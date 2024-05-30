@@ -1,0 +1,19 @@
+class Vehicle
+{
+public:
+	void Method(int val, int* pVal);
+public:
+	int m_age;
+	static int s_nextID;
+};
+
+class Car : public Vehicle
+{
+public:
+};
+
+void Vehicle::Method(int val, int* pVal)
+{
+	int local;
+}
+
