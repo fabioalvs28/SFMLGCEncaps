@@ -12,6 +12,8 @@ template<typename ...T> class GCEvent
 public:
     GCEvent() : m_Functions() {};
     ~GCEvent() { m_Functions.clear(); };
+    GCEvent() = default;
+    ~GCEvent() = default;
 
     /// <summary>
     /// Adds a function to the event
@@ -61,4 +63,5 @@ public:
 
 private:
     std::vector<std::weak_ptr<std::function<void(T...)>>> m_Functions;
+    std::vector<std::function<void(T...)>> m_Functions;
 };
