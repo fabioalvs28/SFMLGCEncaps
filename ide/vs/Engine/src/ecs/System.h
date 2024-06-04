@@ -3,9 +3,9 @@
 /// <summary>
 /// Base class for any other system
 /// </summary>
-class System {
+class GCSystem {
 public:
-	virtual ~System() = default;
+	virtual ~GCSystem() = default;
 
 	virtual void Init();
 
