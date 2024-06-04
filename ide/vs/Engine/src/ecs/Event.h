@@ -10,8 +10,6 @@
 template<typename ...T> class GCEvent
 {
 public:
-    GCEvent() : m_Functions() {};
-    ~GCEvent() { m_Functions.clear(); };
     GCEvent() = default;
     ~GCEvent() = default;
 
@@ -34,7 +32,9 @@ public:
     /// </summary>
     inline void operator -= (const std::function<void(T...)>& function)
     {
-        m_Functions.erase(std::remove(m_Functions.begin(), m_Functions.end(), function), m_Functions.end());
+        auto it = std::remove_if(m_Functions.begin(), m_Functions.end(),
+            [&function](const std::function<void(T...)>& f) { return f.target_type() == function.target_type(); });
+            m_Functions.erase(it, m_Functions.end());
     }
     /// <summary>
     /// Invokes the event
@@ -43,7 +43,10 @@ public:
     {
         for (auto& function : m_Functions)
         {
-            function(args...);
+            if (function)
+            {
+                function(args...);
+            }
         }
     }
     /// <summary>
@@ -62,6 +65,5 @@ public:
     }
 
 private:
-    std::vector<std::weak_ptr<std::function<void(T...)>>> m_Functions;
     std::vector<std::function<void(T...)>> m_Functions;
 };
