@@ -60,5 +60,5 @@ public:
     }
 
 private:
-    std::vector<std::function<void(T...)>> m_Functions;
+    std::vector<std::weak_ptr<std::function<void(T...)>>> m_Functions;
 };
