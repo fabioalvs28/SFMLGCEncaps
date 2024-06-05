@@ -1,5 +1,6 @@
 #pragma once
-#include "GameObject.h"
+
+class GameObject;
 
 
 
@@ -13,7 +14,7 @@ public:
     virtual void Update() = 0;
     virtual void Destroy() = 0;
     
-    void SetGameObject( GameObject* pGameObject );
+    void SetGameObject( GameObject* pGameObject ) { m_pGameObject = pGameObject; };
 
 protected:
     GameObject* m_pGameObject;

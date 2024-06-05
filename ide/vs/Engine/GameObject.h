@@ -1,24 +1,27 @@
 #pragma once
 #include <map>
-#include "Components.h"
+
+class Component;
 
 
 
 class GameObject
 {
+    friend class GameManager;
 
-public:
+private:
     GameObject();
     ~GameObject();
     
     void Init( const char* name, bool active );
     void Update();
     
+public:
     template<class T>
     T* AddComponent();
     template<class T>
     T* GetComponent();
-    
+
     void SetName( const char* name ) { m_name = name; };
     void SetActive( bool active ) { m_active = active; };
     void SetTag( const char* tag ) { m_tag = tag; };
@@ -50,5 +53,5 @@ T* GameObject::AddComponent()
 template<class T>
 T* GameObject::GetComponent()
 {
-    return (T*) m_componentsList[ T::GetType() ]
+    return (T*) m_componentsList[ T::GetType() ];
 }
