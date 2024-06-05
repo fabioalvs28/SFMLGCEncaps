@@ -10,8 +10,8 @@ void GameManager::Init()
 
 void GameManager::Update()
 {
-    for ( int i = 0; i < m_gameObjectsList.size(); i++ )
-        m_gameObjectsList[i]->Update();
+    for ( auto it = m_gameObjectsList.begin(); it != m_gameObjectsList.end(); it++ )
+        (*it)->Update();
 }
 
 GameObject* GameManager::CreateGameObject( const char* name = "GameObject", bool active = true )

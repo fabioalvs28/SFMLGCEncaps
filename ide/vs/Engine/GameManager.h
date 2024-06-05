@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <list>
 #include "GameObject.h"
 
 
@@ -17,7 +17,7 @@ public:
 
 private:
     static GameManager* s_Instance;
-    static std::vector<GameObject*> m_gameObjectsList;
+    static std::list<GameObject*> m_gameObjectsList;
     GameManager() {};
     ~GameManager() {};
 
