@@ -18,7 +18,7 @@ public:
 private:
     static GameManager* s_Instance;
     static std::vector<GameObject*> m_gameObjectsList;
-    GameManager();
-    ~GameManager();
+    GameManager() {};
+    ~GameManager() {};
 
 };
