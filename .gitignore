@@ -1,0 +1,12 @@
+/ide/vs/.vs/Engine/FileContentIndex
+*.db-wal
+*.db-shm
+*.user
+ide/vs/.vs/Engine/v17
+ide/vs/Core/x64
+ide/vs/Demo/x64
+ide/vs/Engine/x64
+ide/vs/FontMaker/x64
+ide/vs/Engine/Engine.vcxproj.user
+/ide/vs/x64/Debug
+.vscode
