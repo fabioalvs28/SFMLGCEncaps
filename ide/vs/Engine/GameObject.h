@@ -39,5 +39,5 @@ T* GameObject::AddComponent()
 template<class T>
 T* GameObject::GetComponent()
 {
-    return (T*) m_componentsList[]
+    return (T*) m_componentsList[ T::GetType() ]
 }
