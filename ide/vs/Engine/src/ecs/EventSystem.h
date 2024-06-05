@@ -3,14 +3,19 @@
 #include "Event.h"
 
 class GCEventDispatcher {
-    using Callback = std::function<void()>;
+public:
+	GCEventDispatcher(GCEvent& gcevent) : m_gcEvent(gcevent) {}
 
-    template<typename ...Args>
-    void AddListener(GCEvent<Args...>& event, std::function<void(Args ...)> listener) { event += listener; }
+	template<typename Type, typename Func>
+	bool Dispatch(const Func& func) {
+		if (m_gcEvent.GetEventType() == Type::GetStaticType())
+		{
+			m_gcEvent.m_isHandle = func(static_cast<Type&>(m_gcEvent));
+			return true;
+		}
+		return false;
+	}
 
-    template<typename... Args>
-    void RemoveListener(GCEvent<Args...>& event, std::function<void(Args...)> listener) { event -= listener; }
-
-    template<typename ...Args>
-    void Dispatch(GCEvent<Args...>& event, Args... args) { event.Invoke(args...); }
+private:
+	GCEvent& m_gcEvent;
 };
