@@ -80,7 +80,6 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="src\core\Define.h" />
     <ClInclude Include="src\ecs\Event.h" />
     <ClInclude Include="src\ecs\EventSystem.h" />
     <ClInclude Include="src\ecs\System.h" />
