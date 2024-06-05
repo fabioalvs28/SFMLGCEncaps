@@ -32,7 +32,7 @@ template<class T>
 T* GameObject::AddComponent()
 {
     T* component = new T();
-    m_componentsList[ component->GetID() ] = component;
+    m_componentsList[ T::GetType() ] = component;
     return component;
 }
 
