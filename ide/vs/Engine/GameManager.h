@@ -13,7 +13,7 @@ public:
     
     static void Update();
     
-    static GameObject* CreateGameObject( const char* name );
+    static GameObject* CreateGameObject( const char* name, bool active = true );
 
 private:
     static GameManager* s_Instance;

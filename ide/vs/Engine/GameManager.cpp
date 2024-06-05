@@ -14,9 +14,10 @@ void GameManager::Update()
         m_gameObjectsList[i]->Update();
 }
 
-GameObject* GameManager::CreateGameObject( const char* name = "GameObject" )
+GameObject* GameManager::CreateGameObject( const char* name = "GameObject", bool active = true )
 {
     GameObject* gameObject = new GameObject();
+    gameObject->Init( name, active );
     m_gameObjectsList.push_back( gameObject );
     return gameObject;
 }
