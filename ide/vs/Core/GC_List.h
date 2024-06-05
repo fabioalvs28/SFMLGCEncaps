@@ -10,16 +10,13 @@ public:
 	GCList();
 	explicit GCList(size_t initialSize);
 	~GCList();
-	void SetSize(size_t newSize) { m_size = newSize; }
-	void SetCapacity(size_t newCapacity) { m_capacity = newCapacity; }
 	void Set(size_t index, const T& element);
 
-	void AllocateTab(size_t capicity);
 	T& operator[](size_t index) { return m_data[index]; }
 	bool Insert(size_t index, const T& element);
 	bool Remove(size_t index);
 	T Get(size_t index);
-	int GetSize() const { return m_size; }
+	size_t GetSize() const { return m_size; }
 	int GetCapacity() const { return m_capacity; }
 
 	void Clear();
@@ -36,11 +33,11 @@ private:
 
 //Default construtor
 template <typename T>
-GCList<T>::GCList() : m_data(nullptr), m_size(0), m_capacity(0) {}
+GCList<T>::GCList() : GCList(1) {}
 
 // Constructor with initial size
 template <typename T>
-GCList<T>::GCList(size_t initialSize) : m_data(new T[initialSize]), m_size(0), m_capacity(initialSize) {}
+GCList<T>::GCList(size_t capicity) : m_data(new T[capicity]), m_size(0), m_capacity(capicity) {}
 
 //Destructor
 template <typename T>
@@ -49,13 +46,6 @@ GCList<T>::~GCList()
 	delete[] m_data;
 }
 
-template <typename T>
-void GCList<T>::AllocateTab(size_t capicity)
-{
-	m_data = new T[capicity];
-	m_capacity = capicity;
-	m_size = 0;
-}
 //Set element at index
 template <typename T>
 void GCList<T>::Set(size_t index, const T& element)
@@ -63,35 +53,27 @@ void GCList<T>::Set(size_t index, const T& element)
 	m_data[index] = element;
 }
 
-//Assert element at index
+//Insert element at index
+//WARNING : This function can't call the overload construtor of T 
 template <typename T>
 bool GCList<T>::Insert(size_t index, const T& element)
 {
-	if (m_data == nullptr)
-		AllocateTab(index + 1); //check if data is null, if so, allocate memory for the new element
-
-	if (index >= m_size)
+	if (index > m_size)
 	{
-		if (m_size == m_capacity)
-		{
-			m_capacity *= 2;
-			T* temp = new T[m_capacity];
-			for (size_t i = 0; i < m_size; i++)
-			{
-				temp[i] = m_data[i];
-			}
-			delete[] m_data;
-			m_data = temp;
-		}
-		for (size_t i = m_size; i > index; i--)
-		{
-			m_data[i] = m_data[i - 1];
-		}
-		m_data[index] = element;
-		m_size++;
-		return true;
+		return false;
 	}
-	return false;
+	if (m_size == m_capacity)
+	{
+		m_capacity *= 2;
+		T* temp = new T[m_capacity];
+		memcpy(temp, m_data, m_size * sizeof(T));
+		free(m_data);
+		m_data = temp;
+	}
+	memcpy(m_data + 1, m_data, (m_size - index) * sizeof(T));
+	m_data[index] = element;
+	m_size++;
+	return true;
 }
 
 //Remove element at index
