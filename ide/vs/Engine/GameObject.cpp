@@ -9,6 +9,7 @@ GameObject::GameObject()
     m_name = "GameObject";
     m_active = true;
     m_tag = "";
+    m_layer = 0;
 }
 
 void GameObject::Update()
