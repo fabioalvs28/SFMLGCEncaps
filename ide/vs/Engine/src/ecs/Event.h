@@ -27,3 +27,30 @@ public:
 protected:
 	bool m_isHandle = false;
 };
+
+class GCWindowCloseEvent : public GCEvent {
+public:
+	GCWindowCloseEvent() {}
+
+	GCEventType GetEventType() const override { return GCEventType::WindowClose; }
+	const char* GetName() const override { return "WindowCloseEvent"; }
+};
+
+/// <summary>
+/// Event occurs when application's window is resized
+/// </summary>
+class GCWindowResizeEvent : public GCEvent {
+public:
+	GCWindowResizeEvent(unsigned int width, unsigned int height) 
+		: m_width(width), m_height(height) {}
+
+	static GCEventType GetStaticType() { return GCEventType::WindowResize; }
+	GCEventType GetEventType() const override { return GetStaticType(); }
+	const char* GetName() const override { return "WindowResizeEvent"; }
+
+	unsigned int GetWidth() const { return m_width; }
+	unsigned int GetHeight() const { return m_height; }
+
+private:
+	unsigned int m_width, m_height;
+};
