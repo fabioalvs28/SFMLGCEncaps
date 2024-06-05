@@ -46,15 +46,28 @@ GCList<T>::~GCList()
 	delete[] m_data;
 }
 
-//Set element at index
+
+/// <summary>
+///  Set a value at index
+/// </summary>
+/// <param name="index">Index of the list where you want to insert a value</param>
+/// <param name="element">Element you want to add in the list</param>
+
 template <typename T>
 void GCList<T>::Set(size_t index, const T& element)
 {
 	m_data[index] = element;
 }
 
-//Insert element at index
-//WARNING : This function can't call the overload construtor of T 
+
+/// <summary>
+///  Insert element at index
+///  WARNING : This function can't call the overload construtor of T 
+/// </summary>
+/// <param name="index">Index of the list where you want to insert a value</param>
+/// <param name="element">Element you want to add in the list</param>
+/// <returns>True if function works</returns>
+
 template <typename T>
 bool GCList<T>::Insert(size_t index, const T& element)
 {
@@ -76,7 +89,12 @@ bool GCList<T>::Insert(size_t index, const T& element)
 	return true;
 }
 
-//Remove element at index
+/// <summary>
+///  Remove element at index
+/// </summary>
+/// <param name="index">Index of the list where you want to remove a value</param>
+/// <returns>True if function works</returns>
+
 template <typename T>
 bool GCList<T>::Remove(size_t index)
 {
@@ -91,7 +109,11 @@ bool GCList<T>::Remove(size_t index)
 	return true;
 }
 
-//Get data at index
+/// <summary>
+///  Get data at index
+/// </summary>
+/// <param name="index">Index of the list where you want to get a value</param>
+
 template <typename T>
 T GCList<T>::Get(size_t index)
 {
@@ -99,7 +121,12 @@ T GCList<T>::Get(size_t index)
 	return m_data[index];
 }
 
-//CLear the list
+
+/// <summary>
+///  Simple clear of the list
+/// WARNING : This function doesn't delete references in the list
+/// </summary>
+
 template <typename T>
 void GCList<T>::Clear()
 {
@@ -109,7 +136,10 @@ void GCList<T>::Clear()
 	m_capacity = 0;
 }
 
-//Clear the list and delete the data
+/// <summary>
+///  Clear the list and delete the data
+/// </summary>
+
 template <typename T>
 void GCList<T>::DeepClear()
 {
@@ -120,7 +150,12 @@ void GCList<T>::DeepClear()
 	Clear();
 }
 
-//Check if the list is empty
+/// <summary>
+///  Check if the list is empty
+/// </summary>
+/// /// <returns>True if the list is empty</returns>
+/// <returns>False if the list isn't empty</returns>
+
 template <typename T>
 bool GCList<T>::IsEmpty() const
 {
