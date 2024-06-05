@@ -43,7 +43,15 @@ class Collider : public Component
 {
 
 public:
+    Collider();
     ~Collider() override {};
+    
+    void SetTrigger( bool trigger ) { m_trigger = trigger; };
+    
+    bool IsTrigger() { return m_trigger; };
+
+protected:
+    bool m_trigger;
 
 };
 

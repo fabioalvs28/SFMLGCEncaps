@@ -3,3 +3,7 @@
 
 
 
+Collider::Collider()
+{
+    m_trigger = false;
+}
