@@ -19,3 +19,16 @@ public:
 private:
 	GCEvent& m_gcEvent;
 };
+
+class GCEventSystem
+{
+public:
+	void PollEvents();
+	void AddEventListener();
+	void RemoveEventListener();
+
+private:
+	void OnEvent(GCEvent& e);
+
+	std::unordered_map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventListeners; //Maybe later to use the custom hashmap
+};
