@@ -13,6 +13,13 @@ enum class GCEventType
 	MouseScrolled,
 };
 
+enum class GCMouseButton
+{
+	Left,
+	Right,
+	Middle
+};
+
 /// <summary>
 /// Base event type class
 /// Derived class should have a static get method to work
@@ -28,6 +35,28 @@ protected:
 	bool m_isHandle = false;
 };
 
+#pragma region MouseEvent
+class GCMouseButtonPressed : public GCEvent
+{
+public:
+	GCMouseButtonPressed(int x, int y, GCMouseButton mouseButton)
+		: m_x(x), m_y(y), m_mouseButton(mouseButton) {}
+
+	static GCEventType GetStaticType() { return GCEventType::MouseButtonPressed; }
+	GCEventType GetEventType() const override { return GetStaticType(); }
+
+	int GetX() const { return m_x; }
+	int GetY() const { return m_y; }
+	GCMouseButton GetMouseButton() const { return m_mouseButton; }
+
+private:
+	int m_x, m_y;
+	GCMouseButton m_mouseButton;
+};
+
+#pragma endregion
+
+#pragma region WindowEvents
 class GCWindowCloseEvent : public GCEvent {
 public:
 	GCWindowCloseEvent() {}
@@ -54,3 +83,4 @@ public:
 private:
 	unsigned int m_width, m_height;
 };
+#pragma endregion
