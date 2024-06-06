@@ -5,14 +5,19 @@ class GCLinkedListNode
 {
 friend class GCLinkedList<T>;
 
-private:
-    GCLinkedListNode();
-    ~GCLinkedListNode();
+public:
+    GCLinkedListNode<T>* GetNext() { return m_pNext; };
+    GCLinkedListNode<T>* GetPrevious() { return m_pPrev; };
+    T& GetData() { return m_data; };
     
     void Destroy();
     void DeepDestroy();
     void Remove();
     T Pop();
+
+private:
+    GCLinkedListNode();
+    ~GCLinkedListNode();
 
 private:
     GCLinkedListNode<T>* m_pNext;
@@ -31,8 +36,8 @@ public:
     
     void Init();
     
-    T GetFirst() const { return m_pHead->m_data; };
-    T GetLast() const { return m_pTail->m_data; };
+    GCLinkedListNode<T>* GetFirstNode() const { return m_pHead; };
+    GCLinkedListNode<T>* GetLastNode() const { return m_pTail; };
     
     void PushBack( T& data );
     void PushFront( T& data );
@@ -51,14 +56,6 @@ private:
 };
 
 
-
-template <typename T>
-GCLinkedListNode<T>::GCLinkedListNode()
-{
-    m_pNext = nullptr;
-    m_pPrev = nullptr;
-    m_data = NULL;
-}
 
 template <typename T>
 void GCLinkedListNode<T>::Destroy()
@@ -88,6 +85,14 @@ T GCLinkedListNode<T>::Pop()
     T temp = m_data;
     Remove();
     return temp;
+}
+
+template <typename T>
+GCLinkedListNode<T>::GCLinkedListNode()
+{
+    m_pNext = nullptr;
+    m_pPrev = nullptr;
+    m_data = NULL;
 }
 
 template <typename T>
