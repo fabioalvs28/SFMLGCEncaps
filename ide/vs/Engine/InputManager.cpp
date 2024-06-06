@@ -1,26 +1,25 @@
-#include "pch.h"
 #include "InputManager.h"
 
 
 
-InputManager::InputManager()
+GCInputManager::GCInputManager()
 {
     m_canLeaveWin = true;
     InitKeysTable();
 };
 
 
-void InputManager::InitKeysTable()
+void GCInputManager::InitKeysTable()
 {
     for (int i = 0; i < 255; i++)
     {
-        InputManager::pListOfKeys[i] = NONE;
+        pListOfKeys[i] = NONE;
 
     }
 }
 
 
-void InputManager::UpdateKeyInput()
+void GCInputManager::UpdateKeyInput()
 {
 
     bool keyState;
@@ -32,19 +31,19 @@ void InputManager::UpdateKeyInput()
         if (keyState == true)
         {
 
-            switch (InputManager::pListOfKeys[i])
+            switch (pListOfKeys[i])
             {
-            case InputManager::NONE:
-                InputManager::pListOfKeys[i] = DOWN;
+            case NONE:
+                pListOfKeys[i] = DOWN;
                 break;
-            case InputManager::PUSH:
-                InputManager::pListOfKeys[i] = PUSH;
+            case PUSH:
+                pListOfKeys[i] = PUSH;
                 break;
-            case InputManager::UP:
-                InputManager::pListOfKeys[i] = DOWN;
+            case UP:
+                pListOfKeys[i] = DOWN;
                 break;
-            case InputManager::DOWN:
-                InputManager::pListOfKeys[i] = PUSH;
+            case DOWN:
+                pListOfKeys[i] = PUSH;
                 break;
 
             }
@@ -52,16 +51,16 @@ void InputManager::UpdateKeyInput()
         else
         {
 
-            switch (InputManager::pListOfKeys[i])
+            switch (pListOfKeys[i])
             {
-            case InputManager::PUSH:
-                InputManager::pListOfKeys[i] = UP;
+            case PUSH:
+                pListOfKeys[i] = UP;
                 break;
-            case InputManager::UP:
-                InputManager::pListOfKeys[i] = NONE;
+            case UP:
+                pListOfKeys[i] = NONE;
                 break;
-            case InputManager::DOWN:
-                InputManager::pListOfKeys[i] = UP;
+            case DOWN:
+                pListOfKeys[i] = UP;
                 break;
 
             }
@@ -72,7 +71,7 @@ void InputManager::UpdateKeyInput()
 
 
 
-void InputManager::UpdateMousePos(const GCWINDOW* pWinInfos)
+void GCInputManager::UpdateMousePos(const GCWINDOW* pWinInfos)
 {
 
     POINT pointOnScreen;
@@ -113,31 +112,31 @@ void InputManager::UpdateMousePos(const GCWINDOW* pWinInfos)
 }
 
 
-Vector2 InputManager::GetMousePos()
+Vector2 GCInputManager::GetMousePos()
 {
     return m_mousePos;
 }
 
 
-bool InputManager::GetKeyDown(char key)
+bool GCInputManager::GetKeyDown(int vKey)
 {
-    if (pListOfKeys[key] == DOWN)
+    if (pListOfKeys[vKey] == DOWN)
     {
         return true;
     }
     return false;
 }
-bool InputManager::GetKeyStay(char key)
+bool GCInputManager::GetKeyStay(int vKey)
 {
-    if (pListOfKeys[key] == PUSH)
+    if (pListOfKeys[vKey] == PUSH)
     {
         return true;
     }
     return false;
 }
-bool InputManager::GetKeyUp(char key)
+bool GCInputManager::GetKeyUp(int vKey)
 {
-    if (pListOfKeys[key] == UP)
+    if (pListOfKeys[vKey] == UP)
     {
         return true;
     }
@@ -147,7 +146,7 @@ bool InputManager::GetKeyUp(char key)
 
 
 
-bool InputManager::GetMouseDown(int mouseButton)
+bool GCInputManager::GetMouseDown(int mouseButton)
 {
     if (mouseButton > 2)
         mouseButton += 1;
@@ -158,7 +157,7 @@ bool InputManager::GetMouseDown(int mouseButton)
     return false;
 }
 
-bool InputManager::GetMouseStay(int mouseButton)
+bool GCInputManager::GetMouseStay(int mouseButton)
 {
     if (mouseButton > 2)
         mouseButton += 1;
@@ -168,7 +167,7 @@ bool InputManager::GetMouseStay(int mouseButton)
     }
     return false;
 }
-bool InputManager::getMouseUp(int mouseButton)
+bool GCInputManager::getMouseUp(int mouseButton)
 {
     if (mouseButton > 2)
         mouseButton += 1;
@@ -183,7 +182,7 @@ bool InputManager::getMouseUp(int mouseButton)
 
 
 
-bool InputManager::OnMouseHover(Vector2 objectPos, Vector2 objSize) {
+bool GCInputManager::OnMouseHover(Vector2 objectPos, Vector2 objSize) {
 
     if (m_mousePos.x < objectPos.x)
         return false;
@@ -199,6 +198,6 @@ bool InputManager::OnMouseHover(Vector2 objectPos, Vector2 objSize) {
 
 
 
-void InputManager::SetLeavingWindows(bool canLeave) {
+void GCInputManager::SetLeavingWindows(bool canLeave) {
     m_canLeaveWin = canLeave;
 }

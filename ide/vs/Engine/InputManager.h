@@ -19,22 +19,22 @@ struct GCWINDOW
 
 };
 
-class InputManager
+class GCInputManager
 {
 
 public:
 
-    InputManager();
-    virtual ~InputManager() {};
+    GCInputManager();
+    virtual ~GCInputManager() {};
 
     void UpdateKeyInput();
     void UpdateMousePos(const GCWINDOW* pWinInfos);
 
     Vector2 GetMousePos();
 
-    bool GetKeyDown(char key);
-    bool GetKeyStay(char key);
-    bool GetKeyUp(char key);
+    bool GetKeyDown(int vKey);
+    bool GetKeyStay(int vKey);
+    bool GetKeyUp(int vKey);
 
     /// \brief int from 1 to 5 : left button, right button, middle button, X button 1, Xbutton 2
     bool GetMouseDown(int mouseButton);
