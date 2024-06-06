@@ -9,7 +9,7 @@ private:
     GCLinkedListNode();
     ~GCLinkedListNode();
     
-    void Destroy();
+    void Remove();
     T Pop();
 
 private:
@@ -27,13 +27,16 @@ public:
     GCLinkedList();
     ~GCLinkedList();
     
+    void Init();
+    
     T GetFirst() const { return m_pHead->m_data; };
     T GetLast() const { return m_pTail->m_data; };
     
     void PushBack( T& data );
     void PushFront( T& data );
+    void Clear();
     
-    bool Query( T& data );
+    bool Find( T& data );
     
     int GetSize() const { return m_size; };
 
@@ -55,23 +58,28 @@ GCLinkedListNode<T>::GCLinkedListNode()
 }
 
 template <typename T>
-void GCLinkedListNode<T>::Destroy()
+void GCLinkedListNode<T>::Remove()
 {
     if ( m_pNext != nullptr ) m_pNext->m_pPrev = m_pPrev;
     if ( m_pPrev != nullptr ) m_pPrev->m_pNext = m_pNext;
-    delete this;
 }
 
 template <typename T>
 T GCLinkedListNode<T>::Pop()
 {
     T temp = m_data;
-    Destroy();
+    Remove();
     return temp;
 }
 
 template <typename T>
 GCLinkedList<T>::GCLinkedList()
+{
+    Init();
+}
+
+template <typename T>
+void GCLinkedList<T>::Init()
 {
     m_pHead = nullptr;
     m_pTail = nullptr;
@@ -81,29 +89,29 @@ GCLinkedList<T>::GCLinkedList()
 template <typename T>
 void GCLinkedList<T>::PushBack( T& data )
 {
-    GCLinkedListNode<T>* newNode = new GCLinkedListNode<T>();
-    newNode->m_data = data;
-    newNode->m_pNext = nullptr;
-    newNode->m_pPrev = m_pTail;
-    m_pTail = newNode;
+    GCLinkedListNode<T>* pNewNode = new GCLinkedListNode<T>();
+    pNewNode->m_data = data;
+    pNewNode->m_pNext = nullptr;
+    pNewNode->m_pPrev = m_pTail;
+    m_pTail = pNewNode;
     m_size++;
 }
 
 template <typename T>
 void GCLinkedList<T>::PushFront( T& data )
 {
-    GCLinkedListNode<T>* newNode = new GCLinkedListNode<T>();
-    newNode->m_data = data;
-    newNode->m_pNext = m_pHead;
-    newNode->m_pPrev = nullptr;
-    m_pHead = newNode;
+    GCLinkedListNode<T>* pNewNode = new GCLinkedListNode<T>();
+    pNewNode->m_data = data;
+    pNewNode->m_pNext = m_pHead;
+    pNewNode->m_pPrev = nullptr;
+    m_pHead = pNewNode;
     m_size++;
 }
 
 template <typename T>
 bool GCLinkedList<T>::Query( T& data )
 {
-    for ( GCLinkedListNode<T>* temp = m_pHead; temp != nullptr; temp->m_pNext )
-        if ( temp->m_data == data ) return true;
+    for ( GCLinkedListNode<T>* pTemp = m_pHead; pTemp != nullptr; pTemp = pTemp->m_pNext )
+        if ( pTemp->m_data == data ) return true;
     return false;
 }
