@@ -19,7 +19,6 @@ public:
 
 private:
 	std::map<Key, Value> m_Map;
-
 };
 
 
