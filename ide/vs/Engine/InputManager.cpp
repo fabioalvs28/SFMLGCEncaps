@@ -63,18 +63,18 @@ void GCInputManager::UpdateKeyboardInput()
 
             switch (pListOfKeyboardKeys[i])
             {
-            case NONE:
-                pListOfKeyboardKeys[i] = DOWN;
-                break;
-            case PUSH:
-                pListOfKeyboardKeys[i] = PUSH;
-                break;
-            case UP:
-                pListOfKeyboardKeys[i] = DOWN;
-                break;
-            case DOWN:
-                pListOfKeyboardKeys[i] = PUSH;
-                break;
+                case NONE:
+                    pListOfKeyboardKeys[i] = DOWN;
+                    break;
+                case PUSH:
+                    pListOfKeyboardKeys[i] = PUSH;
+                    break;
+                case UP:
+                    pListOfKeyboardKeys[i] = DOWN;
+                    break;
+                case DOWN:
+                    pListOfKeyboardKeys[i] = PUSH;
+                    break;
 
             }
         }
@@ -83,15 +83,15 @@ void GCInputManager::UpdateKeyboardInput()
 
             switch (pListOfKeyboardKeys[i])
             {
-            case PUSH:
-                pListOfKeyboardKeys[i] = UP;
-                break;
-            case UP:
-                pListOfKeyboardKeys[i] = NONE;
-                break;
-            case DOWN:
-                pListOfKeyboardKeys[i] = UP;
-                break;
+                case PUSH:
+                    pListOfKeyboardKeys[i] = UP;
+                    break;
+                case UP:
+                    pListOfKeyboardKeys[i] = NONE;
+                    break;
+                case DOWN:
+                    pListOfKeyboardKeys[i] = UP;
+                    break;
 
             }
         }
@@ -259,7 +259,8 @@ void GCInputManager::SetLeavingWindows(bool canLeave) {
 
 void GCInputManager::UpdateInputs()
 {
-    for (int i = 0; i < XUSER_MAX_COUNT; i++) {
+    for (int i = 0; i < XUSER_MAX_COUNT; i++) 
+    {
 
         if (pConnectedController[i] == true)
         {
@@ -322,19 +323,24 @@ void GCInputManager::UpdateControllerInput(int controllerID)
     }
 }
 
-float GCInputManager::GetControllerLeftAxisX(int controllerID) {
+float GCInputManager::GetControllerLeftAxisX(int controllerID)
+{
     return pControllersLeftAxis[controllerID][0];
 }
 
-float GCInputManager::GetControllerLeftAxisY(int controllerID) {
+float GCInputManager::GetControllerLeftAxisY(int controllerID) 
+{
     return pControllersLeftAxis[controllerID][1];
 }
 
-float GCInputManager::GetControllerRightAxisX(int controllerID) {
+
+float GCInputManager::GetControllerRightAxisX(int controllerID) 
+{
     return pControllersRightAxis[controllerID][0];
 }
 
-float GCInputManager::GetControllerRightAxisY(int controllerID) {
+float GCInputManager::GetControllerRightAxisY(int controllerID) 
+{
     return pControllersRightAxis[controllerID][1];
 }
 
@@ -345,7 +351,8 @@ void GCInputManager::UpdateJoySticksinput(int controllerID)
 
     int side[2] = { 1,1 };
 
-    if (XInputGetState(controllerID, &state) == ERROR_SUCCESS) {
+    if (XInputGetState(controllerID, &state) == ERROR_SUCCESS) 
+    {
 
         float LX = state.Gamepad.sThumbLX;
         float LY = state.Gamepad.sThumbLY;
@@ -362,7 +369,8 @@ void GCInputManager::UpdateJoySticksinput(int controllerID)
         rLY = pow(rLY, 2) * side[1];
 
 
-        if (sqrt(LX * LX + LY * LY) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
+        if (sqrt(LX * LX + LY * LY) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) 
+        {
             rLX = 0.0, rLY = 0.0;
         }
 
@@ -387,7 +395,8 @@ void GCInputManager::UpdateJoySticksinput(int controllerID)
         rRY = pow(rRY, 2) * side[1];
 
 
-        if (sqrt(RX * RX + RY * RY) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) {
+        if (sqrt(RX * RX + RY * RY) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+        {
             rRX = 0.0, rRY = 0.0;
         }
 
