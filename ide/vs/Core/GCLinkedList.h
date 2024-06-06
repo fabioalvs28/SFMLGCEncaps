@@ -109,7 +109,20 @@ void GCLinkedList<T>::PushFront( T& data )
 }
 
 template <typename T>
-bool GCLinkedList<T>::Query( T& data )
+void GCLinkedList<T>::Clear()
+{
+    GCLinkedListNode<T>* pTemp;
+    while ( pTemp != nullptr )
+    {
+        pTemp = m_pHead->m_pNext;
+        delete[] m_pHead;
+        m_pHead = pTemp;
+    }
+    Init();
+}
+
+template <typename T>
+bool GCLinkedList<T>::Find( T& data )
 {
     for ( GCLinkedListNode<T>* pTemp = m_pHead; pTemp != nullptr; pTemp = pTemp->m_pNext )
         if ( pTemp->m_data == data ) return true;
