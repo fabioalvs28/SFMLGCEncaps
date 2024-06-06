@@ -2,7 +2,8 @@
 #include <windows.h>
 
 
-typedef struct Vector2
+
+typedef struct CGVECTOR2
 {
     int x;
     int y;
@@ -10,7 +11,7 @@ typedef struct Vector2
 
 
 
-struct Window
+struct GCWINDOW
 {
     Vector2 winPos;
     Vector2 winSize;
@@ -27,18 +28,13 @@ public:
     virtual ~InputManager() {};
 
     void UpdateKeyInput();
-    void UpdateMousePos(const Window* winInfos);
+    void UpdateMousePos(const GCWINDOW* pWinInfos);
 
     Vector2 GetMousePos();
 
-
-    /// \brief Pour l'instant marche avec les lettres donc mettre 'A' par exemple. 
     bool GetKeyDown(char key);
-    /// \brief Pour l'instant marche avec les lettres donc mettre 'A' par exemple. 
     bool GetKeyStay(char key);
-    /// \brief Pour l'instant marche avec les lettres donc mettre 'A' par exemple. 
     bool GetKeyUp(char key);
-
 
     /// \brief int from 1 to 5 : left button, right button, middle button, X button 1, Xbutton 2
     bool GetMouseDown(int mouseButton);
@@ -46,15 +42,14 @@ public:
     bool GetMouseStay(int mouseButton);
     /// \brief int from 1 to 5 : left button, right button, middle button, X button 1, Xbutton 2
     bool getMouseUp(int mouseButton);
-
     bool OnMouseHover(Vector2 objectPos, Vector2 objSize);
 
-    void SetLeavingWindows(bool canLeave); // Choose if the cursor can leave the windows or not. 
+    void SetLeavingWindows(bool canLeave);
 
 private:
     void InitKeysTable();
-    bool canLeaveWin;
-    BYTE listOfKeys[255];
+    bool m_canLeaveWin;
+    BYTE pListOfKeys[255];
     enum
     {
         NONE,
@@ -62,6 +57,6 @@ private:
         UP,
         DOWN,
     };
-    Vector2 mousePos;
+    Vector2 m_mousePos;
 
 };

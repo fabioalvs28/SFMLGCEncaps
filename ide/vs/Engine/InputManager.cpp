@@ -2,57 +2,66 @@
 #include "InputManager.h"
 
 
-InputManager::InputManager() {
-    canLeaveWin = true;
+
+InputManager::InputManager()
+{
+    m_canLeaveWin = true;
     InitKeysTable();
 };
 
 
 void InputManager::InitKeysTable()
 {
-    for (int i = 0; i < 255; i++) {
-        InputManager::listOfKeys[i] = NONE;
+    for (int i = 0; i < 255; i++)
+    {
+        InputManager::pListOfKeys[i] = NONE;
 
     }
 }
 
 
-void InputManager::UpdateKeyInput() {
+void InputManager::UpdateKeyInput()
+{
 
     bool keyState;
 
-    for (int i = 0; i < 255; i++) {
+    for (int i = 0; i < 255; i++)
+    {
         keyState = GetAsyncKeyState(i);
 
-        if (keyState == true) {
+        if (keyState == true)
+        {
 
-            switch (InputManager::listOfKeys[i]) {
+            switch (InputManager::pListOfKeys[i])
+            {
             case InputManager::NONE:
-                InputManager::listOfKeys[i] = DOWN;
+                InputManager::pListOfKeys[i] = DOWN;
                 break;
             case InputManager::PUSH:
-                InputManager::listOfKeys[i] = PUSH;
+                InputManager::pListOfKeys[i] = PUSH;
                 break;
             case InputManager::UP:
-                InputManager::listOfKeys[i] = DOWN;
+                InputManager::pListOfKeys[i] = DOWN;
                 break;
             case InputManager::DOWN:
-                InputManager::listOfKeys[i] = PUSH;
+                InputManager::pListOfKeys[i] = PUSH;
                 break;
 
             }
         }
-        else {
+        else
+        {
 
-            switch (InputManager::listOfKeys[i]) {
+            switch (InputManager::pListOfKeys[i])
+            {
             case InputManager::PUSH:
-                InputManager::listOfKeys[i] = UP;
+                InputManager::pListOfKeys[i] = UP;
                 break;
             case InputManager::UP:
-                InputManager::listOfKeys[i] = NONE;
+                InputManager::pListOfKeys[i] = NONE;
                 break;
             case InputManager::DOWN:
-                InputManager::listOfKeys[i] = UP;
+                InputManager::pListOfKeys[i] = UP;
                 break;
 
             }
@@ -63,33 +72,40 @@ void InputManager::UpdateKeyInput() {
 
 
 
-void InputManager::UpdateMousePos(const Window* winInfos) {
+void InputManager::UpdateMousePos(const GCWINDOW* pWinInfos)
+{
 
     POINT pointOnScreen;
 
-    if (GetCursorPos(&pointOnScreen)) {
+    if (GetCursorPos(&pointOnScreen))
+    {
 
-        if (pointOnScreen.x <= winInfos->winPos.x) {
-            pointOnScreen.x = winInfos->winPos.x;
+        if (pointOnScreen.x <= pWinInfos->winPos.x)
+        {
+            pointOnScreen.x = pWinInfos->winPos.x;
         }
-        else if (pointOnScreen.x >= winInfos->winPos.x + winInfos->winSize.x) {
-            pointOnScreen.x = winInfos->winPos.x + winInfos->winSize.x;
-        }
-
-        if (pointOnScreen.y <= winInfos->winPos.y) {
-            pointOnScreen.y = winInfos->winPos.y;
-        }
-        else if (pointOnScreen.y >= winInfos->winPos.y + winInfos->winSize.y) {
-            pointOnScreen.y = winInfos->winPos.y + winInfos->winSize.y;
+        else if (pointOnScreen.x >= pWinInfos->winPos.x + pWinInfos->winSize.x)
+        {
+            pointOnScreen.x = pWinInfos->winPos.x + pWinInfos->winSize.x;
         }
 
-        if (canLeaveWin == false) {
+        if (pointOnScreen.y <= pWinInfos->winPos.y)
+        {
+            pointOnScreen.y = pWinInfos->winPos.y;
+        }
+        else if (pointOnScreen.y >= pWinInfos->winPos.y + pWinInfos->winSize.y)
+        {
+            pointOnScreen.y = pWinInfos->winPos.y + pWinInfos->winSize.y;
+        }
+
+        if (m_canLeaveWin == false)
+        {
             SetCursorPos(pointOnScreen.x, pointOnScreen.y);
         }
 
 
-        mousePos.x = pointOnScreen.x - winInfos->center.x;
-        mousePos.y = pointOnScreen.y - winInfos->center.y;
+        m_mousePos.x = pointOnScreen.x - pWinInfos->center.x;
+        m_mousePos.y = pointOnScreen.y - pWinInfos->center.y;
 
     }
 
@@ -97,27 +113,32 @@ void InputManager::UpdateMousePos(const Window* winInfos) {
 }
 
 
-Vector2 InputManager::GetMousePos() {
-    return mousePos;
+Vector2 InputManager::GetMousePos()
+{
+    return m_mousePos;
 }
 
 
-bool InputManager::GetKeyDown(char key) {
-    if (listOfKeys[key] == DOWN) {
+bool InputManager::GetKeyDown(char key)
+{
+    if (pListOfKeys[key] == DOWN)
+    {
         return true;
     }
     return false;
 }
 bool InputManager::GetKeyStay(char key)
 {
-    if (listOfKeys[key] == PUSH) {
+    if (pListOfKeys[key] == PUSH)
+    {
         return true;
     }
     return false;
 }
 bool InputManager::GetKeyUp(char key)
 {
-    if (listOfKeys[key] == UP) {
+    if (pListOfKeys[key] == UP)
+    {
         return true;
     }
     return false;
@@ -126,27 +147,33 @@ bool InputManager::GetKeyUp(char key)
 
 
 
-bool InputManager::GetMouseDown(int mouseButton) {
+bool InputManager::GetMouseDown(int mouseButton)
+{
     if (mouseButton > 2)
         mouseButton += 1;
-    if (listOfKeys[mouseButton] == DOWN) {
+    if (pListOfKeys[mouseButton] == DOWN)
+    {
         return true;
     }
     return false;
 }
 
-bool InputManager::GetMouseStay(int mouseButton) {
+bool InputManager::GetMouseStay(int mouseButton)
+{
     if (mouseButton > 2)
         mouseButton += 1;
-    if (listOfKeys[mouseButton] == PUSH) {
+    if (pListOfKeys[mouseButton] == PUSH)
+    {
         return true;
     }
     return false;
 }
-bool InputManager::getMouseUp(int mouseButton) {
+bool InputManager::getMouseUp(int mouseButton)
+{
     if (mouseButton > 2)
         mouseButton += 1;
-    if (listOfKeys[mouseButton] == UP) {
+    if (pListOfKeys[mouseButton] == UP)
+    {
         return true;
     }
     return false;
@@ -158,13 +185,13 @@ bool InputManager::getMouseUp(int mouseButton) {
 
 bool InputManager::OnMouseHover(Vector2 objectPos, Vector2 objSize) {
 
-    if (mousePos.x < objectPos.x)
+    if (m_mousePos.x < objectPos.x)
         return false;
-    if (mousePos.x > objectPos.x + objSize.x)
+    if (m_mousePos.x > objectPos.x + objSize.x)
         return false;
-    if (mousePos.y < objectPos.y)
+    if (m_mousePos.y < objectPos.y)
         return false;
-    if (mousePos.y > objectPos.y + objSize.y)
+    if (m_mousePos.y > objectPos.y + objSize.y)
         return false;
 
     return true;
@@ -173,5 +200,5 @@ bool InputManager::OnMouseHover(Vector2 objectPos, Vector2 objSize) {
 
 
 void InputManager::SetLeavingWindows(bool canLeave) {
-    canLeaveWin = canLeave;
+    m_canLeaveWin = canLeave;
 }
