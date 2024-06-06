@@ -9,6 +9,8 @@ private:
     GCLinkedListNode();
     ~GCLinkedListNode();
     
+    void Destroy();
+    void DeepDestroy();
     void Remove();
     T Pop();
 
@@ -35,6 +37,7 @@ public:
     void PushBack( T& data );
     void PushFront( T& data );
     void Clear();
+    void DeepClear();
     
     bool Find( T& data );
     
@@ -55,6 +58,21 @@ GCLinkedListNode<T>::GCLinkedListNode()
     m_pNext = nullptr;
     m_pPrev = nullptr;
     m_data = NULL;
+}
+
+template <typename T>
+void GCLinkedListNode<T>::Destroy()
+{
+    Remove();
+    delete this;
+}
+
+template <typename T>
+void GCLinkedListNode<T>::DeepDestroy()
+{
+    Remove();
+    delete m_data;
+    delete this;
 }
 
 template <typename T>
@@ -115,7 +133,21 @@ void GCLinkedList<T>::Clear()
     while ( pTemp != nullptr )
     {
         pTemp = m_pHead->m_pNext;
-        delete[] m_pHead;
+        delete m_pHead;
+        m_pHead = pTemp;
+    }
+    Init();
+}
+
+template <typename T>
+void GCLinkedList<T>::DeepClear()
+{
+    GCLinkedListNode<T>* pTemp;
+    while ( pTemp != nullptr )
+    {
+        pTemp = m_pHead->m_pNext;
+        delete m_pHead->m_data;
+        delete m_pHead;
         m_pHead = pTemp;
     }
     Init();
