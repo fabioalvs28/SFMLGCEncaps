@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="Define.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GCMap.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
