@@ -24,6 +24,9 @@
     <ClInclude Include="Define.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GCMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp">
@@ -32,5 +35,8 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GCQueue.h" />
   </ItemGroup>
 </Project>
