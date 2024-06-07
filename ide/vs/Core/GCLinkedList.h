@@ -35,7 +35,7 @@ class GCLinkedList
 
 public:
     GCLinkedList();
-    ~GCLinkedList();
+    ~GCLinkedList() = default;
     
     void Init();
     
