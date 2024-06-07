@@ -17,5 +17,6 @@
     <ClInclude Include="src\ecs\Event.h" />
     <ClInclude Include="src\ecs\EventSystem.h" />
     <ClInclude Include="src\ecs\System.h" />
+    <ClInclude Include="src\ecs\Layer\Layer.h" />
   </ItemGroup>
 </Project>

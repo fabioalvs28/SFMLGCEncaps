@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include "Event.h"
+#include "Layer/Layer.h"
 
 class GCEventDispatcher {
 public:
@@ -26,6 +27,9 @@ public:
 	void PollEvents();
 	void AddEventListener();
 	void RemoveEventListener();
+
+	void AddLayer(Layer* layer);
+	void RemoveLayer(Layer* layer);
 
 private:
 	void OnEvent(GCEvent& e);
