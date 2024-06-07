@@ -24,3 +24,10 @@ void GameObject::Update()
     for ( int i = 0; i < m_componentsList.size(); i++ )
         m_componentsList[i]->Update();
 }
+
+void GameObject::Destroy()
+{
+    m_node->DeepDestroy();
+    for ( int i = 0; i < m_componentsList.size(); i++ )
+        m_componentsList[i]->Destroy();
+}
