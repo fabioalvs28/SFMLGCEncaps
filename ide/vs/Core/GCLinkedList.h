@@ -1,6 +1,9 @@
 #pragma once
 
 template <typename T>
+class GCLinkedList;
+
+template <typename T>
 class GCLinkedListNode
 {
 friend class GCLinkedList<T>;
