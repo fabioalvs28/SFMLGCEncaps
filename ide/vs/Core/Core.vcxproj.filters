@@ -27,12 +27,24 @@
     <ClInclude Include="GCMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GC_List.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCLinkedList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCVector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
