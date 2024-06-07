@@ -1,7 +1,13 @@
 #include "pch.h"
 #include "GCVector.h"
 
-GCVector2::GCVector2( float x = 0.0f, float y = 0.0f )
+GCVEC2::GCVEC2()
+{
+    x = 0.0f;
+    y = 0.0f;
+}
+
+GCVEC2::GCVEC2( float x, float y )
 {
     this->x = x;
     this->y = y;
@@ -9,15 +15,50 @@ GCVector2::GCVector2( float x = 0.0f, float y = 0.0f )
 
 
 
-void GCVector2::SetZero()
+void GCVEC2::SetZero()
 {
     x = 0.0f;
     y = 0.0f;
 }
 
+void GCVEC2::SetUp()
+{
+    x = 0.0f;
+    y = 1.0f;
+}
+
+void GCVEC2::SetDown()
+{
+    x = 0.0f;
+    y = -1.0f;
+}
+
+void GCVEC2::SetLeft()
+ {
+    x = -1.0f;
+    y = 0.0f;
+}
+
+void GCVEC2::SetRight()
+ {
+    x = 1.0f;
+    y = 0.0f;
+}
 
 
-void GCVector2::Normalize()
+
+void GCVEC2::Lerp( const GCVEC2& from, const GCVEC2& to, const float& t )
+{
+    x = from.x + ( to.x - from.x ) * t;
+    y = from.y + ( to.y - from.y ) * t;
+}
+
+void GCVEC2::Clamp( const GCVEC2& min, const GCVEC2& max )
+{
+    if ( min > max ) return;
+}
+
+void GCVEC2::Normalize()
 {
     float norm = GetNorm();
     x /= norm;
@@ -26,85 +67,71 @@ void GCVector2::Normalize()
 
 
 
-GCVector2 GCVector2::operator+( const GCVector2& other ) const
+GCVEC2 GCVEC2::operator+( const GCVEC2& other ) const
 {
-    GCVector2 result = *this;
+    GCVEC2 result = *this;
     result += other;
     return result;
 }
 
-GCVector2 GCVector2::operator-( const GCVector2& other ) const
+GCVEC2 GCVEC2::operator-( const GCVEC2& other ) const
 {
-    GCVector2 result = *this;
+    GCVEC2 result = *this;
     result -= other;
     return result;
 }
 
-GCVector2 GCVector2::operator*( const GCVector2& other ) const
+GCVEC2 GCVEC2::operator*( const GCVEC2& other ) const
 {
-    GCVector2 result = *this;
+    GCVEC2 result = *this;
     result *= other;
     return result;
 }
 
-GCVector2 GCVector2::operator/( const GCVector2& other ) const
+GCVEC2 GCVEC2::operator/( const GCVEC2& other ) const
 {
-    GCVector2 result = *this;
+    GCVEC2 result = *this;
     result /= other;
     return result;
 }
 
 
 
-GCVector2 GCVector2::operator+( const float& value ) const
+GCVEC2 GCVEC2::operator*( const float& value ) const
 {
-    GCVector2 result = *this;
-    result += value;
-    return result;
-}
-
-GCVector2 GCVector2::operator-( const float& value ) const
-{
-    GCVector2 result = *this;
-    result -= value;
-    return result;
-}
-
-GCVector2 GCVector2::operator*( const float& value ) const
-{
-    GCVector2 result = *this;
+    GCVEC2 result = *this;
     result *= value;
     return result;
 }
 
-GCVector2 GCVector2::operator/( const float& value ) const
+GCVEC2 GCVEC2::operator/( const float& value ) const
 {
-    GCVector2 result = *this;
+    GCVEC2 result = *this;
     result /= value;
     return result;
 }
 
 
 
-void GCVector2::operator+=( const GCVector2& other )
+void GCVEC2::operator+=( const GCVEC2& other )
 {
     x += other.x;
     y += other.y;
 }
 
-void GCVector2::operator-=( const GCVector2& other )
+void GCVEC2::operator-=( const GCVEC2& other )
 {
     x -= other.x;
     y -= other.y;
 }
 
-void GCVector2::operator*=( const GCVector2& other )
+void GCVEC2::operator*=( const GCVEC2& other )
 {
     x *= other.x;
     y *= other.y;
 }
 
-void GCVector2::operator/=( const GCVector2& other ) //! Division by zero
+void GCVEC2::operator/=( const GCVEC2& other ) //! Division by zero
 {
     x /= other.x;
     y /= other.y;
@@ -112,42 +139,14 @@ void GCVector2::operator/=( const GCVector2& other ) //! Division by zero
 
 
 
-void GCVector2::operator+=( const float& value )
-{
-    x += value;
-    y += value;
-}
-
-void GCVector2::operator-=( const float& value )
-{
-    x -= value;
-    y -= value;
-}
-
-void GCVector2::operator*=( const float& value )
+void GCVEC2::operator*=( const float& value )
 {
     x *= value;
     y *= value;
 }
 
-void GCVector2::operator/=( const float& value ) //! Division by zero
+void GCVEC2::operator/=( const float& value ) //! Division by zero
 {
     x /= value;
     y /= value;
-}
-
-
-
-void GCVector2::operator++()
-{
-    // this += 1;
-    x++;
-    y++;
-}
-
-void GCVector2::operator--()
-{
-    // this -= 1;
-    x--;
-    y--;
 }
