@@ -29,6 +29,7 @@ public:
 	virtual GCEventType GetEventType() const = 0;
 	virtual const char* GetName() const = 0;
 	virtual std::string ToString() const { return GetName(); }
+    virtual bool IsHandle() const { return m_isHandle; }
 	virtual ~GCEvent() = default;
 
 protected:
@@ -44,13 +45,14 @@ public:
 
 	static GCEventType GetStaticType() { return GCEventType::MouseButtonPressed; }
 	GCEventType GetEventType() const override { return GetStaticType(); }
+    const char* GetName() const override { return "MouseButtonPressed"; }
 
 	int GetX() const { return m_x; }
 	int GetY() const { return m_y; }
 	GCMouseButton GetMouseButton() const { return m_mouseButton; }
 
 private:
-	int m_x, m_y;
+    int m_x, m_y; //Maybe later to use the custom vector2
 	GCMouseButton m_mouseButton;
 };
 
