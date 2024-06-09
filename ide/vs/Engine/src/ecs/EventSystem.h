@@ -11,7 +11,7 @@ public:
 	bool Dispatch(const Func& func) {
 		if (m_gcEvent.GetEventType() == Type::GetStaticType())
 		{
-			m_gcEvent.m_isHandle = func(static_cast<Type&>(m_gcEvent));
+			m_gcEvent.IsHandle() = func(static_cast<Type&>(m_gcEvent));
 			return true;
 		}
 		return false;
@@ -25,8 +25,8 @@ class GCEventSystem
 {
 public:
 	void PollEvents();
-	void AddEventListener();
-	void RemoveEventListener();
+	void AddEventListener(GCEventType type, std::function<void(GCEvent&)> listener);
+	void RemoveEventListener(GCEventType type, std::function<void(GCEvent&)> listener);
 
 	void AddLayer(Layer* layer);
 	void RemoveLayer(Layer* layer);
@@ -35,4 +35,5 @@ private:
 	void OnEvent(GCEvent& e);
 
 	std::unordered_map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventListeners; //Maybe later to use the custom hashmap
+    std::vector<Layer*> m_layers;
 };
