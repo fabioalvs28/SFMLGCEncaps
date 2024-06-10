@@ -1,8 +1,8 @@
 #pragma once
+#include "GCVectors.h"
 
-class GCMatrix
+struct GCMatrix
 {
-public:
 
 	GCMatrix(); //constructeur par defaut
 
@@ -30,12 +30,7 @@ public:
 	void Transpose(); //transpose la matrice
 
 	void Translation(float x, float y, float z); //translation la matrice
-	void Rotation(float x, float y, float z); //rotation la matrice
+	void Rotation(GCVEC3 position, float angle); //rotation la matrice
 	void Scale(float x, float y, float z); //scale la matrice
-
-
-
-
-private:
 
 };
