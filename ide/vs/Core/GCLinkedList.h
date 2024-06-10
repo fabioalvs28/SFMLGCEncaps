@@ -9,9 +9,9 @@ class GCLinkedListNode
 friend class GCLinkedList<T>;
 
 public:
-    GCLinkedListNode<T>* GetNext() { return m_pNext; };
-    GCLinkedListNode<T>* GetPrevious() { return m_pPrev; };
-    T& GetData() { return m_data; };
+    GCLinkedListNode<T>* GetNext() const { return m_pNext; };
+    GCLinkedListNode<T>* GetPrevious() const { return m_pPrev; };
+    T& GetData() const { return m_data; };
     
     void Destroy();
     void DeepDestroy();
@@ -35,19 +35,20 @@ class GCLinkedList
 
 public:
     GCLinkedList();
-    ~GCLinkedList() = default;
+    ~GCLinkedList() {}
     
     void Init();
     
     GCLinkedListNode<T>* GetFirstNode() const { return m_pHead; };
     GCLinkedListNode<T>* GetLastNode() const { return m_pTail; };
     
-    void PushBack( T& data );
-    void PushFront( T& data );
+    void PushBack( const T& data );
+    void PushFront( const T& data );
+    
     void Clear();
     void DeepClear();
     
-    bool Find( T& data );
+    bool Find( const T& data );
     
     int GetSize() const { return m_size; };
 
@@ -113,7 +114,7 @@ void GCLinkedList<T>::Init()
 }
 
 template <typename T>
-void GCLinkedList<T>::PushBack( T& data )
+void GCLinkedList<T>::PushBack( const T& data )
 {
     GCLinkedListNode<T>* pNewNode = new GCLinkedListNode<T>();
     pNewNode->m_data = data;
@@ -124,7 +125,7 @@ void GCLinkedList<T>::PushBack( T& data )
 }
 
 template <typename T>
-void GCLinkedList<T>::PushFront( T& data )
+void GCLinkedList<T>::PushFront( const T& data )
 {
     GCLinkedListNode<T>* pNewNode = new GCLinkedListNode<T>();
     pNewNode->m_data = data;
@@ -162,7 +163,7 @@ void GCLinkedList<T>::DeepClear()
 }
 
 template <typename T>
-bool GCLinkedList<T>::Find( T& data )
+bool GCLinkedList<T>::Find( const T& data )
 {
     for ( GCLinkedListNode<T>* pTemp = m_pHead; pTemp != nullptr; pTemp = pTemp->m_pNext )
         if ( pTemp->m_data == data ) return true;
