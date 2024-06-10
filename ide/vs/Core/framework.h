@@ -2,4 +2,4 @@
 
 #include "Define.h"
 #include "GCVector.h"
-#include "GCLinkedList.h"
+#include "List.h"

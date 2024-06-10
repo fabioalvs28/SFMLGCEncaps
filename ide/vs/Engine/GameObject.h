@@ -6,9 +6,9 @@ class Component;
 
 
 
-class GameObject
+class GCGameObject
 {
-    friend class GameManager;
+friend class GCScene;
     
 public:
     template<class T>
@@ -19,15 +19,15 @@ public:
     void SetName( const char* name ) { m_name = name; };
     void SetActive( bool active ) { m_active = active; };
     void SetTag( const char* tag ) { m_tag = tag; };
-    void SetNode( GCLinkedListNode<GameObject*>* pNode ) { m_node = pNode; };
+    void SetNode( GCLinkedListNode<GCGameObject*>* pNode ) { m_pNode = pNode; };
     
     const char* GetName() const { return m_name; }
     bool IsActive() const { return m_active; }
     const char* GetTag() const { return m_tag; }
 
 private:
-    GameObject();
-    ~GameObject();
+    GCGameObject();
+    ~GCGameObject();
     
     void Init( const char* name, bool active );
     void Update();
@@ -36,7 +36,7 @@ private:
 protected:
     static inline int s_nextID = 0;
     int m_ID;
-    GCLinkedListNode<GameObject*>* m_node;
+    GCLinkedListNode<GCGameObject*>* m_pNode;
     const char* m_name;
     bool m_active;
     const char* m_tag;
@@ -46,16 +46,16 @@ protected:
 };
 
 template<class T>
-T* GameObject::AddComponent()
+T* GCGameObject::AddComponent()
 {
     T* component = new T();
     component.SetGameObject( this );
-    m_componentsList[ T::GetType() ] = component;
+    m_componentsList[ T::TYPE ] = component;
     return component;
 }
 
 template<class T>
-T* GameObject::GetComponent()
+T* GCGameObject::GetComponent()
 {
-    return (T*) m_componentsList[ T::GetType() ];
+    return (T*) m_componentsList[ T::TYPE ];
 }
