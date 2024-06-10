@@ -83,6 +83,7 @@
     <ClInclude Include="GCLinkedList.h" />
     <ClInclude Include="GCMap.h" />
     <ClInclude Include="GCMatrix.h" />
+    <ClInclude Include="GCQuaternion.h" />
     <ClInclude Include="GCVectors.h" />
     <ClInclude Include="GCVector.h" />
     <ClInclude Include="pch.h" />
@@ -90,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="GCMatrix.cpp" />
+    <ClCompile Include="GCQuaternion.cpp" />
     <ClCompile Include="GCVectors.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
