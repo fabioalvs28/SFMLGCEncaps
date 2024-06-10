@@ -1,63 +1,38 @@
 #include "pch.h"
 
 #include <iostream>
-#include <Windows.h>
-
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg)
-    {
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        return 0;
-
-        // Handle other messages like WM_SIZE, WM_LBUTTONDOWN, etc.
-
-    default:
-        return DefWindowProc(hwnd, uMsg, wParam, lParam);
-    }
-}
+#include "Window.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
 {
-    std::cout << "Hello, World!" << std::endl;
+    GCEventSystem eventSystem;
+    GCWindow window(hInstance, nCmdShow, eventSystem);
 
-    const wchar_t CLASS_NAME[] = L"Sample Window Class";
-
-    WNDCLASS wc = {};
-
-    wc.lpfnWndProc = WindowProc;
-    wc.hInstance = hInstance;
-    wc.lpszClassName = CLASS_NAME;
-
-    RegisterClass(&wc);
-
-    HWND hwnd = CreateWindowEx(
-        0,                              // Optional window styles.
-        CLASS_NAME,                     // Window class
-        L"Learn to Program Windows",    // Window text
-        WS_OVERLAPPEDWINDOW,            // Window style
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-        nullptr,       // Parent window
-        nullptr,       // Menu
-        hInstance,     // Instance handle
-        nullptr        // Additional application data
-    );
-
-    if (hwnd == nullptr)
+    if (!window.Create(L"Learn to Program Windows", 800, 600))
     {
         return 0;
     }
 
-    ShowWindow(hwnd, nCmdShow);
+    window.Show(nCmdShow);
 
-    MSG msg = {};
-    while (GetMessage(&msg, nullptr, 0, 0))
+    // Register event listeners
+    eventSystem.AddEventListener(GCEventType::WindowResize, [](GCEvent& e)
+        {
+            auto& resizeEvent = static_cast<GCWindowResizeEvent&>(e);
+            std::wcout << L"Window resized to " << resizeEvent.GetWidth() << L"x" << resizeEvent.GetHeight() << std::endl;
+        });
+
+    eventSystem.AddEventListener(GCEventType::MouseButtonPressed, [](GCEvent& e)
+        {
+            auto& mouseEvent = static_cast<GCMouseButtonPressed&>(e);
+            std::wcout << L"Mouse button pressed at (" << mouseEvent.GetX() << L", " << mouseEvent.GetY() << L")" << std::endl;
+        });
+
+    while (true)
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        window.PollEvents();
+        // Run the rest of the game loop
     }
 
     return 0;
-    
 }

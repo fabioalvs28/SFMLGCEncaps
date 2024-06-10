@@ -33,7 +33,6 @@ public:
 	void AddLayer(Layer* layer);
 	void RemoveLayer(Layer* layer);
 
-private:
 	void OnEvent(GCEvent& e);
 
 private:
