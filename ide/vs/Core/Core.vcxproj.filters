@@ -27,7 +27,7 @@
     <ClInclude Include="GCMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GC_List.h">
+    <ClInclude Include="GCVector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GCLinkedList.h">

@@ -84,7 +84,7 @@
     <ClInclude Include="GCMap.h" />
     <ClInclude Include="GCMatrix.h" />
     <ClInclude Include="GCVectors.h" />
-    <ClInclude Include="GC_List.h" />
+    <ClInclude Include="GCVector.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
