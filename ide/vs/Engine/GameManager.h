@@ -1,5 +1,5 @@
 #pragma once
-#include <list>
+#include "../Core/framework.h"
 
 class GameObject;
 
@@ -7,17 +7,15 @@ class GameManager
 {
 
 public:
-    static void Init();
-    static GameManager* GetInstance() { return s_Instance; };
+    GameManager() {};
+    virtual ~GameManager() {};
     
-    static void Update();
+    void Init();
+    void Update();
     
-    static GameObject* CreateGameObject( const char* name/* = GameObject */, bool active /* = true */);
+    GameObject* CreateGameObject( const char* name/* = GameObject */, bool active/* = true */);
 
 private:
-    static GameManager* s_Instance;
-    static std::list<GameObject*> m_gameObjectsList;
-    GameManager() {};
-    ~GameManager() {};
+    GCLinkedList<GameObject*> m_gameObjectsList;
 
 };

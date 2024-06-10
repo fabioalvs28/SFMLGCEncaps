@@ -1,5 +1,6 @@
 #ifndef DEFINE_H
 #define DEFINE_H
+#define PI 3.1415927f
 
 #include <iostream>
 #include <cassert>

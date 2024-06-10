@@ -3,13 +3,13 @@
 
 
 template <typename T>
-class GCList
+class GCVector
 {
 
 public:
-	GCList();
-	explicit GCList(size_t initialSize);
-	~GCList();
+	GCVector();
+	explicit GCVector(size_t initialSize);
+	~GCVector();
 	void Set(size_t index, const T& element);
 
 	T& operator[](size_t index) { return m_data[index]; }
@@ -18,6 +18,8 @@ public:
 	T Get(size_t index);
 	size_t GetSize() const { return m_size; }
 	int GetCapacity() const { return m_capacity; }
+	void PushBack(const T& element) { Insert(m_size, element); }
+	void PushFront(const T& element) { Insert(0, element); }
 
 	void Clear();
 	void DeepClear();
@@ -33,15 +35,15 @@ private:
 
 //Default construtor
 template <typename T>
-GCList<T>::GCList() : GCList(1) {}
+GCVector<T>::GCVector() : GCVector(1) {}
 
 // Constructor with initial size
 template <typename T>
-GCList<T>::GCList(size_t capicity) : m_data(new T[capicity]), m_size(0), m_capacity(capicity) {}
+GCVector<T>::GCVector(size_t capicity) : m_data(new T[capicity]), m_size(0), m_capacity(capicity) {}
 
 //Destructor
 template <typename T>
-GCList<T>::~GCList()
+GCVector<T>::~GCVector()
 {
 	delete[] m_data;
 }
@@ -54,7 +56,7 @@ GCList<T>::~GCList()
 /// <param name="element">Element you want to add in the list</param>
 
 template <typename T>
-void GCList<T>::Set(size_t index, const T& element)
+void GCVector<T>::Set(size_t index, const T& element)
 {
 	m_data[index] = element;
 }
@@ -69,7 +71,7 @@ void GCList<T>::Set(size_t index, const T& element)
 /// <returns>True if function works</returns>
 
 template <typename T>
-bool GCList<T>::Insert(size_t index, const T& element)
+bool GCVector<T>::Insert(size_t index, const T& element)
 {
 	if (index > m_size)
 	{
@@ -96,7 +98,7 @@ bool GCList<T>::Insert(size_t index, const T& element)
 /// <returns>True if function works</returns>
 
 template <typename T>
-bool GCList<T>::Remove(size_t index)
+bool GCVector<T>::Remove(size_t index)
 {
 	if (index >= m_size)
 		return false;
@@ -115,7 +117,7 @@ bool GCList<T>::Remove(size_t index)
 /// <param name="index">Index of the list where you want to get a value</param>
 
 template <typename T>
-T GCList<T>::Get(size_t index)
+T GCVector<T>::Get(size_t index)
 {
 	assert(index < m_size);
 	return m_data[index];
@@ -128,7 +130,7 @@ T GCList<T>::Get(size_t index)
 /// </summary>
 
 template <typename T>
-void GCList<T>::Clear()
+void GCVector<T>::Clear()
 {
 	delete[] m_data;
 	m_data = nullptr;
@@ -141,7 +143,7 @@ void GCList<T>::Clear()
 /// </summary>
 
 template <typename T>
-void GCList<T>::DeepClear()
+void GCVector<T>::DeepClear()
 {
 	for (size_t i = 0; i < m_size; i++)
 	{
@@ -157,7 +159,7 @@ void GCList<T>::DeepClear()
 /// <returns>False if the list isn't empty</returns>
 
 template <typename T>
-bool GCList<T>::IsEmpty() const
+bool GCVector<T>::IsEmpty() const
 {
 	if (m_size == 0)
 		return true;
