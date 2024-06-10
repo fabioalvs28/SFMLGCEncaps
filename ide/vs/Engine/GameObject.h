@@ -8,8 +8,6 @@ class Component;
 
 class GameObject
 {
-
-    friend class Scene; 
     friend class GameManager;
     
 public:
