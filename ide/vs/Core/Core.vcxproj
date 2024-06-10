@@ -82,12 +82,14 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="GCLinkedList.h" />
     <ClInclude Include="GCMap.h" />
+    <ClInclude Include="GCMatrix.h" />
     <ClInclude Include="GCVectors.h" />
-    <ClInclude Include="GC_List.h" />
+    <ClInclude Include="GCVector.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="GCMatrix.cpp" />
     <ClCompile Include="GCVectors.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
