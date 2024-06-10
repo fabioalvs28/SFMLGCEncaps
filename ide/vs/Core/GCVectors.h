@@ -1,6 +1,8 @@
 #pragma once
 #include "math.h"
 
+
+
 struct GCVEC2
 {
     float x, y;
@@ -55,4 +57,66 @@ struct GCVEC2
     // int operator<=>( const GCVEC2& other ) const;
     
     bool IsZero() const { return x == 0.0f && y == 0.0f; }; //! ::IsZero(x) && ::IsZero(y)
+};
+
+
+
+struct GCVEC3
+{
+    float x, y, z;
+    
+    GCVEC3();
+    GCVEC3( float x, float y, float z );
+    ~GCVEC3();
+
+    static GCVEC3 Zero() { return GCVEC3( 0.0f, 0.0f, 0.0f ); }
+    static GCVEC3 One() { return GCVEC3( 1.0f, 1.0f, 1.0f ); }
+    static GCVEC3 Up() { return GCVEC3( 0.0f, 1.0f, 0.0f ); }
+    static GCVEC3 Down() { return GCVEC3( 0.0f, -1.0f, 0.0f ); }
+    static GCVEC3 Left() { return GCVEC3( -1.0f, 0.0f, 0.0f ); }
+    static GCVEC3 Right() { return GCVEC3( 1.0f, 0.0f , 0.0f); }
+    static GCVEC3 Forward() { return GCVEC3( 0.0f, 0.0f, 1.0f ); }
+    static GCVEC3 Back() { return GCVEC3( 0.0f, 0.0f, -1.0f ); }
+    void SetZero();
+    void SetOne();
+    void SetUp();
+    void SetDown();
+    void SetLeft();
+    void SetRight();
+    void SetForward();
+    void SetBack();
+    
+    void Lerp( const GCVEC3& from, const GCVEC3& to, const float& t );
+    void Clamp( const GCVEC3& min, const GCVEC3& max );
+    void Normalize();
+    
+    float GetNorm() const { return sqrtf( x * x + y * y + z * z ); }
+    float DotProduct( const GCVEC3& other ) const { return x * other.x + y * other.y + z * other.z; }
+    float Distance( const GCVEC3& other ) const { return ; }
+    
+    GCVEC3 operator+( const GCVEC3& other ) const;
+    GCVEC3 operator-( const GCVEC3& other ) const;
+    GCVEC3 operator*( const GCVEC3& other ) const;
+    GCVEC3 operator/( const GCVEC3& other ) const;
+    
+    GCVEC3 operator*( const float& value ) const;
+    GCVEC3 operator/( const float& value ) const;
+    
+    void operator+=( const GCVEC3& other );
+    void operator-=( const GCVEC3& other );
+    void operator*=( const GCVEC3& other );
+    void operator/=( const GCVEC3& other );
+    
+    void operator*=( const float& value );
+    void operator/=( const float& value );
+    
+    bool operator==( const GCVEC3& other ) const { return x == other.x && y == other.y && z == other.z; };
+    bool operator!=( const GCVEC3& other ) const { return x != other.x || y != other.y || z != other.z; };
+    bool operator<( const GCVEC3& other ) const { return ( x < other.x && y <= other.y && z <= other.z ) || ( x <= other.x && y < other.y && z <= other.z ) || ( x <= other.x && y <= other.y && z < other.z ); };
+    bool operator<=( const GCVEC3& other ) const { return x <= other.x && y <= other.y && z <= other.z; };
+    bool operator>( const GCVEC3& other ) const { return ( x > other.x && y >= other.y && z >= other.z ) || ( x >= other.x && y > other.y && z >= other.z ) || ( x >= other.x && y >= other.y && z > other.z ); };
+    bool operator>=( const GCVEC3& other ) const { return x >= other.x && y >= other.y && z >= other.z; };
+    // int operator<=>( const GCVEC3& other ) const;
+    
+    bool IsZero() const { return x == 0.0f && y == 0.0f; }; //! ::IsZero(x) && ::IsZero(y) && ::IsZero(z)
 };
