@@ -3,6 +3,8 @@
 #include "Event.h"
 #include "Layer.h"
 
+using GCListenerID = size_t;
+
 class GCEventDispatcher {
 public:
 	GCEventDispatcher(GCEvent& gcevent) : m_gcEvent(gcevent) {}
@@ -25,8 +27,8 @@ class GCEventSystem
 {
 public:
 	void PollEvents();
-	void AddEventListener(GCEventType type, std::function<void(GCEvent&)> listener);
-	void RemoveEventListener(GCEventType type, std::function<void(GCEvent&)> listener);
+	GCListenerID AddEventListener(GCEventType type, std::function<void(GCEvent&)> listener);
+	void RemoveEventListener(GCEventType type, GCListenerID id);
 
 	void AddLayer(Layer* layer);
 	void RemoveLayer(Layer* layer);
@@ -34,6 +36,10 @@ public:
 private:
 	void OnEvent(GCEvent& e);
 
-	std::unordered_map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventListeners; //Maybe later to use the custom hashmap
+private:
+	GCListenerID m_nextListenerID = 0;
+
+	std::unordered_map<GCEventType, std::vector<std::pair<GCListenerID, std::function<void(GCEvent&)>>>> m_eventListeners;
     std::vector<Layer*> m_layers;
+    std::vector<GCEvent> m_eventListenerID;
 };

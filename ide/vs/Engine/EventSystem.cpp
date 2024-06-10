@@ -5,23 +5,29 @@ void GCEventSystem::PollEvents()
 {
 }
 
-void GCEventSystem::AddEventListener(GCEventType type, std::function<void(GCEvent&)> listener)
+GCListenerID GCEventSystem::AddEventListener(GCEventType type, std::function<void(GCEvent&)> listener)
 {
-    m_eventListeners[type].push_back(listener);
+    GCListenerID id = m_nextListenerID++;
+    m_eventListeners[type].emplace_back(id, listener);
+    return id;
 }
 
-void GCEventSystem::RemoveEventListener(GCEventType type, std::function<void(GCEvent&)> listener)
+void GCEventSystem::RemoveEventListener(GCEventType type, GCListenerID id)
 {  
-    //auto it = m_eventListeners.find(type);
-    //if (it != m_eventListeners.end())
-    //{
-    //    auto& listeners = it->second;
-    //    auto it2 = std::find(listeners.begin(), listeners.end(), listener);
-    //    if (it2 != listeners.end())
-    //    {
-    //        listeners.erase(it2);
-    //    }
-    //}
+    auto it = m_eventListeners.find(type);
+    if (it != m_eventListeners.end())
+    {
+        auto& listeners = it->second;
+        auto listenerIt = std::remove_if(listeners.begin(), listeners.end(),
+            [id](const std::pair<GCListenerID, std::function<void(GCEvent&)>>& element)
+            {
+                return element.first == id;
+            });
+        if (listenerIt != listeners.end())
+        {
+            listeners.erase(listenerIt, listeners.end());
+        }
+    }
 }
 
 void GCEventSystem::AddLayer(Layer* layer)
@@ -45,7 +51,7 @@ void GCEventSystem::OnEvent(GCEvent& e)
     {
         for (auto& listener : it->second)
         {
-            listener(e);
+            listener.second(e);
         }
     }
 }
