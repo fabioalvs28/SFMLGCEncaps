@@ -82,15 +82,12 @@ void GCVEC2::Normalize()
 }
 
 
-int GCVEC2::DistanceToCompare( const GCVEC2& other, const int& distance )
-{
-    GCVEC2 distanceVector = other - *this;
-    float realDistanceSquared = distanceVector.x * distanceVector.x + distanceVector.y * distanceVector.y;
-    float goalDistanceSquared = distance * distance;
-    if ( realDistanceSquared > goalDistanceSquared ) return 1;
-    if ( realDistanceSquared < goalDistanceSquared ) return -1;
-    return 0;
 
+int GCVEC2::DistanceCompare( const GCVEC2& other, const float& distance )
+{
+    float goalDistanceSquared = distance * distance;
+    float realDistanceSquared = ( other - *this ).GetNormSquared();
+    return realDistanceSquared > goalDistanceSquared - realDistanceSquared < goalDistanceSquared;
 }
 
 
@@ -291,15 +288,12 @@ void GCVEC3::Normalize()
 }
 
 
-int GCVEC3::DistanceToCompare( const GCVEC3& other, const int& distance )
-{
-    GCVEC3 distanceVector = other - *this;
-    float realDistanceSquared = distanceVector.x * distanceVector.x + distanceVector.y * distanceVector.y + distanceVector.z * distanceVector.z;
-    float goalDistanceSquared = distance * distance;
-    if ( realDistanceSquared > goalDistanceSquared ) return 1;
-    if ( realDistanceSquared < goalDistanceSquared ) return -1;
-    return 0;
 
+int GCVEC3::DistanceCompare( const GCVEC3& other, const float& distance )
+{
+    float goalDistanceSquared = distance * distance;
+    float realDistanceSquared = ( other - *this ).GetNormSquared();
+    return realDistanceSquared > goalDistanceSquared - realDistanceSquared < goalDistanceSquared;
 }
 
 

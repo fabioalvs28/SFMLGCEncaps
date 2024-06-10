@@ -28,10 +28,14 @@ struct GCVEC2
     void Clamp( const GCVEC2& min, const GCVEC2& max );
     void Normalize();
     
-    float GetNorm() const { return sqrtf( x * x + y * y ); }
+    float GetNorm() const { return sqrtf( GetNormSquared() ); }
+    float GetNormSquared() const { return x * x + y * y; }
     float DotProduct( const GCVEC2& other ) const { return x * other.x + y * other.y; }
     float DistanceTo( const GCVEC2& other ) const { return ( other - *this ).GetNorm(); }
-    int DistanceToCompare( const GCVEC2& other, const int& distance );
+    bool IsDistanceLessThan( const GCVEC2& other, const float& distance ) { return ( other - *this ).GetNormSquared() < ( distance * distance ); };
+    bool IsDistanceMoreThan( const GCVEC2& other, const float& distance ) { return ( other - *this ).GetNormSquared() > ( distance * distance ); };
+    bool IsDistanceEqualTo( const GCVEC2& other, const float& distance ) { return ( other - *this ).GetNormSquared() == ( distance * distance ); };
+    int DistanceCompare( const GCVEC2& other, const float& distance ); // Returns 1 if real distance is more than goal distance, -1 if real distance is less than goal distance and 0 otherwise
     
     GCVEC2 operator+( const GCVEC2& other ) const;
     GCVEC2 operator-( const GCVEC2& other ) const;
@@ -91,10 +95,14 @@ struct GCVEC3
     void Clamp( const GCVEC3& min, const GCVEC3& max );
     void Normalize();
     
-    float GetNorm() const { return sqrtf( x * x + y * y + z * z ); }
+    float GetNorm() const { return sqrtf( GetNormSquared() ); }
+    float GetNormSquared() const { return x * x + y * y + z * z; }
     float DotProduct( const GCVEC3& other ) const { return x * other.x + y * other.y + z * other.z; }
     float DistanceTo( const GCVEC3& other ) const { return ( other - *this ).GetNorm(); }
-    int DistanceToCompare( const GCVEC3& other, const int& distance );
+    bool IsDistanceLessThan( const GCVEC3& other, const float& distance ) { return ( other - *this ).GetNormSquared() < ( distance * distance ); };
+    bool IsDistanceMoreThan( const GCVEC3& other, const float& distance ) { return ( other - *this ).GetNormSquared() > ( distance * distance ); };
+    bool IsDistanceEqualTo( const GCVEC3& other, const float& distance ) { return ( other - *this ).GetNormSquared() == ( distance * distance ); };
+    int DistanceCompare( const GCVEC3& other, const float& distance ); // Returns 1 if real distance is more than goal distance, -1 if real distance is less than goal distance and 0 otherwise
     
     GCVEC3 operator+( const GCVEC3& other ) const;
     GCVEC3 operator-( const GCVEC3& other ) const;
