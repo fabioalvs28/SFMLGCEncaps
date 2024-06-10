@@ -1,5 +1,5 @@
 #pragma once
-#include "pch.h"
+
 #include <iostream>
 #include <chrono>
 
@@ -11,20 +11,32 @@ public:
 
 	void Init();
 
-	void Tick();
 	void Reset();
-	void SetTimeScale(float fTimeScale);
+	void Start();
+	void Stop();
+	void Tick();
 
-	float TotalTime() const;
+	void SetTimeScale(float fTimeScale);
+	void SetMaxDeltaTime(float maxDeltaTime);
+
 	float DeltaTime() const;
+	float FixedDeltaTime() const;
+	float TotalTime() const;
+
+	float GetFPS() const;
 
 private:
-	float m_startTime;
-	float m_previousTime;
-	float m_currentTime;
-	float m_secondsPerCount;
+	std::chrono::time_point<std::chrono::steady_clock> m_StartTime;
+	std::chrono::time_point<std::chrono::steady_clock> m_InitTime;
+
+	float m_MaxDeltaTime;
+
 	float m_deltaTime;
+	float m_previousTime;
 	float m_totalTime;
 
 	float m_timeScale;
+	float m_timeScaleBackup;
+
+	int m_FPS;
 };
