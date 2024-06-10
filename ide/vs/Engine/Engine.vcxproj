@@ -84,6 +84,7 @@
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="src\core\Window.h" />
     <ClInclude Include="src\ecs\Event.h" />
     <ClInclude Include="src\ecs\EventSystem.h" />
     <ClInclude Include="src\ecs\Layer\Layer.h" />
@@ -98,6 +99,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\core\intMain.cpp" />
     <ClCompile Include="src\ecs\EventSystem.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
