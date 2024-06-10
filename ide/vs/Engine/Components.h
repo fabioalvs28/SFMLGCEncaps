@@ -10,6 +10,8 @@ class Component
 public:
     virtual ~Component() {};
     
+    virtual int GetType() = 0;
+    
     virtual void Init() = 0;
     virtual void Update() = 0;
     virtual void Destroy() = 0;
@@ -27,9 +29,9 @@ class SpriteRenderer : public Component
 public: enum { TYPE = 1 };
 
 public:
-    ~SpriteRenderer() override {};
+    ~SpriteRenderer() override {}
     
-    static int GetType() { return TYPE; };
+    int GetType() override { return TYPE; }
     
     void Init() override {};
     void Update() override {};
@@ -44,11 +46,11 @@ class Collider : public Component
 
 public:
     Collider();
-    ~Collider() override {};
+    ~Collider() override {}
     
-    void SetTrigger( bool trigger ) { m_trigger = trigger; };
+    void SetTrigger( bool trigger ) { m_trigger = trigger; }
     
-    bool IsTrigger() { return m_trigger; };
+    bool IsTrigger() { return m_trigger; }
 
 protected:
     bool m_trigger;
@@ -62,13 +64,13 @@ class BoxCollider : public Collider
 public: enum { TYPE = 2 };
 
 public:
-    ~BoxCollider() override {};
+    ~BoxCollider() override {}
     
-    static int GetType() { return TYPE; };
+    int GetType() override { return TYPE; }
     
-    void Init() override {};
-    void Update() override {};
-    void Destroy() override {};
+    void Init() override {}
+    void Update() override {}
+    void Destroy() override {}
 
 };
 
@@ -79,13 +81,13 @@ class CircleCollider : public Collider
 public: enum { TYPE = 3 };
 
 public:
-    ~CircleCollider() override {};
+    ~CircleCollider() override {}
     
-    static int GetType() { return TYPE; };
+    int GetType() override { return TYPE; }
     
-    void Init() override {};
-    void Update() override {};
-    void Destroy() override {};
+    void Init() override {}
+    void Update() override {}
+    void Destroy() override {}
 
 };
 
@@ -96,13 +98,13 @@ class RigidBody : public Component
 public: enum { TYPE = 4 };
 
 public:
-    ~RigidBody() override {};
+    ~RigidBody() override {}
     
-    static int GetType() { return TYPE; };
+    int GetType() override { return TYPE; }
     
-    void Init() override {};
-    void Update() override {};
-    void Destroy() override {};
+    void Init() override {}
+    void Update() override {}
+    void Destroy() override {}
 
 };
 
@@ -113,13 +115,13 @@ class Animator : public Component
 public: enum { TYPE = 5 };
 
 public:
-    ~Animator() override {};
+    ~Animator() override {}
     
-    static int GetType() { return TYPE; };
+    int GetType() override { return TYPE; }
     
-    void Init() override {};
-    void Update() override {};
-    void Destroy() override {};
+    void Init() override {}
+    void Update() override {}
+    void Destroy() override {}
 
 };
 
@@ -130,13 +132,13 @@ class SoundMixer : public Component
 public: enum { TYPE = 6 };
 
 public:
-    ~SoundMixer() override {};
+    ~SoundMixer() override {}
     
-    static int GetType() { return TYPE; };
+    int GetType() override { return TYPE; }
     
-    void Init() override {};
-    void Update() override {};
-    void Destroy() override {};
+    void Init() override {}
+    void Update() override {}
+    void Destroy() override {}
 
 };
 
@@ -149,10 +151,10 @@ public: enum { TYPE = 7 };
 public:
     ~Script() override {};
     
-    static int GetType() { return TYPE; };
+    int GetType() override { return TYPE; }
     
-    void Init() override {};
-    void Update() override {};
-    void Destroy() override {};
+    void Init() override {}
+    void Update() override {}
+    void Destroy() override {}
 
 };

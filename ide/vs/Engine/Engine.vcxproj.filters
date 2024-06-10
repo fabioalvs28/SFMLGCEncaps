@@ -6,6 +6,7 @@
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="InputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -17,6 +18,7 @@
     <ClInclude Include="src\ecs\Event.h" />
     <ClInclude Include="src\ecs\EventSystem.h" />
     <ClInclude Include="src\ecs\System.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="InputManager.h" />
   </ItemGroup>
 </Project>

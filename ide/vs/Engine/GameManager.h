@@ -1,21 +1,21 @@
 #pragma once
-#include "../Core/framework.h"
 
 class GameObject;
+class GCSceneManager; 
+class GCInputManager;
 
-class GameManager 
+class GCGameManager 
 {
 
 public:
-    GameManager() {};
-    virtual ~GameManager() {};
+    GCGameManager() {};
+    virtual ~GCGameManager() {};
     
     void Init();
     void Update();
     
-    GameObject* CreateGameObject( const char* name/* = GameObject */, bool active/* = true */);
-
 private:
-    GCLinkedList<GameObject*> m_gameObjectsList;
+    GCSceneManager* m_pSceneManager;
+    GCInputManager* m_pInputManager;
 
 };
