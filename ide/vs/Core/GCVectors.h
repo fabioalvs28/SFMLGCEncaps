@@ -30,7 +30,8 @@ struct GCVEC2
     
     float GetNorm() const { return sqrtf( x * x + y * y ); }
     float DotProduct( const GCVEC2& other ) const { return x * other.x + y * other.y; }
-    float Distance( const GCVEC2& other ) const { return ; }
+    float DistanceTo( const GCVEC2& other ) const { return ( other - *this ).GetNorm(); }
+    int DistanceToCompare( const GCVEC2& other, const int& distance );
     
     GCVEC2 operator+( const GCVEC2& other ) const;
     GCVEC2 operator-( const GCVEC2& other ) const;
@@ -92,7 +93,8 @@ struct GCVEC3
     
     float GetNorm() const { return sqrtf( x * x + y * y + z * z ); }
     float DotProduct( const GCVEC3& other ) const { return x * other.x + y * other.y + z * other.z; }
-    float Distance( const GCVEC3& other ) const { return ; }
+    float DistanceTo( const GCVEC3& other ) const { return ( other - *this ).GetNorm(); }
+    int DistanceToCompare( const GCVEC3& other, const int& distance );
     
     GCVEC3 operator+( const GCVEC3& other ) const;
     GCVEC3 operator-( const GCVEC3& other ) const;

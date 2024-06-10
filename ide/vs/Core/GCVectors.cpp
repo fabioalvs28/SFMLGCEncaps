@@ -66,6 +66,12 @@ void GCVEC2::Lerp( const GCVEC2& from, const GCVEC2& to, const float& t )
 void GCVEC2::Clamp( const GCVEC2& min, const GCVEC2& max )
 {
     if ( min > max ) return;
+    
+    if ( this->x < min.x ) this->x = min.x;
+    if ( this->y < min.y ) this->y = min.y;
+    
+    if ( this->x > max.x ) this->x = max.x;
+    if ( this->y > max.y ) this->y = max.y;
 }
 
 void GCVEC2::Normalize()
@@ -73,6 +79,18 @@ void GCVEC2::Normalize()
     float norm = GetNorm();
     x /= norm;
     y /= norm;
+}
+
+
+int GCVEC2::DistanceToCompare( const GCVEC2& other, const int& distance )
+{
+    GCVEC2 distanceVector = other - *this;
+    float realDistanceSquared = distanceVector.x * distanceVector.x + distanceVector.y * distanceVector.y;
+    float goalDistanceSquared = distance * distance;
+    if ( realDistanceSquared > goalDistanceSquared ) return 1;
+    if ( realDistanceSquared < goalDistanceSquared ) return -1;
+    return 0;
+
 }
 
 
@@ -254,6 +272,14 @@ void GCVEC3::Lerp( const GCVEC3& from, const GCVEC3& to, const float& t )
 void GCVEC3::Clamp( const GCVEC3& min, const GCVEC3& max )
 {
     if ( min > max ) return;
+    
+    if ( this->x < min.x ) this->x = min.x;
+    if ( this->y < min.y ) this->y = min.y;
+    if ( this->z < min.z ) this->z = min.z;
+    
+    if ( this->x > max.x ) this->x = max.x;
+    if ( this->y > max.y ) this->y = max.y;
+    if ( this->z > max.z ) this->z = max.z;
 }
 
 void GCVEC3::Normalize()
@@ -262,6 +288,18 @@ void GCVEC3::Normalize()
     x /= norm;
     y /= norm;
     z /= norm;
+}
+
+
+int GCVEC3::DistanceToCompare( const GCVEC3& other, const int& distance )
+{
+    GCVEC3 distanceVector = other - *this;
+    float realDistanceSquared = distanceVector.x * distanceVector.x + distanceVector.y * distanceVector.y + distanceVector.z * distanceVector.z;
+    float goalDistanceSquared = distance * distance;
+    if ( realDistanceSquared > goalDistanceSquared ) return 1;
+    if ( realDistanceSquared < goalDistanceSquared ) return -1;
+    return 0;
+
 }
 
 
