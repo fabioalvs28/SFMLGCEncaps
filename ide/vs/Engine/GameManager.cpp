@@ -1,20 +1,17 @@
 #include "pch.h"
 #include "GameManager.h"
-#include "GameObject.h"
+#include "SceneManager.h"
+#include "InputManager.h"
 
 
 
-void GameManager::Update()
+void GCGameManager::Init()
 {
-    for ( GCLinkedListNode<GameObject*>* gameObjectNode = m_gameObjectsList.GetFirstNode(); gameObjectNode != m_gameObjectsList.GetLastNode(); gameObjectNode = gameObjectNode->GetNext() )
-        gameObjectNode->GetData()->Update();
+    m_pSceneManager = new GCSceneManager();
+    m_pInputManager = new GCInputManager();
 }
 
-GameObject* GameManager::CreateGameObject( const char* name = "GameObject", bool active = true )
+void GCGameManager::Update()
 {
-    GameObject* gameObject = new GameObject();
-    gameObject->Init( name, active );
-    m_gameObjectsList.PushBack( gameObject );
-    gameObject->SetNode( m_gameObjectsList.GetLastNode() );
-    return gameObject;
+    m_pSceneManager->Update();
 }
