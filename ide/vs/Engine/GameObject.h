@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include "../Core/framework.h"
 
 class Component;
 
@@ -7,14 +8,9 @@ class Component;
 
 class GameObject
 {
-    friend class GameManager;
 
-private:
-    GameObject();
-    ~GameObject();
-    
-    void Init( const char* name, bool active );
-    void Update();
+    friend class Scene; 
+    friend class GameManager;
     
 public:
     template<class T>
@@ -25,14 +21,24 @@ public:
     void SetName( const char* name ) { m_name = name; };
     void SetActive( bool active ) { m_active = active; };
     void SetTag( const char* tag ) { m_tag = tag; };
+    void SetNode( GCLinkedListNode<GameObject*>* pNode ) { m_node = pNode; };
     
     const char* GetName() const { return m_name; }
     bool IsActive() const { return m_active; }
     const char* GetTag() const { return m_tag; }
 
+private:
+    GameObject();
+    ~GameObject();
+    
+    void Init( const char* name, bool active );
+    void Update();
+    void Destroy();
+
 protected:
     static inline int s_nextID = 0;
     int m_ID;
+    GCLinkedListNode<GameObject*>* m_node;
     const char* m_name;
     bool m_active;
     const char* m_tag;
