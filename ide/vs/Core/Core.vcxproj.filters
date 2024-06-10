@@ -33,7 +33,7 @@
     <ClInclude Include="GCLinkedList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GCVector.h">
+    <ClInclude Include="GCVectors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GCVector.cpp">
+    <ClCompile Include="GCVectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
