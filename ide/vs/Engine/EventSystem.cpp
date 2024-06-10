@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "EventSystem.h"
 
 void GCEventSystem::PollEvents()
@@ -10,13 +11,17 @@ void GCEventSystem::AddEventListener(GCEventType type, std::function<void(GCEven
 }
 
 void GCEventSystem::RemoveEventListener(GCEventType type, std::function<void(GCEvent&)> listener)
-{
-    auto& listener = m_eventListeners[type];
-    auto it = std::find(m_eventListeners.begin(), m_eventListeners.end(), listener);
-    if (it != m_eventListeners.end())
-    {
-        m_eventListeners.erase(it);
-    }
+{  
+    //auto it = m_eventListeners.find(type);
+    //if (it != m_eventListeners.end())
+    //{
+    //    auto& listeners = it->second;
+    //    auto it2 = std::find(listeners.begin(), listeners.end(), listener);
+    //    if (it2 != listeners.end())
+    //    {
+    //        listeners.erase(it2);
+    //    }
+    //}
 }
 
 void GCEventSystem::AddLayer(Layer* layer)

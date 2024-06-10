@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include "Event.h"
-#include "Layer/Layer.h"
+#include "Layer.h"
 
 class GCEventDispatcher {
 public:
