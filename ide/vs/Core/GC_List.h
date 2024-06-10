@@ -18,6 +18,8 @@ public:
 	T Get(size_t index);
 	size_t GetSize() const { return m_size; }
 	int GetCapacity() const { return m_capacity; }
+	void PushBack(const T& element) { Insert(m_size, element); }
+	void PushFront(const T& element) { Insert(0, element); }
 
 	void Clear();
 	void DeepClear();
