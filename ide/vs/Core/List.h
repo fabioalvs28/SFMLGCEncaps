@@ -12,11 +12,6 @@ public:
     GCListNode<T>* GetNext() const { return m_pNext; };
     GCListNode<T>* GetPrevious() const { return m_pPrev; };
     T& GetData() const { return m_data; };
-    
-    void Destroy();
-    void DeepDestroy();
-    void Remove();
-    T Pop();
 
 private:
     GCListNode();
@@ -45,6 +40,10 @@ public:
     void PushBack( const T& data );
     void PushFront( const T& data );
     
+    void RemoveNode( const GCListNode<T>* pNode );
+    void DeleteNode( const GCListNode<T>* pNode );
+    void DeepDeleteNode( const GCListNode<T>* pNode );
+    
     void Clear();
     void DeepClear();
     
@@ -60,36 +59,6 @@ private:
 };
 
 
-
-template <typename T>
-void GCListNode<T>::Destroy()
-{
-    Remove();
-    delete this;
-}
-
-template <typename T>
-void GCListNode<T>::DeepDestroy()
-{
-    Remove();
-    delete m_data;
-    delete this;
-}
-
-template <typename T>
-void GCListNode<T>::Remove()
-{
-    if ( m_pNext != nullptr ) m_pNext->m_pPrev = m_pPrev;
-    if ( m_pPrev != nullptr ) m_pPrev->m_pNext = m_pNext;
-}
-
-template <typename T>
-T GCListNode<T>::Pop()
-{
-    T temp = m_data;
-    Remove();
-    return temp;
-}
 
 template <typename T>
 GCListNode<T>::GCListNode()
@@ -136,12 +105,35 @@ void GCList<T>::PushFront( const T& data )
 }
 
 template <typename T>
+void GCList<T>::RemoveNode( const GCListNode<T>* pNode )
+{
+    if ( pNode == m_pHead ) m_pHead = pNode->m_pNext;
+    else if ( pNode->m_pPrev != nullptr ) pNode->m_pPrev->m_pNext = pNode->m_pNext;
+    if ( pNode->m_pNext != nullptr ) pNode->m_pNext->m_pPrev = pNode->m_pPrev;
+    else if ( pNode == m_pTail ) m_pTail = pNode->m_pPrev;
+    m_size--;
+}
+
+template <typename T>
+void GCList<T>::DeleteNode( const GCListNode<T>* pNode )
+{
+    RemoveNode( pNode );
+    delete pNode;
+}
+
+template <typename T>
+void GCList<T>::DeepDeleteNode( const GCListNode<T>* pNode )
+{
+    RemoveNode( pNode );
+    delete pNode->m_data;
+    delete pNode;
+}
+
+template <typename T>
 void GCList<T>::Clear()
 {
-    GCListNode<T>* pTemp;
-    while ( pTemp != nullptr )
+    for ( GCListNode<T>* pTemp = m_pHead->m_pNext; pTemp != nullptr; pTemp = pTemp->m_pNext )
     {
-        pTemp = m_pHead->m_pNext;
         delete m_pHead;
         m_pHead = pTemp;
     }
@@ -151,10 +143,8 @@ void GCList<T>::Clear()
 template <typename T>
 void GCList<T>::DeepClear()
 {
-    GCListNode<T>* pTemp;
-    while ( pTemp != nullptr )
+    for ( GCListNode<T>* pTemp = m_pHead->m_pNext; pTemp != nullptr; pTemp = pTemp->m_pNext )
     {
-        pTemp = m_pHead->m_pNext;
         delete m_pHead->m_data;
         delete m_pHead;
         m_pHead = pTemp;

@@ -1,6 +1,14 @@
 #include "pch.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "GameObject.h"
+#include "Components.h"
+
+
+GCScene::GCScene()
+{
+	m_active = false;
+}
 
 void GCScene::Destroy()
 {
@@ -18,39 +26,57 @@ void GCScene::Unload()
 }
 
 
-// void GCScene::LoadScene()
-// {
-// 	m_loadedSceneList.PushBack( this );
-// 	m_loadedNode = m_loadedSceneList.GetLastNode(); 
-// }
 
-// void GCScene::UnloadScene()
-// {
-// 	m_loadedNode->Remove();
-// }
+void GCScene::Update()
+{
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+		pGameObjectNode->GetData()->Update();
+}
 
-// void GCScene::DestroyScene()
-// {
-// 	m_allSceneNode->DeepDestroy(); 
-// }
+void GCScene::Render()
+{
+	SpriteRenderer* pSpriteRenderer;
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+	{
+		pSpriteRenderer = pGameObjectNode->GetData()->GetComponent<SpriteRenderer>();
+		if ( pSpriteRenderer != nullptr )
+		    pSpriteRenderer->Render();
+	}
+}
 
-// void GCScene::Update()
-// {
-// 	for (GCListNode<GCGameObject*>* gameObjectNode = m_gameObjectsList.GetFirstNode(); gameObjectNode != m_gameObjectsList.GetLastNode(); gameObjectNode = gameObjectNode->GetNext())
-// 		gameObjectNode->GetData()->Update();
-// }
 
-// GCGameObject* GCScene::CreateGameObject( const char* name = "GameObject", bool active = true )
-// {
-// 	GCGameObject* gameObject = new GCGameObject();
-// 	gameObject->Init( name, active );
-// 	m_gameObjectsList.PushBack( gameObject );
-// 	gameObject->SetNode(m_gameObjectsList.GetLastNode());
-// 	return gameObject;
-// }
 
-// GCScene::GCScene( GCLinkedList<GCScene*>& loadedSceneList )
-// {
-// 	m_loadedSceneList = loadedSceneList;
-// 	m_isActive = false;
-// }
+void GCScene::CreateGameObject( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 )
+{
+	GCGameObject* gameObject = new GCGameObject( name, active, tag, layer );
+	m_gameObjectsList.PushBack( gameObject );
+	gameObject->SetNode( m_gameObjectsList.GetLastNode() );
+}
+
+void GCScene::DestroyGameObject( GCGameObject* pGameObject )
+{
+	GCListNode<GCGameObject*>* pGameObjectNode = pGameObject->GetNode();
+	m_gameObjectsList.DeepDeleteNode( pGameObjectNode );
+}
+
+void GCScene::DuplicateGameObject( GCGameObject* pGameObject )
+{
+	CreateGameObject( pGameObject->GetName(), pGameObject->IsActive(), pGameObject->GetTag(), pGameObject->GetLayer() );
+}
+
+GCGameObject* GCScene::RemoveGameObjectFromScene( GCGameObject* pGameObject )
+{
+	GCListNode<GCGameObject*>* pGameObjectNode = pGameObject->GetNode();
+    m_gameObjectsList.DeleteNode( pGameObjectNode );
+	return pGameObject;
+}
+
+void GCScene::MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject )
+{ 
+	RemoveGameObjectFromScene( pGameObject );
+	pScene->m_gameObjectsList.PushBack( pGameObject ); 
+	pGameObject->SetNode( pScene->m_gameObjectsList.GetLastNode() );
+}
+
+
+// TODO PREFAB 

@@ -24,9 +24,13 @@ public:
     const char* GetName() const { return m_name; }
     bool IsActive() const { return m_active; }
     const char* GetTag() const { return m_tag; }
+    int GetLayer() const { return m_layer; }
+    GCListNode<GCGameObject*>* GetNode() const { return m_pNode; }
 
 private:
-    GCGameObject();
+    GCGameObject() {}
+    GCGameObject( const char* name, bool active );
+    GCGameObject( const char* name, bool active, const char* tag, int layer );
     ~GCGameObject();
     
     void Init( const char* name, bool active );

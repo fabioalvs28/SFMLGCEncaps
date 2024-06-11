@@ -1,6 +1,5 @@
 #pragma once
 
-class GameObject;
 class GCSceneManager; 
 class GCInputManager;
 

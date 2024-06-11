@@ -13,43 +13,51 @@ void GCSceneManager::CreateScene()
 	scene->SetNode( m_scenesList.GetLastNode() );
 }
 
-void GCSceneManager::DestroyScene( GCScene* scene )
+void GCSceneManager::DestroyScene( GCScene* pScene )
 {
-	// TODO Destroy Scene
+	GCListNode<GCScene*>* pSceneLoadedNode = pScene->GetLoadedNode();
+	if ( pSceneLoadedNode != nullptr ) UnloadScene( pScene );
+	GCListNode<GCScene*>* pSceneNode = pScene->GetNode();
+	m_loadedScenesList.DeepDeleteNode( pSceneNode );
 }
 
-void GCSceneManager::LoadScene( GCScene* scene )
+void GCSceneManager::LoadScene( GCScene* pScene )
 {
-	m_loadedScenesList.PushBack( scene );
-	scene->SetLoadedNode( m_loadedScenesList.GetLastNode() );
+	m_loadedScenesList.PushBack( pScene );
+	pScene->SetLoadedNode( m_loadedScenesList.GetLastNode() );
 }
 
-void GCSceneManager::UnloadScene( GCScene* scene )
+void GCSceneManager::UnloadScene( GCScene* pScene )
 {
-	GCListNode<GCScene*>* pSceneLoadedNode = scene->GetLoadedNode();
-	pSceneLoadedNode->Remove();
-	scene->RemoveLoadedNode();
-	// TODO Unloead Scene
+	GCListNode<GCScene*>* pSceneLoadedNode = pScene->GetLoadedNode();
+	pScene->RemoveLoadedNode();
+	m_loadedScenesList.DeleteNode( pSceneLoadedNode );
 }
 
-// void GCSceneManager::CreateScene()
-// {
-// 	GCScene* scene = new GCScene( m_loadedSceneList );
-// 	m_sceneList.PushBack( scene );
-// 	scene->m_allSceneNode = m_sceneList.GetLastNode();
-// }
+void GCSceneManager::Update()
+{
+	GCScene* scene;
+	for ( GCListNode<GCScene*>* sceneNode = m_loadedScenesList.GetFirstNode(); sceneNode != m_loadedScenesList.GetLastNode(); sceneNode = sceneNode->GetNext() )
+	{
+		scene = sceneNode->GetData();
+		if ( scene->IsActive() == true )
+		{
+			scene->Update();
+			// TODO Update des parents également
+		}
+	}
+}
 
-// void GCSceneManager::Update() {
-
-// 	for (GCListNode<GCScene*>* sceneNode = m_loadedSceneList.GetFirstNode(); sceneNode != m_loadedSceneList.GetLastNode(); sceneNode = sceneNode->GetNext())
-// 		sceneNode->GetData()->Update();
-// }
-
-// void GCSceneManager::RenderScene()
-// {
-// 	for (GCListNode<GCScene*>* sceneNode = m_sceneList.GetFirstNode(); sceneNode != m_sceneList.GetLastNode(); sceneNode = sceneNode->GetNext())
-// 		if (sceneNode->GetData()->m_isActive == true)
-// 		{
-// 			// Render. 
-// 		}
-// }
+void GCSceneManager::Render()
+{
+	GCScene* scene;
+	for ( GCListNode<GCScene*>* sceneNode = m_loadedScenesList.GetFirstNode(); sceneNode != m_loadedScenesList.GetLastNode(); sceneNode = sceneNode->GetNext() )
+	{
+		scene = sceneNode->GetData();
+		if ( scene->IsActive() == true )
+		{
+			scene->Render();
+			// TODO Update des parents également
+		}
+	}
+}

@@ -3,8 +3,6 @@
 #include "SceneManager.h"
 #include "InputManager.h"
 
-
-
 void GCGameManager::Init()
 {
     m_pSceneManager = new GCSceneManager();
@@ -14,4 +12,5 @@ void GCGameManager::Init()
 void GCGameManager::Update()
 {
     m_pSceneManager->Update();
+    m_pSceneManager->Render();
 }
