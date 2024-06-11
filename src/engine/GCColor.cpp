@@ -76,5 +76,3 @@ float GCColor::HSLToRGB(float p, float q, float t)
 
     return p;
 }
-
-}
