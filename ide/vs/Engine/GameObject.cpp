@@ -13,10 +13,22 @@ GCGameObject::GCGameObject()
     m_layer = 0;
 }
 
-void GCGameObject::Init( const char* name, bool active )
+GCGameObject::GCGameObject( const char* name, bool active )
 {
+    m_ID = s_nextID++;
     m_name = name;
     m_active = active;
+    m_tag = "";
+    m_layer = 0;
+}
+
+GCGameObject::GCGameObject( const char* name, bool active, const char* tag, int layer ) 
+{
+    m_ID = s_nextID++;
+    m_name = name;
+    m_active = active;
+    m_tag = tag;
+    m_layer = layer;
 }
 
 // TODO Update Every Component

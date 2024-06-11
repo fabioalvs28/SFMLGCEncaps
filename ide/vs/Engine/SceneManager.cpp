@@ -13,31 +13,26 @@ void GCSceneManager::CreateScene()
 	scene->SetNode( m_scenesList.GetLastNode() );
 }
 
-void GCSceneManager::DestroyScene( GCScene* scene )
+void GCSceneManager::DestroyScene( GCScene* pScene )
 {
-	// TODO Destroy Scene
+	GCListNode<GCScene*>* pSceneLoadedNode = pScene->GetLoadedNode();
+	if ( pSceneLoadedNode != nullptr ) UnloadScene( pScene );
+	GCListNode<GCScene*>* pSceneNode = pScene->GetNode();
+	m_loadedScenesList.DeepDeleteNode( pSceneNode );
 }
 
-void GCSceneManager::LoadScene( GCScene* scene )
+void GCSceneManager::LoadScene( GCScene* pScene )
 {
-	m_loadedScenesList.PushBack( scene );
-	scene->SetLoadedNode( m_loadedScenesList.GetLastNode() );
+	m_loadedScenesList.PushBack( pScene );
+	pScene->SetLoadedNode( m_loadedScenesList.GetLastNode() );
 }
 
-void GCSceneManager::UnloadScene( GCScene* scene )
+void GCSceneManager::UnloadScene( GCScene* pScene )
 {
-	GCListNode<GCScene*>* pSceneLoadedNode = scene->GetLoadedNode();
-	pSceneLoadedNode->Remove();
-	scene->RemoveLoadedNode();
-	// TODO Unloead Scene
+	GCListNode<GCScene*>* pSceneLoadedNode = pScene->GetLoadedNode();
+	pScene->RemoveLoadedNode();
+	m_loadedScenesList.DeleteNode( pSceneLoadedNode );
 }
-
-// void GCSceneManager::CreateScene()
-// {
-// 	GCScene* scene = new GCScene( m_loadedSceneList );
-// 	m_sceneList.PushBack( scene );
-// 	scene->m_allSceneNode = m_sceneList.GetLastNode();
-// }
 
 // void GCSceneManager::Update() {
 

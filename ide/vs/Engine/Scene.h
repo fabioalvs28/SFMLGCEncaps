@@ -13,10 +13,18 @@ public:
 	void Load();
 	void Unload();
 	
-	GCGameObject* CreateGameObject( const char* name /*= GameObject*/, bool active /*= true*/ );
+	void SetActive( bool active ) { m_active = active; }
+	
+	bool IsActive() { return m_active; }
+	
+	void CreateGameObject( const char* name /*= GameObject*/, bool active /*= true*/, const char* tag /*= ""*/, int layer /*= 0*/ );
+	void DestroyGameObject( GCGameObject* pGameObject );
+
+	void DuplicateGameObject( GCGameObject* pGameObject ); 
+	void MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject ); 
 
 private:
-	GCScene() {}
+	GCScene();
 	virtual ~GCScene() {}
 	void Update();
 	
@@ -26,6 +34,8 @@ private:
 	void SetNode( GCListNode<GCScene*>* pNode ) { m_pNode = pNode; }
 	void SetLoadedNode( GCListNode<GCScene*>* pLoadedNode ) { m_pLoadedNode = pLoadedNode; }
 	void RemoveLoadedNode() { m_pLoadedNode = nullptr; }
+	
+	GCGameObject* RemoveGameObjectFromScene( GCGameObject* pGameObject ); 
 
 private:
 	GCListNode<GCScene*>* m_pNode;

@@ -1,11 +1,12 @@
 #pragma once
 
-class GameObject;
+class GCGameObject;
 
 
 
 class Component
 {
+friend class GCGameObject;
 
 public:
     virtual ~Component() {};
@@ -17,8 +18,8 @@ public:
     virtual void Destroy() = 0;
 
 protected:
-    GameObject* m_pGameObject;
-    void SetGameObject( GameObject* pGameObject ) { m_pGameObject = pGameObject; };
+    GCGameObject* m_pGameObject;
+    void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
 
 };
 
