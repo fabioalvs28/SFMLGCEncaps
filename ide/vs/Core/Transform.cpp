@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "GCTransform.h"
+#include "Transform.h"
 
 GCTransform::GCTransform( const GCVEC3& position, const GCVEC3& scale, const GCVEC3& rotation )
 {
