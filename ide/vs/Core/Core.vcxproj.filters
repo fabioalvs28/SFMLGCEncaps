@@ -30,16 +30,13 @@
     <ClInclude Include="GCVector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GCLinkedList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GCMatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vectors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="List.h">
+    <ClInclude Include="GCVectors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,10 +50,7 @@
     <ClCompile Include="GCMatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vectors.cpp">
+    <ClCompile Include="GCVectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

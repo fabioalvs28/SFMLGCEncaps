@@ -19,7 +19,7 @@ public:
     void SetName( const char* name ) { m_name = name; };
     void SetActive( bool active ) { m_active = active; };
     void SetTag( const char* tag ) { m_tag = tag; };
-    void SetNode( GCListNode<GCGameObject*>* pNode ) { m_pNode = pNode; };
+    void SetNode( GCLinkedListNode<GCGameObject*>* pNode ) { m_pNode = pNode; };
     
     const char* GetName() const { return m_name; }
     bool IsActive() const { return m_active; }
@@ -36,7 +36,7 @@ private:
 protected:
     static inline int s_nextID = 0;
     int m_ID;
-    GCListNode<GCGameObject*>* m_pNode;
+    GCLinkedListNode<GCGameObject*>* m_pNode;
     const char* m_name;
     bool m_active;
     const char* m_tag;
