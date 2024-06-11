@@ -8,6 +8,11 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="EventSystem.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="intMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.h" />
@@ -16,9 +21,15 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="src\ecs\Event.h" />
-    <ClInclude Include="src\ecs\EventSystem.h" />
     <ClInclude Include="src\ecs\System.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="EventSystem.h" />
+    <ClInclude Include="Layer.h" />
+    <ClInclude Include="Window.h" />
+    <ClInclude Include="System.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
   </ItemGroup>
 </Project>
