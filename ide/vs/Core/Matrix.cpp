@@ -1,12 +1,12 @@
 #include "pch.h"
-#include "GCMatrix.h"
+#include "Matrix.h"
 
-GCMatrix::GCMatrix() { SetZero(); }
+GCMATRIX::GCMATRIX() { SetZero(); }
 
 
-void GCMatrix::operator*=(const GCMatrix& other)
+void GCMATRIX::operator*=(const GCMATRIX& other)
 {
-	GCMatrix pM = *this;
+	GCMATRIX pM = *this;
 
 	_11 = pM._11 * other._11 + pM._12 * other._21 + pM._13 * other._31 + pM._14 * other._41;
 	_12 = pM._11 * other._12 + pM._12 * other._22 + pM._13 * other._32 + pM._14 * other._42;
@@ -23,7 +23,7 @@ void GCMatrix::operator*=(const GCMatrix& other)
 	_41 = pM._41 * other._11 + pM._42 * other._21 + pM._43 * other._31 + pM._44 * other._41;
 }
 
-void GCMatrix::SetZero()
+void GCMATRIX::SetZero()
 {
 	_11 = 0.0f;
 	_12 = 0.0f;
@@ -43,7 +43,7 @@ void GCMatrix::SetZero()
 	_44 = 0.0f;
 }
 
-void GCMatrix::SetIdentity()
+void GCMATRIX::SetIdentity()
 {
 	_11 = 1.0f;
 	_12 = 0.0f;
@@ -63,7 +63,7 @@ void GCMatrix::SetIdentity()
 	_44 = 1.0f;
 }
 
-void GCMatrix::Pow(int exp)
+void GCMATRIX::Pow(int exp)
 {
 	if (exp == 0)
 	{
@@ -98,7 +98,7 @@ void GCMatrix::Pow(int exp)
 	}
 }
 
-float GCMatrix::Determinant()
+float GCMATRIX::Determinant()
 {
 	return _41 * _32 * _23 * _14 - _31 * _42 * _23 * _14 -
 		_41 * _22 * _33 * _14 + _21 * _42 * _33 * _14 +
@@ -115,7 +115,7 @@ float GCMatrix::Determinant()
 }
 
 
-void GCMatrix::Inverse()
+void GCMATRIX::Inverse()
 {
 
 	float d = Determinant();
@@ -124,7 +124,7 @@ void GCMatrix::Inverse()
 		return;
 
 	d = 1.0f / d;
-	GCMatrix pM = *this;
+	GCMATRIX pM = *this;
 
 	_11 = pM._22 * pM._33 * pM._44 * d + pM._23 * pM._34 * pM._42 * d + pM._24 * pM._32 * pM._43 * d - pM._22 * pM._34 * pM._43 * d - pM._23 * pM._32 * pM._44 * d - pM._24 * pM._33 * pM._42 * d;
 	_12 = pM._12 * pM._34 * pM._43 * d + pM._13 * pM._32 * pM._44 * d + pM._14 * pM._33 * pM._42 * d - pM._12 * pM._33 * pM._44 * d - pM._13 * pM._34 * pM._42 * d - pM._14 * pM._32 * pM._43 * d;
@@ -144,9 +144,9 @@ void GCMatrix::Inverse()
 	_44 = pM._11 * pM._22 * pM._33 * d + pM._12 * pM._23 * pM._31 * d + pM._13 * pM._21 * pM._32 * d - pM._11 * pM._23 * pM._32 * d - pM._12 * pM._21 * pM._33 * d - pM._13 * pM._22 * pM._31 * d;
 }
 
-void GCMatrix::Transpose()
+void GCMATRIX::Transpose()
 {
-	GCMatrix pM = *this;
+	GCMATRIX pM = *this;
 
 	_11 = pM._11;
 	_12 = pM._21;
@@ -166,7 +166,7 @@ void GCMatrix::Transpose()
 	_44 = pM._44;
 }
 
-void GCMatrix::Translation(float x, float y, float z)
+void GCMATRIX::Translation(float x, float y, float z)
 {
 	SetIdentity();
 	_41 = x;
@@ -174,7 +174,7 @@ void GCMatrix::Translation(float x, float y, float z)
 	_43 = z;
 }
 
-void GCMatrix::Rotation(GCVEC3 axes, float angle)
+void GCMATRIX::Rotation(GCVEC3 axes, float angle)
 {
 	SetIdentity();
 	float c = cosf(angle);
@@ -192,7 +192,7 @@ void GCMatrix::Rotation(GCVEC3 axes, float angle)
 	_33 = t * axes.z * axes.z + c;
 }
 
-void GCMatrix::Scale(float x, float y, float z)
+void GCMATRIX::Scale(float x, float y, float z)
 {
 	SetIdentity();
 	_11 = x;
