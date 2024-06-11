@@ -3,7 +3,7 @@
     "poles": {
         "all": "",
         "engine": {
-            "projects": ["Engine.json", "Core.json"]
+            "projects": ["Engine.json", "Core.json", "Testing.json"]
         },
         "gameplay": {
             "projects": ["Engine.json", "Core.json", "Jeu_1.json", "Jeu_2.json"],
