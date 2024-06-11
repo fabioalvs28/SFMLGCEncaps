@@ -37,14 +37,14 @@ public:
 	/// </summary>
 	/// <param name="type">The type of event to listen for</param>
 	/// <param name="listener">The callback function to be called when the event occurs</param>
-	/// <returns>A unique ListnerID that can be used to reference and manage the listener</returns>
+	/// <returns>A unique ListenerID that can be used to reference and manage the listener</returns>
 	GCListenerID AddEventListener(GCEventType type, std::function<void(GCEvent&)> listener);
 
 	/// <summary>
 	/// Removes an event listener based on its type and unique ListenerID.
 	/// </summary>
 	/// <param name="type">The event type</param>
-	/// <param name="id">The unique identifer ID to the callback</param>
+	/// <param name="id">The unique identifier ID to the callback</param>
 	void RemoveEventListener(GCEventType type, GCListenerID id);
 
 	/// <summary>
