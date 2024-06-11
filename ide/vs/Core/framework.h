@@ -1,5 +1,8 @@
 #pragma once
 
 #include "Define.h"
-#include "GCVector.h"
+#include "Vector.h"
 #include "List.h"
+#include "Quaternion.h"
+#include "Matrix.h"
+#include "Vectors.h"
