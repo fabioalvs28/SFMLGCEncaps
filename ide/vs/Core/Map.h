@@ -13,6 +13,7 @@ public:
 	void Insert(const Key& key, const Value& value);
 	void Remove(const Key& key);
 	bool Find(const Key& key, Value& value);
+	Value& GetValue(const Key& key) const;
 	void Clear();
 	size_t GetSize() const;
 	bool IsEmpty() const;
@@ -38,12 +39,22 @@ template<typename Key, typename Value>
 bool GCMap<Key, Value>::Find(const Key& key, Value& value)
 {
 	auto it = m_Map.find(key);
+
 	if (it != m_Map.end())
 	{
 		value = it->second;
 		return true;
 	}
 	return false;
+}
+
+template<typename Key, typename Value>
+Value& GCMap<Key, Value>::GetValue(const Key& key) const
+{
+	auto it = m_Map.find(key);
+	assert(it != m_Map.end());
+	value = it->second;
+	return value;
 }
 
 template<typename Key, typename Value>
