@@ -1,20 +1,14 @@
-import os
 import xml.etree.ElementTree as ET
-import json
 import xml.dom.minidom as minidom
 import uuid
-import argparse
+import os
 import shutil
-import subprocess
 
 # paths
-# script_path = os.path.dirname(os.path.realpath(__file__))
-json_path = "./json/"
-# os.path.join(os.path.dirname(__file__), 'json')
 root_path = "../../"
-src_path = root_path + "src/"
 ide_path = root_path + "ide/"
 vs_path = ide_path + "vs/"
+
 # filter extension
 src_ext = "cpp;c"
 h_ext = "h;hpp"
@@ -28,12 +22,6 @@ def prettify_xml(elem):
     rough_string = ET.tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ")
-
-def read_json_file(file_path):
-    # print(f"Reading file: {file_path}")
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-    return data
 
 def generate_sln(data):
     solution_name = data['solution_name']
@@ -117,13 +105,13 @@ def generate_filters(project):
             filter_element.text = filter_name
     
     # Create filters
-    item_group = ET.SubElement(root, "ItemGroup")
-    
+    item_group = ET.SubElement(root, "ItemGroup")  
+
     filters = [
         ("Source Files", src_ext),
         ("Header Files", h_ext),
         ("Resource Files", rc_ext),
-    ]        
+    ]      
 
     for filter_name, extensions in filters:
         filter_element = ET.SubElement(item_group, "Filter", Include=filter_name)
@@ -263,6 +251,8 @@ def generate_vcxproj(project):
         f.write(pretty_xml_as_string)
 
 def populate_include_files(project):
+    src_path = root_path + "src/"
+
     src_ext_split = src_ext.split(';')
     h_ext_split = h_ext.split(';')
     rc_ext_split = rc_ext.split(';')
@@ -288,71 +278,33 @@ def populate_include_files(project):
     else:
         os.makedirs(src_path + project['folder'])
 
-def open_file_explorer(folder_path):
-    try:
-        # Check if folder exists
-        if not os.path.isdir(folder_path):
-            print(f"Le dossier {folder_path} n'existe pas.")
-            return
-        
-        # Open the folder in the file explorer
-        subprocess.run(['explorer', folder_path], shell=True)
-        print(f"L'explorateur de fichiers a été ouvert sur {folder_path}.")
+def generate_solution(data):
     
-    except Exception as e:
-        print(f"Une erreur est survenue : {e}")
+    # Remove the ide folder
+    if os.path.exists(ide_path):
+        shutil.rmtree(ide_path)
 
-# parser for reading arguments
-parser = argparse.ArgumentParser(description="Generate visual solution for the Gaming Campus Engine project.")
-parser.add_argument('--pole', type=str, help='Pôle')
-args = parser.parse_args()
+    # Generate the solution
+    generate_sln(data)
+    file_path = os.path.realpath(vs_path + data['solution_name'])
+    print(file_path + ".sln generated successfully!")
 
-# read the solution file
-data = read_json_file(json_path + 'Solution.json')
-pole = args.pole
-if(pole not in data['poles']):
-    print("Pôle invalide")
-    print("Pôles disponibles : " + ", ".join(data['poles']))
-    exit()
+    # Generate the projects
+    for project in data['projects']:
+        populate_include_files(project)
+        generate_vcxproj(project)
+        generate_filters(project)
+        
+        file_path = os.path.realpath(vs_path + project['name'])
+        print(file_path + ".vcxproj generated successfully!")
+        print(file_path + ".vcxproj.filters generated successfully!")
+    
+    # open the file explorer
+    app_path = os.path.realpath(vs_path)
 
-data['projects'] = []
+    # Specify the path to the __pycache__ directory
+    pycache_path = './src/__pycache__'
+    if os.path.exists(pycache_path):
+        shutil.rmtree(pycache_path)
 
-# read files depending on the pole
-if pole == "all":  
-    data['folders'] = []
-    all_files = []
-    for p in data['poles']:
-        if p != "all":
-            for file in data['poles'][p]["projects"]:
-                all_files.append(file)
-            if data['poles'][p].get('folders'):
-                data['folders'] += data['poles'][p]["folders"]
-
-    all_files = set(all_files)
-    for file in all_files:
-        file_data = read_json_file(json_path + file)
-        data['projects'].append(file_data)
-else:
-    for file in data['poles'][pole]["projects"]:
-        file_data = read_json_file(json_path + file)
-        data['projects'].append(file_data)
-
-    if data['poles'][pole].get('folders'):
-        data['folders'] = data['poles'][pole]["folders"]
-
-# delete ide folder
-if os.path.exists(ide_path):
-    shutil.rmtree(ide_path)
-
-# generate the files
-generate_sln(data)
-print(data['solution_name'] + ".sln generated successfully!")
-for project in data['projects']:
-    populate_include_files(project)
-    generate_filters(project)
-    generate_vcxproj(project)
-    print(project['name'] + " generated successfully!")
-
-# open the file explorer
-app_path = os.path.realpath(vs_path)
-open_file_explorer(app_path)
+    return app_path
