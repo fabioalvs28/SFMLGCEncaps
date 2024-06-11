@@ -1,0 +1,27 @@
+{
+    "solution_name": "GC Engine",
+    "poles": {
+        "all": "",
+        "engine": {
+            "projects": ["Engine.json", "Core.json"]
+        },
+        "gameplay": {
+            "projects": ["Engine.json", "Core.json", "Jeu_1.json", "Jeu_2.json"],
+            "folders": [
+                {
+                    "name": "Gameplay",
+                    "guid": "5C64AA56-22B9-42B9-AF7A-0406E1F92588"
+                }
+            ]
+        },
+        "render": {
+            "projects": ["Engine.json", "Core.json", "Render.json"]
+        },
+        "tools": {
+            "projects": []
+        },
+        "qa": {
+            "projects": []
+        }
+    }
+}
