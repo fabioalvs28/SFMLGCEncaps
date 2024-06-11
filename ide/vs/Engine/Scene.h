@@ -27,6 +27,7 @@ private:
 	GCScene();
 	virtual ~GCScene() {}
 	void Update();
+	void Render();
 	
 	GCListNode<GCScene*>* GetNode() { return m_pNode; }
 	GCListNode<GCScene*>* GetLoadedNode() { return m_pLoadedNode; }

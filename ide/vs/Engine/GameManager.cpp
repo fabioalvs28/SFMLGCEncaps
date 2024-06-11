@@ -12,4 +12,5 @@ void GCGameManager::Init()
 void GCGameManager::Update()
 {
     m_pSceneManager->Update();
+    m_pSceneManager->Render();
 }

@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "GameObject.h"
-
+#include "Components.h"
 
 
 GCScene::GCScene()
@@ -31,6 +31,17 @@ void GCScene::Update()
 {
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
 		pGameObjectNode->GetData()->Update();
+}
+
+void GCScene::Render()
+{
+	SpriteRenderer* pSpriteRenderer;
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+	{
+		pSpriteRenderer = pGameObjectNode->GetData()->GetComponent<SpriteRenderer>();
+		if ( pSpriteRenderer != nullptr )
+		    pSpriteRenderer->Render();
+	}
 }
 
 
