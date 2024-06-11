@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "GCQuaternion.h"
+#include "Quaternion.h"
 #include <math.h>
 
-GCQuaternion::GCQuaternion(float _x, float _y, float _z, float _w)
+GCQUATERNION::GCQUATERNION(float _x, float _y, float _z, float _w)
 {
 	m_X = _x;
 	m_Y = _y;
@@ -10,9 +10,9 @@ GCQuaternion::GCQuaternion(float _x, float _y, float _z, float _w)
 	m_W = _w;
 }
 
-void GCQuaternion::operator*=(const GCQuaternion& other)
+void GCQUATERNION::operator*=(const GCQUATERNION& other)
 {
-	GCQuaternion pQ = *this;
+	GCQUATERNION pQ = *this;
 
 	m_X = pQ.m_W * other.m_X + pQ.m_X * other.m_W + pQ.m_Y * other.m_Z - pQ.m_Z * other.m_Y;
 	m_Y = pQ.m_W * other.m_Y + pQ.m_Y * other.m_W + pQ.m_Z * other.m_X - pQ.m_X * other.m_Z;
@@ -20,7 +20,7 @@ void GCQuaternion::operator*=(const GCQuaternion& other)
 	m_W = pQ.m_W * other.m_W - pQ.m_X * other.m_X - pQ.m_Y * other.m_Y - pQ.m_Z * other.m_Z;
 }
 
-void GCQuaternion::SetZero()
+void GCQUATERNION::SetZero()
 {
 	m_X = 0.0f;
 	m_Y = 0.0f;
@@ -28,7 +28,7 @@ void GCQuaternion::SetZero()
 	m_W = 0.0f;
 }
 
-void GCQuaternion::SetIdentity()
+void GCQUATERNION::SetIdentity()
 {
 	m_X = 0.0f;
 	m_Y = 0.0f;
@@ -36,7 +36,7 @@ void GCQuaternion::SetIdentity()
 	m_W = 1.0f;
 }
 
-void GCQuaternion::Normalize()
+void GCQUATERNION::Normalize()
 {
 	float norm = sqrt(m_X * m_X + m_Y * m_Y + m_Z * m_Z + m_W * m_W);
 
@@ -50,17 +50,17 @@ void GCQuaternion::Normalize()
 	}
 }
 
-void GCQuaternion::Inverse()
+void GCQUATERNION::Inverse()
 {
 	m_X = -m_X;
 	m_Y = -m_Y;
 	m_Z = -m_Z;
 }
 
-void GCQuaternion::SLerp(const GCQuaternion& other, float t)
+void GCQUATERNION::SLerp(const GCQUATERNION& other, float t)
 {
-	GCQuaternion q1 = *this;
-	GCQuaternion q2 = other;
+	GCQUATERNION q1 = *this;
+	GCQUATERNION q2 = other;
 
 	float cosTheta = q1.m_X * q2.m_X + q1.m_Y * q2.m_Y + q1.m_Z * q2.m_Z + q1.m_W * q2.m_W;
 
