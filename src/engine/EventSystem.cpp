@@ -41,6 +41,7 @@ void GCEventSystem::RemoveLayer(Layer* layer)
     if (it != m_layers.end())
     {
         m_layers.erase(it);
+        delete layer;
     }
 }
 
