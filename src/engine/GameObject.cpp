@@ -31,6 +31,11 @@ GCGameObject::GCGameObject( const char* name, bool active, const char* tag, int 
     m_layer = layer;
 }
 
-// TODO Update Every Component
+void GCGameObject::Update()
+{
+    Component* component; 
+    for (int i = 1 ; i <= 7 ; i++)
+        if ( m_componentsList.Find(i, component) == true ) 
+            component->Update();
+}
 
-// TODO Destroy GameObject + Remove it from it's list

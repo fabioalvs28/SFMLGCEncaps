@@ -1,5 +1,4 @@
 #pragma once
-#include <map>
 #include "../Core/framework.h"
 
 class Component;
@@ -15,6 +14,8 @@ public:
     T* AddComponent();
     template<class T>
     T* GetComponent();
+    template<class T>
+    void RemoveComponent();
 
     void SetName( const char* name ) { m_name = name; };
     void SetActive( bool active ) { m_active = active; };
@@ -35,7 +36,6 @@ private:
     
     void Init( const char* name, bool active );
     void Update();
-    void Destroy();
 
 protected:
     static inline int s_nextID = 0;
@@ -45,7 +45,7 @@ protected:
     bool m_active;
     const char* m_tag;
     int m_layer;
-    std::map<int, Component*> m_componentsList;
+    GCMap<int, Component*> m_componentsList;
 
 };
 
@@ -54,12 +54,25 @@ T* GCGameObject::AddComponent()
 {
     T* component = new T();
     component.SetGameObject( this );
-    m_componentsList[ T::TYPE ] = component;
+    m_componentsList.Insert( T::TYPE, component );
     return component;
 }
 
 template<class T>
 T* GCGameObject::GetComponent()
 {
-    return (T*) m_componentsList[ T::TYPE ];
+    T* component;
+    if ( m_componentsList.Find( T::TYPE, component ) == true )
+        return component;
+}
+
+template<class T>
+void GCGameObject::RemoveComponent()
+{
+    T* component;
+    if ( m_componentsList.Find( T::TYPE, component ) == true )
+    {
+        delete component;
+        m_componentsList.Remove( T::TYPE );
+    }
 }

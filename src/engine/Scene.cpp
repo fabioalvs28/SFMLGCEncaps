@@ -35,13 +35,13 @@ void GCScene::Update()
 
 void GCScene::Render()
 {
-	/*SpriteRenderer* pSpriteRenderer;
+	SpriteRenderer* pSpriteRenderer;
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
 	{
 		pSpriteRenderer = pGameObjectNode->GetData()->GetComponent<SpriteRenderer>();
 		if ( pSpriteRenderer != nullptr )
 		    pSpriteRenderer->Render();
-	}*/
+	}
 }
 
 
@@ -56,7 +56,8 @@ void GCScene::CreateGameObject( const char* name = "GameObject", bool active = t
 void GCScene::DestroyGameObject( GCGameObject* pGameObject )
 {
 	GCListNode<GCGameObject*>* pGameObjectNode = pGameObject->GetNode();
-	//m_gameObjectsList.DeepDeleteNode( pGameObjectNode );
+	m_gameObjectsList.DeleteNode( pGameObjectNode );
+	delete pGameObject;
 }
 
 void GCScene::DuplicateGameObject( GCGameObject* pGameObject )

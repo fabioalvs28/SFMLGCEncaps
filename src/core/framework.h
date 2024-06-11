@@ -6,3 +6,4 @@
 #include "Quaternion.h"
 #include "Matrix.h"
 #include "Vectors.h"
+#include "Map.h"
