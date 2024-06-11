@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GCColor.h"
+#include <corecrt_math.h>
 
 GCColor::GCColor() {
     r = 0;
@@ -41,7 +42,8 @@ GCColor::GCColor(const char* hexaCode) {
     a = temp[3];
 }
 
-GCColor::GCColor(float hue, float saturation, float light, float alpha = 1.0f) {
+GCColor::GCColor(float hue, float saturation, float light, float alpha = 1.0f) 
+{
     if (saturation == 0) {
         r = g = b = light * 255;
         a = alpha * 255;
@@ -75,6 +77,4 @@ float GCColor::HSLToRGB(float p, float q, float t)
         return (p + (q - p) * ((2.f / 3) - t) * 6);
 
     return p;
-}
-
 }
