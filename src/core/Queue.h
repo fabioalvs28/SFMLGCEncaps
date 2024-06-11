@@ -19,11 +19,20 @@ private:
 	std::queue<T> m_Queue;
 };
 
+/// <summary>
+///  Push a value at the end of the list
+/// </summary>
+/// <param name="value">Value that you want to push</param>
+
 template<typename T>
 void GCQueue<T>::Push(const T& value)
 {
 	m_Queue.push(value);
 }
+
+/// <summary>
+///  Erase the first element of the list
+/// </summary>
 
 template<typename T>
 void GCQueue<T>::Pop()
@@ -32,12 +41,22 @@ void GCQueue<T>::Pop()
 		m_Queue.pop();
 }
 
+/// <summary>
+/// Return the first element of the list
+/// </summary>
+/// <typeparam name="T"></typeparam>
+
 template<typename T>
 T& GCQueue<T>::Front()
 {
 	if (!IsEmpty())
 		return m_Queue.front();
 }
+
+/// <summary>
+/// Return the last element of the list
+/// </summary>
+/// <typeparam name="T"></typeparam>
 
 template<typename T>
 T& GCQueue<T>::Back()

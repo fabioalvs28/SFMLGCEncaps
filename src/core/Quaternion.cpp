@@ -2,6 +2,14 @@
 #include "Quaternion.h"
 #include <math.h>
 
+/// <summary>
+/// Default constructor
+/// </summary>
+/// <param name="x">X value of the quaternion</param>
+/// <param name="y">Y value of the quaternion</param>
+/// <param name="z">Z value of the quaternion</param>
+/// <param name="w">W value of the quaternion</param>
+
 GCQUATERNION::GCQUATERNION(float x, float y, float z, float w)
 {
 	this->x = x;
@@ -20,6 +28,10 @@ void GCQUATERNION::operator*=(const GCQUATERNION& other)
 	w = pQ.w * other.w - pQ.x * other.x - pQ.y * other.y - pQ.z * other.z;
 }
 
+/// <summary>
+/// Set the quaternion to zero
+/// </summary>
+
 void GCQUATERNION::SetZero()
 {
 	x = 0.0f;
@@ -28,6 +40,10 @@ void GCQUATERNION::SetZero()
 	w = 0.0f;
 }
 
+/// <summary>
+/// Set the quaternion to identity
+/// </summary>
+
 void GCQUATERNION::SetIdentity()
 {
 	x = 0.0f;
@@ -35,6 +51,10 @@ void GCQUATERNION::SetIdentity()
 	z = 0.0f;
 	w = 1.0f;
 }
+
+/// <summary>
+/// Normalize the quaternion
+/// </summary>
 
 void GCQUATERNION::Normalize()
 {
@@ -50,12 +70,22 @@ void GCQUATERNION::Normalize()
 	}
 }
 
+/// <summary>
+/// Inverse the quaternion
+/// </summary>
+
 void GCQUATERNION::Inverse()
 {
 	x = -x;
 	y = -y;
 	z = -z;
 }
+
+/// <summary>
+/// Spherical linear interpolation between two quaternions
+/// </summary>
+/// <param name="other">Quaternion to interpolate with</param>
+/// <param name="t">Interpolation value</param>
 
 void GCQUATERNION::SLerp(const GCQUATERNION& other, float t)
 {
