@@ -2,10 +2,10 @@
 
 struct GCQUATERNION
 {
-	float m_X, m_Y, m_Z, m_W;
+	float x, y, z, w;
 
 	GCQUATERNION();
-	GCQUATERNION(float _x, float _y, float _z, float _w);
+	GCQUATERNION(float x, float y, float z, float w);
 	~GCQUATERNION() = default;
 
 	static GCQUATERNION Identity() { return GCQUATERNION(0.0f, 0.0f, 0.0f, 1.0f); };
