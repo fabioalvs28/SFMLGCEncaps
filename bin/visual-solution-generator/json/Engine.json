@@ -2,6 +2,7 @@
     "name": "Engine",
     "folder": "Engine/",
     "guid": "D89903C3-1E6F-42A9-94CF-C09B8323C5F3",
+    "dependencies": ["7EFB6CD6-1049-4FBD-9CC2-48E83D429467"],
     "vc_project_version": "17.0",
     "root_namespace": "Engine",
     "windows_target_platform_version": "10.0",

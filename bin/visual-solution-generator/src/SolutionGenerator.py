@@ -4,13 +4,17 @@ import json
 import xml.dom.minidom as minidom
 import uuid
 import argparse
+import shutil
+import subprocess
 
 # paths
 # script_path = os.path.dirname(os.path.realpath(__file__))
 json_path = "./json/"
 # os.path.join(os.path.dirname(__file__), 'json')
-src_path = "../../src/"
-vs_path = "../../ide/vs/"
+root_path = "../../"
+src_path = root_path + "src/"
+ide_path = root_path + "ide/"
+vs_path = ide_path + "vs/"
 # filter extension
 src_ext = "cpp;c"
 h_ext = "h;hpp"
@@ -284,6 +288,19 @@ def populate_include_files(project):
     else:
         os.makedirs(src_path + project['folder'])
 
+def open_file_explorer(folder_path):
+    try:
+        # Check if folder exists
+        if not os.path.isdir(folder_path):
+            print(f"Le dossier {folder_path} n'existe pas.")
+            return
+        
+        # Open the folder in the file explorer
+        subprocess.run(['explorer', folder_path], shell=True)
+        print(f"L'explorateur de fichiers a été ouvert sur {folder_path}.")
+    
+    except Exception as e:
+        print(f"Une erreur est survenue : {e}")
 
 # parser for reading arguments
 parser = argparse.ArgumentParser(description="Generate visual solution for the Gaming Campus Engine project.")
@@ -323,6 +340,10 @@ else:
     if data['poles'][pole].get('folders'):
         data['folders'] = data['poles'][pole]["folders"]
 
+# delete ide folder
+if os.path.exists(ide_path):
+    shutil.rmtree(ide_path)
+
 # generate the files
 generate_sln(data)
 print(data['solution_name'] + ".sln generated successfully!")
@@ -331,3 +352,7 @@ for project in data['projects']:
     generate_filters(project)
     generate_vcxproj(project)
     print(project['name'] + " generated successfully!")
+
+# open the file explorer
+app_path = os.path.realpath(vs_path)
+open_file_explorer(app_path)
