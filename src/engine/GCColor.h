@@ -1,4 +1,5 @@
 #pragma once
+#include <corecrt_math.h>
 
 struct GCColor {
 
@@ -13,5 +14,6 @@ struct GCColor {
 	GCColor(float degree, float saturationPercent, float lightPercent, float alpha);
 	~GCColor();
 
+private:
 	float HSLToRGB(float p, float q, float t);
 };
