@@ -28,7 +28,7 @@ public:
     GCListNode<GCGameObject*>* GetNode() const { return m_pNode; }
 
 private:
-    GCGameObject() {}
+    GCGameObject();
     GCGameObject( const char* name, bool active );
     GCGameObject( const char* name, bool active, const char* tag, int layer );
     ~GCGameObject();

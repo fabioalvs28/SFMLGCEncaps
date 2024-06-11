@@ -11,7 +11,7 @@ friend class GCList<T>;
 public:
     GCListNode<T>* GetNext() const { return m_pNext; };
     GCListNode<T>* GetPrevious() const { return m_pPrev; };
-    T& GetData() const { return m_data; };
+    T& GetData() { return m_data; };
 
 private:
     GCListNode();
