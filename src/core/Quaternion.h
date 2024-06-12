@@ -1,4 +1,6 @@
 #pragma once
+#include "Vectors.h"
+#include "Matrix.h"
 
 struct GCQUATERNION
 {
@@ -17,5 +19,8 @@ struct GCQUATERNION
 	void Normalize();
 	void Inverse();
 	void SLerp(const GCQUATERNION& other, float t);
+	void FromEuler(float yaw, float pitch, float roll);
+	void FromAxisAngle(const GCVEC3& axis, float angle);
+	GCMATRIX ToMatrix();
 
 };
