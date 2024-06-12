@@ -2,6 +2,8 @@
 
 class GCGameObject;
 
+// TODO Adding stuff to the components
+
 
 
 class Component

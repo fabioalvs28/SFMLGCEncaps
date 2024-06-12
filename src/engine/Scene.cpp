@@ -46,11 +46,12 @@ void GCScene::Render()
 
 
 
-void GCScene::CreateGameObject( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 )
+GCGameObject* GCScene::CreateGameObject( const char* name = "GameObject", GCGameObject* mParent = nullptr, bool active = true, const char* tag = "", int layer = 0 )
 {
-	GCGameObject* gameObject = new GCGameObject( name, active, tag, layer );
-	m_gameObjectsList.PushBack( gameObject );
-	gameObject->SetNode( m_gameObjectsList.GetLastNode() );
+	GCGameObject* pGameObject = new GCGameObject( this, name, mParent, active, tag, layer );
+	m_gameObjectsList.PushBack( pGameObject );
+	pGameObject->SetNode( m_gameObjectsList.GetLastNode() );
+	return pGameObject;
 }
 
 void GCScene::DestroyGameObject( GCGameObject* pGameObject )
@@ -60,9 +61,31 @@ void GCScene::DestroyGameObject( GCGameObject* pGameObject )
 	delete pGameObject;
 }
 
+GCGameObject* GCScene::FindGameObjectByName( const char* name )
+{
+	GCGameObject* pGameObject;
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode!= m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+	{
+		pGameObject = pGameObjectNode->GetData();
+		if ( pGameObject->GetName() == name )
+			return pGameObject;
+	}
+}
+
+GCGameObject* GCScene::FindGameObjectByID( int ID )
+{
+	GCGameObject* pGameObject;
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+	{
+		pGameObject = pGameObjectNode->GetData();
+		if ( pGameObject->GetID() == ID )
+            return pGameObject;
+	}
+}
+
 void GCScene::DuplicateGameObject( GCGameObject* pGameObject )
 {
-	CreateGameObject( pGameObject->GetName(), pGameObject->IsActive(), pGameObject->GetTag(), pGameObject->GetLayer() );
+	CreateGameObject( pGameObject->GetName(), pGameObject->GetParent() , pGameObject->IsActive(), pGameObject->GetTag(), pGameObject->GetLayer() );
 }
 
 GCGameObject* GCScene::RemoveGameObjectFromScene( GCGameObject* pGameObject )
@@ -80,4 +103,4 @@ void GCScene::MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject 
 }
 
 
-// TODO PREFAB 
+// TODO PREFAB

@@ -2,6 +2,7 @@
 #include "../Core/framework.h"
 
 class Component;
+class GCScene;
 
 
 
@@ -16,35 +17,55 @@ public:
     T* GetComponent();
     template<class T>
     void RemoveComponent();
-
-    void SetName( const char* name ) { m_name = name; };
-    void SetActive( bool active ) { m_active = active; };
-    void SetTag( const char* tag ) { m_tag = tag; };
-    void SetNode( GCListNode<GCGameObject*>* pNode ) { m_pNode = pNode; };
     
+    void SetNode( GCListNode<GCGameObject*>* pNode ) { m_pNode = pNode; }
+    void SetName( const char* name ) { m_name = name; }
+    void SetActive( bool active ) { m_active = active; }
+    void SetTag( const char* tag ) { m_tag = tag; }
+    void SetLayer( int layer ) { m_layer = layer; }
+    void SetScene( GCScene* pScene ) { m_pScene = pScene; }
+    void SetParent( GCGameObject* pParent ) { m_pParent = pParent; }
+    
+    int GetID() const { return m_ID; }
+    GCListNode<GCGameObject*>* GetNode() const { return m_pNode; }
     const char* GetName() const { return m_name; }
     bool IsActive() const { return m_active; }
     const char* GetTag() const { return m_tag; }
     int GetLayer() const { return m_layer; }
-    GCListNode<GCGameObject*>* GetNode() const { return m_pNode; }
+    GCScene* GetScene() const { return m_pScene; }
+    GCGameObject* GetParent() const { return m_pParent; }
+    
+    void CreateChild();
+    void CreateChild( const char* name /*= "GameObject"*/, bool active /*= true*/, const char* tag /*= ""*/, int layer /*= 0*/ );
+    void AddChild( GCGameObject* pChild ) { m_childrenList.PushBack( pChild ); }
+    void DeleteChild( unsigned int childIndex );
+    GCVector<GCGameObject*> GetChildren() { return m_childrenList; }
+    GCGameObject* GetChild( unsigned int childIndex ) { return m_childrenList.Get( childIndex ); }
+    void MoveChild( unsigned int childIndex, unsigned int newChildIndex );
+    
 
 private:
-    GCGameObject();
-    GCGameObject( const char* name, bool active );
-    GCGameObject( const char* name, bool active, const char* tag, int layer );
+    GCGameObject( GCScene* pScene );
+    GCGameObject( GCScene* pScene, const char* name, GCGameObject* pParent, bool active, const char* tag, int layer );
     ~GCGameObject();
     
     void Init( const char* name, bool active );
     void Update();
+    void Destroy();
 
 protected:
     static inline int s_nextID = 0;
     int m_ID;
     GCListNode<GCGameObject*>* m_pNode;
+    
     const char* m_name;
     bool m_active;
     const char* m_tag;
     int m_layer;
+    
+    GCScene* m_pScene;
+    GCGameObject* m_pParent;
+    GCVector<GCGameObject*> m_childrenList;
     GCMap<int, Component*> m_componentsList;
 
 };
