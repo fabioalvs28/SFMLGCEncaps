@@ -43,7 +43,6 @@ public:
     GCVector<GCGameObject*> GetChildren() { return m_childrenList; }
     GCGameObject* GetChild( unsigned int childIndex ) { return m_childrenList.Get( childIndex ); }
     void MoveChild( unsigned int childIndex, unsigned int newChildIndex );
-    
 
 private:
     GCGameObject( GCScene* pScene );
@@ -83,9 +82,10 @@ T* GCGameObject::AddComponent()
 template<class T>
 T* GCGameObject::GetComponent()
 {
-    T* component;
+    Component* component;
     if ( m_componentsList.Find( T::TYPE, component ) == true )
-        return component;
+        return (T*) component;
+    return nullptr;
 }
 
 template<class T>
