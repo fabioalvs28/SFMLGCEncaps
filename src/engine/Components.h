@@ -2,7 +2,7 @@
 
 class GCGameObject;
 
-// TODO Adding stuff to the components
+// TODO Adding lots of stuff to the components
 
 
 
@@ -18,9 +18,16 @@ public:
     virtual void Init() = 0;
     virtual void Update() = 0;
     virtual void Destroy() = 0;
+    
+    void SetActive( bool active ) { m_active = active; }
+    
+    bool IsActive() { return m_active; }
 
 protected:
     GCGameObject* m_pGameObject;
+    bool m_active;
+
+protected:
     void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
 
 };
