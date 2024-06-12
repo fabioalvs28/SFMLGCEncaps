@@ -209,7 +209,10 @@ def generate_vcxproj(project):
             ET.SubElement(cl_compile, "PrecompiledHeaderFile").text = config["precompiled_header_file"]
         if config.get('language_standard'):
             ET.SubElement(cl_compile, "LanguageStandard").text = config["language_standard"]
+        if config.get('additional_include_directories'):
+            ET.SubElement(cl_compile, "AdditionalIncludeDirectories").text = config["additional_include_directories"]
 
+        # Link
         link = ET.SubElement(item_definition_group, "Link")
         if config.get("subsystem"):
             ET.SubElement(link, "SubSystem").text = config["subsystem"]
@@ -217,7 +220,13 @@ def generate_vcxproj(project):
             ET.SubElement(link, "EnableCOMDATFolding").text = config["enable_comdat_folding"]
         if config.get("optimize_references"):
             ET.SubElement(link, "OptimizeReferences").text = config["optimize_references"]
-        ET.SubElement(link, "GenerateDebugInformation").text = config["generate_debug_information"]
+        if config.get("generate_debug_information"):
+            ET.SubElement(link, "GenerateDebugInformation").text = config["generate_debug_information"]
+        if config.get("additional_library_directories"):
+            ET.SubElement(link, "AdditionalLibraryDirectories").text = config["additional_library_directories"]
+        if config.get("additional_dependencies"):
+            ET.SubElement(link, "AdditionalDependencies").text = config["additional_dependencies"]
+        
 
     # Item Groups for source and header files
     item_group_clinclude = ET.SubElement(root, "ItemGroup")
@@ -282,7 +291,10 @@ def generate_solution(data):
     
     # Remove the ide folder
     if os.path.exists(ide_path):
-        shutil.rmtree(ide_path)
+        try:
+            shutil.rmtree(ide_path)
+        except Exception as e:
+            print(f"An error occurred while deleting the ide folder: {e}")
 
     # Generate the solution
     generate_sln(data)
