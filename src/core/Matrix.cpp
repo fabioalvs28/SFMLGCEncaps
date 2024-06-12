@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Matrix.h"
 
+/// <summary>
+/// Default constructor
+/// </summary>
+
 GCMATRIX::GCMATRIX() { SetZero(); }
 
 
@@ -23,6 +27,10 @@ void GCMATRIX::operator*=(const GCMATRIX& other)
 	_41 = pM._41 * other._11 + pM._42 * other._21 + pM._43 * other._31 + pM._44 * other._41;
 }
 
+/// <summary>
+/// Set the matrix to zero
+/// </summary>
+
 void GCMATRIX::SetZero()
 {
 	_11 = 0.0f;
@@ -43,6 +51,10 @@ void GCMATRIX::SetZero()
 	_44 = 0.0f;
 }
 
+/// <summary>
+/// Set the matrix to identity
+/// </summary>
+
 void GCMATRIX::SetIdentity()
 {
 	_11 = 1.0f;
@@ -62,6 +74,11 @@ void GCMATRIX::SetIdentity()
 	_43 = 0.0f;
 	_44 = 1.0f;
 }
+
+/// <summary>
+/// Put the matrix to the power of exp
+/// </summary>
+/// <param name="exp">Exponent</param>
 
 void GCMATRIX::Pow(int exp)
 {
@@ -98,6 +115,10 @@ void GCMATRIX::Pow(int exp)
 	}
 }
 
+/// <summary>
+/// Returnn the determinant of the matrix
+/// </summary>
+
 float GCMATRIX::Determinant()
 {
 	return _41 * _32 * _23 * _14 - _31 * _42 * _23 * _14 -
@@ -114,6 +135,10 @@ float GCMATRIX::Determinant()
 		_21 * _12 * _33 * _44 + _11 * _22 * _33 * _44;
 }
 
+
+/// <summary>
+/// Inverse the matrix. WARNING : If the determinant is 0, the function will return without doing anything
+/// </summary>
 
 void GCMATRIX::Inverse()
 {
@@ -144,6 +169,11 @@ void GCMATRIX::Inverse()
 	_44 = pM._11 * pM._22 * pM._33 * d + pM._12 * pM._23 * pM._31 * d + pM._13 * pM._21 * pM._32 * d - pM._11 * pM._23 * pM._32 * d - pM._12 * pM._21 * pM._33 * d - pM._13 * pM._22 * pM._31 * d;
 }
 
+
+/// <summary>
+/// Swap rows with columns of the matrix
+/// </summary>
+
 void GCMATRIX::Transpose()
 {
 	GCMATRIX pM = *this;
@@ -166,6 +196,13 @@ void GCMATRIX::Transpose()
 	_44 = pM._44;
 }
 
+/// <summary>
+/// Transformation matrix for moving a point in an XYZ axis system
+/// </summary>
+/// <param name="x">Translation on the X axis</param>
+/// <param name="y">Translation on the Y axis</param>
+/// <param name="z">Translation on the Z axis</param>
+
 void GCMATRIX::Translation(float x, float y, float z)
 {
 	SetIdentity();
@@ -173,6 +210,13 @@ void GCMATRIX::Translation(float x, float y, float z)
 	_42 = y;
 	_43 = z;
 }
+
+
+/// <summary>
+/// Transformation matrix for rotating a point around an axis
+/// </summary>
+/// <param name="axes">Axis of rotation</param>
+/// <param name="angle">Angle of rotation</param>
 
 void GCMATRIX::Rotation(GCVEC3 axes, float angle)
 {
@@ -191,6 +235,14 @@ void GCMATRIX::Rotation(GCVEC3 axes, float angle)
 	_32 = t * axes.y * axes.z - s * axes.x;
 	_33 = t * axes.z * axes.z + c;
 }
+
+
+/// <summary>
+/// Transformation matrix for scaling a point
+/// </summary>
+/// <param name="x">Scaling on the X axis</param>
+/// <param name="y">Scaling on the Y axis</param>
+/// <param name="z">Scaling on the Z axis</param>
 
 void GCMATRIX::Scale(float x, float y, float z)
 {

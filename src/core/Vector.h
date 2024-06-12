@@ -16,6 +16,7 @@ public:
 	bool Insert(size_t index, const T& element);
 	bool Remove(size_t index);
 	T Get(size_t index);
+	size_t GetIndex( const T& element); 
 	size_t GetSize() const { return m_size; }
 	int GetCapacity() const { return m_capacity; }
 	void PushBack(const T& element) { Insert(m_size, element); }
@@ -121,6 +122,24 @@ T GCVector<T>::Get(size_t index)
 {
 	assert(index < m_size);
 	return m_data[index];
+}
+
+
+/// <summary>
+///  Get index with data
+/// </summary>
+/// <param name="element">element of the list you want to get index </param>
+template <typename T>
+size_t GCVector<T>::GetIndex(const T& element)
+{
+	for (size_t i = 0; i < m_size; i++)
+    {
+        if (m_data[i] == element)
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 

@@ -42,10 +42,8 @@ public:
     
     void RemoveNode( const GCListNode<T>* pNode );
     void DeleteNode( const GCListNode<T>* pNode );
-    void DeepDeleteNode( const GCListNode<T>* pNode );
     
     void Clear();
-    void DeepClear();
     
     bool Find( const T& data );
     
@@ -122,30 +120,10 @@ void GCList<T>::DeleteNode( const GCListNode<T>* pNode )
 }
 
 template <typename T>
-void GCList<T>::DeepDeleteNode( const GCListNode<T>* pNode )
-{
-    RemoveNode( pNode );
-    delete pNode->m_data;
-    delete pNode;
-}
-
-template <typename T>
 void GCList<T>::Clear()
 {
     for ( GCListNode<T>* pTemp = m_pHead->m_pNext; pTemp != nullptr; pTemp = pTemp->m_pNext )
     {
-        delete m_pHead;
-        m_pHead = pTemp;
-    }
-    Init();
-}
-
-template <typename T>
-void GCList<T>::DeepClear()
-{
-    for ( GCListNode<T>* pTemp = m_pHead->m_pNext; pTemp != nullptr; pTemp = pTemp->m_pNext )
-    {
-        delete m_pHead->m_data;
         delete m_pHead;
         m_pHead = pTemp;
     }

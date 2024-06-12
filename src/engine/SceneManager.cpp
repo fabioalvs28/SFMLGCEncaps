@@ -18,7 +18,9 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 	GCListNode<GCScene*>* pSceneLoadedNode = pScene->GetLoadedNode();
 	if ( pSceneLoadedNode != nullptr ) UnloadScene( pScene );
 	GCListNode<GCScene*>* pSceneNode = pScene->GetNode();
-	//m_loadedScenesList.DeepDeleteNode( pSceneNode );
+	m_scenesList.DeleteNode( pSceneNode );
+	pScene->DestroyGameObjectsList();
+    delete pScene;
 }
 
 void GCSceneManager::LoadScene( GCScene* pScene )

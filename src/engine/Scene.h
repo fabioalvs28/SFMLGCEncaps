@@ -10,6 +10,7 @@ friend class GCSceneManager;
 
 public:
 	void Destroy();
+	void DestroyGameObjectsList();
 	void Load();
 	void Unload();
 	
@@ -17,8 +18,10 @@ public:
 	
 	bool IsActive() { return m_active; }
 	
-	void CreateGameObject( const char* name /*= GameObject*/, bool active /*= true*/, const char* tag /*= ""*/, int layer /*= 0*/ );
+	GCGameObject* CreateGameObject( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 );
 	void DestroyGameObject( GCGameObject* pGameObject );
+	GCGameObject* FindGameObjectByName( const char* name );
+	GCGameObject* FindGameObjectByID( int ID );
 
 	void DuplicateGameObject( GCGameObject* pGameObject ); 
 	void MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject ); 
