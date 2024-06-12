@@ -20,6 +20,7 @@
             "generate_debug_information": "true",
             "additional_library_directories" : "$(SolutionDir)Render\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "subsystem": "Windows",
+            "additional_dependencies" : "Render.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         },
@@ -41,6 +42,7 @@
             "generate_debug_information": "true",
             "additional_library_directories" : "$(SolutionDir)Render\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "subsystem": "Windows",
+            "additional_dependencies" : "Render.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         }

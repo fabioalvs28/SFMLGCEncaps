@@ -21,7 +21,7 @@
             "precompiled_header_file": "pch.h",
             "subsystem": "Windows",
             "language_standard": "stdcpp20",
-            "additional_include_directories" : "$(SolutionDir)Core;$(SolutionDir)Engine",            
+            "additional_include_directories" : "$(SolutionDir)Core;$(SolutionDir)Engine",
             "generate_debug_information": "true",
             "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);$(SolutionDir)Engine\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "additional_dependencies" : "Core.lib;Engine.lib;%(AdditionalDependencies)",
