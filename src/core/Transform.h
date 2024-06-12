@@ -1,25 +1,33 @@
 #pragma once
 #include "Vectors.h"
+#include "Matrix.h"
 
-class GCTransform
+struct GCTransform
 {
+	GCVEC3 m_scale;
+	GCVEC3 m_direction;
+	GCVEC3 m_right;
+	GCVEC3 m_up;
+	GCQUATERNION m_rotation;
+	GCMATRIX m_rotationMatrix;
 
-public:
-    GCTransform() {}
-    GCTransform( const GCVEC3& position, const GCVEC3& scale, const GCVEC3& rotation );
-    ~GCTransform() {}
-    
-    GCVEC3& GetPosition() { return m_position; }
-    GCVEC3& GetScale() { return m_scale; }
-    GCVEC3& GetRotationVector() { return m_rotationVector; }
-    
-    void SetPosition( const GCVEC3& position );
-    void SetScale( const GCVEC3& scale );
-    void SetRotation( const GCVEC3& rotation );
+	GCVEC3 m_position;
+	GCMATRIX m_matrix;
 
-protected:
-    GCVEC3 m_position;
-    GCVEC3 m_scale;
-    GCVEC3 m_rotationVector;
-
+	void Identity();
+	void FromMatrix(const GCMATRIX& matrix);
+	void UpdateRotationFromVectors();
+	void UpdateVectorsFromQuaternion();
+	void UpdateRoationFromMatrix();
+	void UpdateMatrix();
+	void Rotate(float yaw, float pitch, float roll);
+	void RotateYaw(float angle);
+	void RotatePitch(float angle);
+	void RotateRoll(float angle);
+	void RotateWorld(const GCMATRIX& matrix);
+	void RotateWorldX(float angle);
+	void RotateWorldY(float angle);
+	void RotateWorldZ(float angle);
+	void Scale(const GCVEC3& scale);
+	void Translate(const GCVEC3& translation);
 };
