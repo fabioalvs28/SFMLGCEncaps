@@ -1,6 +1,7 @@
 #pragma once
-#include "Vectors.h"
-#include "Matrix.h"
+class GCMATRIX;
+class GCVEC3;
+
 
 struct GCQUATERNION
 {
