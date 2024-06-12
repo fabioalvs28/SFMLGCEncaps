@@ -2,10 +2,19 @@
 #include <functional>
 #include "Event.h"
 #include "Layer.h"
+#include "../core/Map.h"
+#include "../core/List.h"
 
 using GCListenerID = size_t;
 
-class GCEventDispatcher {
+typedef struct GCListener 
+{
+	GCEventType type;
+	std::function<void(GCEvent&)> callback;
+};
+
+class GCEventDispatcher 
+{
 public:
 	GCEventDispatcher(GCEvent& gcevent) : m_gcEvent(gcevent) {}
 
@@ -38,14 +47,14 @@ public:
 	/// <param name="type">The type of event to listen for</param>
 	/// <param name="listener">The callback function to be called when the event occurs</param>
 	/// <returns>A unique ListenerID that can be used to reference and manage the listener</returns>
-	GCListenerID AddEventListener(GCEventType type, std::function<void(GCEvent&)> listener);
+	GCListenerID AddEventListener(GCListener);
 
 	/// <summary>
 	/// Removes an event listener based on its type and unique ListenerID.
 	/// </summary>
 	/// <param name="type">The event type</param>
 	/// <param name="id">The unique identifier ID to the callback</param>
-	void RemoveEventListener(GCEventType type, GCListenerID id);
+	void RemoveEventListener(GCListenerID id);
 
 	/// <summary>
 	/// Adds a new layer to the event system.
@@ -71,7 +80,8 @@ public:
 private:
 	GCListenerID m_nextListenerID = 0;
 
-	std::unordered_map<GCEventType, std::vector<std::pair<GCListenerID, std::function<void(GCEvent&)>>>> m_eventListeners;
-    std::vector<Layer*> m_layers;
-    std::vector<GCEvent> m_eventListenerID;
+	GCMap<GCListenerID, GCListener> m_eventListeners;
+    GCList<GCEvent> m_eventListenerID;
+
+	GCList<Layer*> m_layers;
 };
