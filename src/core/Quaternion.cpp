@@ -126,6 +126,13 @@ void GCQUATERNION::SLerp(const GCQUATERNION& other, float t)
 	w = k0 * q1.w + k1 * q2.w;
 }
 
+/// <summary>
+/// Create a quaternion from euler angles
+/// </summary>
+/// <param name="yaw">Yaw angle</param>
+/// <param name="pitch">Pitch angle</param>
+/// <param name="roll">Roll angle</param>
+
 void GCQUATERNION::FromEuler(float yaw, float pitch, float roll)
 {
 	float cy = cos(yaw * 0.5f);
@@ -141,6 +148,14 @@ void GCQUATERNION::FromEuler(float yaw, float pitch, float roll)
 	z = sy * cp * cr - cy * sp * sr;
 }
 
+
+
+/// <summary>
+/// Create a quaternion from an axis and an angle
+/// </summary>
+/// <param name="axis">Axis of rotation</param>
+/// <param name="angle">Angle of rotation</param>
+
 void GCQUATERNION::FromAxisAngle(const GCVEC3& axis, float angle)
 {
 	float halfAngle = angle * 0.5f;
@@ -152,6 +167,10 @@ void GCQUATERNION::FromAxisAngle(const GCVEC3& axis, float angle)
 	w = cos(halfAngle);
 }
 
+/// <summary>
+/// Convert the quaternion to a matrix
+/// </summary>
+/// <returns>Matrix representation of the quaternion</returns>
 
 GCMATRIX GCQUATERNION::ToMatrix()
 {
