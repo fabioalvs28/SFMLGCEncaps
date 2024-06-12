@@ -10,6 +10,7 @@ friend class GCSceneManager;
 
 public:
 	void Destroy();
+	void DestroyGameObjectsList();
 	void Load();
 	void Unload();
 	
