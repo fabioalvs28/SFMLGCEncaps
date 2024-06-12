@@ -3,6 +3,8 @@
 #include <iostream>
 #include <Windows.h>
 #include "ECSTesting.h"
+#include "../engine/Window.h"
+#include "../engine/EventSystem.h"
 
 void CreateConsole()
 {
@@ -18,6 +20,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     CreateConsole();
     ECSTesting::GetInstance().RunTests();
     std::cout << "Logging to console..." << std::endl;
-    MessageBox(NULL, L"(Hello World!)", L"(Hello)", MB_OK);
+    
+    GCEventSystem* ev = new GCEventSystem();
+    GCWindow w = GCWindow(hInstance, nCmdShow, *ev);
+    w.Create(L"Testing", 800, 600);
+    w.Show(nCmdShow);
+
+    w.PollEvents();
+    
     FreeConsole();
 }
