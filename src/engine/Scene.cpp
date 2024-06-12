@@ -20,6 +20,17 @@ void GCScene::Destroy()
 	GCSceneManager::DestroyScene( this );
 }
 
+//void GCScene::DestroyGameObjectsList()
+//{
+//	GCGameObject* pGameObject;
+//	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+//        pGameObject = pGameObjectNode->GetData();
+//	    pGameObject->Destroy();
+//		delete pGameObject;
+//
+//    m_gameObjectsList.Clear();
+//}
+
 
 // <summary>
 // Loads the scene.
@@ -29,6 +40,7 @@ void GCScene::Destroy()
 void GCScene::Load()
 {
 	GCSceneManager::LoadScene( this );
+	DestroyGameObjectsList();
 }
 
 
@@ -87,7 +99,7 @@ void GCScene::Render()
 // <param name="active"> The activation status of the game object. Default value is true.</param>
 // <param name="tag"> The tag of the game object. Default value is an empty string.</param>
 // <param nam="layer"> The layer of the game object. Default value is 0.</param>
-GCGameObject* GCScene::CreateGameObject( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 )
+GCGameObject* GCScene::CreateGameObject( const char* name, bool active, const char* tag, int layer )
 {
 	GCGameObject* pGameObject = new GCGameObject( this, name, nullptr, active, tag, layer );
 	m_gameObjectsList.PushBack( pGameObject );
