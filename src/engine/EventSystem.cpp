@@ -3,13 +3,13 @@
 
 void GCEventSystem::PollEvents()
 {
+
 }
 
-GCListenerID GCEventSystem::AddEventListener(GCListener)
+void GCEventSystem::AddEventListener(GCListener)
 {
     GCListenerID id = m_nextListenerID++;
 
-    return id;
 }
 
 void GCEventSystem::RemoveEventListener(GCListenerID id)

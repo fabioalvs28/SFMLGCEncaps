@@ -47,7 +47,7 @@ public:
 	/// <param name="type">The type of event to listen for</param>
 	/// <param name="listener">The callback function to be called when the event occurs</param>
 	/// <returns>A unique ListenerID that can be used to reference and manage the listener</returns>
-	GCListenerID AddEventListener(GCListener);
+	void AddEventListener(GCListener);
 
 	/// <summary>
 	/// Removes an event listener based on its type and unique ListenerID.
@@ -69,7 +69,7 @@ public:
 	/// <param name="layer">Pointer to the Layer object to be removed</param>
 	void RemoveLayer(Layer* layer);
 
-
+private:
 	/// <summary>
 	/// Dispatches the event to all registered listeners for the event's type.
 	/// The method is called internally to process events and call the appropriate listeners.
