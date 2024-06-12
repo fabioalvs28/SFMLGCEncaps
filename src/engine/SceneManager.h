@@ -14,7 +14,7 @@ public:
 	void Update();
 	void Render();
 	
-	void CreateScene();
+	static GCScene* CreateScene();
 	static void DestroyScene( GCScene* pScene );
 	static void LoadScene( GCScene* pScene );
 	static void UnloadScene( GCScene* pScene );

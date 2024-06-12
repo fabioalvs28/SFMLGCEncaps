@@ -15,8 +15,11 @@ public:
 	void Unload();
 	
 	void SetActive( bool active ) { m_active = active; }
-	
+	void SetParent( GCScene* pParent ) { m_pParent = pParent; }
+
 	bool IsActive() { return m_active; }
+
+	GCScene* GetParent() const { return m_pParent; }
 	
 	GCGameObject* CreateGameObject( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 );
 	void DestroyGameObject( GCGameObject* pGameObject );
@@ -25,6 +28,14 @@ public:
 
 	void DuplicateGameObject( GCGameObject* pGameObject ); 
 	void MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject ); 
+
+	void CreateChild(); 
+	void AddChild( GCScene* pScene );
+	void DeleteChild(unsigned int childIndex);
+	void RemoveChild( GCScene* pChild );
+	GCVector<GCScene*> GetChildren() { return m_childrenList; }
+	GCScene* GetChild( unsigned int childIndex ) { return m_childrenList.Get( childIndex ); }
+
 
 private:
 	GCScene();
@@ -46,5 +57,8 @@ private:
 	GCListNode<GCScene*>* m_pLoadedNode;
 	bool m_active; 
 	GCList<GCGameObject*> m_gameObjectsList;
+
+	GCScene* m_pParent; 
+	GCVector<GCScene*> m_childrenList;
 
 };

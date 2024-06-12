@@ -6,11 +6,12 @@
 
 
 
-void GCSceneManager::CreateScene()
+GCScene* GCSceneManager::CreateScene()
 {
 	GCScene* scene = new GCScene();
     m_scenesList.PushBack( scene );
-	scene->SetNode( m_scenesList.GetLastNode() );
+	scene->SetNode( m_scenesList.GetLastNode() ); 
+	return scene;
 }
 
 void GCSceneManager::DestroyScene( GCScene* pScene )
@@ -45,7 +46,7 @@ void GCSceneManager::Update()
 		if ( scene->IsActive() == true )
 		{
 			scene->Update();
-			// TODO Update des parents également
+			scene->m_pParent->Update();
 		}
 	}
 }
@@ -59,7 +60,7 @@ void GCSceneManager::Render()
 		if ( scene->IsActive() == true )
 		{
 			scene->Render();
-			// TODO Update des parents également
+			scene->m_pParent->Render();
 		}
 	}
 }

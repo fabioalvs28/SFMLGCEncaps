@@ -93,7 +93,7 @@ void GCGameObject::CreateChild( const char* name = "GameObject", bool active = t
 void GCGameObject::AddChild( GCGameObject* pChild )
 {
     m_childrenList.PushBack( pChild );
-    pChild->m_pParent = m_pParent;
+    pChild->m_pParent = this;
 }
 
 

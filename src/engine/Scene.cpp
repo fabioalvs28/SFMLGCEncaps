@@ -8,6 +8,7 @@
 GCScene::GCScene()
 {
 	m_active = false;
+	m_pParent = nullptr;
 }
 
 
@@ -20,16 +21,16 @@ void GCScene::Destroy()
 	GCSceneManager::DestroyScene( this );
 }
 
-//void GCScene::DestroyGameObjectsList()
-//{
-//	GCGameObject* pGameObject;
-//	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
-//        pGameObject = pGameObjectNode->GetData();
-//	    pGameObject->Destroy();
-//		delete pGameObject;
-//
-//    m_gameObjectsList.Clear();
-//}
+void GCScene::DestroyGameObjectsList()
+{
+	GCGameObject* pGameObject;
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+	{
+		pGameObject = pGameObjectNode->GetData();
+		pGameObject->Destroy();
+	}
+	m_gameObjectsList.Clear();
+}
 
 
 // <summary>
@@ -201,5 +202,28 @@ void GCScene::MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject 
 	pGameObject->SetNode( pScene->m_gameObjectsList.GetLastNode() );
 }
 
+void GCScene::CreateChild()
+{
+	AddChild( GCSceneManager::CreateScene(); );
+}
+
+void GCScene::AddChild( GCScene* pChild )
+{
+	m_childrenList.PushBack( pChild );
+	pChild->m_pParent = this;
+}
+
+void GCScene::DeleteChild( unsigned int childIndex )
+{
+	m_childrenList.Get( childIndex )->Destroy();
+	m_childrenList.Remove( childIndex ); 
+}
+
+void GCScene::RemoveChild( GCScene* pChild )
+{
+	int childIndex; 
+	childIndex = m_childrenList.GetIndex( pChild );
+	m_childrenList.Remove( childIndex );
+}
 
 // TODO PREFAB
