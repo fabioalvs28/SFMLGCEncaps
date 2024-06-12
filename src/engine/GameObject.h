@@ -24,7 +24,7 @@ public:
     void SetTag( const char* tag ) { m_tag = tag; }
     void SetLayer( int layer ) { m_layer = layer; }
     void SetScene( GCScene* pScene ) { m_pScene = pScene; }
-    void SetParent( GCGameObject* pParent ) { m_pParent = pParent; }
+    void SetParent( GCGameObject* pParent );
     
     int GetID() const { return m_ID; }
     GCListNode<GCGameObject*>* GetNode() const { return m_pNode; }
@@ -37,8 +37,9 @@ public:
     
     void CreateChild();
     void CreateChild( const char* name /*= "GameObject"*/, bool active /*= true*/, const char* tag /*= ""*/, int layer /*= 0*/ );
-    void AddChild( GCGameObject* pChild ) { m_childrenList.PushBack( pChild ); }
+    void AddChild( GCGameObject* pChild ); 
     void DeleteChild( unsigned int childIndex );
+    void RemoveChild( GCGameObject* pChild );
     GCVector<GCGameObject*> GetChildren() { return m_childrenList; }
     GCGameObject* GetChild( unsigned int childIndex ) { return m_childrenList.Get( childIndex ); }
     void MoveChild( unsigned int childIndex, unsigned int newChildIndex );

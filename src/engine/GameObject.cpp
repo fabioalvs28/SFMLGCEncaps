@@ -33,6 +33,12 @@ GCGameObject::GCGameObject( GCScene* pScene, const char* name, GCGameObject* pPa
     m_pParent = pParent;
 }
 
+void GCGameObject::SetParent( GCGameObject* pParent )
+{
+    m_pParent->RemoveChild( this );
+    pParent->AddChild( this );
+}
+
 void GCGameObject::CreateChild()
 {
     AddChild( m_pScene->CreateGameObject() );
@@ -40,12 +46,25 @@ void GCGameObject::CreateChild()
 
 void GCGameObject::CreateChild( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 )
 {
-    AddChild( m_pScene->CreateGameObject( name, this, active, tag, layer ) );
+    AddChild( m_pScene->CreateGameObject( name, active, tag, layer ) );
+}
+
+void GCGameObject::AddChild( GCGameObject* pChild )
+{
+    m_childrenList.PushBack( pChild );
+    pChild->m_pParent = m_pParent;
 }
 
 void GCGameObject::DeleteChild( unsigned int childIndex )
 {
     m_childrenList.Get( childIndex )->Destroy();
+    m_childrenList.Remove( childIndex );
+}
+
+void GCGameObject::RemoveChild( GCGameObject* pChild )
+{
+    int childIndex; 
+    childIndex = m_childrenList.GetIndex( pChild );
     m_childrenList.Remove( childIndex );
 }
 
