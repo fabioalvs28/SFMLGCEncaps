@@ -15,7 +15,7 @@
             ]
         },
         "render": {
-            "projects": ["Engine.json", "Core.json", "Render.json"]
+            "projects": ["Render.json", "RenderApp.json"]
         },
         "tools": {
             "projects": []

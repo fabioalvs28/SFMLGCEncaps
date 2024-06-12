@@ -12,7 +12,7 @@ vs_path = ide_path + "vs/"
 # filter extension
 src_ext = "cpp;c"
 h_ext = "h;hpp"
-rc_ext = "hlsl;jpg;jpeg;png;wav;mp3"
+rc_ext = "hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc"
 
 def newUUID():
     return str(uuid.uuid4()).upper()
@@ -111,6 +111,7 @@ def generate_filters(project):
         ("Source Files", src_ext),
         ("Header Files", h_ext),
         ("Resource Files", rc_ext),
+        # ("Other Files", ""),
     ]      
 
     for filter_name, extensions in filters:
@@ -123,6 +124,7 @@ def generate_filters(project):
     add_files_to_item_group(item_group, "ClCompile", project['source_files'], "Source Files")
     add_files_to_item_group(item_group, "ClInclude", project['header_files'], "Header Files")
     add_files_to_item_group(item_group, "None", project['resource_files'], "Resource Files")
+    # add_files_to_item_group(item_group, "None", project['other_files'], "Other Files")
     
     # Prettify and write the XML
     pretty_xml_as_string = prettify_xml(root)
@@ -266,12 +268,10 @@ def populate_include_files(project):
     h_ext_split = h_ext.split(';')
     rc_ext_split = rc_ext.split(';')
 
-    if(not project.get('source_files')):
-        project['source_files'] = []
-    if(not project.get('header_files')):
-        project['header_files'] = []
-    if(not project.get('resource_files')):
-        project['resource_files'] = []
+    filters = ["source_files", "header_files", "resource_files", "other_files"]
+    for filter in filters:
+        if(not project.get(filter)):
+            project[filter] = []
 
     if os.path.exists(src_path + project['folder']):
         for dirpath, dirnames, filenames in os.walk(src_path + project['folder']):
@@ -284,6 +284,8 @@ def populate_include_files(project):
                     project['header_files'].append(relative_path)
                 if ext in rc_ext_split:
                     project['resource_files'].append(relative_path)
+                if ext not in (src_ext_split + h_ext_split + rc_ext_split):
+                    project['other_files'].append(relative_path)
     else:
         os.makedirs(src_path + project['folder'])
 
