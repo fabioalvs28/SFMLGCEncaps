@@ -1,8 +1,7 @@
 {
     "name": "Render App",
     "folder": "RenderApp/",
-    "guid": "668DCEE8-18FB-4C21-A091-4FBD3E4A7FF3",
-    "dependencies": ["0E9B70BE-10D2-4E3B-9220-DFA89558A364"],
+    "dependencies": ["Render"],
     "vc_project_version": "17.0",
     "root_namespace": "Render App",
     "windows_target_platform_version": "10.0",

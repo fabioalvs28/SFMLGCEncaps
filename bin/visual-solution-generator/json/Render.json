@@ -1,7 +1,6 @@
 {
     "name": "Render",
     "folder": "Render/",
-    "guid": "0E9B70BE-10D2-4E3B-9220-DFA89558A364",
     "vc_project_version": "17.0",
     "root_namespace": "Render",
     "windows_target_platform_version": "10.0",

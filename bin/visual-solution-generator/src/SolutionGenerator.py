@@ -34,6 +34,16 @@ def generate_sln(data):
     
     type_guid = {"project": "8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942",
                  "folder": "2150E333-8FDC-42A3-9474-1A3956D46DE8"}
+    
+    # fill guid array with projet and folder
+    guids = {"projects": {},
+             "folders": {}}
+    for project in projects:
+        project['guid'] = newUUID()
+        guids['projects'][project['name']] = project['guid']
+    for folder in folders:
+        folder['guid'] = newUUID()
+        guids['folders'][folder['name']] = folder['guid']
 
     os.path.exists(vs_path) or os.makedirs(vs_path)
     with open(f"{vs_path + solution_name}.sln", 'w') as f:
@@ -43,24 +53,19 @@ def generate_sln(data):
         f.write("VisualStudioVersion = " + data['version_full'] + "\n")
         f.write("MinimumVisualStudioVersion = " + data['minimum_version'] + "\n")
 
-        guids['projects'] = {}
         # Add projects
         for project in projects:
-            guids['projects'][project['name']] = project['guid']
-            # project['guid'] = newUUID()
             f.write(f"Project(\"{{{type_guid['project']}}}\") = \"{project['name']}\", \"{project['folder'] + project['name']}.vcxproj\", \"{{{project['guid']}}}\"\n")
 
             # Add dependencies
             if project.get("dependencies"):
                 f.write(f"\tProjectSection(ProjectDependencies) = postProject\n")
                 for dependency in project['dependencies']:
-                    f.write(f"\t\t{{{dependency}}} = {{{dependency}}}\n")
+                    f.write(f"\t\t{{{guids['projects'][dependency]}}} = {{{guids['projects'][dependency]}}}\n")
                 f.write("\tEndProjectSection\n")
             f.write("EndProject\n")
 
-        guids['folders'] = []
         for folder in folders:
-            guids['folders'][folder['name']] = folder['guid']
             f.write(f"Project(\"{{{type_guid['folder']}}}\") = \"{folder['name']}\", \"{folder['name']}\", \"{folder['guid']}\"\n")
             f.write("EndProject\n")
         
@@ -88,10 +93,10 @@ def generate_sln(data):
         f.write("\tGlobalSection(NestedProjects) = preSolution\n")
         for project in projects:
             if project.get('nested'):
-                f.write(f"\t\t{{{project['guid']}}} = {{{project['nested']}}}\n")
+                f.write(f"\t\t{{{project['guid']}}} = {{{guids['folders'][project['nested']]}}}\n")
         for folder in folders:
             if folder.get('nested'):
-                f.write(f"\t\t{{{folder['guid']}}} = {{{folder['nested']}}}\n")
+                f.write(f"\t\t{{{folder['guid']}}} = {{{guids['folders'][folder['nested']]}}}\n")
         f.write("\tEndGlobalSection\n")
 
         f.write("\tGlobalSection(ExtensibilityGlobals) = postSolution\n")
