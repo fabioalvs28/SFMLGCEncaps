@@ -1,0 +1,22 @@
+﻿  ConsoleApp.cpp
+  DDSTextureLoader.cpp
+  GCGeometry.cpp
+  GCGraphics.cpp
+  GCMaterial.cpp
+  GCMesh.cpp
+  GCModelParser.cpp
+  GCModelParserObj.cpp
+C:\Users\ZeyRoxFly\Source\Repos\WilliamChapron\gce-dev\src\Render\GCModelParserObj.cpp(12,12): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\ZeyRoxFly\Source\Repos\WilliamChapron\gce-dev\src\Render\GCModelParserObj.cpp(21,21): warning C4267: '+=' : conversion de 'size_t' en 'int', perte possible de données
+  GCPrimitiveFactory.cpp
+  GCRender.cpp
+  GCShader.cpp
+  GCShaderColor.cpp
+  GCShaderCustom.cpp
+  GCShaderTexture.cpp
+  GCTexture.cpp
+  GCTextureFactory.cpp
+  MathHelper.cpp
+  Timer.cpp
+  Window.cpp
+  Render.vcxproj -> C:\Users\ZeyRoxFly\Source\Repos\WilliamChapron\gce-dev\ide\vs\Render\Build\Debug\Render.lib
