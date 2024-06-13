@@ -45,11 +45,14 @@ void GCWindow::Show(int nCmdShow)
 
 void GCWindow::PollEvents()
 {
-    MSG msg;
-    while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+    MSG msg = { 0 };
+    while (msg.message !=  WM_QUIT)
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg); 
+        }
     }
 }
 
@@ -85,26 +88,24 @@ LRESULT GCWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
-
     case WM_SIZE:
     {
         UINT width = LOWORD(lParam);
         UINT height = HIWORD(lParam);
         GCWindowResizeEvent event(width, height);
-        m_eventSystem.OnEvent(event);
+        
         return 0;
     }
-
     case WM_LBUTTONDOWN:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
         GCMouseButtonPressed event(x, y, GCMouseButton::Left);
-        m_eventSystem.OnEvent(event);
+        std::cout << "Left clicked" << std::endl;
         return 0;
     }
-
-    //TODO: Handle other messages and event
+    case WM_KEYDOWN:
+        //TODO: Implement InputManager
 
     default:
         return DefWindowProc(m_hwnd, uMsg, wParam, lParam);

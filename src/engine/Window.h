@@ -16,6 +16,7 @@ private:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+private:
     HINSTANCE m_hInstance;
     HWND m_hwnd;
     GCEventSystem& m_eventSystem;
