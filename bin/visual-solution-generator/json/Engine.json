@@ -1,0 +1,49 @@
+{
+    "name": "Engine",
+    "folder": "Engine/",
+    "dependencies": ["Core"],
+    "vc_project_version": "17.0",
+    "root_namespace": "Engine",
+    "windows_target_platform_version": "10.0",
+    "configuration": [
+        {
+            "name": "Debug|x64",
+            "type": "StaticLibrary",
+            "use_debug_libraries": "true",
+            "platform_toolset": "v143",
+            "character_set": "Unicode",
+            "warning_level": "Level3",
+            "sdl_check": "true",
+            "preprocessor_definitions": "_DEBUG;_LIB;%(PreprocessorDefinitions)",
+            "conformance_mode": "true",
+            "precompiled_header": "Use",
+            "precompiled_header_file": "pch.h",
+            "generate_debug_information": "true",
+            "language_standard": "stdcpp20",
+            "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
+            "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
+        },
+        {
+            "name": "Release|x64",
+            "type": "StaticLibrary",
+            "use_debug_libraries": "false",
+            "platform_toolset": "v143",
+            "whole_program_optimization": "true",
+            "character_set": "Unicode",
+            "warning_level": "Level3",
+            "function_level_linking": "true",
+            "intrinsic_functions": "true",
+            "sdl_check": "true",
+            "preprocessor_definitions": "NDEBUG;_LIB;%(PreprocessorDefinitions)",
+            "conformance_mode": "true",
+            "precompiled_header": "Use",
+            "precompiled_header_file": "pch.h",
+            "enable_comdat_folding": "true",
+            "optimize_references": "true",
+            "generate_debug_information": "true",
+            "language_standard": "stdcpp20",
+            "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
+            "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
+        }
+    ]
+}
