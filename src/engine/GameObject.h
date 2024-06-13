@@ -11,14 +11,26 @@ class GCGameObject
 friend class GCScene;
     
 public:
+    void Destroy();
+    
     template<class T>
     T* AddComponent();
     template<class T>
     T* GetComponent();
     template<class T>
     void RemoveComponent();
+    void ClearComponents();
     
-    void SetNode( GCListNode<GCGameObject*>* pNode ) { m_pNode = pNode; }
+    void CreateChild( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 );
+    void AddChild( GCGameObject* pChild );
+    GCGameObject* GetChild( unsigned int childIndex ) { return m_childrenList.Get( childIndex ); }
+    GCVector<GCGameObject*> GetChildren() { return m_childrenList; }
+    void MoveChild( unsigned int childIndex, unsigned int newChildIndex );
+    void RemoveChild( GCGameObject* pChild );
+    void RemoveChild( unsigned int childIndex );
+    void DeleteChild( unsigned int childIndex );
+    void ClearChildren();
+    
     void SetName( const char* name ) { m_name = name; }
     void SetActive( bool active ) { m_active = active; }
     void SetTag( const char* tag ) { m_tag = tag; }
@@ -27,45 +39,38 @@ public:
     void SetParent( GCGameObject* pParent );
     
     int GetID() const { return m_ID; }
-    GCListNode<GCGameObject*>* GetNode() const { return m_pNode; }
     const char* GetName() const { return m_name; }
     bool IsActive() const { return m_active; }
     const char* GetTag() const { return m_tag; }
     int GetLayer() const { return m_layer; }
     GCScene* GetScene() const { return m_pScene; }
     GCGameObject* GetParent() const { return m_pParent; }
-    
-    void CreateChild();
-    void CreateChild( const char* name /*= "GameObject"*/, bool active /*= true*/, const char* tag /*= ""*/, int layer /*= 0*/ );
-    void AddChild( GCGameObject* pChild ); 
-    void DeleteChild( unsigned int childIndex );
-    void RemoveChild( GCGameObject* pChild );
-    GCVector<GCGameObject*> GetChildren() { return m_childrenList; }
-    GCGameObject* GetChild( unsigned int childIndex ) { return m_childrenList.Get( childIndex ); }
-    void MoveChild( unsigned int childIndex, unsigned int newChildIndex );
 
 private:
     GCGameObject( GCScene* pScene );
     GCGameObject( GCScene* pScene, const char* name, GCGameObject* pParent, bool active, const char* tag, int layer );
     ~GCGameObject();
     
-    void Init( const char* name, bool active );
     void Update();
-    void Destroy();
+    
+    void RemoveComponent( int type );
+    
+    void SetNode( GCListNode<GCGameObject*>* pNode ) { m_pNode = pNode; }
+    GCListNode<GCGameObject*>* GetNode() const { return m_pNode; }
 
 protected:
     static inline int s_nextID = 0;
     int m_ID;
     GCListNode<GCGameObject*>* m_pNode;
     
+    GCScene* m_pScene;
+    GCGameObject* m_pParent;
+    GCVector<GCGameObject*> m_childrenList;
+    
     const char* m_name;
     bool m_active;
     const char* m_tag;
     int m_layer;
-    
-    GCScene* m_pScene;
-    GCGameObject* m_pParent;
-    GCVector<GCGameObject*> m_childrenList;
     GCMap<int, Component*> m_componentsList;
 
 };
@@ -91,10 +96,5 @@ T* GCGameObject::GetComponent()
 template<class T>
 void GCGameObject::RemoveComponent()
 {
-    T* component;
-    if ( m_componentsList.Find( T::TYPE, component ) == true )
-    {
-        delete component;
-        m_componentsList.Remove( T::TYPE );
-    }
+    RemoveComponent( T::TYPE );
 }

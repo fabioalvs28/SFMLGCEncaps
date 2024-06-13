@@ -4,7 +4,6 @@
 #include "GameObject.h"
 #include "Components.h"
 
-
 GCScene::GCScene()
 {
 	m_active = false;
@@ -21,17 +20,6 @@ void GCScene::Destroy()
 	GCSceneManager::DestroyScene( this );
 }
 
-void GCScene::DestroyGameObjectsList()
-{
-	GCGameObject* pGameObject;
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
-	{
-		pGameObject = pGameObjectNode->GetData();
-		pGameObject->Destroy();
-	}
-	m_gameObjectsList.Clear();
-}
-
 
 // <summary>
 // Loads the scene.
@@ -41,7 +29,6 @@ void GCScene::DestroyGameObjectsList()
 void GCScene::Load()
 {
 	GCSceneManager::LoadScene( this );
-	DestroyGameObjectsList();
 }
 
 
@@ -68,6 +55,7 @@ void GCScene::Update()
 {
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
 		pGameObjectNode->GetData()->Update();
+	if ( m_pParent != nullptr ) m_pParent->Update();
 }
 
 
@@ -85,6 +73,7 @@ void GCScene::Render()
 		if ( pSpriteRenderer != nullptr )
 		    pSpriteRenderer->Render();
 	}
+	if ( m_pParent != nullptr ) m_pParent->Render();
 }
 
 
@@ -95,7 +84,6 @@ void GCScene::Render()
 // This function creates a new game object with the specified name, activation status, tag, and layer.
 // The game object is then added to the end of the game objects list in the scene.
 // </summary>
-
 // <param name="name"> The name of the game object. Default value is "GameObject". </param>
 // <param name="active"> The activation status of the game object. Default value is true.</param>
 // <param name="tag"> The tag of the game object. Default value is an empty string.</param>
@@ -109,18 +97,17 @@ GCGameObject* GCScene::CreateGameObject( const char* name, bool active, const ch
 }
 
 
-// <summary> 
-// Destroys a game object and removes it from the scene.
-// This function removes the specified game object from the scene's list of game objects.
-// It also deletes the memory allocated for the game object.
+// <summary>
+// Duplicates a game object in the scene.
+// This function creates a new game object with the same properties as the specified game object.
+// The new game object is added to the end of the game objects list in the scene.
 // </summary>
-// <param name="pGameObject"> A pointer to the game object to be destroyed. </param>
-void GCScene::DestroyGameObject( GCGameObject* pGameObject )
+// <param name="pGameObject"> A pointer to the game object to be duplicated. </param>
+void GCScene::DuplicateGameObject( GCGameObject* pGameObject )
 {
-	GCListNode<GCGameObject*>* pGameObjectNode = pGameObject->GetNode();
-	m_gameObjectsList.DeleteNode( pGameObjectNode );
-	delete pGameObject;
+	CreateGameObject( pGameObject->GetName(), pGameObject->IsActive(), pGameObject->GetTag(), pGameObject->GetLayer() );
 }
+
 
 // <summary>
 // Finds a game object by its name in the scene.
@@ -139,6 +126,7 @@ GCGameObject* GCScene::FindGameObjectByName( const char* name )
 	}
 }
 
+
 // <summary>
 // Finds a game object by its ID in the scene.
 // This function iterates through all the game objects in the scene and checks if their IDs match the specified ID.
@@ -154,34 +142,6 @@ GCGameObject* GCScene::FindGameObjectByID( int ID )
 		if ( pGameObject->GetID() == ID )
             return pGameObject;
 	}
-}
-
-
-// <summary>
-// Duplicates a game object in the scene.
-// This function creates a new game object with the same properties as the specified game object.
-// The new game object is added to the end of the game objects list in the scene.
-// </summary>
-// <param name="pGameObject"> A pointer to the game object to be duplicated. </param>
-void GCScene::DuplicateGameObject( GCGameObject* pGameObject )
-{
-	CreateGameObject( pGameObject->GetName(), pGameObject->IsActive(), pGameObject->GetTag(), pGameObject->GetLayer() );
-}
-
-
-// <summary>
-// Removes a game object from the scene.
-// This function removes the specified game object from the scene's list of game objects.
-// It does not delete the memory allocated for the game object.
-// This function does not delete the memory allocated for the game object.
-//       It is the responsibility of the caller to delete the game object if necessary.
-// </summary>
-// <param name="pGameObject"> A pointer to the game object to be removed. </param>
-GCGameObject* GCScene::RemoveGameObjectFromScene( GCGameObject* pGameObject )
-{
-	GCListNode<GCGameObject*>* pGameObjectNode = pGameObject->GetNode();
-    m_gameObjectsList.DeleteNode( pGameObjectNode );
-	return pGameObject;
 }
 
 // <summary>
@@ -202,9 +162,50 @@ void GCScene::MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject 
 	pGameObject->SetNode( pScene->m_gameObjectsList.GetLastNode() );
 }
 
+
+// <summary>
+// Removes a game object from the scene.
+// This function removes the specified game object from the scene's list of game objects.
+// It does not delete the memory allocated for the game object.
+// This function does not delete the memory allocated for the game object.
+// It is the responsibility of the caller to delete the game object if necessary.
+// </summary>
+// <param name="pGameObject"> A pointer to the game object to be removed. </param>
+GCGameObject* GCScene::RemoveGameObjectFromScene( GCGameObject* pGameObject )
+{
+	GCListNode<GCGameObject*>* pGameObjectNode = pGameObject->GetNode();
+    m_gameObjectsList.DeleteNode( pGameObjectNode );
+	return pGameObject;
+}
+
+
+// <summary> 
+// Destroys a game object and removes it from the scene.
+// This function removes the specified game object from the scene's list of game objects.
+// It also deletes the memory allocated for the game object.
+// </summary>
+// <param name="pGameObject"> A pointer to the game object to be destroyed. </param>
+void GCScene::DestroyGameObject( GCGameObject* pGameObject )
+{
+	m_gameObjectsList.DeleteNode( pGameObject->GetNode() );
+	pGameObject->ClearComponents();
+	pGameObject->ClearChildren();
+	delete pGameObject;
+}
+
+void GCScene::ClearGameObjects()
+{
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != m_gameObjectsList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+		pGameObjectNode->GetData()->Destroy();
+	m_gameObjectsList.Clear();
+}
+
+
+
+
 void GCScene::CreateChild()
 {
-	AddChild( GCSceneManager::CreateScene(); );
+	AddChild( GCSceneManager::CreateScene() );
 }
 
 void GCScene::AddChild( GCScene* pChild )
@@ -213,17 +214,24 @@ void GCScene::AddChild( GCScene* pChild )
 	pChild->m_pParent = this;
 }
 
-void GCScene::DeleteChild( unsigned int childIndex )
-{
-	m_childrenList.Get( childIndex )->Destroy();
-	m_childrenList.Remove( childIndex ); 
-}
-
 void GCScene::RemoveChild( GCScene* pChild )
 {
-	int childIndex; 
-	childIndex = m_childrenList.GetIndex( pChild );
-	m_childrenList.Remove( childIndex );
+	m_childrenList.DeleteNode( pChild->GetChildNode() );
+	pChild->RemoveChildNode();
+}
+
+void GCScene::DeleteChild( GCScene* pChild )
+{
+	RemoveChild( pChild );
+	pChild->Destroy();
+}
+
+void GCScene::ClearChildren()
+{
+	GCScene* pChild;
+	for ( GCListNode<GCScene*>* pChildNode = m_childrenList.GetFirstNode() ; pChildNode != m_childrenList.GetLastNode(); pChildNode = pChildNode->GetNext() )
+		pChildNode->GetData()->Destroy();
+	m_childrenList.Clear();
 }
 
 // TODO PREFAB
