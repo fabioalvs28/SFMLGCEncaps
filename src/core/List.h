@@ -34,6 +34,7 @@ public:
     
     void Init();
     
+    int GetSize() const { return m_size; };
     GCListNode<T>* GetFirstNode() const { return m_pHead; };
     GCListNode<T>* GetLastNode() const { return m_pTail; };
     
@@ -46,8 +47,6 @@ public:
     void Clear();
     
     bool Find( const T& data );
-    
-    int GetSize() const { return m_size; };
 
 private:
     GCListNode<T>* m_pHead;
@@ -105,10 +104,14 @@ void GCList<T>::PushFront( const T& data )
 template <typename T>
 void GCList<T>::RemoveNode( const GCListNode<T>* pNode )
 {
-    if ( pNode == m_pHead ) m_pHead = pNode->m_pNext;
-    else if ( pNode->m_pPrev != nullptr ) pNode->m_pPrev->m_pNext = pNode->m_pNext;
-    if ( pNode->m_pNext != nullptr ) pNode->m_pNext->m_pPrev = pNode->m_pPrev;
-    else if ( pNode == m_pTail ) m_pTail = pNode->m_pPrev;
+    if ( pNode == m_pHead )
+        m_pHead = pNode->m_pNext;
+    else if ( pNode->m_pPrev != nullptr )
+        pNode->m_pPrev->m_pNext = pNode->m_pNext;
+    if ( pNode->m_pNext != nullptr )
+        pNode->m_pNext->m_pPrev = pNode->m_pPrev;
+    else if ( pNode == m_pTail )
+        m_pTail = pNode->m_pPrev;
     m_size--;
 }
 

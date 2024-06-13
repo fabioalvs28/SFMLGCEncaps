@@ -7,17 +7,21 @@ class GCGameManager;
 class GCSceneManager
 {
 friend class GCGameManager;
+friend class GCScene;
 
 public:
+	static GCScene* CreateScene();
+
+private:
+    GCSceneManager() {}
 	virtual ~GCSceneManager() {}
 	
-	void Update();
-	void Render();
+	static void Update();
+	static void Render();
 	
-	void CreateScene();
-	static void DestroyScene( GCScene* pScene );
 	static void LoadScene( GCScene* pScene );
 	static void UnloadScene( GCScene* pScene );
+	static void DestroyScene( GCScene* pScene );
 
 private:
 	static GCList<GCScene*> m_scenesList;

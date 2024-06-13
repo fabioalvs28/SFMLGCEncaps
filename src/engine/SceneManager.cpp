@@ -6,36 +6,6 @@
 
 
 
-void GCSceneManager::CreateScene()
-{
-	GCScene* scene = new GCScene();
-    m_scenesList.PushBack( scene );
-	scene->SetNode( m_scenesList.GetLastNode() );
-}
-
-void GCSceneManager::DestroyScene( GCScene* pScene )
-{
-	GCListNode<GCScene*>* pSceneLoadedNode = pScene->GetLoadedNode();
-	if ( pSceneLoadedNode != nullptr ) UnloadScene( pScene );
-	GCListNode<GCScene*>* pSceneNode = pScene->GetNode();
-	m_scenesList.DeleteNode( pSceneNode );
-	pScene->DestroyGameObjectsList();
-    delete pScene;
-}
-
-void GCSceneManager::LoadScene( GCScene* pScene )
-{
-	m_loadedScenesList.PushBack( pScene );
-	pScene->SetLoadedNode( m_loadedScenesList.GetLastNode() );
-}
-
-void GCSceneManager::UnloadScene( GCScene* pScene )
-{
-	GCListNode<GCScene*>* pSceneLoadedNode = pScene->GetLoadedNode();
-	pScene->RemoveLoadedNode();
-	m_loadedScenesList.DeleteNode( pSceneLoadedNode );
-}
-
 void GCSceneManager::Update()
 {
 	GCScene* scene;
@@ -43,10 +13,7 @@ void GCSceneManager::Update()
 	{
 		scene = sceneNode->GetData();
 		if ( scene->IsActive() == true )
-		{
 			scene->Update();
-			// TODO Update des parents également
-		}
 	}
 }
 
@@ -57,9 +24,41 @@ void GCSceneManager::Render()
 	{
 		scene = sceneNode->GetData();
 		if ( scene->IsActive() == true )
-		{
 			scene->Render();
-			// TODO Update des parents également
-		}
 	}
+}
+
+
+
+
+GCScene* GCSceneManager::CreateScene()
+{
+	GCScene* scene = new GCScene();
+    m_scenesList.PushBack( scene );
+	scene->SetNode( m_scenesList.GetLastNode() ); 
+	return scene;
+}
+
+void GCSceneManager::LoadScene( GCScene* pScene )
+{
+	if ( pScene->GetLoadedNode() != nullptr ) return;
+	m_loadedScenesList.PushBack( pScene );
+	pScene->SetLoadedNode( m_loadedScenesList.GetLastNode() );
+}
+
+void GCSceneManager::UnloadScene( GCScene* pScene )
+{
+	GCListNode<GCScene*>* pLoadedNode = pScene->GetLoadedNode();
+	if ( pLoadedNode == nullptr ) return;
+	m_loadedScenesList.DeleteNode( pLoadedNode );
+	pScene->RemoveLoadedNode();
+}
+
+void GCSceneManager::DestroyScene( GCScene* pScene )
+{
+	UnloadScene( pScene );
+	m_scenesList.DeleteNode( pScene->GetNode() );
+	pScene->ClearGameObjects();
+	pScene->ClearChildren();
+    delete pScene;
 }
