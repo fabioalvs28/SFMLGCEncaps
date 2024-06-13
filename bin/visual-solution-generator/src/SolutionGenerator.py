@@ -12,7 +12,7 @@ vs_path = ide_path + "vs/"
 # filter extension
 src_ext = "cpp;c"
 h_ext = "h;hpp"
-rc_ext = "hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc"
+rc_ext = "hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj"
 
 guids = {}
 
