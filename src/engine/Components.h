@@ -10,6 +10,8 @@ class Component
 {
 friend class GCGameObject;
 
+public: enum { TYPE = 0 };
+
 public:
     virtual ~Component() {};
     
