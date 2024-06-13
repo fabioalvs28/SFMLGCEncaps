@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "GameObject.h"
-#include "Components.h"
+
+#include "SceneManager.h"
 #include "Scene.h"
+#include "Components.h"
 
 
 
@@ -70,7 +72,7 @@ void GCGameObject::Update()
 // </summary>
 void GCGameObject::Destroy()
 {
-    m_pScene->DestroyGameObject( this );
+    GCSceneManager::AddGameObjectToDeleteQueue( this );
 }
 
 

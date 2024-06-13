@@ -10,6 +10,12 @@ GCScene::GCScene()
 	m_pParent = nullptr;
 }
 
+GCScene::GCScene( GCScene* pParent )
+{
+	m_active = false;
+    m_pParent = pParent;
+}
+
 
 // <summary>
 // Destroys the scene and removes it from the SceneManager.
@@ -146,8 +152,7 @@ GCGameObject* GCScene::FindGameObjectByID( int ID )
 
 // <summary>
 // Moves a game object from the current scene to another specified scene.
-// This function removes the specified game object from the current scene's list of game objects
-// and adds it to the end of the game objects list in the specified scene.
+// This function removes the specified game object from the current scene's list of game objects and adds it to the end of the game objects list in the specified scene.
 // This function does not delete the memory allocated for the game object.
 // It is the responsibility of the caller to delete the game object if necessary.
 // This function assumes that the specified scene and game object exist and are valid.
