@@ -9,26 +9,35 @@
 
 GCInputManager::GCInputManager()
 {
-    m_canLeaveWin = true;
+    for (int i = 0; i < XUSER_MAX_COUNT; i++)
+    {
+        m_controllerList.PushBack(nullptr);
+    }
+}
 
+KeyboardInput::KeyboardInput()
+{
     for (int i = 0; i < 255; i++)
     {
         pListOfKeyboardKeys[i] = NONE;
 
     }
+}
 
-    for (int i = 0; i < 4; i++)
+
+ControllerInput::ControllerInput()
+{
+
+    pControllersLeftAxis[0] = 0.0; pControllersLeftAxis[1] = 0.0;
+    pControllersRightAxis[0] = 0.0; pControllersRightAxis[1] = 0.0;
+
+    for (int j = 0; j < 16; j++)
     {
-        pControllersLeftAxis[i][0] = 0.0; pControllersLeftAxis[i][1] = 0.0;
-        pControllersRightAxis[i][0] = 0.0; pControllersRightAxis[i][1] = 0.0;
-
-        for (int j = 0; j < 16; j++)
-        {
-            pListofControllerKeys[i][j] = NONE;
-        }
+        pListofControllerKeys[j] = NONE;
     }
+}
 
-};
+
 
 
 void GCInputManager::GetConnectedController()
@@ -39,18 +48,16 @@ void GCInputManager::GetConnectedController()
     for (int i = 0; i < XUSER_MAX_COUNT; i++)
     {
 
-        if (XInputGetState(i, &state) == ERROR_SUCCESS)
+        if (XInputGetState(i, &state) == ERROR_SUCCESS && m_controllerList.Get(i) == nullptr)
         {
-            pConnectedController[i] = true;
-        }
-        else
-        {
-            pConnectedController[i] = false;
+            ControllerInput* pController = new ControllerInput();
+            m_controllerList.Insert(i, pController);
         }
     }
 }
 
-void GCInputManager::UpdateKeyboardInput()
+
+void KeyboardInput::UpdateKeyboardInput()
 {
 
     bool keyState;
@@ -64,18 +71,18 @@ void GCInputManager::UpdateKeyboardInput()
 
             switch (pListOfKeyboardKeys[i])
             {
-                case NONE:
-                    pListOfKeyboardKeys[i] = DOWN;
-                    break;
-                case PUSH:
-                    pListOfKeyboardKeys[i] = PUSH;
-                    break;
-                case UP:
-                    pListOfKeyboardKeys[i] = DOWN;
-                    break;
-                case DOWN:
-                    pListOfKeyboardKeys[i] = PUSH;
-                    break;
+            case NONE:
+                pListOfKeyboardKeys[i] = DOWN;
+                break;
+            case PUSH:
+                pListOfKeyboardKeys[i] = PUSH;
+                break;
+            case UP:
+                pListOfKeyboardKeys[i] = DOWN;
+                break;
+            case DOWN:
+                pListOfKeyboardKeys[i] = PUSH;
+                break;
 
             }
         }
@@ -84,15 +91,15 @@ void GCInputManager::UpdateKeyboardInput()
 
             switch (pListOfKeyboardKeys[i])
             {
-                case PUSH:
-                    pListOfKeyboardKeys[i] = UP;
-                    break;
-                case UP:
-                    pListOfKeyboardKeys[i] = NONE;
-                    break;
-                case DOWN:
-                    pListOfKeyboardKeys[i] = UP;
-                    break;
+            case PUSH:
+                pListOfKeyboardKeys[i] = UP;
+                break;
+            case UP:
+                pListOfKeyboardKeys[i] = NONE;
+                break;
+            case DOWN:
+                pListOfKeyboardKeys[i] = UP;
+                break;
 
             }
         }
@@ -102,7 +109,7 @@ void GCInputManager::UpdateKeyboardInput()
 
 
 
-void GCInputManager::UpdateMousePos(const GCWINDOW* pWinInfos)
+void MouseInput::UpdateMouseInput(const GCWINDOW* pWinInfos)
 {
 
     POINT pointOnScreen;
@@ -139,17 +146,53 @@ void GCInputManager::UpdateMousePos(const GCWINDOW* pWinInfos)
 
     }
 
+    for (int i = 0; i < 5; i++)
+    {
+        if ( GetAsyncKeyState(i) )
+        {
+            switch (pMouseButtons[i])
+            {
+                case NONE:
+                    pMouseButtons[i] = DOWN;
+                    break;
+                case UP:
+                    pMouseButtons[i] = DOWN;
+                    break;
+                case DOWN:
+                    pMouseButtons[i] = PUSH;
+                    break;
+
+            }
+        }
+        else
+        {
+
+            switch (pMouseButtons[i])
+            {
+                case PUSH:
+                    pMouseButtons[i] = UP;
+                    break;
+                case UP:
+                    pMouseButtons[i] = NONE;
+                    break;
+                case DOWN:
+                    pMouseButtons[i] = UP;
+                    break;
+            }
+        }
+    }
+
 
 }
 
 
-Vector2 GCInputManager::GetMousePos()
+Vector2 MouseInput::GetMousePos()
 {
     return m_mousePos;
 }
 
 
-bool GCInputManager::GetKeyDown(int vKey)
+bool KeyboardInput::GetKeyDown(int vKey)
 {
     if (pListOfKeyboardKeys[vKey] == DOWN)
     {
@@ -157,7 +200,8 @@ bool GCInputManager::GetKeyDown(int vKey)
     }
     return false;
 }
-bool GCInputManager::GetKeyStay(int vKey)
+
+bool KeyboardInput::GetKeyStay(int vKey)
 {
     if (pListOfKeyboardKeys[vKey] == PUSH)
     {
@@ -165,7 +209,8 @@ bool GCInputManager::GetKeyStay(int vKey)
     }
     return false;
 }
-bool GCInputManager::GetKeyUp(int vKey)
+
+bool KeyboardInput::GetKeyUp(int vKey)
 {
     if (pListOfKeyboardKeys[vKey] == UP)
     {
@@ -175,31 +220,31 @@ bool GCInputManager::GetKeyUp(int vKey)
 }
 
 
-bool GCInputManager::GetMouseDown(int mouseButton)
+bool MouseInput::GetMouseDown(int mouseButton)
 {
     if (mouseButton > 2)
         mouseButton += 1;
-    if (pListOfKeyboardKeys[mouseButton] == DOWN)
+    if (pMouseButtons[mouseButton] == DOWN)
     {
         return true;
     }
     return false;
 }
-bool GCInputManager::GetMouseStay(int mouseButton)
+bool MouseInput::GetMouseStay(int mouseButton)
 {
     if (mouseButton > 2)
         mouseButton += 1;
-    if (pListOfKeyboardKeys[mouseButton] == PUSH)
+    if (pMouseButtons[mouseButton] == PUSH)
     {
         return true;
     }
     return false;
 }
-bool GCInputManager::GetMouseUp(int mouseButton)
+bool MouseInput::GetMouseUp(int mouseButton)
 {
     if (mouseButton > 2)
         mouseButton += 1;
-    if (pListOfKeyboardKeys[mouseButton] == UP)
+    if (pMouseButtons[mouseButton] == UP)
     {
         return true;
     }
@@ -207,38 +252,40 @@ bool GCInputManager::GetMouseUp(int mouseButton)
 }
 
 
-bool GCInputManager::GetControllerButtonDown(int controllerID, int vButton)
+bool ControllerInput::GetControllerButtonDown(int controllerID, int vButton)
 {
     int index = 0x5800;
     if (vButton > 0x05807)
         index += 8;
 
-    if (pListofControllerKeys[controllerID][vButton - index] == DOWN)
+    if (pListofControllerKeys[vButton - index] == DOWN)
         return true;
     return false;
 }
-bool GCInputManager::GetControllerButtonStay(int controllerID, int vButton)
+
+
+bool ControllerInput::GetControllerButtonStay(int controllerID, int vButton)
 {
     int index = 0x5800;
     if (vButton > 0x05807)
         index += 8;
 
-    if (pListofControllerKeys[controllerID][vButton - index] == PUSH)
+    if (pListofControllerKeys[vButton - index] == PUSH)
         return true;
     return false;
 }
-bool GCInputManager::GetControllerButtonUp(int controllerID, int vButton)
+bool ControllerInput::GetControllerButtonUp(int controllerID, int vButton)
 {
     int index = 0x5800;
     if (vButton > 0x05807)
         index += 8;
 
-    if (pListofControllerKeys[controllerID][vButton - index] == UP)
+    if (pListofControllerKeys[vButton - index] == UP)
         return true;
     return false;
 }
 
-bool GCInputManager::OnMouseHover(Vector2 objectPos, Vector2 objSize) {
+bool MouseInput::OnMouseHover(Vector2 objectPos, Vector2 objSize) {
 
     if (m_mousePos.x < objectPos.x)
         return false;
@@ -252,7 +299,7 @@ bool GCInputManager::OnMouseHover(Vector2 objectPos, Vector2 objSize) {
     return true;
 }
 
-void GCInputManager::SetLeavingWindows(bool canLeave) {
+void MouseInput::SetLeavingWindows(bool canLeave) {
     m_canLeaveWin = canLeave;
 }
 
@@ -260,20 +307,22 @@ void GCInputManager::SetLeavingWindows(bool canLeave) {
 
 void GCInputManager::UpdateInputs()
 {
-    for (int i = 0; i < XUSER_MAX_COUNT; i++) 
+
+    for (int i = 0; i < XUSER_MAX_COUNT; i++)
     {
 
-        if (pConnectedController[i] == true)
+        if (m_controllerList[i] != nullptr)
         {
-            UpdateControllerInput(i);
-            UpdateJoySticksinput(i);
+            m_controllerList[i]->UpdateControllerInput(i);
+            m_controllerList[i]->UpdateJoySticksinput(i);
         }
     }
 
-    UpdateKeyboardInput();
+    m_keyboard.UpdateKeyboardInput();
+    m_mouse.UpdateMouseInput(m_pWindow);
 }
 
-void GCInputManager::UpdateControllerInput(int controllerID)
+void ControllerInput::UpdateControllerInput(int controllerID)
 {
 
     XINPUT_KEYSTROKE key;
@@ -290,32 +339,32 @@ void GCInputManager::UpdateControllerInput(int controllerID)
 
             if (key.VirtualKey == j + i && key.Flags == 1)
             {
-                switch (pListofControllerKeys[controllerID][key.VirtualKey - j])
+                switch (pListofControllerKeys[key.VirtualKey - j])
                 {
                 case NONE:
-                    pListofControllerKeys[controllerID][key.VirtualKey - j] = DOWN;
+                    pListofControllerKeys[key.VirtualKey - j] = DOWN;
                     break;
                 case UP:
-                    pListofControllerKeys[controllerID][key.VirtualKey - j] = DOWN;
+                    pListofControllerKeys[key.VirtualKey - j] = DOWN;
                     break;
                 case DOWN:
-                    pListofControllerKeys[controllerID][key.VirtualKey - j] = PUSH;
+                    pListofControllerKeys[key.VirtualKey - j] = PUSH;
                     break;
                 }
             }
 
             else if (key.VirtualKey == j + i)
             {
-                switch (pListofControllerKeys[controllerID][key.VirtualKey - j])
+                switch (pListofControllerKeys[key.VirtualKey - j])
                 {
                 case PUSH:
-                    pListofControllerKeys[controllerID][key.VirtualKey - j] = UP;
+                    pListofControllerKeys[key.VirtualKey - j] = UP;
                     break;
                 case UP:
-                    pListofControllerKeys[controllerID][key.VirtualKey - j] = NONE;
+                    pListofControllerKeys[key.VirtualKey - j] = NONE;
                     break;
                 case DOWN:
-                    pListofControllerKeys[controllerID][key.VirtualKey - j] = UP;
+                    pListofControllerKeys[key.VirtualKey - j] = UP;
                     break;
 
                 }
@@ -324,35 +373,35 @@ void GCInputManager::UpdateControllerInput(int controllerID)
     }
 }
 
-float GCInputManager::GetControllerLeftAxisX(int controllerID)
+float ControllerInput::GetControllerLeftAxisX(int controllerID)
 {
-    return pControllersLeftAxis[controllerID][0];
+    return pControllersLeftAxis[0];
 }
 
-float GCInputManager::GetControllerLeftAxisY(int controllerID) 
+float ControllerInput::GetControllerLeftAxisY(int controllerID)
 {
-    return pControllersLeftAxis[controllerID][1];
-}
-
-
-float GCInputManager::GetControllerRightAxisX(int controllerID) 
-{
-    return pControllersRightAxis[controllerID][0];
-}
-
-float GCInputManager::GetControllerRightAxisY(int controllerID) 
-{
-    return pControllersRightAxis[controllerID][1];
+    return pControllersLeftAxis[1];
 }
 
 
-void GCInputManager::UpdateJoySticksinput(int controllerID)
+float ControllerInput::GetControllerRightAxisX(int controllerID)
+{
+    return pControllersRightAxis[0];
+}
+
+float ControllerInput::GetControllerRightAxisY(int controllerID)
+{
+    return pControllersRightAxis[1];
+}
+
+
+void ControllerInput::UpdateJoySticksinput(int controllerID)
 {
     XINPUT_STATE state;
 
     int side[2] = { 1,1 };
 
-    if (XInputGetState(controllerID, &state) == ERROR_SUCCESS) 
+    if (XInputGetState(controllerID, &state) == ERROR_SUCCESS)
     {
 
         float LX = state.Gamepad.sThumbLX;
@@ -366,17 +415,17 @@ void GCInputManager::UpdateJoySticksinput(int controllerID)
 
         if (rLX < 0) side[0] = -1; if (rLY < 0) side[1] = -1;
 
-        rLX = pow(rLX, 2) * side[0];
-        rLY = pow(rLY, 2) * side[1];
+        rLX = rLX * rLX;
+        rLY = rLY * rLY;
 
 
-        if (sqrt(LX * LX + LY * LY) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) 
+        if (LX * side[0] + LY * side[1] < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
         {
-            rLX = 0.0, rLY = 0.0;
+            rLX = 0.0f, rLY = 0.0f;
         }
 
 
-        pControllersLeftAxis[controllerID][0] = rLX; pControllersLeftAxis[controllerID][1] = rLY;
+        pControllersLeftAxis[0] = rLX; pControllersLeftAxis[1] = rLY;
 
 
         side[0] = 1; side[1] = 1;
@@ -392,16 +441,16 @@ void GCInputManager::UpdateJoySticksinput(int controllerID)
 
         if (rRX < 0) side[0] = -1; if (rRY < 0) side[1] = -1;
 
-        rRX = pow(rRX, 2) * side[0];
-        rRY = pow(rRY, 2) * side[1];
+        rRX = rRX * rRX;
+        rRY = rRY * rRY;
 
 
-        if (sqrt(RX * RX + RY * RY) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+        if (RX * side[0] + RY * side[1] < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
         {
             rRX = 0.0, rRY = 0.0;
         }
 
 
-        pControllersRightAxis[controllerID][0] = rRX; pControllersRightAxis[controllerID][1] = rRY;
+        pControllersRightAxis[0] = rRX; pControllersRightAxis[1] = rRY;
     }
 }
