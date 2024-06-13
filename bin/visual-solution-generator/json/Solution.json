@@ -1,5 +1,9 @@
 {
     "solution_name": "GC Engine",
+    "format_version": "12.00",
+    "version": "16",
+    "version_full": "16.0.28729.10",
+    "minimum_version": "10.0.40219.1",
     "poles": {
         "all": "",
         "engine": {
