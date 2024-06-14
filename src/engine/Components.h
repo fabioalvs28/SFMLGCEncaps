@@ -1,8 +1,8 @@
 #pragma once
 #include "../core/framework.h"
+#include "GCColor.h"
 
 class GCGameObject;
-struct GCVEC2;
 
 // TODO Adding lots of stuff to the components
 
@@ -15,6 +15,7 @@ friend class GCGameObject;
 public: enum { TYPE = 0 };
 
 public:
+    Component();
     virtual ~Component() {};
     
     virtual int GetType() = 0;
@@ -53,10 +54,10 @@ public:
     
     void Render() {}
     
-    void SetSprite();
+    void SetSprite() {};
     void SetColor( GCColor& color ) { m_color = color; }
     
-    void GetSprite();
+    void GetSprite() {};
     GCColor& GetColor() { return m_color; }
 
 protected:
