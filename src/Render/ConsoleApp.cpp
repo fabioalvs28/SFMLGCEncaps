@@ -88,15 +88,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	material2->addObjectCB(graphics->GetRender()->LoadObjectCB<GCWORLDCB>());
 	material2->addCameraCB(graphics->GetRender()->LoadObjectCB<GCCAMERACB>());
-	graphics->GetRender()->DrawOneObject(mesh1, material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->UpdateBuffers(material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObject(mesh1, material2);
 
 	material->addObjectCB(graphics->GetRender()->LoadObjectCB<GCWORLDCB>());
 	material->addCameraCB(graphics->GetRender()->LoadObjectCB<GCCAMERACB>());
-	graphics->GetRender()->DrawOneObject(mesh, material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObject(mesh, material);
 
 	material->addObjectCB(graphics->GetRender()->LoadObjectCB<GCWORLDCB>());
 	material->addCameraCB(graphics->GetRender()->LoadObjectCB<GCCAMERACB>());
-	graphics->GetRender()->DrawOneObject(mesh, material, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->UpdateBuffers(material, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObject(mesh, material);
 
 
 	graphics->GetRender()->PostDraw();

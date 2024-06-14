@@ -449,18 +449,8 @@ void GCRender::Draw(const Timer& gt) {
 //Absolutely needs Prepare Draw to be called before it being used
 //Needs post draw to be called right after aswell
 //(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
-bool GCRender::DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
-
-
-	GCWORLDCB worldData;
-	worldData.world = worldMatrix;
-
-	GCCAMERACB cameraData;
-	cameraData.view = viewMatrix;
-	cameraData.proj = projectionMatrix;
+bool GCRender::DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial) {
 	// Update 
-	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
-	pMaterial->UpdateConstantBufferData(cameraData, pMaterial->GetCameraCBData()[pMaterial->m_count]);
 
 	if (pMaterial->GetShader() == nullptr || pMesh == nullptr) {
 		return false;
@@ -606,4 +596,16 @@ GCShaderUploadBuffer<GCCAMERACB>* GCRender::LoadCameraCB() {
 
 void GCRender::LoadMatrices() {
 
+}
+
+void GCRender::UpdateBuffers(GCMaterial* pMaterial,DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
+	GCWORLDCB worldData;
+	worldData.world = worldMatrix;
+
+	GCCAMERACB cameraData;
+	cameraData.view = viewMatrix;
+	cameraData.proj = projectionMatrix;
+	// Update 
+	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
+	pMaterial->UpdateConstantBufferData(cameraData, pMaterial->GetCameraCBData()[pMaterial->m_count]);
 }

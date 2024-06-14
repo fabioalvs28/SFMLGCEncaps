@@ -72,7 +72,7 @@ public:
 	void PostDraw();
 	void Draw(const Timer& gt);
 
-	bool DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	bool DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial);
 	//void BuildBoxGeometry();
 
 
@@ -111,7 +111,7 @@ public:
 
 	GCShaderUploadBuffer<GCCAMERACB>* LoadCameraCB();
 	void LoadMatrices();
-
+	void UpdateBuffers(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 private:
 	
 	Window* m_pWindow;
