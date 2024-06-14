@@ -11,6 +11,7 @@
 #include "../Engine/Scene.h"
 #include "../Engine/GameObject.h"
 #include "../Engine/Components.h"
+#include "../Engine/GCColor.h"
 
 
 void CreateConsole()
@@ -45,10 +46,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	myGoOne->AddComponent<SpriteRenderer>();
 	myGoTwo->AddComponent<SpriteRenderer>();
 
+	GCColor color = GCColor(1.0f, 1.0f, 1.0f, 1.0f);
+	myGoOne->GetComponent<SpriteRenderer>()->SetColor(color);
+	myGoTwo->RemoveComponent<SpriteRenderer>();
+	myGoOne->AddComponent<BoxCollider>();
+    myGoOne->Destroy();
 
     while (w->IsRunning())
     {
+        
+		myGoTwo->m_transform.m_position.x += 0.01f;
 
+		std::cout << "Position  " << myGoTwo->m_transform.m_position.x << std::endl;
 
 
 	    GameManager->Update();

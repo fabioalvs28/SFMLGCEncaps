@@ -14,6 +14,9 @@ struct GCTransform
 	GCVEC3 m_position;
 	GCMATRIX m_matrix;
 
+	GCTransform() {};
+	~GCTransform() {};
+
 	void Identity();
 	void FromMatrix(const GCMATRIX& matrix);
 	void UpdateRotationFromVectors();
