@@ -10,6 +10,8 @@ struct GCVEC2
     GCVEC2();
     GCVEC2( float x, float y );
     ~GCVEC2() {};
+    
+    const char* ToString() const;
 
     static GCVEC2 Zero() { return GCVEC2( 0.0f, 0.0f ); }
     static GCVEC2 One() { return GCVEC2( 1.0f, 1.0f ); }
@@ -73,6 +75,8 @@ struct GCVEC3
     GCVEC3();
     GCVEC3( float x, float y, float z );
     ~GCVEC3() {};
+    
+    const char* ToString() const;
 
     static GCVEC3 Zero() { return GCVEC3( 0.0f, 0.0f, 0.0f ); }
     static GCVEC3 One() { return GCVEC3( 1.0f, 1.0f, 1.0f ); }
