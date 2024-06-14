@@ -1,6 +1,8 @@
 #pragma once
+#include "../core/framework.h"
 
 class GCGameObject;
+struct GCVEC2;
 
 // TODO Adding lots of stuff to the components
 
@@ -26,11 +28,11 @@ public:
     bool IsActive() { return m_active; }
 
 protected:
-    GCGameObject* m_pGameObject;
-    bool m_active;
+    void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
 
 protected:
-    void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
+    GCGameObject* m_pGameObject;
+    bool m_active;
 
 };
 
@@ -47,8 +49,18 @@ public:
     
     void Init() override {};
     void Update() override {};
-    void Render();
     void Destroy() override {};
+    
+    void Render() {}
+    
+    void SetSprite();
+    void SetColor( GCColor& color ) { m_color = color; }
+    
+    void GetSprite();
+    GCColor& GetColor() { return m_color; }
+
+protected:
+    GCColor m_color;
 
 };
 
@@ -118,6 +130,8 @@ public:
     void Init() override {}
     void Update() override {}
     void Destroy() override {}
+    
+    void AddForce( GCVEC2 force ) {}
 
 };
 

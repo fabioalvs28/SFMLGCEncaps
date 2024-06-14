@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "GameObject.h"
-#include "Components.h"
+
+#include "SceneManager.h"
 #include "Scene.h"
+#include "Components.h"
 
 
 
@@ -21,7 +23,6 @@ GCGameObject::GCGameObject( GCScene* pScene )
 
 
 // <summary> 
-// Constructor for GCGameObject class. 
 // This constructor initializes a new game object with the given parameters.
 // It also increments the next ID for future game object.
 // </summary>
@@ -47,7 +48,6 @@ GCGameObject::GCGameObject( GCScene* pScene, const char* name, GCGameObject* pPa
 
 
 // <summary>
-// Updates all the components of the game object.
 // This function iterates through the components list of the game object and updates each component, if the game object and the component are active.
 // The components are updated based on their TYPE, which ranges from 1 to 7 as of right now.
 // </summary>
@@ -57,20 +57,20 @@ void GCGameObject::Update()
     Component* component; 
     for (int i = 1 ; i <= 7 ; i++)
         if ( m_componentsList.Find(i, component) == true ) 
-        {
-            if ( component->IsActive() == false ) continue;
-            component->Update();
-        }
+            if ( component->IsActive() == true )
+                component->Update();
 }
 
 
 // <summary>
-// Destroys the game object and removes it from the scene.
-// It removes the game object from the scene's list of game objects and destroys all its components
+// This function marks the game object for deletion by adding it to the deletion queue.
+// The actual deletion of the game object will be handled by the GCSceneManager at a later time.
+// This method is typically called when the game object is no longer needed and should be removed from the scene.
+// The game object will not be immediately deleted. It will be deleted during the next frame.
 // </summary>
 void GCGameObject::Destroy()
 {
-    m_pScene->DestroyGameObject( this );
+    GCSceneManager::AddGameObjectToDeleteQueue( this );
 }
 
 
@@ -81,8 +81,10 @@ void GCGameObject::Destroy()
 
 
 // <summary>
-// 
+// This function searches for a component in the game object's components list based on the given type.
+// If the component is found, it is deleted and removed from the components list.
 // </summary>
+// <param name="type"> An integer representing the type of the component to be removed. </param>
 void GCGameObject::RemoveComponent( int type )
 {
     Component* component;
@@ -95,7 +97,8 @@ void GCGameObject::RemoveComponent( int type )
 
 
 // <summary>
-// 
+// This function iterates through the components list of the game object and removes each component.
+// It calls the RemoveComponent method for each component type from 1 to 7.
 // </summary>
 void GCGameObject::ClearComponents()
 {
@@ -110,7 +113,6 @@ void GCGameObject::ClearComponents()
 
 
 // <summary>
-// Creates a new child game object with custom parameters.
 // This function creates a new child game object using the CreateGameObject method of the scene.
 // The new child game object is then added to the children list of the current game object.
 // </summary>
@@ -125,7 +127,6 @@ void GCGameObject::CreateChild( const char* name, bool active, const char* tag, 
 
 
 // <summary>
-// Adds a child game object to the children list.
 // This function adds the given game object as a child of the current game object.
 // It also sets the parent of the child game object to the current game object.
 // </summary>
@@ -138,7 +139,6 @@ void GCGameObject::AddChild( GCGameObject* pChild )
 
 
 // <summary>
-// Moves a child game object from one index to another in the children list.
 // This function removes the child game object at the given childIndex and inserts it at the newIndex in the children list.
 // </summary>
 // <param  name="childIndex"> An unsigned int representing the index of the child game object to be moved. </param>
@@ -151,12 +151,22 @@ void GCGameObject::MoveChild( unsigned int childIndex, unsigned int newIndex )
 }
 
 
+// <summary>
+// This function removes the child game object from the children list of the current game object.
+// It internally calls the RemoveChild method with the index of the child game object obtained from the children list.
+// </summary>
+// <param name="pChild"> A pointer to the game object to be removed as a child. </param>
 void GCGameObject::RemoveChild( GCGameObject* pChild )
 {
     RemoveChild( m_childrenList.GetIndex( pChild ) );
 }
 
 
+// <summary>
+// This function removes the child game object from the children list of the current game object.
+// It does not destroy the child game object. It only removes it from the children list.
+// </summary>
+// <param name="childIndex"> An unsigned int representing the index of the child game object to be removed. </param>
 void GCGameObject::RemoveChild( unsigned int childIndex )
 {
     m_childrenList.Remove( childIndex );
@@ -164,10 +174,9 @@ void GCGameObject::RemoveChild( unsigned int childIndex )
 
 
 // <summary>
-// Deletes a child game object at the specified index.
 // This function destroys the child game object at the given index and removes it from the children list.
 // </summary>
-// <pparamname=" childIndex"> An unsigned int representing the index of the child game object to be deleted </param>
+// <param name="childIndex"> An unsigned int representing the index of the child game object to be deleted </param>
 void GCGameObject::DeleteChild( unsigned int childIndex )
 {
     m_childrenList.Get( childIndex )->Destroy();
@@ -176,7 +185,9 @@ void GCGameObject::DeleteChild( unsigned int childIndex )
 
 
 // <summary>
-// 
+// This function iterates through the children list of the game object, destroys each child game object, and then clears the children list.
+// The child game objects will not be immediately deleted. They will be deleted during the next frame.
+// The actual deletion of the child game objects will be handled by the GCSceneManager at a later time.
 // </summary>
 void GCGameObject::ClearChildren()
 {

@@ -2,7 +2,7 @@
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "Scene.h"
-#include "../Core/framework.h"
+#include "../core/framework.h"
 
 
 
@@ -15,6 +15,21 @@ void GCSceneManager::Update()
 		if ( scene->IsActive() == true )
 			scene->Update();
 	}
+}
+
+void GCSceneManager::NewDelete()
+{
+	GCGameObject* pGameObject;
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != m_gameObjectsToDeleteList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+	{
+		pGameObject = pGameObjectNode->GetData();
+		pGameObject->GetScene()->DestroyGameObject( pGameObject );
+	}
+	m_gameObjectsToDeleteList.Clear();
+
+	for ( GCListNode<GCScene*>* pSceneNode = m_scenesToDeleteList.GetFirstNode(); pSceneNode != m_scenesToDeleteList.GetLastNode(); pSceneNode = pSceneNode->GetNext() )
+		DestroyScene( pSceneNode->GetData() );
+	m_scenesToDeleteList.Clear();
 }
 
 void GCSceneManager::Render()
@@ -31,9 +46,9 @@ void GCSceneManager::Render()
 
 
 
-GCScene* GCSceneManager::CreateScene()
+GCScene* GCSceneManager::CreateScene( GCScene* pParent )
 {
-	GCScene* scene = new GCScene();
+	GCScene* scene = new GCScene( pParent );
     m_scenesList.PushBack( scene );
 	scene->SetNode( m_scenesList.GetLastNode() ); 
 	return scene;
@@ -61,4 +76,15 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 	pScene->ClearGameObjects();
 	pScene->ClearChildren();
     delete pScene;
+}
+
+
+void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject )
+{
+	m_gameObjectsToDeleteList.PushBack( pGameObject );
+}
+
+void GCSceneManager::AddSceneToDeleteQueue( GCScene* pScene )
+{
+	m_scenesToDeleteList.PushBack( pScene );
 }
