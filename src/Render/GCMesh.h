@@ -89,10 +89,6 @@ public:
 
     void Initialize(GCRender* pRender) {
         m_pRender = pRender;
-        //m_pObjectCB = new UploadBuffer<ShaderType>(m_pRender->Getmd3dDevice(), 1, true);
-
-
-
     }
 
 

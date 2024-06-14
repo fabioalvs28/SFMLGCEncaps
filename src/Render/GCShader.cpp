@@ -20,6 +20,9 @@ void GCShader::Render() {
 	m_pRender->GetCommandList()->SetGraphicsRootSignature(GetRootSign());
 }
 
+
+//#TODO Need To make documentation
+// Initialize Precompile the shader | And load must be call when we need it 
 void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int type) {
 	m_pRender = pRender;
 	m_type = type;
@@ -38,7 +41,7 @@ void GCShader::RootSign() {
 	slotRootParameter[1].InitAsConstantBufferView(1);
     
 	// If texture
-	if (m_type == 1) {
+	if (m_type == texture) {
 		CD3DX12_DESCRIPTOR_RANGE srvTable;
 		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 		slotRootParameter[2].InitAsDescriptorTable(1, &srvTable);
@@ -58,6 +61,8 @@ void GCShader::RootSign() {
         0.0f, // minLOD
         D3D12_FLOAT32_MAX // maxLOD
     );
+
+
 
     // Configuration de la signature racine
     CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(m_type+2, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -217,15 +222,15 @@ void GCShader::PreCompile(const std::string& filePath, const std::string& csoDes
 	SaveShaderToFile(psByteCode, wideCsoDestinationPath + L"PS.cso");
 }
 
-void GCShader::UpdateCameraBuffer(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projMatrix)
-{
-
-	viewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-	projMatrix = DirectX::XMMatrixTranspose(projMatrix);
-
-
-	CameraCB cameraCB;
-	XMStoreFloat4x4(&cameraCB.view, viewMatrix);
-	XMStoreFloat4x4(&cameraCB.proj, projMatrix);
-	m_pCameraCB->CopyData(0, cameraCB);
-}
+//void GCShader::UpdateCameraBuffer(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projMatrix)
+//{
+//    //viewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
+//    //projMatrix = DirectX::XMMatrixTranspose(projMatrix);
+//
+//
+//    //XMStoreFloat4x4(&cameraCB.view, viewMatrix);
+//    //XMStoreFloat4x4(&cameraCB.proj, projMatrix);
+//
+//
+//    m_pCameraCB->CopyData(0, cameraCB);  // Pass the address of cameraCB
+//}

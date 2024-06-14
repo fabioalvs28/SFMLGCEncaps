@@ -28,7 +28,7 @@ public:
 	GCMaterial* CreateMaterial();
 
 
-	template<typename T>
+
 	GCMesh* CreateMesh(GCGeometry* pGeometry);
 
 	GCTexture* CreateTexture(const std::string& filePath);
@@ -87,20 +87,4 @@ private:
 
 
 };
-
-// #TODO -> Faire la condition dans l'initialize
-template<typename T>
-GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
-{
-	GCMesh* mesh = new GCMesh();
-	mesh->Initialize<T>(m_pRender);
-
-	if (pGeometry->texC.size() == 0)
-		mesh->UploadGeometryDataColor(pGeometry);
-	else
-		mesh->UploadGeometryDataTexture(pGeometry);
-
-	m_vMeshes.push_back(mesh);
-	return mesh;
-}
 

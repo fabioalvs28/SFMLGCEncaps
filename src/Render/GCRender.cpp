@@ -441,20 +441,35 @@ void GCRender::Draw(const Timer& gt) {
 
 
 
-bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMMATRIX projectionMatrix, DirectX::XMMATRIX viewMatrix) {
+bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
+
+
+	GCWORLDCB worldData;
+	worldData.world = worldMatrix;
+
+	GCCAMERACB cameraData;
+	cameraData.view = viewMatrix;
+	cameraData.proj = projectionMatrix;
+	// Update 
+	pShader->UpdateConstantBufferData(worldData, pShader->GetObjectCBData());
+	pShader->UpdateConstantBufferData(cameraData, pShader->GetCameraCBData());
 
 	if (pShader == nullptr || pMesh == nullptr) {
 		return false;
 	}
+
+	// 
 	m_CommandList->SetPipelineState(pShader->GetPso());
 	m_CommandList->SetGraphicsRootSignature(pShader->GetRootSign());
 
+	//
 	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = pMesh->GetBufferGeometryData()->VertexBufferView();
 	m_CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
+	//
 	if (pShader->GetType() == 1) // Texture?
 	{
 		if(pTexture)
@@ -469,36 +484,15 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 
 
 
-	// EN DEHORS DONC C'EST AU MOTEUR DE CONNAITRE LE TYPE DERIVE 
-	DirectX::XMMATRIX worldMatrixXM = DirectX::XMLoadFloat4x4(&worldMatrix);
-	DirectX::XMMATRIX transposedWorldMatrix = DirectX::XMMatrixTranspose(worldMatrixXM);
-	DirectX::XMFLOAT4X4 transposedWorld;
-	DirectX::XMStoreFloat4x4(&transposedWorld, transposedWorldMatrix);
-
-	WorldCB worldData;
-	worldData.world = transposedWorld;
 
 
 
-	pShader->UpdateObjectBuffer<WorldCB>(worldData);
-	pShader->UpdateCameraBuffer(viewMatrix, projectionMatrix);
 
-	// EN DEHORS DONC C'EST AU MOTEUR DE CONNAITRE LE TYPE DERIVE 
-
-	//auto* pUploadBuffer = dynamic_cast<SUploadBuffer<WorldCB>*>(pMesh->GetObjectCBData());
-
-
-	//if (pUploadBuffer) {
-	//	m_CommandList->SetGraphicsRootConstantBufferView(0, pUploadBuffer->Resource()->GetGPUVirtualAddress());
-	//}
+	// Object
 	m_CommandList->SetGraphicsRootConstantBufferView(0, pShader->GetObjectCBData()->Resource()->GetGPUVirtualAddress());
-
 	// Camera
 	m_CommandList->SetGraphicsRootConstantBufferView(1, pShader->GetCameraCBData()->Resource()->GetGPUVirtualAddress());
-
-
-
-	// #TODO Réflechir a passer par la GCGeometry ? 
+	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
 	return true;

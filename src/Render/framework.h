@@ -51,10 +51,10 @@ struct GCGeometry;
 struct MeshBufferData;
 struct GCVERTEX;
 struct GCVERTEXTEXTURE;
-struct ShaderCB;
-struct WorldCB;
-struct LightAndWorld;
-struct CameraCB;
+struct GCSHADERCB;
+struct GCWORLDCB;
+struct GCLIGHTANDWORLD;
+struct GCCAMERACB;
 
 //template<typename T>;
 
@@ -71,8 +71,8 @@ class GCShaderTexture;
 class GCShaderCustom;
 class GCTexture;
 class GCTextureFactory;
-class SUploadBufferBase; // 
-//class SUploadBuffer; 
+class GCShaderUploadBufferBase; // 
+//class GCShaderUploadBuffer; // 
 class MathHelper;
 class Timer;
 class Window;
