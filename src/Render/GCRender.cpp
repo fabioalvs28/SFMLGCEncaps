@@ -449,7 +449,7 @@ void GCRender::Draw(const Timer& gt) {
 //Absolutely needs Prepare Draw to be called before it being used
 //Needs post draw to be called right after aswell
 //(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
-bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
+bool GCRender::DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
 
 
 	GCWORLDCB worldData;
@@ -459,16 +459,16 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 	cameraData.view = viewMatrix;
 	cameraData.proj = projectionMatrix;
 	// Update 
-	pShader->UpdateConstantBufferData(worldData, pShader->GetObjectCBData());
-	pShader->UpdateConstantBufferData(cameraData, pShader->GetCameraCBData());
+	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
+	pMaterial->UpdateConstantBufferData(cameraData, pMaterial->GetCameraCBData()[pMaterial->m_count]);
 
-	if (pShader == nullptr || pMesh == nullptr) {
+	if (pMaterial->GetShader() == nullptr || pMesh == nullptr) {
 		return false;
 	}
 
 	// 
-	m_CommandList->SetPipelineState(pShader->GetPso());
-	m_CommandList->SetGraphicsRootSignature(pShader->GetRootSign());
+	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
+	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
 
 	//
 	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -478,35 +478,29 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
 	//
-	if (pShader->GetType() == 1) // Texture?
+	if (pMaterial->GetShader()->GetType() == 1) // Texture?
 	{
-		if(pTexture)
+		if(pMaterial->GetTexture())
 		{
-			m_CommandList->SetGraphicsRootDescriptorTable(2, pTexture->GetTextureAddress());
+			m_CommandList->SetGraphicsRootDescriptorTable(2, pMaterial->GetTexture()->GetTextureAddress());
 		}
 		else {
 			return false;
 		}
 	}
-
-
-
-
-
-
-
-
 	// Object
-	m_CommandList->SetGraphicsRootConstantBufferView(0, pShader->GetObjectCBData()->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
 	// Camera
-	m_CommandList->SetGraphicsRootConstantBufferView(1, pShader->GetCameraCBData()->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(1, pMaterial->GetCameraCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
+	pMaterial->m_count++;
 	return true;
 }
+
 //Always needs to be called right after drawing!!!
-void GCRender::PostDraw() {
+void GCRender::PostDraw() { 
 	CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
@@ -605,3 +599,11 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 	}
 }
 // LOG
+
+GCShaderUploadBuffer<GCCAMERACB>* GCRender::LoadCameraCB() {
+	return new GCShaderUploadBuffer<GCCAMERACB>(Getmd3dDevice(), 1, true);
+}
+
+void GCRender::LoadMatrices() {
+
+}

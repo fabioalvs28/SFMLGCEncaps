@@ -83,11 +83,11 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) {
 //}
 
 //Creates a material (WIP)
-GCMaterial* GCGraphics::CreateMaterial() {
+GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader, GCTexture* pTexture) {
     GCMaterial* material = new GCMaterial();
-    //material->Initialize();
-    //m_vMaterials.push_back(material);
-    //m_materialId++;
+    material->Initialize(pShader, pTexture);
+    m_vMaterials.push_back(material);
+    m_materialId++;
     return material;
 }
 

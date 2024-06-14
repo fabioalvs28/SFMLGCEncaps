@@ -72,7 +72,7 @@ public:
 	void PostDraw();
 	void Draw(const Timer& gt);
 
-	bool DrawOneObject(GCMesh* pMesh, GCShader* pShader,GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	bool DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 	//void BuildBoxGeometry();
 
 
@@ -104,6 +104,13 @@ public:
 	UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
 	UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
+	template<typename ShaderTypeConstantBuffer>
+	GCShaderUploadBuffer<ShaderTypeConstantBuffer>* LoadObjectCB() {
+		return new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(Getmd3dDevice(), 1, true);
+	}
+
+	GCShaderUploadBuffer<GCCAMERACB>* LoadCameraCB();
+	void LoadMatrices();
 
 private:
 	
@@ -159,7 +166,6 @@ private:
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
 
 };
-
 
 #ifndef ReleaseCom
 #define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }

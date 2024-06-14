@@ -53,34 +53,34 @@ public:
 
 
 	// 
-	template<typename ShaderType>
+	//template<typename ShaderType>
 	void Load();
 
 
 	// Object
 	
-	GCShaderUploadBufferBase* GetObjectCBData() {
-		return m_pObjectCB;
-	}
+	//GCShaderUploadBufferBase* GetObjectCBData() {
+	//	return m_pObjectCB;
+	//}
 
-	// Camera
-	GCShaderUploadBufferBase* GetCameraCBData() {
-		return m_pCameraCB;
-	}
+	//// Camera
+	//GCShaderUploadBufferBase* GetCameraCBData() {
+	//	return m_pCameraCB;
+	//}
 
 	// Update Shader Constant Buffer Data
-	void UpdateConstantBufferData(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
-	{
-		uploadBufferInstance->CopyData(0, objectData);
-	}
+	//void UpdateConstantBufferData(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
+	//{
+	//	uploadBufferInstance->CopyData(0, objectData);
+	//}
 
 private:
 	ID3D12RootSignature* m_RootSignature = nullptr;
 	ID3D12PipelineState* m_PSO = nullptr;
 	int m_type;
 
-	GCShaderUploadBufferBase* m_pObjectCB;
-	GCShaderUploadBufferBase* m_pCameraCB;
+	//GCShaderUploadBufferBase* m_pObjectCB;
+	//GCShaderUploadBufferBase* m_pCameraCB;
 protected:
 
 
@@ -95,13 +95,3 @@ protected:
 };
 
 //Loads the shader:Compiles it using the precompiled file created previously in the init,creates both the rootsign and the pso
-template<typename ShaderTypeConstantBuffer>
-void GCShader::Load() {
-	CompileShader();
-	RootSign();
-	Pso();
-
-	// Load in GPU CB Struct
-	m_pObjectCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->Getmd3dDevice(), 1, true);
-	m_pCameraCB = new GCShaderUploadBuffer<GCCAMERACB>(m_pRender->Getmd3dDevice(), 1, true);
-}

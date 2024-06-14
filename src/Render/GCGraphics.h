@@ -25,7 +25,7 @@ public:
 	//GCShader* CreateShaderCustom(HLSLFile* customShaderFile);
 
 
-	GCMaterial* CreateMaterial();
+	GCMaterial* CreateMaterial(GCShader* pShader, GCTexture* pTexture);
 
 
 
