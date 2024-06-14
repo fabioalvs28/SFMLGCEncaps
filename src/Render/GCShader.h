@@ -26,9 +26,13 @@ public:
 	ID3DBlob* CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint, const std::string& target);
 
 	void SaveShaderToFile(ID3DBlob* shaderBlob, const std::wstring& filename);
+
 	ID3DBlob* LoadShaderFromFile(const std::wstring& filename);
+
 	void PreCompile(const std::string& filePath, const std::string& csoDestinationPath);
+
 	void Load();
+
 private:
 	ID3D12RootSignature* m_RootSignature = nullptr;
 	ID3D12PipelineState* m_PSO = nullptr;

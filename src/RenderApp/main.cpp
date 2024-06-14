@@ -30,10 +30,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 	// Mesh
-	GCMesh* mesh = graphics->CreateMeshh<Test>(geo);
-	GCMesh* mesh1 = graphics->CreateMeshh<Test>(geo1);
-	//GCMesh* mesh = graphics->CreateMesh(geo);
-	//GCMesh* mesh1 = graphics->CreateMesh(geo1);
+	GCMesh* mesh = graphics->CreateMesh<Test>(geo);
+	GCMesh* mesh1 = graphics->CreateMesh<Test>(geo1);
+
+
 	//GCShader* shaderCustom = graphics->CreateShaderCustom(customShaderFile);
 
 
