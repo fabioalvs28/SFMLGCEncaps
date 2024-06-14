@@ -1,12 +1,14 @@
 #pragma once
 #include <functional>
+#include <Windows.h>
+
 #include "Event.h"
 #include "Layer.h"
 #include "../core/Map.h"
 #include "../core/Vector.h"
 #include "../core/Queue.h"
 
-using GCListener = std::function<void(GCEvent&)>;
+typedef void(*CallBack)();
 
 class GCEventDispatcher 
 {
@@ -30,11 +32,14 @@ private:
 class GCEventSystem
 {
 public:
+	GCEventSystem();
 	/// <summary>
 	/// Polls events from the operating system or framework 
 	/// and dispatches them to the appropriate handlers.
 	/// </summary>
-	void PollEvents();
+	void PollEvents(MSG msg);
+
+	void PushEvent(GCEvent* ev);
 
 	/// <summary>
 	/// Registers a new event listener for a specific event type.
@@ -42,14 +47,14 @@ public:
 	/// <param name="type">The type of event to listen for</param>
 	/// <param name="listener">The callback function to be called when the event occurs</param>
 	/// <returns>A unique ListenerID that can be used to reference and manage the listener</returns>
-	void AddEventListener(GCListener);
+	void AddEventListener(const GCEvent& ev ,std::function<void()> func);
 
 	/// <summary>
 	/// Removes an event listener based on its type and unique ListenerID.
 	/// </summary>
 	/// <param name="type">The event type</param>
 	/// <param name="id">The unique identifier ID to the callback</param>
-	void RemoveEventListener(GCListener);
+	void RemoveEventListener();
 
 	/// <summary>
 	/// Adds a new layer to the event system.
@@ -73,7 +78,7 @@ private:
 	void OnEvent(GCEvent& e);
 
 private:
-	GCMap<GCEventType, GCListener> m_eventListeners;
+	GCMap<GCEventType, GCVector<std::function<void()>>*> m_eventListeners;
     GCQueue<GCEvent*> m_eventQueue;
 
 	GCVector<Layer*> m_layers;
