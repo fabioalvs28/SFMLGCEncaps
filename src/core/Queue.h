@@ -1,6 +1,10 @@
 #pragma once
 #include <queue>
 
+/*
+	   /!\ WARNING : This class encapsulate the STL this is not our OWN methods. /!\
+*/
+
 
 template <typename T>
 class GCQueue

@@ -15,5 +15,6 @@ void GCGameManager::Init()
 void GCGameManager::Update()
 {
     GCSceneManager::Update();
+    GCSceneManager::NewDelete();
     GCSceneManager::Render();
 }

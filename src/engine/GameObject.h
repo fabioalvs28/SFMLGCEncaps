@@ -1,5 +1,5 @@
 #pragma once
-#include "../Core/framework.h"
+#include "../core/framework.h"
 
 class Component;
 class GCScene;
@@ -46,10 +46,11 @@ public:
     GCScene* GetScene() const { return m_pScene; }
     GCGameObject* GetParent() const { return m_pParent; }
 
+    GCTransform m_transform;
 private:
     GCGameObject( GCScene* pScene );
     GCGameObject( GCScene* pScene, const char* name, GCGameObject* pParent, bool active, const char* tag, int layer );
-    ~GCGameObject();
+    ~GCGameObject() {}
     
     void Update();
     
@@ -75,15 +76,30 @@ protected:
 
 };
 
+// <summary>
+// This function creates a new instance of the specified component type, initializes it with the game object, and adds it to the game object's component list.
+// If the component type already exists on the game object, the function returns nullptr.
+// The component's memory is managed internally, and it will be automatically deleted when the game object is destroyed or when the component is removed.
+// It also returns a pointer to the newly created component.
+// </summary>
+// <template param name="T"> The type of the component to be added. </template param>
 template<class T>
 T* GCGameObject::AddComponent()
 {
+    if ( GetComponent<T>() != nullptr ) return nullptr;
     T* component = new T();
-    component.SetGameObject( this );
+    component->SetGameObject( this );
     m_componentsList.Insert( T::TYPE, component );
     return component;
 }
 
+// <summary>
+// This function searches the game object's component list for a component of the specified type.
+// If the component is found, it returns a pointer to the component.
+// If the component is not found, it returns nullptr.
+// The returned pointer should not be used to delete the component, as there is a function to do it.
+// </summary>
+// <template param name="T"> The type of the component to be retrieved. </template param>
 template<class T>
 T* GCGameObject::GetComponent()
 {
@@ -93,6 +109,12 @@ T* GCGameObject::GetComponent()
     return nullptr;
 }
 
+// <summary>
+// This function searches the game object's component list for a component of the specified type.
+// If the component is found, it is removed from the list and deleted.
+// The component's memory is managed internally, and it will be automatically deleted.
+// </summary>
+// <template param name="T"> The type of the component to be removed. </template param>
 template<class T>
 void GCGameObject::RemoveComponent()
 {
