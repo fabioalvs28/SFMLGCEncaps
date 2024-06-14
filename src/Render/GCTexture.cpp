@@ -28,6 +28,15 @@ GCTexture::~GCTexture()
 
 bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics)
 {
+
+    std::wstring filePathW = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(filePath);
+
+    if (_waccess(filePathW.c_str(), 0) == 0)
+    {
+        OutputDebugString((L"Shader not found: " + filePathW + L"\n").c_str());
+        return false;
+    }
+
     m_cbvSrvUavDescriptorSize = pGraphics->GetRender()->Getmd3dDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 

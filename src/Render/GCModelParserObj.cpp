@@ -150,6 +150,15 @@ bool GCModelParserObj::ParseObj(std::string fileName)
 GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 {
 
+	std::wstring fileNameW = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(fileName);
+
+	if (_waccess(fileNameW.c_str(), 0) == 0)
+	{
+		OutputDebugString((L"Obj file not found: " + fileNameW + L"\n").c_str());
+		return NULL;
+	}
+
+
 	ParseObj(fileName);
 
 
@@ -176,6 +185,16 @@ GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 
 GCGeometry* GCModelParserObj::BuildObjColor(std::string fileName) {
 
+	std::wstring fileNameW = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(fileName);
+
+	if (_waccess(fileNameW.c_str(), 0) == 0)
+	{
+		OutputDebugString((L"Obj file not found: " + fileNameW + L"\n").c_str());
+		return NULL;
+	}
+
+	ParseObj(fileName);
+
 	GCGeometry* objGeometry = new GCGeometry();
 
 	objGeometry->indiceNumber = m_ParsedObj.facesInfos.size();
@@ -192,8 +211,6 @@ GCGeometry* GCModelParserObj::BuildObjColor(std::string fileName) {
 	for (int i = 0; i < m_ParsedObj.facesInfos.size(); i++) {
 		objGeometry->indices.push_back(m_ParsedObj.facesInfos[i][0]);
 	}
-
-
 
 	return objGeometry;
 }
