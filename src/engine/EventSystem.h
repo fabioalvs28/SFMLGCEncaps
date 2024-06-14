@@ -3,15 +3,10 @@
 #include "Event.h"
 #include "Layer.h"
 #include "../core/Map.h"
-#include "../core/List.h"
+#include "../core/Vector.h"
+#include "../core/Queue.h"
 
-using GCListenerID = size_t;
-
-typedef struct GCListener 
-{
-	GCEventType type;
-	std::function<void(GCEvent&)> callback;
-};
+using GCListener = std::function<void(GCEvent&)>;
 
 class GCEventDispatcher 
 {
@@ -54,7 +49,7 @@ public:
 	/// </summary>
 	/// <param name="type">The event type</param>
 	/// <param name="id">The unique identifier ID to the callback</param>
-	void RemoveEventListener(GCListenerID id);
+	void RemoveEventListener(GCListener);
 
 	/// <summary>
 	/// Adds a new layer to the event system.
@@ -78,10 +73,8 @@ private:
 	void OnEvent(GCEvent& e);
 
 private:
-	GCListenerID m_nextListenerID = 0;
+	GCMap<GCEventType, GCListener> m_eventListeners;
+    GCQueue<GCEvent*> m_eventQueue;
 
-	GCMap<GCListenerID, GCListener> m_eventListeners;
-    GCList<GCEvent> m_eventListenerID;
-
-	GCList<Layer*> m_layers;
+	GCVector<Layer*> m_layers;
 };
