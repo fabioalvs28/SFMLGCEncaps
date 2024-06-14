@@ -15,7 +15,7 @@ public:
 
 private:
     GCListNode();
-    ~GCListNode();
+    ~GCListNode() {}
 
 private:
     GCListNode<T>* m_pNext;

@@ -30,8 +30,8 @@ private:
 	static void AddSceneToDeleteQueue( GCScene* pScene );
 
 private:
-	static GCList<GCScene*> m_scenesList;
-	static GCList<GCScene*> m_loadedScenesList;
-	static GCList<GCGameObject*> m_gameObjectsToDeleteList;
-    static GCList<GCScene*> m_scenesToDeleteList;
+	static inline GCList<GCScene*> m_scenesList = GCList<GCScene*>();
+	static inline GCList<GCScene*> m_loadedScenesList = GCList<GCScene*>();
+	static inline GCList<GCGameObject*> m_gameObjectsToDeleteList = GCList<GCGameObject*>();
+    static inline GCList<GCScene*> m_scenesToDeleteList = GCList<GCScene*>();
 };
