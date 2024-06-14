@@ -15,6 +15,9 @@ class GCMap
 public:
 	GCMap() = default;
 
+	Value& operator[](const Key& key) { return m_Map[key]; }
+	const Value& operator[](const Key& key) const { return m_Map[key]; }
+
 	void Insert(const Key& key, const Value& value);
 	void Remove(const Key& key);
 	bool Find(const Key& key, Value& value);
@@ -22,6 +25,12 @@ public:
 	void Clear();
 	size_t GetSize() const;
 	bool IsEmpty() const;
+
+	// Iterator support
+	typename std::map<Key, Value>::iterator begin() { return m_Map.begin(); }
+	typename std::map<Key, Value>::iterator end() { return m_Map.end(); }
+	typename std::map<Key, Value>::const_iterator begin() const { return m_Map.begin(); }
+	typename std::map<Key, Value>::const_iterator end() const { return m_Map.end(); }
 
 private:
 	std::map<Key, Value> m_Map;
