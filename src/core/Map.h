@@ -2,6 +2,11 @@
 #include <assert.h>
 #include <map>
 
+/*
+       /!\ WARNING : This class encapsulate the STL this is not our OWN methods. /!\
+*/
+
+
 
 template <typename Key, typename Value>
 
