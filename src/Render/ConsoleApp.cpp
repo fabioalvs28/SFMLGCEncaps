@@ -26,8 +26,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation
 
 
-	shader1->Load<GCWORLDCB>();
-	shader2->Load<GCWORLDCB>();
+	shader1->Load();
+	shader2->Load();
 
 
 	// Mesh
@@ -38,7 +38,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	std::string texturePath = "../../../src/Render/Textures/texture.dds";
 	GCTexture* tex1 = graphics->CreateTexture(texturePath);
-		
+	GCMaterial* material = graphics->CreateMaterial(shader1, nullptr);
+	GCMaterial* material2 = graphics->CreateMaterial(shader2, tex1);
+
 	graphics->GetRender()->CloseCommandList(); // Close and Execute after creation
 	graphics->GetRender()->ExecuteCommandList();// Close and Execute after creation
 
@@ -83,14 +85,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 
-	graphics->GetRender()->DrawOneObject(mesh1, shader2, tex1, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawOneObject(mesh, shader1, nullptr, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+
+	material2->addObjectCB(graphics->GetRender()->LoadObjectCB<GCWORLDCB>());
+	material2->addCameraCB(graphics->GetRender()->LoadObjectCB<GCCAMERACB>());
+	graphics->GetRender()->DrawOneObject(mesh1, material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+
+	material->addObjectCB(graphics->GetRender()->LoadObjectCB<GCWORLDCB>());
+	material->addCameraCB(graphics->GetRender()->LoadObjectCB<GCCAMERACB>());
+	graphics->GetRender()->DrawOneObject(mesh, material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+
+	material->addObjectCB(graphics->GetRender()->LoadObjectCB<GCWORLDCB>());
+	material->addCameraCB(graphics->GetRender()->LoadObjectCB<GCCAMERACB>());
+	graphics->GetRender()->DrawOneObject(mesh, material, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
 
 
 	graphics->GetRender()->PostDraw();
 
+	for (int i = 0; i < graphics->GetMaterials().size(); i++)
+		graphics->GetMaterials()[i]->m_count = 0;
+
 	//// Loop Again < |||| >
-	
+
 	//graphics->GetRender()->PrepareDraw();
 
 	//graphics->GetRender()->PostDraw();
