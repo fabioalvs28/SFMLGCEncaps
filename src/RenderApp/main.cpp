@@ -25,8 +25,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation
 
 
-	shader1->Load();
-	shader2->Load();
+	shader1->Load<WorldCB>();
+	shader2->Load<WorldCB>();
 
 
 	// Mesh
@@ -34,6 +34,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	GCMesh* mesh1 = graphics->CreateMesh<Test>(geo1);
 
 
+
+	//GCMesh* mesh = graphics->CreateMesh(geo);
+	//GCMesh* mesh1 = graphics->CreateMesh(geo1);
 	//GCShader* shaderCustom = graphics->CreateShaderCustom(customShaderFile);
 
 

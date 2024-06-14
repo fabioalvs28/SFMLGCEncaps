@@ -1,5 +1,24 @@
 #pragma once
 
+struct ShaderCB {
+};
+
+struct WorldCB : ShaderCB {
+	DirectX::XMFLOAT4X4 world; // Matrice du monde
+};
+
+struct LightAndWorld : ShaderCB {
+	DirectX::XMFLOAT4X4 world; // Matrice du monde
+	DirectX::XMFLOAT4X4 light; // Matrice du monde
+	DirectX::XMFLOAT4X4 normal;
+};
+
+//
+struct CameraCB {
+	DirectX::XMFLOAT4X4 view; // Matrice de vue
+	DirectX::XMFLOAT4X4 proj; // Matrice de projection
+};
+
 class GCShader
 {
 public:
@@ -32,12 +51,32 @@ public:
 	void PreCompile(const std::string& filePath, const std::string& csoDestinationPath);
 
 	void Load();
+	template<typename ShaderType>
+	void Load();
+	// Object
+	
+	SUploadBufferBase* GetObjectCBData() {
+		return m_pObjectCB;
+	}
+
+	// Camera
+	UploadBuffer<CameraCB>* GetCameraCBData() {
+		return m_pCameraCB;
+	}
+	template<typename T>
+	void UpdateObjectBuffer(const T& objectData)
+	{
+		m_pObjectCB->CopyData(0, objectData);
+	}
+
+	void UpdateCameraBuffer(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projMatrix);
 
 private:
 	ID3D12RootSignature* m_RootSignature = nullptr;
 	ID3D12PipelineState* m_PSO = nullptr;
 	int m_type;
-
+	SUploadBufferBase* m_pObjectCB;
+	UploadBuffer<CameraCB>* m_pCameraCB;
 protected:
 
 
@@ -50,3 +89,11 @@ protected:
 	GCRender* m_pRender;
 };
 
+template<typename ShaderType>
+void GCShader::Load() {
+	CompileShader();
+	RootSign();
+	Pso();
+	m_pObjectCB = new SUploadBuffer<ShaderType>(m_pRender->Getmd3dDevice(), 1, true);
+	m_pCameraCB = new UploadBuffer<CameraCB>(m_pRender->Getmd3dDevice(), 1, true);
+}

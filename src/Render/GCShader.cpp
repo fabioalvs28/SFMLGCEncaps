@@ -26,12 +26,6 @@ void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const 
 	PreCompile(filePath, csoDestinationPath);
 }
  
-void GCShader::Load() {
-	CompileShader();
-	RootSign();
-	Pso();
-}
-
 void GCShader::CompileShader() {
 
 }
@@ -221,4 +215,17 @@ void GCShader::PreCompile(const std::string& filePath, const std::string& csoDes
 
 	SaveShaderToFile(vsByteCode, wideCsoDestinationPath + L"VS.cso");
 	SaveShaderToFile(psByteCode, wideCsoDestinationPath + L"PS.cso");
+}
+
+void GCShader::UpdateCameraBuffer(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projMatrix)
+{
+
+	viewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
+	projMatrix = DirectX::XMMatrixTranspose(projMatrix);
+
+
+	CameraCB cameraCB;
+	XMStoreFloat4x4(&cameraCB.view, viewMatrix);
+	XMStoreFloat4x4(&cameraCB.proj, projMatrix);
+	m_pCameraCB->CopyData(0, cameraCB);
 }

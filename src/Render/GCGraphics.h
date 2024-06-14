@@ -27,6 +27,7 @@ public:
 
 	GCMaterial* CreateMaterial();
 
+
 	template<typename T>
 	GCMesh* CreateMesh(GCGeometry* pGeometry);
 
@@ -56,8 +57,8 @@ public:
 
 
 
-	GCPrimitiveFactory* GetPrimitiveFactory() const {return m_pPrimitiveFactory;}
-	GCModelParserObj* GetModelParserFactory() const {return m_pModelParserFactory;}
+	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
+	GCModelParserObj* GetModelParserFactory() const { return m_pModelParserFactory; }
 
 
 
@@ -86,10 +87,9 @@ private:
 
 
 };
-template<typename T>
-
 
 // #TODO -> Faire la condition dans l'initialize
+template<typename T>
 GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
 {
 	GCMesh* mesh = new GCMesh();
