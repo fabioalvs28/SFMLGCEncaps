@@ -33,7 +33,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	// Mesh
 	GCMesh* mesh = graphics->CreateMesh(geo);
 	GCMesh* mesh1 = graphics->CreateMesh(geo1);
-
 	//GCShader* shaderCustom = graphics->CreateShaderCustom(customShaderFile);
 
 
@@ -59,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
 	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
 
-	// Stockez les matrices transposées dans des XMFLOAT4X4
+	// Stockez les matrices transposï¿½es dans des XMFLOAT4X4
 	DirectX::XMFLOAT4X4 storedProjectionMatrix;
 	DirectX::XMFLOAT4X4 storedViewMatrix;
 

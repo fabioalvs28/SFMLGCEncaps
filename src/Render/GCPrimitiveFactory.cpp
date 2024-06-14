@@ -7,6 +7,7 @@ GCPrimitiveFactory::GCPrimitiveFactory() {
 GCPrimitiveFactory::~GCPrimitiveFactory() {
 }
 
+//Initializes the geometries that will then be used by both the create build geos funcs
 void GCPrimitiveFactory::Initialize() 
 {
 
@@ -146,6 +147,8 @@ void GCPrimitiveFactory::Initialize()
     };
 }
 
+//Builds a color based geometry using pre-created ones
+//Needs both a geometry name and a specific color
 GCGeometry* GCPrimitiveFactory::BuildGeometryColor(std::wstring name, DirectX::XMFLOAT4 color)
 {
 	GCGeometry* primitiveGeometry = new GCGeometry();
@@ -163,7 +166,8 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryColor(std::wstring name, DirectX::X
 	return primitiveGeometry;
 }
 
-
+//Builds a texture based geometry using pre-created ones
+//Needs a geometry name
 GCGeometry* GCPrimitiveFactory::BuildGeometryTexture(std::wstring name)
 {
 	GCGeometry* primitiveGeometry = new GCGeometry();
