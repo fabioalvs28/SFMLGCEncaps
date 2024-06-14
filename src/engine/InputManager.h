@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-#include "../Core/framework.h"
+#include "../core/framework.h"
 
 
 enum
@@ -12,19 +12,11 @@ enum
 };
 
 
-
-typedef struct CGVECTOR2
-{
-    int x;
-    int y;
-} Vector2;
-
-
 struct GCWINDOW
 {
-    Vector2 winPos;
-    Vector2 winSize;
-    Vector2 center;
+    GCVEC2 winPos;
+    GCVEC2 winSize;
+    GCVEC2 center;
 
 } GCWINDOWv;
 
@@ -36,9 +28,9 @@ class KeyboardInput
 
 public:
 
-    bool GetKeyDown(int vKey);
-    bool GetKeyStay(int vKey);
-    bool GetKeyUp(int vKey);
+    bool GetKeyDown( int vKey );
+    bool GetKeyStay( int vKey );
+    bool GetKeyUp( int vKey );
 
 
 
@@ -47,8 +39,8 @@ private:
 
     KeyboardInput();
     virtual ~KeyboardInput() {};
-    BYTE pListOfKeyboardKeys[255];
-    void UpdateKeyboardInput();
+    GCVector<BYTE> pListOfKeyboardKeys;
+    void UpdateKeyboardInput( bool isActive );
 };
 
 
@@ -57,20 +49,18 @@ class MouseInput
     friend class GCInputManager;
 
 public:
-    /// \brief int from 1 to 5 : left button, right button, middle button, X button 1, Xbutton 2
-    bool GetMouseDown(int mouseButton);
-    /// \brief int from 1 to 5 : left button, right button, middle button, X button 1, Xbutton 2
-    bool GetMouseStay(int mouseButton);
-    /// \brief int from 1 to 5 : left button, right button, middle button, X button 1, Xbutton 2
-    bool GetMouseUp(int mouseButton);
+    
+    bool GetMouseDown( int mouseButton );
+    bool GetMouseStay( int mouseButton );
+    bool GetMouseUp( int mouseButton );
 
-    bool OnMouseHover(Vector2 objectPos, Vector2 objSize);
+    bool OnMouseHover( GCVEC2* objectPos, GCVEC2* objSize );
 
 
-    void SetLeavingWindows(bool canLeave);
+    void SetLeavingWindows( bool canLeave ) { m_canLeaveWin = canLeave;  }
 
 
-    Vector2 GetMousePos();
+    GCVEC2* GetMousePos() { return &m_mousePos; }
 
 
 private:
@@ -79,11 +69,10 @@ private:
     virtual ~MouseInput() {};
 
 
-    void UpdateMouseInput(const GCWINDOW* pWinInfos);
+    void UpdateMouseInput( const GCWINDOW* pWinInfos, bool isActive );
     bool m_canLeaveWin;
-    Vector2 m_mousePos;
-
-    BYTE pMouseButtons[5];
+    GCVEC2 m_mousePos;
+    GCVector<BYTE> m_pMouseButtons;
 
 };
 
@@ -94,46 +83,56 @@ class ControllerInput
 
 public:
 
-    bool GetControllerButtonDown(int controllerId, int vButton);
-    bool GetControllerButtonStay(int controllerId, int vButton);
-    bool GetControllerButtonUp(int controllerId, int vButton);
+    bool GetControllerButtonDown( int vButton );
+    bool GetControllerButtonStay( int vButton );
+    bool GetControllerButtonUp( int vButton );
 
-    float GetControllerLeftAxisX(int controllerID);
-    float GetControllerLeftAxisY(int controllerID);
-    float GetControllerRightAxisX(int controllerID);
-    float GetControllerRightAxisY(int controllerID);
+    float GetControllerLeftAxisX() { return pControllersLeftAxis[0]; }
+    float GetControllerLeftAxisY() { return pControllersLeftAxis[1]; }
+    float GetControllerRightAxisX() { return pControllersRightAxis[0]; }
+    float GetControllerRightAxisY() { return pControllersRightAxis[1]; }
 
 private:
 
     ControllerInput();
+    ControllerInput( int id ); 
     virtual ~ControllerInput() {};
 
 
-    void UpdateJoySticksinput(int controllerID);
-    void UpdateControllerInput(int controllerID);
+    void UpdateJoySticksinput();
+    void UpdateControllerInput( bool isActive );
 
-    BYTE pListofControllerKeys[16];
+    int m_ID; 
+    GCVector<BYTE> pListofControllerKeys;
     float pControllersLeftAxis[2];
     float pControllersRightAxis[2];
 };
 
 
 
-
-
 class GCInputManager
 {
 
-public:
+    friend class GCGameManager;
+
+private:
 
     GCInputManager();
     virtual ~GCInputManager() {};
 
     void GetConnectedController();
-
     void UpdateInputs();
+    
+    bool GetKeyboardState() { return m_keyboardIsActive; }
+    bool GetMouseState() { return m_mouseIsActive; }
+    bool GetControllersState() { return m_controllerIsActive;  }
+
 
 private:
+
+    bool m_keyboardIsActive; 
+    bool m_mouseIsActive; 
+    bool m_controllerIsActive; 
 
     GCWINDOW* m_pWindow;
     GCVector<ControllerInput*> m_controllerList;
@@ -141,4 +140,4 @@ private:
     MouseInput m_mouse;
 };
 
-
+ 
