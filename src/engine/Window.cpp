@@ -46,13 +46,11 @@ void GCWindow::Show(int nCmdShow)
 void GCWindow::PollEvents()
 {
     MSG msg = { 0 };
-    while (msg.message !=  WM_QUIT)
+
+    if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
     {
-        if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg); 
-        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
 }
 
@@ -86,7 +84,9 @@ LRESULT GCWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_DESTROY:
+	case WM_QUIT:
         PostQuitMessage(0);
+		Close();
         return 0;
     case WM_SIZE:
     {

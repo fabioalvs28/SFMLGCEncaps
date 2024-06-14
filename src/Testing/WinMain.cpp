@@ -5,6 +5,13 @@
 #include "ECSTesting.h"
 #include "../engine/Window.h"
 #include "../engine/EventSystem.h"
+#include "../Engine/GameManager.h"
+#include "../Engine/SceneManager.h"
+#include "../Engine/InputManager.h"
+#include "../Engine/Scene.h"
+#include "../Engine/GameObject.h"
+#include "../Engine/Components.h"
+
 
 void CreateConsole()
 {
@@ -22,11 +29,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     std::cout << "Logging to console..." << std::endl;
     
     GCEventSystem* ev = new GCEventSystem();
-    GCWindow w = GCWindow(hInstance, nCmdShow, *ev);
-    w.Create(L"Testing", 800, 600);
-    w.Show(nCmdShow);
+    GCWindow *w = new GCWindow(hInstance, nCmdShow, *ev);
+    w->Create(L"Testing", 800, 600);
+    w->Show(nCmdShow);
 
-    w.PollEvents();
+	GCGameManager *GameManager = new GCGameManager();
+    GameManager->Init();
+
+	GCScene *myScene = GCSceneManager::CreateScene();
+	myScene->SetActive(true);
+
+    GCGameObject *myGoOne = myScene->CreateGameObject("go", true);
+	GCGameObject *myGoTwo = myScene->CreateGameObject("go2", true);
+
+	myGoOne->AddComponent<SpriteRenderer>();
+	myGoTwo->AddComponent<SpriteRenderer>();
+
+
+    while (w->IsRunning())
+    {
+
+
+
+	    GameManager->Update();
+        w->PollEvents();
+    }
+
     
     FreeConsole();
 }
