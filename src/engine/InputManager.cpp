@@ -21,14 +21,14 @@ GCInputManager::GCInputManager()
 }
 
 
-/*
-<summary>
-Function to get connected controllers.
-This function checks for connected controllers using XInputGetState.
-If a controller is connected and not already in the controller list,
-it creates a new ControllerInput object for that controller and adds it to the list.
-</summary>
-*/
+
+// <summary>
+// Function to get connected controllers.
+// This function checks for connected controllers using XInputGetState.
+// If a controller is connected and not already in the controller list,
+// it creates a new ControllerInput object for that controller and adds it to the list.
+// </summary>
+
 void GCInputManager::GetConnectedController()
 {
 
@@ -46,14 +46,14 @@ void GCInputManager::GetConnectedController()
 }
 
 
-/**
-<summary>
-Updates all input devices and their states.
-This function iterates through all connected controllers, updates their input states,
-and calls the respective update functions for the keyboard and mouse.
-It also sets the boolean flags for keyboard, mouse, and controller activity.
-</summary>
-*/
+
+// <summary>
+// Updates all input devices and their states.
+// This function iterates through all connected controllers, updates their input states,
+// and calls the respective update functions for the keyboard and mouse.
+// It also sets the boolean flags for keyboard, mouse, and controller activity.
+// </summary>
+
 void GCInputManager::UpdateInputs()
 {
     m_keyboardIsActive, m_mouseIsActive, m_controllerIsActive = false;
@@ -85,16 +85,16 @@ KeyboardInput::KeyboardInput()
 }
 
 
-/*
-<summary>
-Function to update the keyboard input state.
-This function checks the state of each keyboard key using GetAsyncKeyState.
-It updates the corresponding key state in the pListOfKeyboardKeys array.
-If a key is pressed, it sets the state to DOWN or PUSH if it was already DOWN.
-If a key is released, it sets the state to UP or NONE if it was already UP.
-</summary>
-<param name="isActive"> A boolean indicating whether the keyboard input is active. It is set to true if any key is pressed. </param>
-*/
+
+// <summary>
+// Function to update the keyboard input state.
+// This function checks the state of each keyboard key using GetAsyncKeyState.
+// It updates the corresponding key state in the pListOfKeyboardKeys array.
+// If a key is pressed, it sets the state to DOWN or PUSH if it was already DOWN.
+// If a key is released, it sets the state to UP or NONE if it was already UP.
+// </summary>
+// <param name="isActive"> A boolean indicating whether the keyboard input is active. It is set to true if any key is pressed. </param>
+
 void KeyboardInput::UpdateKeyboardInput(bool isActive)
 {
 
@@ -141,14 +141,13 @@ void KeyboardInput::UpdateKeyboardInput(bool isActive)
 }
 
 
-/**
-<summary>
-Function to check if a specific keyboard key is in the DOWN state.
-This function checks the state of a given virtual key in the pListOfKeyboardKeys array.
-If the state is DOWN, it returns true. Otherwise, it returns false.
-</summary>
-<param name="vKey"> The virtual key code to check. </param>
- */
+
+// <summary>
+// Function to check if a specific keyboard key is in the DOWN state.
+// This function checks the state of a given virtual key in the pListOfKeyboardKeys array.
+// If the state is DOWN, it returns true. Otherwise, it returns false.
+// </summary>
+// <param name="vKey"> The virtual key code to check. </param>
 bool KeyboardInput::GetKeyDown(int vKey)
 {
     if (pListOfKeyboardKeys[vKey] == DOWN)
@@ -159,14 +158,13 @@ bool KeyboardInput::GetKeyDown(int vKey)
 }
 
 
-/*
-<summary>
-Function to check if a specific keyboard key is in the PUSH state.
-This function checks the state of a given virtual key in the pListOfKeyboardKeys array.
-If the state is PUSH, it returns true. Otherwise, it returns false.
-</summary>
-<param name="vKey> The virtual key code to check. It should be a valid virtual key code. </param>
- */
+
+// <summary>
+// Function to check if a specific keyboard key is in the PUSH state.
+// This function checks the state of a given virtual key in the pListOfKeyboardKeys array.
+// If the state is PUSH, it returns true. Otherwise, it returns false.
+// </summary>
+// <param name="vKey> The virtual key code to check. It should be a valid virtual key code. </param>
 bool KeyboardInput::GetKeyStay(int vKey)
 {
     if (pListOfKeyboardKeys[vKey] == PUSH)
@@ -177,14 +175,12 @@ bool KeyboardInput::GetKeyStay(int vKey)
 }
 
 
-/**
-<summary>
-Function to check if a specific keyboard key is in the UP state.
-This function checks the state of a given virtual key in the pListOfKeyboardKeys array.
-If the state is UP, it returns true. Otherwise, it returns false.
-</summary>
-<param name="vKey"> The virtual key code to check. It should be a valid virtual key code. </param>
- */
+// <summary>
+// Function to check if a specific keyboard key is in the UP state.
+// This function checks the state of a given virtual key in the pListOfKeyboardKeys array.
+// If the state is UP, it returns true. Otherwise, it returns false.
+// </summary>
+// <param name="vKey"> The virtual key code to check. It should be a valid virtual key code. </param>
 bool KeyboardInput::GetKeyUp(int vKey)
 {
     if (pListOfKeyboardKeys[vKey] == UP)
@@ -197,26 +193,25 @@ bool KeyboardInput::GetKeyUp(int vKey)
 
 MouseInput::MouseInput()
 {
-    m_canLeaveWin = true; 
+    m_canLeaveWin = true;
 
-    for ( int i = 0; i < 6; i++ )
+    for (int i = 0; i < 6; i++)
     {
-        m_pMouseButtons.PushBack(NONE); 
+        m_pMouseButtons.PushBack(NONE);
     }
 
-    m_mousePos = {0,0};
+    m_mousePos = { 0,0 };
 }
 
 
-/*
-<summary>
-Function to update the mouse input state.
-This function checks the state of each mouse button and updates the corresponding button state in the pMouseButtons array.
-It also updates the mouse position within the game window.
-</summary>
-<param name="pWinInfos"> A pointer to a GCWINDOW structure containing information about the game window. </param>
-<param name="isActive"> A boolean indicating whether the mouse input is active. It is set to true if any button is pressed or the mouse position changes. </param>
- */
+
+// <summary>
+// Function to update the mouse input state.
+// This function checks the state of each mouse button and updates the corresponding button state in the pMouseButtons array.
+// It also updates the mouse position within the game window.
+// </summary>
+// <param name="pWinInfos"> A pointer to a GCWINDOW structure containing information about the game window. </param>
+// <param name="isActive"> A boolean indicating whether the mouse input is active. It is set to true if any button is pressed or the mouse position changes. </param>
 void MouseInput::UpdateMouseInput(const GCWINDOW* pWinInfos, bool isActive)
 {
 
@@ -298,22 +293,20 @@ void MouseInput::UpdateMouseInput(const GCWINDOW* pWinInfos, bool isActive)
 
 
 
-/**
-<summary>
-Function to check if a specific mouse button is in the DOWN state.
-This function checks the state of a given mouse button in the pMouseButtons array.
-If the state is DOWN, it returns true. Otherwise, it returns false.
-</summary>
-<param name="mouseButton"> The mouse button code to check. It should be a valid mouse button code. From 1 to 5 </param>
- */
-bool MouseInput::GetMouseDown( int mouseButton )
+// <summary>
+// Function to check if a specific mouse button is in the DOWN state.
+// This function checks the state of a given mouse button in the pMouseButtons array.
+// If the state is DOWN, it returns true. Otherwise, it returns false.
+// </summary>
+// <param name="mouseButton"> The mouse button code to check. It should be a valid mouse button code. From 1 to 5 </param>
+bool MouseInput::GetMouseDown(int mouseButton)
 {
-    if (mouseButton > 5 || mouseButton < 1 ) 
+    if (mouseButton > 5 || mouseButton < 1)
         return false;
     if (mouseButton > 2)
         mouseButton += 1;
 
-    if ( m_pMouseButtons[mouseButton] == DOWN )
+    if (m_pMouseButtons[mouseButton] == DOWN)
     {
         return true;
     }
@@ -322,17 +315,15 @@ bool MouseInput::GetMouseDown( int mouseButton )
 
 
 
-/**
-<summary>
-Function to check if a specific mouse button is in the PUSH state.
-This function checks the state of a given mouse button in the pMouseButtons array.
-If the state is PUSH, it returns true. Otherwise, it returns false.
-</summary>
-<param name="mouseButton"> The mouse button code to check. It should be a valid mouse button code. From 1 to 5  </param>
-*/
+// <summary>
+// Function to check if a specific mouse button is in the PUSH state.
+// This function checks the state of a given mouse button in the pMouseButtons array.
+// If the state is PUSH, it returns true. Otherwise, it returns false.
+// </summary>
+// <param name="mouseButton"> The mouse button code to check. It should be a valid mouse button code. From 1 to 5  </param>
 bool MouseInput::GetMouseStay(int mouseButton)
 {
-    if (mouseButton > 5 || mouseButton < 1 )
+    if (mouseButton > 5 || mouseButton < 1)
         return false;
 
     if (mouseButton > 2)
@@ -346,17 +337,15 @@ bool MouseInput::GetMouseStay(int mouseButton)
 }
 
 
-/**
-<summary>
-Function to check if a specific mouse button is in the UP state.
-This function checks the state of a given mouse button in the pMouseButtons array.
-It returns true if the mouse button is in the UP state, false otherwise.
-</summary>
-<param name="mouseButton"> The mouse button code to check. It should be a valid mouse button. From 1 to 5 </param>
-*/
+// <summary>
+// Function to check if a specific mouse button is in the UP state.
+// This function checks the state of a given mouse button in the pMouseButtons array.
+// It returns true if the mouse button is in the UP state, false otherwise.
+// </summary>
+// <param name="mouseButton"> The mouse button code to check. It should be a valid mouse button. From 1 to 5 </param>
 bool MouseInput::GetMouseUp(int mouseButton)
 {
-    if (mouseButton > 5 || mouseButton < 1 ) 
+    if (mouseButton > 5 || mouseButton < 1)
         return false;
     if (mouseButton > 2)
         mouseButton += 1;
@@ -368,15 +357,13 @@ bool MouseInput::GetMouseUp(int mouseButton)
 }
 
 
-/**
-<summary>
-Function to check if the mouse cursor is within a specified object's boundaries.
-This function checks if the mouse cursor's position is within the boundaries of a given object.
-The object's position and size are provided as parameters.
-</summary>
-<param name="objectPos"> A pointer to a GCVEC2 structure representing the object's position. </param>
-<param name="objSize"> A pointer to a GCVEC2 structure representing the object's size. </param>
- */
+// <summary>
+// Function to check if the mouse cursor is within a specified object's boundaries.
+// This function checks if the mouse cursor's position is within the boundaries of a given object.
+// The object's position and size are provided as parameters.
+// </summary>
+// <param name="objectPos"> A pointer to a GCVEC2 structure representing the object's position. </param>
+// <param name="objSize"> A pointer to a GCVEC2 structure representing the object's size. </param>
 bool MouseInput::OnMouseHover(GCVEC2* objectPos, GCVEC2* objSize) {
 
     if (m_mousePos.x < objectPos->x)
@@ -418,14 +405,12 @@ ControllerInput::ControllerInput(int id)
 }
 
 
-/**
-<summary>
-Function to check if a specific controller button is in the DOWN state.
-This function checks the state of a given virtual button in the pListofControllerKeys array.
-If the state is DOWN, it returns true. Otherwise, it returns false.
-</summary>
-<param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
- */
+// <summary>
+// Function to check if a specific controller button is in the DOWN state.
+// This function checks the state of a given virtual button in the pListofControllerKeys array.
+// If the state is DOWN, it returns true. Otherwise, it returns false.
+// </summary>
+// <param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
 bool ControllerInput::GetControllerButtonDown(int vButton)
 {
     int index = 0x5800;
@@ -438,14 +423,13 @@ bool ControllerInput::GetControllerButtonDown(int vButton)
 }
 
 
-/**
-<summary>
-Function to check if a specific controller button is in the PUSH state.
-This function checks the state of a given virtual button in the pListofControllerKeys array.
-If the state is PUSH, it returns true. Otherwise, it returns false.
-</summary>
-<param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
- */
+
+// <summary>
+// Function to check if a specific controller button is in the PUSH state.
+// This function checks the state of a given virtual button in the pListofControllerKeys array.
+// If the state is PUSH, it returns true. Otherwise, it returns false.
+// </summary>
+// <param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
 bool ControllerInput::GetControllerButtonStay(int vButton)
 {
     int index = 0x5800;
@@ -458,14 +442,13 @@ bool ControllerInput::GetControllerButtonStay(int vButton)
 }
 
 
-/**
-<summary>
-Function to check if a specific controller button is in the UP state.
-This function checks the state of a given virtual button in the pListofControllerKeys array.
-If the state is UP, it returns true. Otherwise, it returns false.
-</summary>
-<param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
- */
+
+// <summary>
+// Function to check if a specific controller button is in the UP state.
+// This function checks the state of a given virtual button in the pListofControllerKeys array.
+// If the state is UP, it returns true. Otherwise, it returns false.
+// </summary>
+// <param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
 bool ControllerInput::GetControllerButtonUp(int vButton)
 {
     int index = 0x5800;
@@ -478,14 +461,13 @@ bool ControllerInput::GetControllerButtonUp(int vButton)
 }
 
 
-/**
-<summary>
-Updates the state of the controller's buttons.
-This function checks for keystrokes from the controller and updates the state of the buttons.
-It also handles the transition between different button states (DOWN, UP, PUSH).
-</summary>
-<param name="isActive"> A boolean flag indicating whether the controller input is active. </param>
- */
+
+// <summary>
+// Updates the state of the controller's buttons.
+// This function checks for keystrokes from the controller and updates the state of the buttons.
+// It also handles the transition between different button states (DOWN, UP, PUSH).
+// </summary>
+// <param name="isActive"> A boolean flag indicating whether the controller input is active. </param>
 void ControllerInput::UpdateControllerInput(bool isActive)
 {
 
@@ -541,14 +523,12 @@ void ControllerInput::UpdateControllerInput(bool isActive)
 }
 
 
-/**
-<summary>
-Updates the state of the controller's joystick axes.
-This function retrieves the state of the controller's left and right joystick axes
-and normalizes the values to a range between -1.0 and 1.0.
-The normalized values are stored in the pControllersLeftAxis and pControllersRightAxis arrays.
-</summary>
- */
+// <summary>
+// Updates the state of the controller's joystick axes.
+// This function retrieves the state of the controller's left and right joystick axes
+// and normalizes the values to a range between -1.0 and 1.0.
+// The normalized values are stored in the pControllersLeftAxis and pControllersRightAxis arrays.
+// </summary>
 void ControllerInput::UpdateJoySticksinput()
 {
     XINPUT_STATE state;
