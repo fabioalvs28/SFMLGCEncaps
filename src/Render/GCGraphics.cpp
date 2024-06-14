@@ -69,7 +69,7 @@ GCShader* GCGraphics::CreateShaderTexture() {
 
 GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) {
     GCMesh* mesh = new GCMesh();
-    mesh->Initialize<WorldCB>(m_pRender);
+    //mesh->Initialize<WorldCB>(m_pRender);
     if (pGeometry->texC.size() == 0)
     {
         mesh->UploadGeometryDataColor(pGeometry);
@@ -97,7 +97,19 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) {
 //}
 //
 
+GCMesh* GCGraphics::CreateMeshh(GCGeometry* pGeometry)
+{
+    GCMesh* mesh = new GCMesh();
+    mesh->Initialize(m_pRender);
 
+    if (pGeometry->texC.size() == 0)
+        mesh->UploadGeometryDataColor(pGeometry);
+    else
+        mesh->UploadGeometryDataTexture(pGeometry);
+
+    m_vMeshes.push_back(mesh);
+    return mesh;
+}
 
 
 GCMaterial* GCGraphics::CreateMaterial() {

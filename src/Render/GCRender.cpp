@@ -480,8 +480,8 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 
 
 
-	pMesh->UpdateObjectBuffer<WorldCB>(worldData);
-	pMesh->UpdateCameraBuffer(viewMatrix, projectionMatrix);
+	pShader->UpdateObjectBuffer<WorldCB>(worldData);
+	pShader->UpdateCameraBuffer(viewMatrix, projectionMatrix);
 
 	// EN DEHORS DONC C'EST AU MOTEUR DE CONNAITRE LE TYPE DERIVE 
 
@@ -491,10 +491,10 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 	//if (pUploadBuffer) {
 	//	m_CommandList->SetGraphicsRootConstantBufferView(0, pUploadBuffer->Resource()->GetGPUVirtualAddress());
 	//}
-	m_CommandList->SetGraphicsRootConstantBufferView(0, pMesh->GetObjectCBData()->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(0, pShader->GetObjectCBData()->Resource()->GetGPUVirtualAddress());
 
 	// Camera
-	m_CommandList->SetGraphicsRootConstantBufferView(1, pMesh->GetCameraCBData()->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(1, pShader->GetCameraCBData()->Resource()->GetGPUVirtualAddress());
 
 
 
