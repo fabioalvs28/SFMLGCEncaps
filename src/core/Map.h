@@ -13,10 +13,35 @@ template <typename Key, typename Value>
 class GCMap
 {
 public:
-	GCMap() = default;
-
 	Value& operator[](const Key& key) { return m_Map[key]; }
 	const Value& operator[](const Key& key) const { return m_Map[key]; }
+
+	// Default constructor
+	GCMap() : m_Map() {}
+
+	// Constructor with initializer list
+	GCMap(std::initializer_list<typename std::map<Key, Value>::value_type> init)
+		: m_Map(init) {}
+
+	// Copy constructor
+	GCMap(const GCMap& other) : m_Map(other.m_Map) {}
+
+	// Move constructor
+	GCMap(GCMap&& other) noexcept : m_Map(std::move(other.m_Map)) {}
+
+	// Assignment operators
+	GCMap& operator=(const GCMap& other)
+	{
+		if (this != &other) // Check for self-assignment
+			m_Map = other.m_Map;
+		return *this;
+	}
+
+	GCMap& operator=(GCMap&& other) noexcept
+	{
+		m_Map = std::move(other.m_Map);
+		return *this;
+	}
 
 	void Insert(const Key& key, const Value& value);
 	void Remove(const Key& key);
@@ -35,7 +60,6 @@ public:
 private:
 	std::map<Key, Value> m_Map;
 };
-
 
 /// <summary>
 /// Insert a new value into the map with the given key
