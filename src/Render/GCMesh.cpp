@@ -99,18 +99,5 @@ void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) {
 //    m_pObjectCB->CopyData(0, objectCB);
 //}
 
-void GCMesh::UpdateCameraBuffer(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projMatrix)
-{
-
-    viewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-    projMatrix = DirectX::XMMatrixTranspose(projMatrix);
-
-
-    CameraCB cameraCB;
-    XMStoreFloat4x4(&cameraCB.view, viewMatrix);
-    XMStoreFloat4x4(&cameraCB.proj, projMatrix);
-    m_pCameraCB->CopyData(0, cameraCB);
-}
-
 ////
 

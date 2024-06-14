@@ -53,9 +53,8 @@ GCModelParserObj::GCModelParserObj() {
 GCModelParserObj::~GCModelParserObj() {
 }
 
-void GCModelParserObj::Initialize(GCRender* pRender)
+void GCModelParserObj::Initialize()
 {
-	m_pRender = pRender;
 }
 
 bool GCModelParserObj::ParseObj(std::string fileName)

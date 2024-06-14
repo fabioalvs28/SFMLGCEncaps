@@ -17,19 +17,7 @@ void GCGraphics::Initialize(Window* window) {
     m_pModelParserFactory = new GCModelParserObj();
 }
 
-//template<typename T>
-//GCMesh* GCGraphics::CreateMeshh(GCGeometry* pGeometry) {
-//    GCMesh* mesh = new GCMesh();
-//    mesh->Initialize<T>(m_pRender);
-//
-//    if (pGeometry->texC.size() == 0)
-//    	mesh->UploadGeometryDataColor(pGeometry);
-//    else
-//    	mesh->UploadGeometryDataTexture(pGeometry);
-//
-//    m_vMeshes.push_back(mesh);
-//    return mesh;
-//}
+
 
 
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) {
@@ -67,22 +55,22 @@ GCShader* GCGraphics::CreateShaderTexture() {
     return shader;
 }
 
-GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) {
+// #TODO -> Faire la condition dans l'initialize
+GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
+{
     GCMesh* mesh = new GCMesh();
-    mesh->Initialize<WorldCB>(m_pRender);
+    mesh->Initialize(m_pRender);
+
     if (pGeometry->texC.size() == 0)
-    {
         mesh->UploadGeometryDataColor(pGeometry);
-    }
-    else {
+    else
         mesh->UploadGeometryDataTexture(pGeometry);
-    }
+
     m_vMeshes.push_back(mesh);
     return mesh;
 }
 
 
-//template GCMesh* GCGraphics::CreateMeshh<WorldCB>(GCGeometry* pGeometry);
 
 
 //GCShader* GCGraphics::CreateShaderCustom(HLSLFile* customShaderFile) {

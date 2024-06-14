@@ -68,44 +68,6 @@ struct MeshBufferData
         IndexBufferUploader = nullptr;
     }
 };
-struct GCVERTEX
-{
-	DirectX::XMFLOAT3 Pos;
-	DirectX::XMFLOAT4 Color;
-
-	GCVERTEX() : Pos(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)), Color(DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)) {}
-
-	GCVERTEX(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color) : Pos(position), Color(color) {}
-};
-
-struct GCVERTEXTEXTURE
-{
-	DirectX::XMFLOAT3 Pos;
-	DirectX::XMFLOAT2 TexC; // Uv
-
-	GCVERTEXTEXTURE() : Pos(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)), TexC(DirectX::XMFLOAT2(0.0f, 0.0f)) {}
-
-	GCVERTEXTEXTURE(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT2& texCoord) : Pos(position), TexC(texCoord) {}
-};
-
-struct ShaderCB {
-};
-
-struct WorldCB : ShaderCB {
-    DirectX::XMFLOAT4X4 world; // Matrice du monde
-};
-
-struct LightAndWorld : ShaderCB {
-    DirectX::XMFLOAT4X4 world; // Matrice du monde
-    DirectX::XMFLOAT4X4 light; // Matrice du monde
-    DirectX::XMFLOAT4X4 normal;
-};
-
-//
-struct CameraCB {
-    DirectX::XMFLOAT4X4 view; // Matrice de vue
-    DirectX::XMFLOAT4X4 proj; // Matrice de projection
-};
 
 
 
@@ -125,38 +87,15 @@ public:
 
     
 
-    template<typename ShaderType>
     void Initialize(GCRender* pRender) {
         m_pRender = pRender;
-        //m_pObjectCB = new UploadBuffer<ShaderType>(m_pRender->Getmd3dDevice(), 1, true);
-        m_pObjectCB = new SUploadBuffer<ShaderType>(m_pRender->Getmd3dDevice(), 1, true);
-        m_pCameraCB = new UploadBuffer<CameraCB>(m_pRender->Getmd3dDevice(), 1, true);
-
-
     }
 
-    template<typename T>
-    void UpdateObjectBuffer(const T& objectData)
-    {
-        m_pObjectCB->CopyData(0, objectData);
-    }
-    void UpdateCameraBuffer(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projMatrix);
 
 
 
     // Getter
     inline MeshBufferData* GetBufferGeometryData() { return  m_pBufferGeometryData; }
-
-
-    // Object
-    SUploadBufferBase* GetObjectCBData() {
-        return m_pObjectCB;
-    }
-
-    // Camera
-    UploadBuffer<CameraCB>* GetCameraCBData() {
-        return m_pCameraCB;
-    }
 
 
 
@@ -167,8 +106,6 @@ private:
     MeshBufferData* m_pBufferGeometryData;
 
     // #TODO Put this in shader or Other place
-    SUploadBufferBase* m_pObjectCB;
-    UploadBuffer<CameraCB>* m_pCameraCB;
 
 
 
