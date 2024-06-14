@@ -12,7 +12,7 @@
 
 GCInputManager::GCInputManager()
 {
-    m_controllerIsActive = false;  m_keyboardIsActive = false;  m_mouseIsActive = false;
+
     m_pWindow->winPos = { 10 ,10 }; m_pWindow->winSize = { 800, 500 }; m_pWindow->center = { m_pWindow->winSize.x / 2 , m_pWindow->winSize.y / 2 }; // !! valeur random de la fenêtre à changer quand on aura la bonne window !!
     for (int i = 0; i < XUSER_MAX_COUNT; i++)
     {
@@ -56,20 +56,19 @@ void GCInputManager::GetConnectedController()
 
 void GCInputManager::UpdateInputs()
 {
-    m_keyboardIsActive, m_mouseIsActive, m_controllerIsActive = false;
 
     for (int i = 0; i < XUSER_MAX_COUNT; i++)
     {
 
         if (m_controllerList[i] != nullptr)
         {
-            m_controllerList[i]->UpdateControllerInput(m_controllerIsActive);
+            m_controllerList[i]->UpdateControllerInput();
             m_controllerList[i]->UpdateJoySticksinput();
         }
     }
 
-    m_keyboard.UpdateKeyboardInput(m_keyboardIsActive);
-    m_mouse.UpdateMouseInput(m_pWindow, m_mouseIsActive);
+    m_keyboard.UpdateKeyboardInput();
+    m_mouse.UpdateMouseInput(m_pWindow);
 
 }
 
@@ -95,7 +94,7 @@ KeyboardInput::KeyboardInput()
 // </summary>
 // <param name="isActive"> A boolean indicating whether the keyboard input is active. It is set to true if any key is pressed. </param>
 
-void KeyboardInput::UpdateKeyboardInput(bool isActive)
+void KeyboardInput::UpdateKeyboardInput()
 {
 
     for (int i = 5; i < 255; i++)
@@ -103,7 +102,6 @@ void KeyboardInput::UpdateKeyboardInput(bool isActive)
 
         if (GetAsyncKeyState(i) != 0)
         {
-            isActive = true;
 
             switch (pListOfKeyboardKeys[i])
             {
@@ -212,7 +210,7 @@ MouseInput::MouseInput()
 // </summary>
 // <param name="pWinInfos"> A pointer to a GCWINDOW structure containing information about the game window. </param>
 // <param name="isActive"> A boolean indicating whether the mouse input is active. It is set to true if any button is pressed or the mouse position changes. </param>
-void MouseInput::UpdateMouseInput(const GCWINDOW* pWinInfos, bool isActive)
+void MouseInput::UpdateMouseInput(const GCWINDOW* pWinInfos)
 {
 
     POINT pointOnScreen;
@@ -243,7 +241,6 @@ void MouseInput::UpdateMouseInput(const GCWINDOW* pWinInfos, bool isActive)
             SetCursorPos(pointOnScreen.x, pointOnScreen.y);
         }
 
-        if (m_mousePos.x != pointOnScreen.x - pWinInfos->center.x || m_mousePos.y != pointOnScreen.y - pWinInfos->center.y) isActive = true;
 
         m_mousePos.x = pointOnScreen.x - pWinInfos->center.x;
         m_mousePos.y = pointOnScreen.y - pWinInfos->center.y;
@@ -254,7 +251,6 @@ void MouseInput::UpdateMouseInput(const GCWINDOW* pWinInfos, bool isActive)
     {
         if (GetAsyncKeyState(i))
         {
-            isActive = true;
 
             switch (m_pMouseButtons[i])
             {
@@ -468,7 +464,7 @@ bool ControllerInput::GetControllerButtonUp(int vButton)
 // It also handles the transition between different button states (DOWN, UP, PUSH).
 // </summary>
 // <param name="isActive"> A boolean flag indicating whether the controller input is active. </param>
-void ControllerInput::UpdateControllerInput(bool isActive)
+void ControllerInput::UpdateControllerInput()
 {
 
     XINPUT_KEYSTROKE key;
@@ -477,7 +473,6 @@ void ControllerInput::UpdateControllerInput(bool isActive)
 
     if (XInputGetKeystroke(m_ID, 0, &key) == ERROR_SUCCESS)
     {
-        isActive = true;
 
         for (int i = 0; i < 16; i++)
         {
