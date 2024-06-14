@@ -13,6 +13,7 @@ public:
 	void Set(size_t index, const T& element);
 
 	T& operator[](size_t index) { return m_data[index]; }
+	const T& operator[](size_t index) const { return m_data[index]; }
 	bool Insert(size_t index, const T& element);
 	bool Remove(size_t index);
 	T Get(size_t index);
@@ -25,6 +26,11 @@ public:
 	void Clear();
 	void DeepClear();
 	bool IsEmpty() const;
+
+	T* begin() { return &m_data[0]; }
+	T* end() { return &m_data[m_size]; }
+	const T* begin() const { return &m_data[0]; }
+	const T* end() const { return &m_data[m_size]; }
 
 private:
 
