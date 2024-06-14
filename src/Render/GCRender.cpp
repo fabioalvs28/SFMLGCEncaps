@@ -1,5 +1,7 @@
 #include "framework.h"
 
+
+//Initialize Direct3D + Update viewport
 bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow) {
 	m_pWindow = pWindow;
 	InitDirect3D();
@@ -401,6 +403,8 @@ void GCRender::FlushCommandQueue()
 		CloseHandle(eventHandle);
 	}
 }
+
+//Always needs to be called right before drawing!!!
 void GCRender::PrepareDraw() {
 	m_DirectCmdListAlloc->Reset();
 	m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
@@ -440,7 +444,11 @@ void GCRender::Draw(const Timer& gt) {
 
 
 
-
+//Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
+//Needs all three of the matrices(world,proj,view)
+//Absolutely needs Prepare Draw to be called before it being used
+//Needs post draw to be called right after aswell
+//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
 bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMMATRIX projectionMatrix, DirectX::XMMATRIX viewMatrix) {
 
 	if (pShader == nullptr || pMesh == nullptr) {
@@ -503,7 +511,7 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 
 	return true;
 }
-
+//Always needs to be called right after drawing!!!
 void GCRender::PostDraw() {
 	CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));

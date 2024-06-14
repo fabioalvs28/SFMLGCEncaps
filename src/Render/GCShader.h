@@ -84,6 +84,7 @@ protected:
 	GCRender* m_pRender;
 };
 
+//Loads the shader:Compiles it using the precompiled file created previously in the init,creates both the rootsign and the pso
 template<typename ShaderType>
 void GCShader::Load() {
 	CompileShader();

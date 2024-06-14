@@ -28,8 +28,6 @@ public:
 	GCMaterial* CreateMaterial();
 	GCMesh* CreateMesh(GCGeometry* pGeometry);
 
-	GCMesh* CreateMeshh(GCGeometry* pGeometry);
-
 	GCTexture* CreateTexture(const std::string& filePath);
 
 

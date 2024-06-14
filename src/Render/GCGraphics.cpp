@@ -17,21 +17,7 @@ void GCGraphics::Initialize(Window* window) {
     m_pModelParserFactory = new GCModelParserObj();
 }
 
-//template<typename T>
-//GCMesh* GCGraphics::CreateMeshh(GCGeometry* pGeometry) {
-//    GCMesh* mesh = new GCMesh();
-//    mesh->Initialize<T>(m_pRender);
-//
-//    if (pGeometry->texC.size() == 0)
-//    	mesh->UploadGeometryDataColor(pGeometry);
-//    else
-//    	mesh->UploadGeometryDataTexture(pGeometry);
-//
-//    m_vMeshes.push_back(mesh);
-//    return mesh;
-//}
-
-
+//Creates and initializes a texture using a path
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) {
 	GCTexture* texture = new GCTexture();
 	texture->Initialize(filePath, this);
@@ -39,7 +25,7 @@ GCTexture* GCGraphics::CreateTexture(const std::string& filePath) {
 	return texture;
 }
 
-
+//Creates a color shader / initializes it
 GCShader* GCGraphics::CreateShaderColor() {
     //HLSLFile* shaderFile = new HLSLFile(L"Shaders\\color.hlsl");
 
@@ -55,6 +41,8 @@ GCShader* GCGraphics::CreateShaderColor() {
 
     return shader;   
 }
+
+//Creates a texture shader / initializes it
 GCShader* GCGraphics::CreateShaderTexture() {
     //HLSLFile* shaderFile = new HLSLFile(L"Shaders\\texture.hlsl");
 
@@ -67,6 +55,7 @@ GCShader* GCGraphics::CreateShaderTexture() {
     return shader;
 }
 
+//Creates mesh using a specific geometry
 GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) {
     GCMesh* mesh = new GCMesh();
     //mesh->Initialize<WorldCB>(m_pRender);
@@ -95,23 +84,8 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) {
 //
 //    return shader;
 //}
-//
 
-GCMesh* GCGraphics::CreateMeshh(GCGeometry* pGeometry)
-{
-    GCMesh* mesh = new GCMesh();
-    mesh->Initialize(m_pRender);
-
-    if (pGeometry->texC.size() == 0)
-        mesh->UploadGeometryDataColor(pGeometry);
-    else
-        mesh->UploadGeometryDataTexture(pGeometry);
-
-    m_vMeshes.push_back(mesh);
-    return mesh;
-}
-
-
+//Creates a material (WIP)
 GCMaterial* GCGraphics::CreateMaterial() {
     GCMaterial* material = new GCMaterial();
     //material->Initialize();
@@ -136,6 +110,7 @@ std::vector<GCTexture*> GCGraphics::GetTextures() {
     return m_vTextures;
 }
 
+//Removes Shader both from vector and the shader itself
 void GCGraphics::RemoveShader(GCShader* pShader) {
     auto it = std::find(m_vShaders.begin(), m_vShaders.end(), pShader);
 
@@ -146,6 +121,7 @@ void GCGraphics::RemoveShader(GCShader* pShader) {
     delete pShader;
 }
 
+//Removes material from the vector then the material itself
 void GCGraphics::RemoveMaterial(GCMaterial* pMaterial) {
     auto it = std::find(m_vMaterials.begin(), m_vMaterials.end(), pMaterial);
 
@@ -155,6 +131,8 @@ void GCGraphics::RemoveMaterial(GCMaterial* pMaterial) {
 
     delete pMaterial;
 }
+
+//Removes Mesh
 void GCGraphics::RemoveMesh(GCMesh* pMesh) {
     auto it = std::find(m_vMeshes.begin(), m_vMeshes.end(), pMesh);
 
@@ -163,6 +141,8 @@ void GCGraphics::RemoveMesh(GCMesh* pMesh) {
     }
     delete pMesh;
 }
+
+//Removes Texture
 void GCGraphics::RemoveTexture(GCTexture* pTexture) {
     auto it = std::find(m_vTextures.begin(), m_vTextures.end(), pTexture);
 
