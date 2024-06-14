@@ -58,7 +58,7 @@ GCShader* GCGraphics::CreateShaderTexture() {
 //Creates mesh using a specific geometry
 GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) {
     GCMesh* mesh = new GCMesh();
-    //mesh->Initialize<WorldCB>(m_pRender);
+    mesh->Initialize(m_pRender);
     if (pGeometry->texC.size() == 0)
     {
         mesh->UploadGeometryDataColor(pGeometry);

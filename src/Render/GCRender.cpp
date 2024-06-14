@@ -571,9 +571,6 @@ DXGI_FORMAT GCRender::GetDepthStencilFormat() {
 	return m_DepthStencilFormat;
 }
 
-
-
-
 ID3D12GraphicsCommandList* GCRender::GetCommandList() {
 	return m_CommandList;
 }
