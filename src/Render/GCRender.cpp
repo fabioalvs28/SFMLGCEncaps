@@ -452,6 +452,10 @@ void GCRender::Draw(const Timer& gt) {
 bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
 
 
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+	profiler.LogWarning("This is a warning message.");
+	profiler.LogInfo("This is an informational message.");
+
 	GCWORLDCB worldData;
 	worldData.world = worldMatrix;
 

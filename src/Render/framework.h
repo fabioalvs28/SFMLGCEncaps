@@ -56,7 +56,12 @@ struct GCWORLDCB;
 struct GCLIGHTANDWORLD;
 struct GCCAMERACB;
 
-//template<typename T>;
+
+
+// Add William 
+class GCGraphicsProfiler;
+//
+
 
 class GCGraphics;
 class GCMaterial;
@@ -81,6 +86,10 @@ class Window;
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
 
+
+// Add William 
+#include "./GCGraphicsProfiler.h"
+//
 #include "d3dx12.h"
 #include "Window.h"
 #include "GCRender.h"

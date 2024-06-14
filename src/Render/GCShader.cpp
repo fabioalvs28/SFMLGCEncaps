@@ -65,6 +65,8 @@ void GCShader::RootSign() {
 
 
     // Configuration de la signature racine
+
+
     CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(m_type+2, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
     // Sérialisation de la signature racine

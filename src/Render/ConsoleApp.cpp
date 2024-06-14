@@ -1,11 +1,24 @@
 #include "framework.h"
 
+
+
+
+
+
+
+
+
+
+
+
 struct Test : GCSHADERCB {
 	DirectX::XMFLOAT4X4 world; // Matrice du monde
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
+	// Graphics Global Profiler
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
 	Window* window = new Window(hInstance);
 	window->Initialize();
