@@ -34,6 +34,7 @@ public:
 
 private:
 	GCScene();
+	GCScene( GCScene* pParent );
 	virtual ~GCScene() {}
 	void Update();
 	void Render();
