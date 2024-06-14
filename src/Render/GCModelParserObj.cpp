@@ -150,13 +150,10 @@ bool GCModelParserObj::ParseObj(std::string fileName)
 GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 {
 
-	std::wstring fileNameW = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(fileName);
+	std::wstring wideFileName(fileName.begin(), fileName.end());
 
-	if (_waccess(fileNameW.c_str(), 0) == 0)
-	{
-		OutputDebugString((L"Obj file not found: " + fileNameW + L"\n").c_str());
-		return NULL;
-	}
+	if (_waccess(wideFileName.c_str(), 0) == 0)
+		OutputDebugString((L"Obj file not found: " + wideFileName + L"\n").c_str());
 
 
 	ParseObj(fileName);
@@ -185,13 +182,11 @@ GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 
 GCGeometry* GCModelParserObj::BuildObjColor(std::string fileName) {
 
-	std::wstring fileNameW = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(fileName);
+	std::wstring wideFileName(fileName.begin(), fileName.end());
 
-	if (_waccess(fileNameW.c_str(), 0) == 0)
-	{
-		OutputDebugString((L"Obj file not found: " + fileNameW + L"\n").c_str());
-		return NULL;
-	}
+	if (_waccess(wideFileName.c_str(), 0) == 0)
+		OutputDebugString((L"Obj file not found: " + wideFileName + L"\n").c_str());
+
 
 	ParseObj(fileName);
 
