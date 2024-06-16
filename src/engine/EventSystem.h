@@ -1,14 +1,11 @@
 #pragma once
 #include <functional>
-#include <Windows.h>
 
 #include "Event.h"
 #include "Layer.h"
 #include "../core/Map.h"
 #include "../core/Vector.h"
 #include "../core/Queue.h"
-
-typedef void(*CallBack)();
 
 class GCEventDispatcher 
 {
@@ -37,8 +34,12 @@ public:
 	/// Polls events from the operating system or framework 
 	/// and dispatches them to the appropriate handlers.
 	/// </summary>
-	void PollEvents(MSG msg);
+	void PollEvents();
 
+	/// <summary>
+    /// Push the created event to the event queue.
+	/// </summary>
+	/// <param name="ev">The pointer to the created event</param>
 	void PushEvent(GCEvent* ev);
 
 	/// <summary>
@@ -78,7 +79,7 @@ private:
 	void OnEvent(GCEvent& e);
 
 private:
-	GCMap<GCEventType, GCVector<std::function<void()>>*> m_eventListeners;
+	GCMap<GCEventType, std::vector<std::function<void()>>> m_eventListeners;
     GCQueue<GCEvent*> m_eventQueue;
 
 	GCVector<Layer*> m_layers;

@@ -94,21 +94,26 @@ LRESULT GCWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         UINT height = HIWORD(lParam);
         GCWindowResizeEvent event(width, height);
         
-        return 0;
+        break;
     }
     case WM_LBUTTONDOWN:
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        GCMouseButtonPressed event(x, y, GCMouseButton::Left);
-        std::cout << "Left clicked" << std::endl;
-        return 0;
+        GCMouseButtonPressed *event = new GCMouseButtonPressed(x, y, GCMouseButton::Left);
+        m_eventSystem.PushEvent(event);
+        m_eventSystem.AddEventListener(*event, 
+            []() { std::cout << "Left Mouse Button Pressed" << std::endl; });
+        break;
     }
     case WM_KEYDOWN:
         //TODO: Implement InputManager
-
+        break;
     default:
         return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
     }
+
+    m_eventSystem.PollEvents();
+    return 0;
 }
 
