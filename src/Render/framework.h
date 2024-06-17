@@ -17,6 +17,8 @@
 #include "Timer.h"
 #include <string>
 #include <map>
+#include <codecvt>
+#include <locale>
 #include <vector>
 #include <variant>
 #include <memory>

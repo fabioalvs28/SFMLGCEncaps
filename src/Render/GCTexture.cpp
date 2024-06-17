@@ -28,10 +28,15 @@ GCTexture::~GCTexture()
 
 bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics)
 {
-    m_cbvSrvUavDescriptorSize = pGraphics->GetRender()->Getmd3dDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
 
     std::wstring wideFilePath(filePath.begin(), filePath.end());
+
+    if (_waccess(wideFilePath.c_str(), 0) == 0)
+        OutputDebugString((L"Shader not found: " + wideFilePath + L"\n").c_str());
+
+
+    m_cbvSrvUavDescriptorSize = pGraphics->GetRender()->Getmd3dDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
 
     DirectX::CreateDDSTextureFromFile12(pGraphics->GetRender()->Getmd3dDevice(), pGraphics->GetRender()->GetCommandList(), wideFilePath.c_str(), &m_pTextureBuffer, &m_pUploadTexture);
     if (m_pTextureBuffer == nullptr || m_pUploadTexture == nullptr)

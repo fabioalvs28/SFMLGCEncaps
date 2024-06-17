@@ -24,9 +24,17 @@ void GCShader::Render() {
 //#TODO Need To make documentation
 // Initialize Precompile the shader | And load must be call when we need it 
 void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int type) {
+
+	std::wstring wideFilePath(filePath.begin(), filePath.end());
+
+	if (_waccess(wideFilePath.c_str(), 0) == 0)
+		OutputDebugString((L"Shader not found: " + wideFilePath + L"\n").c_str());
+
+
 	m_pRender = pRender;
 	m_type = type;
 	PreCompile(filePath, csoDestinationPath);
+
 }
  
 void GCShader::CompileShader() {
