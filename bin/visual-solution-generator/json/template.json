@@ -1,8 +1,9 @@
 {
     "name": "name",
     "folder": "folder/",
-    "dependencies": ["name"],
-    "nested": "name",
+    "guid": "00000000-0000-0000-0000-000000000000",
+    "dependencies": [],
+    "nested": "00000000-0000-0000-0000-000000000000",
     "source_files": [],
     "header_files": [],
     "resource_files": [],
