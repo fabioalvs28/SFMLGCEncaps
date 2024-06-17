@@ -7,10 +7,10 @@
     "poles": {
         "all": "",
         "engine": {
-            "projects": ["Engine.json", "Core.json", "Testing.json"]
+            "projects": ["Testing.json", "Engine.json", "Core.json"]
         },
         "gameplay": {
-            "projects": ["Engine.json", "Core.json", "Jeu_1.json", "Jeu_2.json"],
+            "projects": ["Jeu_1.json", "Engine.json", "Core.json", "Jeu_2.json"],
             "folders": [
                 {
                     "name": "Gameplay"
@@ -18,7 +18,7 @@
             ]
         },
         "render": {
-            "projects": ["Render.json", "RenderApp.json"]
+            "projects": ["RenderApp.json", "Render.json"]
         },
         "tools": {
             "projects": []
