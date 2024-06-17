@@ -316,7 +316,6 @@ def delete_folder_safe(folder_path):
             continue
 
 def generate_solution(data):
-            
     # Remove the ide folder
     delete_folder_safe(ide_path)
 
