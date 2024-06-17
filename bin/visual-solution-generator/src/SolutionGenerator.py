@@ -292,38 +292,33 @@ def populate_include_files(project):
     else:
         os.makedirs(src_path + project['folder'])
 
-def generate_solution(data):
-    
+def delete_folder_safe(folder_path):
     ext = tuple((src_ext + ";" + h_ext + ";" + rc_ext).split(";"))
-
-    def delete_folder_safe(folder_path):
-        for root, dirs, files in os.walk(folder_path):
-            has_src_files = False
-            
-            for dir in dirs:
+    exclude_dirs = [".vs", "Build"]
+    for root, dirs, files in os.walk(folder_path):
+        has_src_files = False
+        
+        for dir in dirs:
+            if not dir in exclude_dirs:
                 has_src_files = delete_folder_safe(root + dir + "/")
                 if has_src_files:
                     return True
-            
-            for file in files:
-                if os.path.splitext(file)[1].lstrip('.') in ext:
-                    print(f"WARNING: source file '{file}' is present in the folder '{root}'. It won't be deleted.")
-                    return True
-            
-            try:
-                shutil.rmtree(root)
-            except Exception as e:
-                # print(f"An error occurred while deleting the ide folder: {e}")
-                continue
-            
-    delete_folder_safe(ide_path)
+        
+        for file in files:
+            if os.path.splitext(file)[1].lstrip('.') in ext:
+                print(f"WARNING: source file '{file}' is present in the folder '{root}'. It won't be deleted.")
+                return True
+        
+        try:
+            shutil.rmtree(root)
+        except Exception as e:
+            # print(f"An error occurred while deleting the ide folder: {e}")
+            continue
 
+def generate_solution(data):
+            
     # Remove the ide folder
-    # if os.path.exists(ide_path):
-    #     try:
-    #         shutil.rmtree(ide_path)
-    #     except Exception as e:
-    #         print(f"An error occurred while deleting the ide folder: {e}")
+    delete_folder_safe(ide_path)
 
     # Generate the solution
     generate_sln(data)
