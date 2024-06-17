@@ -1,24 +1,5 @@
 #pragma once
 
-//struct ObjectConstants
-//{
-//	DirectX::XMFLOAT4X4 WorldViewProj;
-//};
-
-//struct ObjectCB {
-//	
-//};
-//
-//struct WorldCB : ObjectCB {
-//	DirectX::XMFLOAT4X4 world; // Matrice du monde
-//};
-//
-//struct LightAndWorld : ObjectCB {
-//	DirectX::XMFLOAT4X4 world; // Matrice du monde
-//	DirectX::XMFLOAT4X4 light; // Matrice du monde
-//	DirectX::XMFLOAT4X4 normal; // Matrice du monde
-//};
-
 class GCRender
 {
 public:
@@ -57,7 +38,7 @@ public:
 	void PostDraw();
 	void Draw(const Timer& gt);
 
-	bool DrawOneObject(GCMesh* pMesh, GCShader* pShader,GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	bool DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial);
 	//void BuildBoxGeometry();
 	void OnResize();
 
@@ -85,6 +66,16 @@ public:
 	UINT GetRtvDescriptorSize() const { return m_rtvDescriptorSize; }
 	UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
 	UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
+
+	//Creates an Object Constant Buffer(useful for changing the position of an entity)
+	template<typename ShaderTypeConstantBuffer>
+	GCShaderUploadBuffer<ShaderTypeConstantBuffer>* CreateObjectCB() {
+		return new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(Getmd3dDevice(), 1, true);
+	}
+
+	GCShaderUploadBuffer<GCCAMERACB>* CreateCameraCB();
+	
+	void UpdateBuffers(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 
 private:
 	Window* m_pWindow;
@@ -134,7 +125,6 @@ private:
 	// Camera (Temporary)
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
 };
-
 
 #ifndef ReleaseCom
 #define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }

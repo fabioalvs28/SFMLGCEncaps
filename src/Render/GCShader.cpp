@@ -242,3 +242,13 @@ void GCShader::PreCompile(const std::string& filePath, const std::string& csoDes
 //
 //    m_pCameraCB->CopyData(0, cameraCB);  // Pass the address of cameraCB
 //}
+
+void GCShader::Load() {
+	CompileShader();
+	RootSign();
+	Pso();
+
+	// Load in GPU CB Struct
+	//m_pObjectCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->Getmd3dDevice(), 1, true);
+	//m_pCameraCB = new GCShaderUploadBuffer<GCCAMERACB>(m_pRender->Getmd3dDevice(), 1, true);
+}

@@ -15,7 +15,11 @@ public:
 	GCShader* CreateShaderTexture();
 	//GCShader* CreateShaderCustom(HLSLFile* customShaderFile);
 
-	GCMaterial* CreateMaterial();
+
+	GCMaterial* CreateMaterial(GCShader* pShader, GCTexture* pTexture);
+
+
+
 	GCMesh* CreateMesh(GCGeometry* pGeometry);
 	GCTexture* CreateTexture(const std::string& filePath);
 

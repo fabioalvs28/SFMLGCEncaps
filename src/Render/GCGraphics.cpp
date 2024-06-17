@@ -99,14 +99,13 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
 //    return shader;
 //}
 
-GCMaterial* GCGraphics::CreateMaterial() 
-{
-    //Creates a material (WIP)
-    GCMaterial* pMaterial = new GCMaterial();
-    //pMaterial->Initialize();
-    //m_vMaterials.push_back(pMaterial);
-    //m_materialId++;
-    return pMaterial;
+//Creates a material (WIP)
+GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader, GCTexture* pTexture) {
+    GCMaterial* material = new GCMaterial();
+    material->Initialize(pShader, pTexture);
+    m_vMaterials.push_back(material);
+    m_materialId++;
+    return material;
 }
 
 std::vector<GCShader*> GCGraphics::GetShaders() 

@@ -73,10 +73,8 @@ bool GCRender::InitDirect3D()
 	msQualityLevels.SampleCount = 4;
 	msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
 	msQualityLevels.NumQualityLevels = 0;
-	m_d3dDevice->CheckFeatureSupport(
-		D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
-		&msQualityLevels,
-		sizeof(msQualityLevels));
+
+	m_d3dDevice->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,&msQualityLevels, sizeof(msQualityLevels));
 
 	m_4xMsaaQuality = msQualityLevels.NumQualityLevels;
 	assert(m_4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
@@ -427,17 +425,21 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 	GCCAMERACB cameraData;
 	cameraData.view = viewMatrix;
 	cameraData.proj = projectionMatrix;
+//Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
+//Needs all three of the matrices(world,proj,view)
+//Absolutely needs Prepare Draw to be called before it being used
+//Needs post draw to be called right after aswell
+//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
+bool GCRender::DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial) {
 	// Update 
-	pShader->UpdateConstantBufferData(worldData, pShader->GetObjectCBData());
-	pShader->UpdateConstantBufferData(cameraData, pShader->GetCameraCBData());
 
-	if (pShader == nullptr || pMesh == nullptr)
-	{
+	if (pMaterial->GetShader() == nullptr || pMesh == nullptr) {
 		return false;
 	}
 
-	m_CommandList->SetPipelineState(pShader->GetPso());
-	m_CommandList->SetGraphicsRootSignature(pShader->GetRootSign());
+	// 
+	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
+	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
 
 	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = pMesh->GetBufferGeometryData()->VertexBufferView();
@@ -445,33 +447,32 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
-	if (pShader->GetType() == 1) // Texture?
+	//
+	if (pMaterial->GetShader()->GetType() == 1) // Texture?
 	{
-		if(pTexture)
+		if(pMaterial->GetTexture())
 		{
-			m_CommandList->SetGraphicsRootDescriptorTable(2, pTexture->GetTextureAddress());
+			m_CommandList->SetGraphicsRootDescriptorTable(2, pMaterial->GetTexture()->GetTextureAddress());
 		}
 		else 
 		{
 			return false;
 		}
 	}
-
 	// Object
-	m_CommandList->SetGraphicsRootConstantBufferView(0, pShader->GetObjectCBData()->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
 	// Camera
-	m_CommandList->SetGraphicsRootConstantBufferView(1, pShader->GetCameraCBData()->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(1, pMaterial->GetCameraCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
+	pMaterial->m_count++;
 	return true;
 }
 
-void GCRender::PostDraw() 
-{
-	//Always needs to be called right after drawing!!!
-	CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+//Always needs to be called right after drawing!!!
+void GCRender::PostDraw() { 
+	CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
 	m_CommandList->ResourceBarrier(1, &ResBar2);
 	m_CommandList->Close();
@@ -559,4 +560,25 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 
 		::OutputDebugString(text.c_str());
 	}
+}
+// LOG
+
+//Creates a constant buffer for the camera
+GCShaderUploadBuffer<GCCAMERACB>* GCRender::CreateCameraCB()
+{
+	return new GCShaderUploadBuffer<GCCAMERACB>(Getmd3dDevice(), 1, true);
+}
+
+//Updates a cb data of a given material using the three matrices world/view/proj
+//using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
+void GCRender::UpdateBuffers(GCMaterial* pMaterial,DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
+	GCWORLDCB worldData;
+	worldData.world = worldMatrix;
+
+	GCCAMERACB cameraData;
+	cameraData.view = viewMatrix;
+	cameraData.proj = projectionMatrix;
+	// Update 
+	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
+	pMaterial->UpdateConstantBufferData(cameraData, pMaterial->GetCameraCBData()[pMaterial->m_count]);
 }
