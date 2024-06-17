@@ -169,7 +169,7 @@ def generate_vcxproj(project):
     property_group = ET.SubElement(root, "PropertyGroup", Label="Globals")
     add_text_element(property_group, "VCProjectVersion", project.get("vc_project_version"))
     add_text_element(property_group, "Keyword", "Win32Proj")
-    add_text_element(property_group, "ProjectGuid", f"{{{project['guid']}}})")
+    add_text_element(property_group, "ProjectGuid", f"{{{project['guid']}}}")
     add_text_element(property_group, "RootNamespace", project.get("root_namespace"))
     add_text_element(property_group, "WindowsTargetPlatformVersion", project.get("windows_target_platform_version"))
 
@@ -294,12 +294,36 @@ def populate_include_files(project):
 
 def generate_solution(data):
     
+    ext = tuple((src_ext + ";" + h_ext + ";" + rc_ext).split(";"))
+
+    def delete_folder_safe(folder_path):
+        for root, dirs, files in os.walk(folder_path):
+            has_src_files = False
+            
+            for dir in dirs:
+                has_src_files = delete_folder_safe(root + dir + "/")
+                if has_src_files:
+                    return True
+            
+            for file in files:
+                if os.path.splitext(file)[1].lstrip('.') in ext:
+                    print(f"WARNING: source file '{file}' is present in the folder '{root}'. It won't be deleted.")
+                    return True
+            
+            try:
+                shutil.rmtree(root)
+            except Exception as e:
+                # print(f"An error occurred while deleting the ide folder: {e}")
+                continue
+            
+    delete_folder_safe(ide_path)
+
     # Remove the ide folder
-    if os.path.exists(ide_path):
-        try:
-            shutil.rmtree(ide_path)
-        except Exception as e:
-            print(f"An error occurred while deleting the ide folder: {e}")
+    # if os.path.exists(ide_path):
+    #     try:
+    #         shutil.rmtree(ide_path)
+    #     except Exception as e:
+    #         print(f"An error occurred while deleting the ide folder: {e}")
 
     # Generate the solution
     generate_sln(data)

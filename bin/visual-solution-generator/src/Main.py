@@ -5,7 +5,6 @@ import os
 import subprocess
 
 # paths
-# script_path = os.path.dirname(os.path.realpath(__file__))
 json_path = "./json/"
 
 def read_json_file(file_path):
