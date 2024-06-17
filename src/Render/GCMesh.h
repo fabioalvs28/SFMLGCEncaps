@@ -1,16 +1,5 @@
 #pragma once
 
-//struct SubmeshGeometry
-//{
-//    UINT IndexCount = 0;
-//    UINT StartIndexLocation = 0;
-//    INT BaseVertexLocation = 0;
-//
-//    // Bounding box of the geometry defined by this submesh. 
-//    // This is used in later chapters of the book.
-//    DirectX::BoundingBox Bounds;
-//};
-
 struct MeshBufferData
 {
     // Give it a name so we can look it up by name.
@@ -33,10 +22,7 @@ struct MeshBufferData
     DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
     UINT IndexBufferByteSize = 0;
 
-    // A MeshGeometry may store multiple geometries in one vertex/index buffer.
-    // Use this container to define the Submesh geometries so we can draw
-    // the Submeshes individually.
-    /*std::unordered_map<std::string, SubmeshGeometry> DrawArgs;*/
+
     UINT IndexCount = 0;
 
     D3D12_VERTEX_BUFFER_VIEW VertexBufferView()const
@@ -59,7 +45,6 @@ struct MeshBufferData
         return ibv;
     }
 
-    // We can free this memory after we finish upload to the GPU.
     void DisposeUploaders()
     {
         VertexBufferUploader = nullptr;
@@ -73,24 +58,20 @@ public:
 	GCMesh();
     ~GCMesh();
 
-    //void Initialize(GCRender* pRender);
-
-    template<typename VertexType>
+    template<typename VertexStructType>
     void UploadGeometryData(GCGeometry* pGeometry);
 
     void UploadGeometryDataColor(GCGeometry* pGeometry);
     void UploadGeometryDataTexture(GCGeometry* pGeometry);
 
-    void Initialize(GCRender* pRender) 
-    {
-        m_pRender = pRender;
-    }
+    void Initialize(GCRender* pRender) { m_pRender = pRender; }
+
     inline MeshBufferData* GetBufferGeometryData() { return  m_pBufferGeometryData; }
 
 private:
     GCRender* m_pRender;
 
-    //Buffer Data #TODO -> Change structure name
+
     MeshBufferData* m_pBufferGeometryData;
 
     // #TODO Put this in shader or Other place
@@ -137,13 +118,5 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
     m_pBufferGeometryData->IndexFormat = DXGI_FORMAT_R16_UINT;
     m_pBufferGeometryData->IndexBufferByteSize = ibByteSize;
 
-    //// Initialize submesh
-    //SubmeshGeometry submesh;
-    //submesh.IndexCount = static_cast<UINT>(pGeometry->indices.size());
-    //submesh.StartIndexLocation = 0;
-    //submesh.BaseVertexLocation = 0;
-
     m_pBufferGeometryData->IndexCount = static_cast<UINT>(pGeometry->indices.size());
-
-    //m_pBufferGeometryData->DrawArgs["mesh"] = submesh;
 }

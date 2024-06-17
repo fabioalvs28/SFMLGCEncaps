@@ -17,7 +17,16 @@ void GCGraphics::Initialize(Window* pWindow)
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
+
+
+    // Create a new shader upload buffer for the camera constant buffer
+    GCShaderUploadBuffer<GCCAMERACB>* pCameraCB = new GCShaderUploadBuffer<GCCAMERACB>(m_pRender->Getmd3dDevice(), true);
+
+    // Store the buffer in a vector
+    m_vpCameraCB.push_back(pCameraCB);
 }
+
+//void GCGraphics::CreateShaderUploadBuffer()
 
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) 
 {
@@ -186,4 +195,26 @@ void GCGraphics::RemoveTexture(GCTexture* pTexture)
     m_vTextures.erase(it);
 
     delete pTexture;
+}
+
+void GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
+    GCCAMERACB cameraData;
+    cameraData.view = viewMatrix;
+    cameraData.proj = projectionMatrix;
+    m_pRender->UpdateConstantBuffer(cameraData, m_vpCameraCB[0]);
+}
+
+//Updates a cb data of a given material using the three matrices world/view/proj
+//using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
+void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix) {
+    GCWORLDCB worldData;
+    worldData.world = worldMatrix;
+    // Update 
+    pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
+}
+
+//Update Camera and Object Constant Buffer / But They can also send their own structure
+void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
+{
+    uploadBufferInstance->CopyData(0, objectData);
 }

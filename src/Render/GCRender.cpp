@@ -26,8 +26,6 @@ void GCRender::CloseCommandList()
 	m_CommandList->Close();
 }
 
-
-
 void GCRender::EnableDebugController() 
 {
 #if defined(DEBUG) || defined(_DEBUG) 
@@ -399,46 +397,11 @@ void GCRender::PrepareDraw()
 	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void GCRender::Draw(const Timer& gt) {
-	//PrepareDraw();
-
-	////DrawOneObject(m_pGraphicsManager->GetMeshes()[0], m_pGraphicsManager->GetShaders()[0]);
-
-	//PostDraw();
-}
-
-//bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix)
-//{
-//	//Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
-//	//Needs all three of the matrices(world,proj,view)
-//	//Absolutely needs Prepare Draw to be called before it being used
-//	//Needs post draw to be called right after aswell
-//	//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
-//
-//	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-//	profiler.LogWarning("This is a warning message.");
-//	profiler.LogInfo("This is an informational message.");
-//
-//	GCWORLDCB worldData;
-//	worldData.world = worldMatrix;
-//
-//	GCCAMERACB cameraData;
-//	cameraData.view = viewMatrix;
-//	cameraData.proj = projectionMatrix;
-//}
-//Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
-//Needs all three of the matrices(world,proj,view)
-//Absolutely needs Prepare Draw to be called before it being used
-//Needs post draw to be called right after aswell
-//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
-
-
-bool GCRender::DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial) {
-	// Update 
-
-	if (pMaterial->GetShader() == nullptr || pMesh == nullptr) {
+// You can call many times this function without call again Prepare and Post Draw
+bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
+{
+	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
-	}
 
 	// 
 	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
@@ -560,28 +523,9 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 			L"Height = " + std::to_wstring(x.Height) + L" " +
 			L"Refresh = " + std::to_wstring(n) + L"/" + std::to_wstring(d) +
 			L"\n";
-
 		::OutputDebugString(text.c_str());
 	}
 }
-// LOG
 
-//Creates a constant buffer for the camera
-GCShaderUploadBuffer<GCCAMERACB>* GCRender::CreateCameraCB()
-{
-	return new GCShaderUploadBuffer<GCCAMERACB>(Getmd3dDevice(), 1, true);
-}
 
-//Updates a cb data of a given material using the three matrices world/view/proj
-//using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
-void GCRender::UpdateBuffers(GCMaterial* pMaterial,DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
-	GCWORLDCB worldData;
-	worldData.world = worldMatrix;
 
-	GCCAMERACB cameraData;
-	cameraData.view = viewMatrix;
-	cameraData.proj = projectionMatrix;
-	// Update 
-	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
-	pMaterial->UpdateConstantBufferData(cameraData, pMaterial->GetCameraCBData()[pMaterial->m_count]);
-}

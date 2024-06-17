@@ -53,10 +53,10 @@ struct GCGeometry;
 struct MeshBufferData;
 struct GCVERTEX;
 struct GCVERTEXTEXTURE;
+
 struct GCSHADERCB;
 struct GCWORLDCB;
-struct GCLIGHTANDWORLD;
-struct GCCAMERACB;
+struct GCVIEWPROJCB;
 
 
 
@@ -91,6 +91,9 @@ class Window;
 
 // Add William 
 #include "./GCGraphicsProfiler.h"
+#include "./GCShaderCBStruct.h"
+#include "./GCShaderVertexStruct.h"
+
 //
 #include "d3dx12.h"
 #include "Window.h"

@@ -16,12 +16,9 @@ void GCMaterial::addObjectCB(GCShaderUploadBufferBase* pObjectCB)
 	m_vpObjectCB.push_back(pObjectCB);
 }
 
-void GCMaterial::addCameraCB(GCShaderUploadBufferBase* pCameraCB) 
-{
-	m_vpCameraCB.push_back(pCameraCB);
-}
 
-void GCMaterial::UpdateConstantBufferData(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
+
+void GCMaterial::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
 {
 	uploadBufferInstance->CopyData(0, objectData);
 }

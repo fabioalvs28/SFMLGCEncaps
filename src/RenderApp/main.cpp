@@ -84,6 +84,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	graphics->GetRender()->PrepareDraw();
 
 
+	//material->Update(&cb);
+	//material->Draw(mesh1);
+
+	//material->Draw(&cb, mesh1);
+
+	//graphics->GetRender()->DrawObject(mesh1, material2);
+
 	//problème? actuel -> moteur doit forcément updatebuffers des materials dans le même ordre qu'ils vont être dessiné,même si les matrices n'ont pas changé
 	material2->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
 	material2->addCameraCB(graphics->GetRender()->CreateCameraCB());

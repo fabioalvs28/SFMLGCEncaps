@@ -11,17 +11,28 @@ public:
 	void Initialize(Window* window);
 
 	// Principal Object Creation
+
 	GCShader* CreateShaderColor();
 	GCShader* CreateShaderTexture();
 	//GCShader* CreateShaderCustom(HLSLFile* customShaderFile);
 
 
+
+
 	GCMaterial* CreateMaterial(GCShader* pShader, GCTexture* pTexture);
-
-
 
 	GCMesh* CreateMesh(GCGeometry* pGeometry);
 	GCTexture* CreateTexture(const std::string& filePath);
+
+
+	void GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+
+	//Updates a cb data of a given material using the three matrices world/view/proj
+	//using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
+	void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
+
+	//Update Camera and Object Constant Buffer / But They can also send their own structure
+	void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 
 	//Delete
 	void RemoveShader(GCShader* pShader);
@@ -43,6 +54,7 @@ public:
 	GCRender* GetRender() const { return m_pRender; }
 
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
+	// #TODO -> Améliorer le lien parser 
 	GCModelParserObj* GetModelParserFactory() const { return m_pModelParserFactory; }
 
 private:
@@ -58,6 +70,9 @@ private:
 	std::vector<GCShader*> m_vShaders;
 	std::vector<GCMaterial*> m_vMaterials;
 	std::vector<GCMesh*> m_vMeshes;
+
+	// They Can use their own
+	std::vector<GCShaderUploadBufferBase*> m_vpCameraCB;
 
 	// Mesh
 	GCPrimitiveFactory* m_pPrimitiveFactory;

@@ -36,11 +36,13 @@ public:
 
 	void PrepareDraw();
 	void PostDraw();
-	void Draw(const Timer& gt);
 
-	bool DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial);
-	//void BuildBoxGeometry();
-	void OnResize();
+	// Update Constant Buffer for Camera 
+	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
+
+	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
+
+	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
 	// Getter
 	bool Get4xMsaaState();
@@ -67,6 +69,7 @@ public:
 	UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
 	UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
+
 	//Creates an Object Constant Buffer(useful for changing the position of an entity)
 	template<typename ShaderTypeConstantBuffer>
 	GCShaderUploadBuffer<ShaderTypeConstantBuffer>* CreateObjectCB() {
@@ -75,7 +78,7 @@ public:
 
 	GCShaderUploadBuffer<GCCAMERACB>* CreateCameraCB();
 	
-	void UpdateBuffers(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	void UpdateBuffers(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
 
 private:
 	Window* m_pWindow;
