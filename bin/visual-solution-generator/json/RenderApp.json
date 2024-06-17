@@ -17,8 +17,10 @@
             "preprocessor_definitions": "_DEBUG;_CONSOLE;%(PreprocessorDefinitions)",
             "conformance_mode": "true",
             "generate_debug_information": "true",
-            "additional_library_directories" : "$(SolutionDir)Render\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "subsystem": "Windows",
+            "language_standard": "stdcpp20",
+            "additional_include_directories" : "$(SolutionDir)Render;",
+            "additional_library_directories" : "$(SolutionDir)Render\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "additional_dependencies" : "Render.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
@@ -39,8 +41,10 @@
             "enable_comdat_folding": "true",
             "optimize_references": "true",
             "generate_debug_information": "true",
-            "additional_library_directories" : "$(SolutionDir)Render\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "subsystem": "Windows",
+            "language_standard": "stdcpp20",
+            "additional_include_directories" : "$(SolutionDir)Render;",
+            "additional_library_directories" : "$(SolutionDir)Render\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "additional_dependencies" : "Render.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"

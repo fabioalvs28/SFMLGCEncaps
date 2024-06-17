@@ -1,5 +1,7 @@
 #include "../../src/render/framework.h"
 
+
+
 struct Test : GCSHADERCB {
 	DirectX::XMFLOAT4X4 world; // Matrice du monde
 };

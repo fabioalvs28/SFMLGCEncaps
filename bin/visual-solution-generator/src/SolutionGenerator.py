@@ -12,7 +12,9 @@ vs_path = ide_path + "vs/"
 # filter extension
 src_ext = "cpp;c"
 h_ext = "h;hpp"
-rc_ext = "hlsl;jpg;jpeg;png;wav;mp3"
+rc_ext = "hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj"
+
+guids = {}
 
 def newUUID():
     return str(uuid.uuid4()).upper()
@@ -30,32 +32,41 @@ def generate_sln(data):
         data['folders'] = []
     folders = data['folders']
     
-    project_type_guid = "8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942"
-    folder_type_guid = "2150E333-8FDC-42A3-9474-1A3956D46DE8"
+    type_guid = {"project": "8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942",
+                 "folder": "2150E333-8FDC-42A3-9474-1A3956D46DE8"}
+    
+    # fill guid array with projet and folder
+    guids = {"projects": {},
+             "folders": {}}
+    for project in projects:
+        project['guid'] = newUUID()
+        guids['projects'][project['name']] = project['guid']
+    for folder in folders:
+        folder['guid'] = newUUID()
+        guids['folders'][folder['name']] = folder['guid']
 
     os.path.exists(vs_path) or os.makedirs(vs_path)
     with open(f"{vs_path + solution_name}.sln", 'w') as f:
         f.write("\n")
-        f.write("Microsoft Visual Studio Solution File, Format Version 12.00\n")
-        f.write("# Visual Studio Version 16\n")
-        f.write("VisualStudioVersion = 16.0.28729.10\n")
-        f.write("MinimumVisualStudioVersion = 10.0.40219.1\n")
+        f.write("Microsoft Visual Studio Solution File, Format Version " + data['format_version'] + "\n")
+        f.write("# Visual Studio Version " + data['version'] + "\n")
+        f.write("VisualStudioVersion = " + data['version_full'] + "\n")
+        f.write("MinimumVisualStudioVersion = " + data['minimum_version'] + "\n")
 
         # Add projects
         for project in projects:
-            # project['guid'] = newUUID()
-            f.write(f"Project(\"{{{project_type_guid}}}\") = \"{project['name']}\", \"{project['folder'] + project['name']}.vcxproj\", \"{{{project['guid']}}}\"\n")
+            f.write(f"Project(\"{{{type_guid['project']}}}\") = \"{project['name']}\", \"{project['folder'] + project['name']}.vcxproj\", \"{{{project['guid']}}}\"\n")
 
             # Add dependencies
             if project.get("dependencies"):
                 f.write(f"\tProjectSection(ProjectDependencies) = postProject\n")
                 for dependency in project['dependencies']:
-                    f.write(f"\t\t{{{dependency}}} = {{{dependency}}}\n")
+                    f.write(f"\t\t{{{guids['projects'][dependency]}}} = {{{guids['projects'][dependency]}}}\n")
                 f.write("\tEndProjectSection\n")
             f.write("EndProject\n")
 
         for folder in folders:
-            f.write(f"Project(\"{{{folder_type_guid}}}\") = \"{folder['name']}\", \"{folder['name']}\", \"{folder['guid']}\"\n")
+            f.write(f"Project(\"{{{type_guid['folder']}}}\") = \"{folder['name']}\", \"{folder['name']}\", \"{folder['guid']}\"\n")
             f.write("EndProject\n")
         
         # Add global section
@@ -82,10 +93,10 @@ def generate_sln(data):
         f.write("\tGlobalSection(NestedProjects) = preSolution\n")
         for project in projects:
             if project.get('nested'):
-                f.write(f"\t\t{{{project['guid']}}} = {{{project['nested']}}}\n")
+                f.write(f"\t\t{{{project['guid']}}} = {{{guids['folders'][project['nested']]}}}\n")
         for folder in folders:
             if folder.get('nested'):
-                f.write(f"\t\t{{{folder['guid']}}} = {{{folder['nested']}}}\n")
+                f.write(f"\t\t{{{folder['guid']}}} = {{{guids['folders'][folder['nested']]}}}\n")
         f.write("\tEndGlobalSection\n")
 
         f.write("\tGlobalSection(ExtensibilityGlobals) = postSolution\n")
@@ -111,6 +122,7 @@ def generate_filters(project):
         ("Source Files", src_ext),
         ("Header Files", h_ext),
         ("Resource Files", rc_ext),
+        # ("Other Files", ""),
     ]      
 
     for filter_name, extensions in filters:
@@ -123,6 +135,7 @@ def generate_filters(project):
     add_files_to_item_group(item_group, "ClCompile", project['source_files'], "Source Files")
     add_files_to_item_group(item_group, "ClInclude", project['header_files'], "Header Files")
     add_files_to_item_group(item_group, "None", project['resource_files'], "Resource Files")
+    # add_files_to_item_group(item_group, "None", project['other_files'], "Other Files")
     
     # Prettify and write the XML
     pretty_xml_as_string = prettify_xml(root)
@@ -138,6 +151,13 @@ def generate_filters(project):
 def generate_vcxproj(project):
     root = ET.Element("Project", ToolsVersion="4.0", xmlns="http://schemas.microsoft.com/developer/msbuild/2003")
     
+    def add_text_element(parent, tag, text):
+        if text is None:
+            return
+        element = ET.SubElement(parent, tag)
+        element.text = text
+        return element
+
     # Add configurations
     item_group = ET.SubElement(root, "ItemGroup", Label="ProjectConfigurations")
     for config in ["Debug", "Release"]:
@@ -147,11 +167,11 @@ def generate_vcxproj(project):
 
     # Globals
     property_group = ET.SubElement(root, "PropertyGroup", Label="Globals")
-    ET.SubElement(property_group, "VCProjectVersion").text = project["vc_project_version"]
-    ET.SubElement(property_group, "Keyword").text = "Win32Proj"
-    ET.SubElement(property_group, "ProjectGuid").text = f"{{{project['guid']}}}"
-    ET.SubElement(property_group, "RootNamespace").text = project["root_namespace"]
-    ET.SubElement(property_group, "WindowsTargetPlatformVersion").text = project["windows_target_platform_version"]
+    add_text_element(property_group, "VCProjectVersion", project.get("vc_project_version"))
+    add_text_element(property_group, "Keyword", "Win32Proj")
+    add_text_element(property_group, "ProjectGuid", f"{{{project['guid']}}}")
+    add_text_element(property_group, "RootNamespace", project.get("root_namespace"))
+    add_text_element(property_group, "WindowsTargetPlatformVersion", project.get("windows_target_platform_version"))
 
     # Default props
     ET.SubElement(root, "Import", Project="$(VCTargetsPath)\\Microsoft.Cpp.Default.props")
@@ -160,12 +180,11 @@ def generate_vcxproj(project):
     for config in project["configuration"]:
         condition = f"'$(Configuration)|$(Platform)'=='{config['name']}'"
         property_group_config = ET.SubElement(root, "PropertyGroup", Condition=condition, Label="Configuration")
-        ET.SubElement(property_group_config, "ConfigurationType").text = config["type"]
-        ET.SubElement(property_group_config, "UseDebugLibraries").text = config["use_debug_libraries"]
-        ET.SubElement(property_group_config, "PlatformToolset").text = config["platform_toolset"]
-        if config.get("whole_program_optimization"):
-            ET.SubElement(property_group_config, "WholeProgramOptimization").text = config["whole_program_optimization"]
-        ET.SubElement(property_group_config, "CharacterSet").text = config["character_set"]
+        add_text_element(property_group_config, "ConfigurationType", config.get("type"))
+        add_text_element(property_group_config, "UseDebugLibraries", config.get("use_debug_libraries"))
+        add_text_element(property_group_config, "PlatformToolset", config.get("platform_toolset"))
+        add_text_element(property_group_config, "WholeProgramOptimization", config.get("whole_program_optimization"))
+        add_text_element(property_group_config, "CharacterSet", config.get("character_set"))
 
     # Cpp props
     ET.SubElement(root, "Import", Project="$(VCTargetsPath)\\Microsoft.Cpp.props")
@@ -185,47 +204,33 @@ def generate_vcxproj(project):
     for config in project["configuration"]:
         condition = f"'$(Configuration)|$(Platform)'=='{config['name']}'"
         property_group = ET.SubElement(root, "PropertyGroup", Condition=condition)
-        if config.get("out_dir"):
-            ET.SubElement(property_group, "OutDir").text = config["out_dir"]
-        if config.get("int_dir"):
-            ET.SubElement(property_group, "IntDir").text = config["int_dir"]
+        add_text_element(property_group, "OutDir", config.get("out_dir"))
+        add_text_element(property_group, "IntDir", config.get("int_dir"))
 
     # Item Definition Groups
     for config in project["configuration"]:
         condition = f"'$(Configuration)|$(Platform)'=='{config['name']}'"
         item_definition_group = ET.SubElement(root, "ItemDefinitionGroup", Condition=condition)
         cl_compile = ET.SubElement(item_definition_group, "ClCompile")
-        ET.SubElement(cl_compile, "WarningLevel").text = config["warning_level"]
-        if config.get("function_level_linking"):
-            ET.SubElement(cl_compile, "FunctionLevelLinking").text = config["function_level_linking"]
-        if config.get("intrinsic_functions"):
-            ET.SubElement(cl_compile, "IntrinsicFunctions").text = config["intrinsic_functions"]
-        ET.SubElement(cl_compile, "SDLCheck").text = config["sdl_check"]
-        ET.SubElement(cl_compile, "PreprocessorDefinitions").text = config["preprocessor_definitions"]
-        ET.SubElement(cl_compile, "ConformanceMode").text = config["conformance_mode"]
-        if config.get('precompiled_header'):
-            ET.SubElement(cl_compile, "PrecompiledHeader").text = config["precompiled_header"]
-        if config.get('precompiled_header_file'):
-            ET.SubElement(cl_compile, "PrecompiledHeaderFile").text = config["precompiled_header_file"]
-        if config.get('language_standard'):
-            ET.SubElement(cl_compile, "LanguageStandard").text = config["language_standard"]
-        if config.get('additional_include_directories'):
-            ET.SubElement(cl_compile, "AdditionalIncludeDirectories").text = config["additional_include_directories"]
+        add_text_element(cl_compile, "WarningLevel", config.get("warning_level"))
+        add_text_element(cl_compile, "FunctionLevelLinking", config.get("function_level_linking"))
+        add_text_element(cl_compile, "IntrinsicFunctions", config.get("intrinsic_functions"))
+        add_text_element(cl_compile, "SDLCheck", config.get("sdl_check"))
+        add_text_element(cl_compile, "PreprocessorDefinitions", config.get("preprocessor_definitions"))
+        add_text_element(cl_compile, "ConformanceMode", config.get("conformance_mode"))
+        add_text_element(cl_compile, "PrecompiledHeader", config.get("precompiled_header"))
+        add_text_element(cl_compile, "PrecompiledHeaderFile", config.get("precompiled_header_file"))
+        add_text_element(cl_compile, "LanguageStandard", config.get("language_standard"))
+        add_text_element(cl_compile, "AdditionalIncludeDirectories", config.get("additional_include_directories"))
 
         # Link
         link = ET.SubElement(item_definition_group, "Link")
-        if config.get("subsystem"):
-            ET.SubElement(link, "SubSystem").text = config["subsystem"]
-        if config.get("enable_comdat_folding"):
-            ET.SubElement(link, "EnableCOMDATFolding").text = config["enable_comdat_folding"]
-        if config.get("optimize_references"):
-            ET.SubElement(link, "OptimizeReferences").text = config["optimize_references"]
-        if config.get("generate_debug_information"):
-            ET.SubElement(link, "GenerateDebugInformation").text = config["generate_debug_information"]
-        if config.get("additional_library_directories"):
-            ET.SubElement(link, "AdditionalLibraryDirectories").text = config["additional_library_directories"]
-        if config.get("additional_dependencies"):
-            ET.SubElement(link, "AdditionalDependencies").text = config["additional_dependencies"]
+        add_text_element(link, "SubSystem", config.get("subsystem"))
+        add_text_element(link, "EnableCOMDATFolding", config.get("enable_comdat_folding"))
+        add_text_element(link, "OptimizeReferences", config.get("optimize_references"))
+        add_text_element(link, "GenerateDebugInformation", config.get("generate_debug_information"))
+        add_text_element(link, "AdditionalLibraryDirectories", config.get("additional_library_directories"))
+        add_text_element(link, "AdditionalDependencies", config.get("additional_dependencies"))
         
 
     # Item Groups for source and header files
@@ -266,12 +271,10 @@ def populate_include_files(project):
     h_ext_split = h_ext.split(';')
     rc_ext_split = rc_ext.split(';')
 
-    if(not project.get('source_files')):
-        project['source_files'] = []
-    if(not project.get('header_files')):
-        project['header_files'] = []
-    if(not project.get('resource_files')):
-        project['resource_files'] = []
+    filters = ["source_files", "header_files", "resource_files", "other_files"]
+    for filter in filters:
+        if(not project.get(filter)):
+            project[filter] = []
 
     if os.path.exists(src_path + project['folder']):
         for dirpath, dirnames, filenames in os.walk(src_path + project['folder']):
@@ -284,17 +287,43 @@ def populate_include_files(project):
                     project['header_files'].append(relative_path)
                 if ext in rc_ext_split:
                     project['resource_files'].append(relative_path)
+                if ext not in (src_ext_split + h_ext_split + rc_ext_split):
+                    project['other_files'].append(relative_path)
     else:
         os.makedirs(src_path + project['folder'])
 
 def generate_solution(data):
     
+    ext = tuple((src_ext + ";" + h_ext + ";" + rc_ext).split(";"))
+
+    def delete_folder_safe(folder_path):
+        for root, dirs, files in os.walk(folder_path):
+            has_src_files = False
+            
+            for dir in dirs:
+                has_src_files = delete_folder_safe(root + dir + "/")
+                if has_src_files:
+                    return True
+            
+            for file in files:
+                if os.path.splitext(file)[1].lstrip('.') in ext:
+                    print(f"WARNING: source file '{file}' is present in the folder '{root}'. It won't be deleted.")
+                    return True
+            
+            try:
+                shutil.rmtree(root)
+            except Exception as e:
+                # print(f"An error occurred while deleting the ide folder: {e}")
+                continue
+            
+    delete_folder_safe(ide_path)
+
     # Remove the ide folder
-    if os.path.exists(ide_path):
-        try:
-            shutil.rmtree(ide_path)
-        except Exception as e:
-            print(f"An error occurred while deleting the ide folder: {e}")
+    # if os.path.exists(ide_path):
+    #     try:
+    #         shutil.rmtree(ide_path)
+    #     except Exception as e:
+    #         print(f"An error occurred while deleting the ide folder: {e}")
 
     # Generate the solution
     generate_sln(data)

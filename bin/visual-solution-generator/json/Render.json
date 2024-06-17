@@ -16,6 +16,7 @@
             "preprocessor_definitions": "_DEBUG;_LIB;%(PreprocessorDefinitions)",
             "conformance_mode": "true",
             "generate_debug_information": "true",
+            "language_standard": "stdcpp20",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         },
@@ -35,6 +36,7 @@
             "enable_comdat_folding": "true",
             "optimize_references": "true",
             "generate_debug_information": "true",
+            "language_standard": "stdcpp20",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         }
