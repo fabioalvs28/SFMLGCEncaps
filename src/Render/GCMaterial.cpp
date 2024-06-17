@@ -5,16 +5,19 @@ GCMaterial::GCMaterial(){}
 GCMaterial::~GCMaterial(){}
 
 
-void GCMaterial::Initialize(GCShader* pShader, GCTexture* pTexture) {
+void GCMaterial::Initialize(GCShader* pShader, GCTexture* pTexture) 
+{
 	m_pShader = pShader;
 	m_pTexture = pTexture;
 }
 
-void GCMaterial::addObjectCB(GCShaderUploadBufferBase* pObjectCB) {
+void GCMaterial::addObjectCB(GCShaderUploadBufferBase* pObjectCB) 
+{
 	m_vpObjectCB.push_back(pObjectCB);
 }
 
-void GCMaterial::addCameraCB(GCShaderUploadBufferBase* pCameraCB) {
+void GCMaterial::addCameraCB(GCShaderUploadBufferBase* pCameraCB) 
+{
 	m_vpCameraCB.push_back(pCameraCB);
 }
 

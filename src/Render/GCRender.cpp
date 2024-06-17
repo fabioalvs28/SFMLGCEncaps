@@ -439,11 +439,6 @@ void GCRender::Draw(const Timer& gt) {
 	//PostDraw();
 }
 
-
-
-
-
-
 //Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
 //Needs all three of the matrices(world,proj,view)
 //Absolutely needs Prepare Draw to be called before it being used
@@ -590,10 +585,13 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 }
 // LOG
 
+//Creates a constant buffer for the camera
 GCShaderUploadBuffer<GCCAMERACB>* GCRender::CreateCameraCB() {
 	return new GCShaderUploadBuffer<GCCAMERACB>(Getmd3dDevice(), 1, true);
 }
 
+//Updates a cb data of a given material using the three matrices world/view/proj
+//using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
 void GCRender::UpdateBuffers(GCMaterial* pMaterial,DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
 	GCWORLDCB worldData;
 	worldData.world = worldMatrix;

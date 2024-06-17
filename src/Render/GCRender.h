@@ -104,6 +104,7 @@ public:
 	UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
 	UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
+	//Creates an Object Constant Buffer(useful for changing the position of an entity)
 	template<typename ShaderTypeConstantBuffer>
 	GCShaderUploadBuffer<ShaderTypeConstantBuffer>* CreateObjectCB() {
 		return new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(Getmd3dDevice(), 1, true);

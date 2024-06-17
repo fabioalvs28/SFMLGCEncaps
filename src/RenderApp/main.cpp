@@ -103,6 +103,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	graphics->GetRender()->PostDraw();
 
+	//Resets the count of 
 	for (int i = 0; i < graphics->GetMaterials().size(); i++)
 		graphics->GetMaterials()[i]->m_count = 0;
 
