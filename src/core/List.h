@@ -86,6 +86,7 @@ void GCList<T>::PushBack( const T& data )
     pNewNode->m_data = data;
     pNewNode->m_pNext = nullptr;
     pNewNode->m_pPrev = m_pTail;
+    if ( m_size == 0 ) m_pHead = pNewNode;
     m_pTail = pNewNode;
     m_size++;
 }
@@ -97,6 +98,7 @@ void GCList<T>::PushFront( const T& data )
     pNewNode->m_data = data;
     pNewNode->m_pNext = m_pHead;
     pNewNode->m_pPrev = nullptr;
+    if ( m_size == 0 ) m_pTail = pNewNode;
     m_pHead = pNewNode;
     m_size++;
 }
