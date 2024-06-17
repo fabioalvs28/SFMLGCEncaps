@@ -590,12 +590,8 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 }
 // LOG
 
-GCShaderUploadBuffer<GCCAMERACB>* GCRender::LoadCameraCB() {
+GCShaderUploadBuffer<GCCAMERACB>* GCRender::CreateCameraCB() {
 	return new GCShaderUploadBuffer<GCCAMERACB>(Getmd3dDevice(), 1, true);
-}
-
-void GCRender::LoadMatrices() {
-
 }
 
 void GCRender::UpdateBuffers(GCMaterial* pMaterial,DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {

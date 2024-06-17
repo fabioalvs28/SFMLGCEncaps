@@ -105,12 +105,11 @@ public:
 	UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
 	template<typename ShaderTypeConstantBuffer>
-	GCShaderUploadBuffer<ShaderTypeConstantBuffer>* LoadObjectCB() {
+	GCShaderUploadBuffer<ShaderTypeConstantBuffer>* CreateObjectCB() {
 		return new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(Getmd3dDevice(), 1, true);
 	}
 
-	GCShaderUploadBuffer<GCCAMERACB>* LoadCameraCB();
-	void LoadMatrices();
+	GCShaderUploadBuffer<GCCAMERACB>* CreateCameraCB();
 	void UpdateBuffers(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 private:
 	
