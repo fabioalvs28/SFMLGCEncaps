@@ -54,59 +54,27 @@ void GCInputManager::GetConnectedController()
 // </summary>
 void GCInputManager::UpdateInputs()
 {
-    
-    m_keyboard.UpdateKeyboardInput();
-    m_mouse.UpdateMouseInput(m_pWindow);
+    m_updatedKeys.Clear();
 
-    if ( m_checkController == false ) return; 
-    for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
-    {
-        if ( m_controllerList[i] != nullptr )
-        {
-            m_controllerList[i]->UpdateControllerInput();
-            m_controllerList[i]->UpdateJoySticksinput();
-            m_controllerList[i]->UpdateTriggers();
-        }
-    }   
-}
-
-
-GCKeyboardInput::GCKeyboardInput()
-{
-    for ( int i = 0; i < 255; i++ )
-    {
-        m_pListOfKeyboardKeys.PushBack( NONE );
-
-    }
-}
-
-
-// <summary>
-// Function to update the keyboard input state.
-// This function checks the state of each keyboard key using GetAsyncKeyState.
-// It updates the corresponding key state in the m_pListOfKeyboardKeys array.
-// If a key is pressed, it sets the state to DOWN or PUSH if it was already DOWN.
-// If a key is released, it sets the state to UP or NONE if it was already UP.
-// </summary>
-void GCKeyboardInput::UpdateKeyboardInput()
-{
-
-    for ( int i = 5; i < 255; i++ )
+    for (int i = 0; i < 255; i++)
     {
 
-        if ( GetAsyncKeyState(i) != 0 )
+        if (GetAsyncKeyState(i) != 0)
         {
 
-            switch ( m_pListOfKeyboardKeys[i] )
+            switch (m_keyState[i])
             {
             case NONE:
-                m_pListOfKeyboardKeys[i] = DOWN;
+                AddToUpdateList(i, DOWN);
+                break;
+            case PUSH:
+                AddToUpdateList(i, PUSH);
                 break;
             case UP:
-                m_pListOfKeyboardKeys[i] = DOWN;
+                AddToUpdateList(i, DOWN);
                 break;
             case DOWN:
-                m_pListOfKeyboardKeys[i] = PUSH;
+                AddToUpdateList(i, PUSH);
                 break;
 
             }
@@ -114,71 +82,49 @@ void GCKeyboardInput::UpdateKeyboardInput()
         else
         {
 
-            switch ( m_pListOfKeyboardKeys[i] )
+            switch (m_keyState[i])
             {
             case PUSH:
-                m_pListOfKeyboardKeys[i] = UP;
+                AddToUpdateList(i, UP);
                 break;
             case UP:
-                m_pListOfKeyboardKeys[i] = NONE;
+                m_keyState[i] = NONE;
                 break;
             case DOWN:
-                m_pListOfKeyboardKeys[i] = UP;
+                AddToUpdateList(i, UP);
                 break;
 
             }
         }
     }
 
-}
 
-
-// <summary>
-// Function to check if a specific keyboard key is in the DOWN state.
-// This function checks the state of a given virtual key in the m_pListOfKeyboardKeys array.
-// If the state is DOWN, it returns true. Otherwise, it returns false.
-// </summary>
-// <param name="vKey"> The virtual key code to check. </param>
-bool GCKeyboardInput::GetKeyDown(int vKey)
-{
-    if ( m_pListOfKeyboardKeys[vKey] == DOWN )
+    if ( m_checkController == false ) return; 
+    for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
-        return true;
-    }
-    return false;
+        if ( m_controllerList[i] != nullptr )
+        {
+            m_controllerList[i]->m_updatedControllerKeys.Clear();
+            m_controllerList[i]->UpdateControllerInput();
+            m_controllerList[i]->UpdateJoySticksinput();
+            m_controllerList[i]->UpdateTriggers();
+            for (int j = 0; j < m_controllerList[i]->m_updatedControllerKeys.GetSize(); j++)
+            {
+                m_updatedKeys.PushBack(m_controllerList[i]->m_updatedControllerKeys[j]);
+            }
+        }
+    }   
 }
 
-
-// <summary>
-// Function to check if a specific keyboard key is in the PUSH state.
-// This function checks the state of a given virtual key in the m_pListOfKeyboardKeys array.
-// If the state is PUSH, it returns true. Otherwise, it returns false.
-// </summary>
-// <param name="vKey> The virtual key code to check. It should be a valid virtual key code. </param>
-bool GCKeyboardInput::GetKeyStay(int vKey)
+void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
-    if ( m_pListOfKeyboardKeys[vKey] == PUSH )
-    {
-        return true;
-    }
-    return false;
+    m_keyState[index] = state;
+    m_updatedKeys.PushBack(index);
 }
 
 
-// <summary>
-// Function to check if a specific keyboard key is in the UP state.
-// This function checks the state of a given virtual key in the m_pListOfKeyboardKeys array.
-// If the state is UP, it returns true. Otherwise, it returns false.
-// </summary>
-// <param name="vKey"> The virtual key code to check. It should be a valid virtual key code. </param>
-bool GCKeyboardInput::GetKeyUp(int vKey)
-{
-    if ( m_pListOfKeyboardKeys[vKey] == UP )
-    {
-        return true;
-    }
-    return false;
-}
+
+
 
 
 GCMouseInput::GCMouseInput()
@@ -236,44 +182,6 @@ void GCMouseInput::UpdateMouseInput(const WinTest* pWinInfos)
         m_mousePos.y = pointOnScreen.y - pWinInfos->center.y;
 
     }
-
-    for ( int i = 0; i < 5; i++ )
-    {
-        if ( GetAsyncKeyState( i ) )
-        {
-
-            switch ( m_pMouseButtons[i] )
-            {
-            case NONE:
-                m_pMouseButtons[i] = DOWN;
-                break;
-            case UP:
-                m_pMouseButtons[i] = DOWN;
-                break;
-            case DOWN:
-                m_pMouseButtons[i] = PUSH;
-                break;
-
-            }
-        }
-        else
-        {
-
-            switch ( m_pMouseButtons[i] )
-            {
-            case PUSH:
-                m_pMouseButtons[i] = UP;
-                break;
-            case UP:
-                m_pMouseButtons[i] = NONE;
-                break;
-            case DOWN:
-                m_pMouseButtons[i] = UP;
-                break;
-            }
-        }
-    }
-
 
 }
 
@@ -538,6 +446,9 @@ void GCControllerInput::UpdateJoySticksinput()
         }
 
 
+        if (rLX != 0.0 || rLY != 0.0 ) AddtoControllerListUpdate(16);
+
+
         m_pControllersLeftAxis[0] = rLX; m_pControllersLeftAxis[1] = rLY;
 
 
@@ -563,6 +474,7 @@ void GCControllerInput::UpdateJoySticksinput()
             rRX = 0.0, rRY = 0.0;
         }
 
+        if (rRX != 0.0 || rRY != 0.0) AddtoControllerListUpdate(17);
 
         m_pControllersRightAxis[0] = rRX; m_pControllersRightAxis[1] = rRY;
     }
@@ -583,6 +495,20 @@ void GCControllerInput::UpdateTriggers()
         float lTriggerState = state.Gamepad.bLeftTrigger;
         float rTriggerState = state.Gamepad.bRightTrigger;
 
-        m_pControllerTrigger[0] = lTriggerState / 255; m_pControllerTrigger[1] = rTriggerState / 255; 
+        lTriggerState /= 255;  rTriggerState /= 255;
+        
+        if (lTriggerState != 0.0f) AddtoControllerListUpdate(18); 
+        if (rTriggerState != 0.0f) AddtoControllerListUpdate(19); 
+
+        m_pControllerTrigger[0] = lTriggerState; m_pControllerTrigger[1] = rTriggerState; 
     }
+}
+
+
+void GCControllerInput::AddtoControllerListUpdate(int index)
+{
+    int keyindex; 
+    keyindex = 1000 + (100 * m_ID); 
+    keyindex += index; 
+    m_updatedControllerKeys.PushBack(keyindex); 
 }

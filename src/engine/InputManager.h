@@ -4,6 +4,35 @@
 
 
 
+//////////////////////////////////////////////
+
+// 1 - 255 : Mouse + KeyBoard.  1000 - 1019 : Controller 0 , 1100 - 1119 : Controller 1 , 1200-1219 : Controller 3 , 1300 - 1319 : Controller 4 ;
+// Controller : 0 - 15 : buttons, 16 : analog State leftjoystick, 17 : analog State right joystick, 18 : analog ltrigger, 19 : analog r trigger.
+
+#define CONTROLLER_BUTTON_A                        0x5800
+#define CONTROLLER_BUTTON_B                        0x5801
+#define CONTROLLER_BUTTON_X                        0x5802
+#define CONTROLLER_BUTTON_Y                        0x5803
+#define CONTROLLER_BUTTON_RSHOULDER                0x5804
+#define CONTROLLER_BUTTON_LSHOULDER                0x5805
+#define CONTROLLER_BUTTON_LTRIGGER                 0x5806
+#define CONTROLLER_BUTTON_RTRIGGER                 0x5807
+
+#define CONTROLLER_BUTTON_CROSS_UP                 0x5810
+#define CONTROLLER_BUTTON_CROSS_DOWN               0x5811
+#define CONTROLLER_BUTTON_CROSS_LEFT               0x5812
+#define CONTROLLER_BUTTON_CROSS_RIGHT              0x5813
+#define CONTROLLER_BUTTON_START                    0x5814
+#define CONTROLLER_BUTTON_BACK                     0x5815
+#define CONTROLLER_BUTTON_LJOYSTICK_PRESS          0x5816
+#define CONTROLLER_BUTTON_RJOYSTICK_PRESS          0x5817
+
+//////////////////////////////////////////////
+
+//VK_SHIFT
+
+
+
 
 enum GCKeyState
 {
@@ -22,25 +51,6 @@ typedef struct WinTest
 
 } WinTest;
 
-
-
-class GCKeyboardInput 
-{
-    friend class GCInputManager;
-
-private: 
-
-    GCKeyboardInput();
-    virtual ~GCKeyboardInput() {};
-
-    bool GetKeyDown( int vKey );
-    bool GetKeyStay( int vKey );
-    bool GetKeyUp( int vKey );
-
-
-    GCVector<BYTE> m_pListOfKeyboardKeys;
-    void UpdateKeyboardInput();
-};
 
 
 class GCMouseInput
@@ -90,12 +100,17 @@ private:
     void UpdateJoySticksinput();
     void UpdateControllerInput();
     void UpdateTriggers();
+
+    void AddtoControllerListUpdate(int index); 
     
     int m_ID;
     GCVector<BYTE> m_pListofControllerKeys;
     float m_pControllersLeftAxis[2];
     float m_pControllersRightAxis[2];
     float m_pControllerTrigger[2]; // 0 - left, 1 - Right ;
+
+    GCVector<int> m_updatedControllerKeys;
+
 };
 
 
@@ -113,11 +128,7 @@ private:
 
     void UpdateInputs();
 
-    GCVEC2 GetMousePos() { return m_mouse.m_mousePos; }
 
-    BYTE GetMouseButtonState( int button ) { return m_mouse.m_pMouseButtons[button]; }
-    BYTE GetKeyboardKeyState( int key ) { return m_keyboard.m_pListOfKeyboardKeys[key]; }
-    BYTE GetControllerButtonState( int controllerID, int key ) { return m_controllerList[controllerID]->m_pListofControllerKeys[key]; }
 
     bool GetControllerButtonDown( int controllerID, int vButton ) { return m_controllerList[controllerID]->GetControllerButtonDown(vButton); }
     bool GetControllerButtonStay( int controllerID, int vButton ) { return m_controllerList[controllerID]->GetControllerButtonStay(vButton); }
@@ -133,12 +144,16 @@ private:
 
 
 
+    GCVector<int>* GetUpdatedKeys() { return &m_updatedKeys; }
+
+    void AddToUpdateList(int index, BYTE state);
+
 private:
 
     bool m_checkController; 
-
+    GCVEC2 m_mousePos;
     WinTest* m_pWindow;
     GCVector<GCControllerInput*> m_controllerList;
-    GCKeyboardInput m_keyboard;
-    GCMouseInput m_mouse;
+    GCVector<int> m_updatedKeys;
+    GCVector<BYTE> m_keyState;
 };
