@@ -14,7 +14,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	graphics->Initialize(window);
 
 	graphics->GetPrimitiveFactory()->Initialize();
-	graphics->GetModelParserFactory()->Initialize();
+	//graphics->GetModelParserFactory()->Initialize();
 
 	// Geometry (Resource)
 	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::White));

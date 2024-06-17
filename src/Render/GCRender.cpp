@@ -407,29 +407,32 @@ void GCRender::Draw(const Timer& gt) {
 	//PostDraw();
 }
 
-bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) 
-{
-	//Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
-	//Needs all three of the matrices(world,proj,view)
-	//Absolutely needs Prepare Draw to be called before it being used
-	//Needs post draw to be called right after aswell
-	//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
-
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-	profiler.LogWarning("This is a warning message.");
-	profiler.LogInfo("This is an informational message.");
-
-	GCWORLDCB worldData;
-	worldData.world = worldMatrix;
-
-	GCCAMERACB cameraData;
-	cameraData.view = viewMatrix;
-	cameraData.proj = projectionMatrix;
+//bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix)
+//{
+//	//Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
+//	//Needs all three of the matrices(world,proj,view)
+//	//Absolutely needs Prepare Draw to be called before it being used
+//	//Needs post draw to be called right after aswell
+//	//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
+//
+//	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+//	profiler.LogWarning("This is a warning message.");
+//	profiler.LogInfo("This is an informational message.");
+//
+//	GCWORLDCB worldData;
+//	worldData.world = worldMatrix;
+//
+//	GCCAMERACB cameraData;
+//	cameraData.view = viewMatrix;
+//	cameraData.proj = projectionMatrix;
+//}
 //Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
 //Needs all three of the matrices(world,proj,view)
 //Absolutely needs Prepare Draw to be called before it being used
 //Needs post draw to be called right after aswell
 //(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
+
+
 bool GCRender::DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial) {
 	// Update 
 
