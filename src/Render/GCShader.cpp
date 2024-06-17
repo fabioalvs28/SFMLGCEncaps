@@ -21,9 +21,17 @@ void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const 
 	// Initialize Precompile the shader | And load must be called when we need it 
 	std::wstring wideFilePath(filePath.begin(), filePath.end());
 
-	if (_waccess(wideFilePath.c_str(), 0) == 0)
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+	if (_waccess(wideFilePath.c_str(), 0) == -1)
 	{
 		OutputDebugString((L"Shader not found: " + wideFilePath + L"\n").c_str());
+		profiler.LogWarning("Shader not found: " + filePath);
+	}
+	else
+	{
+		OutputDebugString((L"Shader file: " + wideFilePath + L" loaded successfully\n").c_str());
+		profiler.LogInfo("Shader file: " + filePath + " loaded successfully");
 	}
 
 	m_pRender = pRender;

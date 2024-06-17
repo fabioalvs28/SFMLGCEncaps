@@ -153,24 +153,39 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryColor(std::wstring name, DirectX::X
 {
     //Builds a color based geometry using pre-created ones
     //Needs both a geometry name and a specific color
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    
+    std::string strName(name.begin(), name.end());
+
     auto it = m_primitiveInfos.find(name);
+
     if (it == m_primitiveInfos.end())
     {
         OutputDebugString((L"Primitive not found: " + name + L"\n").c_str());
-        return NULL;
+        profiler.LogWarning("Primitive not found: " + strName);
+    }
+    else
+    {
+        OutputDebugString((L"Primitive: " + name + L" loaded successfully\n").c_str());
+        profiler.LogInfo("Primitive: " + strName + " loaded successfully");
     }
 
 	GCGeometry* primitiveGeometry = new GCGeometry();
 
 	primitiveGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[name][L"index"]);
 	primitiveGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[name][L"index"]).size();
-	
 
 	primitiveGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[name][L"pos"]);
 	primitiveGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[name][L"pos"]).size();
 
     for(int i = 0 ; i<primitiveGeometry->vertexNumber; i++)
 	    primitiveGeometry->color.push_back(color);
+
+    if (CheckNull(primitiveGeometry))
+    {
+        OutputDebugString(L"Primitive geometry is empty");
+        profiler.LogWarning("Primitive geometry is empty");
+    }
 
 	return primitiveGeometry;
 }
@@ -179,11 +194,20 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryTexture(std::wstring name)
 {
     //Builds a texture based geometry using pre-created ones
     //Needs a geometry name
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+    std::string strName(name.begin(), name.end());
+
     auto it = m_primitiveInfos.find(name);
     if (it == m_primitiveInfos.end())
     {
         OutputDebugString((L"Primitive not found: " + name + L"\n").c_str());
-        return NULL;
+        profiler.LogWarning("Primitive not found: " + strName);
+    }
+    else
+    {
+        OutputDebugString((L"Primitive: " + name + L" loaded successfully\n").c_str());
+        profiler.LogInfo("Primitive: " + strName + " loaded successfully");
     }
 
 	GCGeometry* primitiveGeometry = new GCGeometry();
@@ -196,5 +220,10 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryTexture(std::wstring name)
 
 	primitiveGeometry->texC = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[name][L"uvs"]);
 
+    if (CheckNull(primitiveGeometry))
+    {
+        OutputDebugString(L"Primitive geometry is empty");
+        profiler.LogWarning("Primitive geometry is empty");
+    }
 	return primitiveGeometry;
 }

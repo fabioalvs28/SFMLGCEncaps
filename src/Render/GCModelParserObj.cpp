@@ -140,11 +140,19 @@ bool GCModelParserObj::ParseObj(std::string fileName)
 GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 {
 	//Parses an obj and puts it into a geometry with textures
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
 	std::wstring wideFileName(fileName.begin(), fileName.end());
 
-	if (_waccess(wideFileName.c_str(), 0) == 0)
+	if (_waccess(wideFileName.c_str(), 0) == -1)
 	{
 		OutputDebugString((L"Obj file not found: " + wideFileName + L"\n").c_str());
+		profiler.LogWarning("Obj file not found: " + fileName);
+	}
+	else 
+	{
+		OutputDebugString((L"Obj file: " + wideFileName + L" loaded successfully \n").c_str());
+		profiler.LogInfo("Obj file:" + fileName + " loaded successfully");
 	}
 
 	ParseObj(fileName);
@@ -165,6 +173,11 @@ GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 		objGeometry->indices.push_back(i);
 	}
 
+	if (CheckNull(objGeometry))
+	{
+		OutputDebugString(L"Obj Geometry is empty \n");
+		profiler.LogWarning("Obj geometry is empty");
+	}
 	return objGeometry;
 }
 
@@ -173,11 +186,19 @@ GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 GCGeometry* GCModelParserObj::BuildObjColor(std::string fileName) 
 {
 	//Parses an obj and puts it into a geometry with colors
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
 	std::wstring wideFileName(fileName.begin(), fileName.end());
 
-	if (_waccess(wideFileName.c_str(), 0) == 0)
+	if (_waccess(wideFileName.c_str(), 0) == -1)
 	{
 		OutputDebugString((L"Obj file not found: " + wideFileName + L"\n").c_str());
+		profiler.LogWarning("Obj file not found: " + fileName);
+	}
+	else
+	{
+		OutputDebugString((L"Obj file : " + wideFileName + L" loaded successfully \n").c_str());
+		profiler.LogInfo("Obj file:" + fileName + " loaded successfully");
 	}
 
 	ParseObj(fileName);
@@ -199,6 +220,11 @@ GCGeometry* GCModelParserObj::BuildObjColor(std::string fileName)
 		objGeometry->indices.push_back(m_ParsedObj.facesInfos[i][0]);
 	}
 
+	if (CheckNull(objGeometry))
+	{
+		OutputDebugString(L"Obj Geometry is empty \n");
+		profiler.LogWarning("Obj geometry is empty");
+	}
 	return objGeometry;
 }
 

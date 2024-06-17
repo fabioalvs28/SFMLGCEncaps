@@ -6,7 +6,14 @@ bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow)
 	m_pWindow = pWindow;
 	InitDirect3D();
 	OnResize();
-
+	if (CheckNull(pGraphics, pWindow))
+	{
+		OutputDebugString(L"Graphics and window are empty\n");
+	}
+	else
+	{
+		OutputDebugString(L"Graphics and window loaded successfully\n");
+	}
 	return true;
 }
 
@@ -417,9 +424,9 @@ bool GCRender::DrawOneObject(GCMesh* pMesh, GCShader* pShader, GCTexture* pTextu
 	//Needs post draw to be called right after aswell
 	//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
 
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+	/*GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 	profiler.LogWarning("This is a warning message.");
-	profiler.LogInfo("This is an informational message.");
+	profiler.LogInfo("This is an informational message.");*/
 
 	GCWORLDCB worldData;
 	worldData.world = worldMatrix;
