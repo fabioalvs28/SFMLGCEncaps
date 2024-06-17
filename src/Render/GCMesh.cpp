@@ -61,13 +61,12 @@ ID3D12Resource* GCMesh::CreateDefaultBuffer(
     return defaultBuffer;
 }
 
-
-//// CLASS
-GCMesh::GCMesh() {
+GCMesh::GCMesh() 
+{
 }
 
-GCMesh::~GCMesh() {
-
+GCMesh::~GCMesh() 
+{
 }
 
 //void GCMesh::Initialize(GCRender* pRender) {
@@ -79,14 +78,14 @@ GCMesh::~GCMesh() {
 //
 //}
 
-
-void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry) {
+void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry) 
+{
     UploadGeometryData<GCVERTEX>(pGeometry);
 }
-void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) {
+void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) 
+{
     UploadGeometryData<GCVERTEXTEXTURE>(pGeometry);
 }
-
 
 //void GCMesh::UpdateObjectBuffer(DirectX::XMMATRIX worldMatrix)
 //{
@@ -98,6 +97,3 @@ void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) {
 //    XMStoreFloat4x4(&objectCB.world, worldMatrix);
 //    m_pObjectCB->CopyData(0, objectCB);
 //}
-
-////
-

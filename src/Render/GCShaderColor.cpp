@@ -1,6 +1,7 @@
 #include "framework.h"
 
-void GCShaderColor::CompileShader() {
+void GCShaderColor::CompileShader() 
+{
 	m_vsByteCode = LoadShaderFromFile(L"../../../src/Render/CsoCompiled/colorVS.cso");
 	m_psByteCode = LoadShaderFromFile(L"../../../src/Render/CsoCompiled/colorPS.cso");
 	m_InputLayout =

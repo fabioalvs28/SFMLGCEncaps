@@ -3,18 +3,20 @@
 struct GCSHADERCB {
 };
 
-struct GCWORLDCB : GCSHADERCB {
+struct GCWORLDCB : GCSHADERCB 
+{
 	DirectX::XMFLOAT4X4 world; // Matrice du monde
 };
 
-struct GCLIGHTANDWORLD : GCSHADERCB {
+struct GCLIGHTANDWORLD : GCSHADERCB
+{
 	DirectX::XMFLOAT4X4 world; // Matrice du monde
 	DirectX::XMFLOAT4X4 light; // Matrice du monde
 	DirectX::XMFLOAT4X4 normal;
 };
 
-//
-struct GCCAMERACB : GCSHADERCB {
+struct GCCAMERACB : GCSHADERCB 
+{
 	DirectX::XMFLOAT4X4 view; // Matrice de vue
 	DirectX::XMFLOAT4X4 proj; // Matrice de projection
 };
@@ -41,30 +43,26 @@ public:
 
 	int GetType() const { return m_type; }
 
-
-
 	ID3DBlob* CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint, const std::string& target);
-
 
 	// Precompile by CSO
 	void SaveShaderToFile(ID3DBlob* shaderBlob, const std::wstring& filename);
 	ID3DBlob* LoadShaderFromFile(const std::wstring& filename);
 	void PreCompile(const std::string& filePath, const std::string& csoDestinationPath);
 
-
-	// 
+	// Load Shader
 	template<typename ShaderType>
 	void Load();
 
-
 	// Object
-	
-	GCShaderUploadBufferBase* GetObjectCBData() {
+	GCShaderUploadBufferBase* GetObjectCBData() 
+	{
 		return m_pObjectCB;
 	}
 
 	// Camera
-	GCShaderUploadBufferBase* GetCameraCBData() {
+	GCShaderUploadBufferBase* GetCameraCBData() 
+	{
 		return m_pCameraCB;
 	}
 
@@ -81,9 +79,8 @@ private:
 
 	GCShaderUploadBufferBase* m_pObjectCB;
 	GCShaderUploadBufferBase* m_pCameraCB;
+
 protected:
-
-
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
 
 	ID3DBlob* m_vsByteCode = nullptr;
@@ -96,7 +93,8 @@ protected:
 
 //Loads the shader:Compiles it using the precompiled file created previously in the init,creates both the rootsign and the pso
 template<typename ShaderTypeConstantBuffer>
-void GCShader::Load() {
+void GCShader::Load() 
+{
 	CompileShader();
 	RootSign();
 	Pso();

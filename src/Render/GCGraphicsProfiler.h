@@ -1,6 +1,7 @@
 #pragma once
 
-class GCGraphicsProfiler {
+class GCGraphicsProfiler 
+{
 public:
     static GCGraphicsProfiler& GetInstance();
 
@@ -13,8 +14,6 @@ public:
 private:
     GCGraphicsProfiler();
     ~GCGraphicsProfiler();
-
-
 
     GCGraphicsProfiler(const GCGraphicsProfiler&) = delete;
     GCGraphicsProfiler& operator=(const GCGraphicsProfiler&) = delete;

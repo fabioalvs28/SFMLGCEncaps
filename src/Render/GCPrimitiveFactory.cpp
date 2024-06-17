@@ -1,15 +1,18 @@
 #include "framework.h"
 
-GCPrimitiveFactory::GCPrimitiveFactory() {
+GCPrimitiveFactory::GCPrimitiveFactory() 
+{
 	m_pRender = nullptr;
 }
 
-GCPrimitiveFactory::~GCPrimitiveFactory() {
+GCPrimitiveFactory::~GCPrimitiveFactory() 
+{
 }
 
-//Initializes the geometries that will then be used by both the create build geos funcs
+
 void GCPrimitiveFactory::Initialize() 
 {
+    //Initializes the geometries that will then be used by both the create build geometry functions
 
     // Create circle vertices, uvs and indices
     std::vector<DirectX::XMFLOAT3> circleVertices;
@@ -31,7 +34,8 @@ void GCPrimitiveFactory::Initialize()
     circleUvs.push_back(DirectX::XMFLOAT2(0.5f, 0.5f)); // Center UV
 
     // Add vertices around the circumference
-    for (int i = 0; i < numSegments; ++i) {
+    for (int i = 0; i < numSegments; ++i) 
+    {
         float x = radius * std::cos(angle);
         float y = radius * std::sin(angle);
         circleVertices.push_back(DirectX::XMFLOAT3(x, 0.0f, y));
@@ -45,7 +49,8 @@ void GCPrimitiveFactory::Initialize()
     }
 
     // Add indices to form triangles with reversed normals
-    for (int i = 1; i < numSegments; ++i) {
+    for (int i = 1; i < numSegments; ++i) 
+    {
         circleIndices.push_back(0);        // Center vertex
         circleIndices.push_back(i);        // Current vertex
         circleIndices.push_back(i + 1);    // Next vertex
@@ -55,12 +60,9 @@ void GCPrimitiveFactory::Initialize()
     circleIndices.push_back(numSegments);
     circleIndices.push_back(1);
 
-
-
     //Put all data in map
     m_primitiveInfos = {
-        //plane
-            {L"plane", {
+    {L"plane", {
         { L"index", std::vector<uint16_t>{0, 2, 1, 0, 3, 2} },
         { L"pos", std::vector<DirectX::XMFLOAT3>{
             DirectX::XMFLOAT3(-0.5f, +0.0f, -0.5f),
@@ -147,11 +149,10 @@ void GCPrimitiveFactory::Initialize()
     };
 }
 
-//Builds a color based geometry using pre-created ones
-//Needs both a geometry name and a specific color
 GCGeometry* GCPrimitiveFactory::BuildGeometryColor(std::wstring name, DirectX::XMFLOAT4 color)
 {
-    
+    //Builds a color based geometry using pre-created ones
+    //Needs both a geometry name and a specific color
     auto it = m_primitiveInfos.find(name);
     if (it == m_primitiveInfos.end())
     {
@@ -174,11 +175,10 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryColor(std::wstring name, DirectX::X
 	return primitiveGeometry;
 }
 
-//Builds a texture based geometry using pre-created ones
-//Needs a geometry name
 GCGeometry* GCPrimitiveFactory::BuildGeometryTexture(std::wstring name)
 {
-
+    //Builds a texture based geometry using pre-created ones
+    //Needs a geometry name
     auto it = m_primitiveInfos.find(name);
     if (it == m_primitiveInfos.end())
     {
@@ -198,154 +198,3 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryTexture(std::wstring name)
 
 	return primitiveGeometry;
 }
-
-//void PrimitiveFactory::Initialize(int type, GCRender* pRender)
-//{
-//	m_pRender = pRender;
-//}
-//
-//GCGeometry* PrimitiveFactory::BuildBoxGeometryColor()
-//{
-//	GCGeometry* boxGeometry = new GCGeometry();
-//
-//	boxGeometry->pos = {
-//		{ DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f) },
-//		{ DirectX::XMFLOAT3(-1.0f, +1.0f, -1.0f) },
-//		{ DirectX::XMFLOAT3(+1.0f, +1.0f, -1.0f) },
-//		{ DirectX::XMFLOAT3(+1.0f, -1.0f, -1.0f) },
-//		{ DirectX::XMFLOAT3(-1.0f, -1.0f, +1.0f) },
-//		{ DirectX::XMFLOAT3(-1.0f, +1.0f, +1.0f) },
-//		{ DirectX::XMFLOAT3(+1.0f, +1.0f, +1.0f) },
-//		{ DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f) },
-//	};
-//
-//	boxGeometry->color = {
-//	{ DirectX::XMFLOAT4(DirectX::Colors::White) },
-//	{ DirectX::XMFLOAT4(DirectX::Colors::Black) },
-//	{ DirectX::XMFLOAT4(DirectX::Colors::Red) },
-//	{ DirectX::XMFLOAT4(DirectX::Colors::Green) },
-//	{ DirectX::XMFLOAT4(DirectX::Colors::Blue) },
-//	{ DirectX::XMFLOAT4(DirectX::Colors::Yellow) },
-//	{ DirectX::XMFLOAT4(DirectX::Colors::Cyan) },
-//	{ DirectX::XMFLOAT4(DirectX::Colors::Magenta) },
-//	};
-//
-//
-//	boxGeometry->indices = {
-//		0, 1, 2, 0, 2, 3,
-//		4, 6, 5, 4, 7, 6,
-//		4, 5, 1, 4, 1, 0,
-//		3, 2, 6, 3, 6, 7,
-//		1, 5, 6, 1, 6, 2,
-//		4, 0, 3, 4, 3, 7,
-//	};
-//
-//	boxGeometry->vertexNumber = boxGeometry->pos.size();
-//	boxGeometry->indiceNumber = boxGeometry->indices.size();
-//
-//
-//
-//	return boxGeometry;
-//}
-//
-//
-//GCGeometry* PrimitiveFactory::BuildBoxGeometryTexture()
-//{
-//	GCGeometry* boxGeometry = new GCGeometry();
-//
-//	boxGeometry->pos = {
-//		 DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(-1.0f, +1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, +1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, -1.0f, -1.0f),
-//
-//		 DirectX::XMFLOAT3(-1.0f, -1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(-1.0f, +1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, +1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f),
-//
-//		 DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(-1.0f, +1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(-1.0f, +1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(-1.0f, -1.0f, +1.0f),
-//
-//		 DirectX::XMFLOAT3(+1.0f, -1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, +1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, +1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f),
-//
-//		 DirectX::XMFLOAT3(-1.0f, +1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(-1.0f, +1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, +1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, +1.0f, -1.0f),
-//
-//		 DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),
-//		 DirectX::XMFLOAT3(-1.0f, -1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f),
-//		 DirectX::XMFLOAT3(+1.0f, -1.0f, -1.0f),
-//	};
-//	boxGeometry->texC = {
-//		DirectX::XMFLOAT2(0, 1),
-//		DirectX::XMFLOAT2(0, 0),
-//		DirectX::XMFLOAT2(1, 0),
-//		DirectX::XMFLOAT2(1, 1),
-//
-//		DirectX::XMFLOAT2(0, 1),
-//		DirectX::XMFLOAT2(0, 0),
-//		DirectX::XMFLOAT2(1, 0),
-//		DirectX::XMFLOAT2(1, 1),
-//
-//		DirectX::XMFLOAT2(0, 1),
-//		DirectX::XMFLOAT2(0, 0),
-//		DirectX::XMFLOAT2(1, 0),
-//		DirectX::XMFLOAT2(1, 1),
-//
-//		DirectX::XMFLOAT2(0, 1),
-//		DirectX::XMFLOAT2(0, 0),
-//		DirectX::XMFLOAT2(1, 0),
-//		DirectX::XMFLOAT2(1, 1),
-//
-//		DirectX::XMFLOAT2(0, 1),
-//		DirectX::XMFLOAT2(0, 0),
-//		DirectX::XMFLOAT2(1, 0),
-//		DirectX::XMFLOAT2(1, 1),
-//
-//		DirectX::XMFLOAT2(0, 1),
-//		DirectX::XMFLOAT2(0, 0),
-//		DirectX::XMFLOAT2(1, 0),
-//		DirectX::XMFLOAT2(1, 1),
-//	};
-//
-//
-//	boxGeometry->indices =
-//	{
-//		// Front face
-//		0, 1, 2,
-//		0, 2, 3,
-//
-//		// Back face
-//		4, 6, 5,
-//		4, 7, 6,
-//
-//		// Left face
-//		8, 10, 9,
-//		8, 11, 10,
-//
-//		// Right face
-//		12, 13, 14,
-//		12, 14, 15,
-//
-//		// Top face
-//		16, 17, 18,
-//		16, 18, 19,
-//
-//		// Bottom face
-//		20, 22, 21,
-//		20, 23, 22
-//	};
-//	boxGeometry->vertexNumber = boxGeometry->pos.size();
-//	boxGeometry->indiceNumber = boxGeometry->indices.size();
-//
-//
-//	return boxGeometry;
-//}

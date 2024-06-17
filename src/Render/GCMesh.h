@@ -11,8 +11,6 @@
 //    DirectX::BoundingBox Bounds;
 //};
 
-
-
 struct MeshBufferData
 {
     // Give it a name so we can look it up by name.
@@ -69,8 +67,6 @@ struct MeshBufferData
     }
 };
 
-
-
 class GCMesh
 {
 public:
@@ -85,19 +81,11 @@ public:
     void UploadGeometryDataColor(GCGeometry* pGeometry);
     void UploadGeometryDataTexture(GCGeometry* pGeometry);
 
-    
-
-    void Initialize(GCRender* pRender) {
+    void Initialize(GCRender* pRender) 
+    {
         m_pRender = pRender;
     }
-
-
-
-
-    // Getter
     inline MeshBufferData* GetBufferGeometryData() { return  m_pBufferGeometryData; }
-
-
 
 private:
     GCRender* m_pRender;
@@ -106,9 +94,6 @@ private:
     MeshBufferData* m_pBufferGeometryData;
 
     // #TODO Put this in shader or Other place
-
-
-
     ID3D12Resource* CreateDefaultBuffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, ID3D12Resource* uploadBuffer);
 };
 
@@ -118,19 +103,20 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
 
     vertices.resize(pGeometry->pos.size());
 
-    if constexpr (std::is_same<VertexType, GCVERTEX>::value) {
-        for (size_t i = 0; i < pGeometry->pos.size(); ++i) {
+    if constexpr (std::is_same<VertexType, GCVERTEX>::value) 
+    {
+        for (size_t i = 0; i < pGeometry->pos.size(); ++i) 
+        {
             vertices[i] = VertexType(pGeometry->pos[i], pGeometry->color[i]);
         }
     }
-    else if constexpr (std::is_same<VertexType, GCVERTEXTEXTURE>::value) {
-        for (size_t i = 0; i < pGeometry->pos.size(); ++i) {
+    else if constexpr (std::is_same<VertexType, GCVERTEXTEXTURE>::value) 
+    {
+        for (size_t i = 0; i < pGeometry->pos.size(); ++i) 
+        {
             vertices[i] = VertexType(pGeometry->pos[i], pGeometry->texC[i]);
         }
     }
-
-
-
     const UINT vbByteSize = static_cast<UINT>(vertices.size() * sizeof(VertexType));
     const UINT ibByteSize = static_cast<UINT>(pGeometry->indices.size() * sizeof(std::uint16_t));
 

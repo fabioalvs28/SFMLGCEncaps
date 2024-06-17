@@ -4,6 +4,7 @@ class GCMaterial
 public:
 	GCMaterial();
 	~GCMaterial();
+
 private:
 	GCTexture* m_pTexture;
 	DirectX::XMFLOAT4 m_diffuseAlbedo;

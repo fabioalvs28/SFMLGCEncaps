@@ -5,7 +5,6 @@
 //	DirectX::XMFLOAT4X4 WorldViewProj;
 //};
 
-
 //struct ObjectCB {
 //	
 //};
@@ -20,13 +19,6 @@
 //	DirectX::XMFLOAT4X4 normal; // Matrice du monde
 //};
 
-
-
-
-
-
-
-
 class GCRender
 {
 public:
@@ -34,10 +26,7 @@ public:
 
 	bool Initialize(GCGraphics* pGraphics,Window* pWindow);
 	bool InitDirect3D();
-
-
 	//void BuildConstantBuffers();
-
 	void LogAdapters();
 	void LogAdapterOutputs(IDXGIAdapter* adapter);
 	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
@@ -50,15 +39,11 @@ public:
 	void CreateSwapChain();
 
 	// Resize 
-
-
-
 	void ReleasePreviousResources();
 	void ResizeSwapChain();
 	void CreateRenderTargetViews();
 	void CreateDepthStencilBufferAndView();
 	void UpdateViewport();
-
 
 	// Draw Part
 	void ResetCommandList();
@@ -74,8 +59,6 @@ public:
 
 	bool DrawOneObject(GCMesh* pMesh, GCShader* pShader,GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 	//void BuildBoxGeometry();
-
-
 	void OnResize();
 
 	// Getter
@@ -96,7 +79,6 @@ public:
 
 	ID3D12Fence* GetFence() { return m_Fence; }
 
-
 	ID3D12DescriptorHeap* GetRtvHeap() { return m_rtvHeap; }
 	ID3D12DescriptorHeap* GetDsvHeap() { return m_dsvHeap; }
 	ID3D12DescriptorHeap* GetCbvSrvUavSrvDescriptorHeap() { return m_cbvSrvUavDescriptorHeap; }
@@ -104,9 +86,7 @@ public:
 	UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
 	UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
-
 private:
-	
 	Window* m_pWindow;
 	// Swap chain size
 	static const int SwapChainBufferCount = 2;
@@ -125,8 +105,6 @@ private:
 	ID3D12Fence* m_Fence;
 	UINT64 m_CurrentFence = 0;
 	// Descriptor heaps
-
-
 	ID3D12DescriptorHeap* m_rtvHeap;
 	ID3D12DescriptorHeap* m_dsvHeap;
 	ID3D12DescriptorHeap* m_cbvSrvUavDescriptorHeap;
@@ -136,7 +114,6 @@ private:
 	UINT m_dsvDescriptorSize = 0;
 
 	UINT m_cbvSrvUavDescriptorSize = 0;
-
 
 	// State var
 	bool m_canResize = true;
@@ -150,14 +127,12 @@ private:
 	bool      m_4xMsaaState = false;    // 4X MSAA enabled
 	UINT      m_4xMsaaQuality = 0;      // quality level of 4X MSAA
 
-
 	// Screen
 	D3D12_VIEWPORT m_ScreenViewport;
 	D3D12_RECT m_ScissorRect;
 
 	// Camera (Temporary)
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
-
 };
 
 

@@ -1,9 +1,5 @@
 #include "framework.h"
 
-
-//#include "GCMesh.h"
-
-
 LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {

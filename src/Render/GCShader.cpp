@@ -1,47 +1,42 @@
 #include "framework.h"
 
-
-
-
-GCShader::GCShader() {
-
+GCShader::GCShader() 
+{
 }
 
 
 GCShader::~GCShader()
 {
+}
 
-};
-
-
-
-void GCShader::Render() {
+void GCShader::Render() 
+{
 	m_pRender->GetCommandList()->SetPipelineState(GetPso());
 	m_pRender->GetCommandList()->SetGraphicsRootSignature(GetRootSign());
 }
 
-
-//#TODO Need To make documentation
-// Initialize Precompile the shader | And load must be call when we need it 
-void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int type) {
-
+void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int type)
+{
+	//#TODO Need To make documentation
+	// Initialize Precompile the shader | And load must be called when we need it 
 	std::wstring wideFilePath(filePath.begin(), filePath.end());
 
 	if (_waccess(wideFilePath.c_str(), 0) == 0)
+	{
 		OutputDebugString((L"Shader not found: " + wideFilePath + L"\n").c_str());
-
+	}
 
 	m_pRender = pRender;
 	m_type = type;
 	PreCompile(filePath, csoDestinationPath);
-
 }
  
-void GCShader::CompileShader() {
-
+void GCShader::CompileShader() 
+{
 }
 
-void GCShader::RootSign() {
+void GCShader::RootSign() 
+{
     // Déclaration des paramètres racine
     CD3DX12_ROOT_PARAMETER slotRootParameter[3];
 
@@ -49,7 +44,8 @@ void GCShader::RootSign() {
 	slotRootParameter[1].InitAsConstantBufferView(1);
     
 	// If texture
-	if (m_type == texture) {
+	if (m_type == texture) 
+	{
 		CD3DX12_DESCRIPTOR_RANGE srvTable;
 		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 		slotRootParameter[2].InitAsDescriptorTable(1, &srvTable);
@@ -70,11 +66,7 @@ void GCShader::RootSign() {
         D3D12_FLOAT32_MAX // maxLOD
     );
 
-
-
     // Configuration de la signature racine
-
-
     CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(m_type+2, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
     // Sérialisation de la signature racine
@@ -96,12 +88,12 @@ void GCShader::RootSign() {
     );
 }
 
-void GCShader::Pso() {
+void GCShader::Pso() 
+{
 	// Initialize the graphics pipeline state description
 	ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 	psoDesc.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
 	psoDesc.pRootSignature = m_RootSignature;
-
 
 	psoDesc.VS =
 	{
@@ -146,27 +138,25 @@ void GCShader::Pso() {
 	m_pRender->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO));
 }
 
-
-
-ID3D12RootSignature* GCShader::GetRootSign() {
+ID3D12RootSignature* GCShader::GetRootSign() 
+{
 	return m_RootSignature;
 }
 
-ID3D12PipelineState* GCShader::GetPso() {
+ID3D12PipelineState* GCShader::GetPso() 
+{
 	return m_PSO;
 }
-
 
 ID3DBlob* GCShader::GetmvsByteCode()
 {
 	return m_vsByteCode;
-};
+}
 
 ID3DBlob* GCShader::GetmpsByteCode()
 {
 	return m_psByteCode;
-};
-
+}
 
 ID3DBlob* GCShader::CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint,const std::string& target)
 {
@@ -183,25 +173,30 @@ ID3DBlob* GCShader::CompileShaderBase(const std::wstring& filename, const D3D_SH
 		entrypoint.c_str(), target.c_str(), compileFlags, 0, &byteCode, &errors);
 
 	if (errors != nullptr)
+	{
 		OutputDebugStringA((char*)errors->GetBufferPointer());
+	}
 
 	//hr;
-
 	return byteCode;
 }
 
-void GCShader::SaveShaderToFile(ID3DBlob* shaderBlob, const std::wstring& filename) {
+void GCShader::SaveShaderToFile(ID3DBlob* shaderBlob, const std::wstring& filename) 
+{
 	std::ofstream file(filename, std::ios::binary);
-	if (!file.is_open()) {
+	if (!file.is_open()) 
+	{
 		throw std::runtime_error("Failed to open file for writing");
 	}
 	file.write(static_cast<const char*>(shaderBlob->GetBufferPointer()), shaderBlob->GetBufferSize());
 	file.close();
 }
 
-ID3DBlob* GCShader::LoadShaderFromFile(const std::wstring& filename) {
+ID3DBlob* GCShader::LoadShaderFromFile(const std::wstring& filename) 
+{
 	std::ifstream file(filename, std::ios::binary | std::ios::ate);
-	if (!file.is_open()) {
+	if (!file.is_open()) 
+	{
 		throw std::runtime_error("Failed to open file for reading");
 	}
 	std::streamsize size = file.tellg();
@@ -209,11 +204,13 @@ ID3DBlob* GCShader::LoadShaderFromFile(const std::wstring& filename) {
 
 	ID3DBlob* shaderBlob = nullptr;
 	HRESULT hr = D3DCreateBlob(size, &shaderBlob);
-	if (FAILED(hr)) {
+	if (FAILED(hr)) 
+	{
 		throw std::runtime_error("Failed to create shader blob");
 	}
 
-	if (!file.read(static_cast<char*>(shaderBlob->GetBufferPointer()), size)) {
+	if (!file.read(static_cast<char*>(shaderBlob->GetBufferPointer()), size)) 
+	{
 		shaderBlob->Release();
 		throw std::runtime_error("Failed to read file");
 	}
@@ -221,7 +218,8 @@ ID3DBlob* GCShader::LoadShaderFromFile(const std::wstring& filename) {
 	return shaderBlob;
 }
 
-void GCShader::PreCompile(const std::string& filePath, const std::string& csoDestinationPath) {
+void GCShader::PreCompile(const std::string& filePath, const std::string& csoDestinationPath) 
+{
 	std::wstring wideFilePath(filePath.begin(), filePath.end());
 	std::wstring wideCsoDestinationPath(csoDestinationPath.begin(), csoDestinationPath.end());
 

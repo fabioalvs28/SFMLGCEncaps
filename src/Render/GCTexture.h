@@ -8,7 +8,6 @@ public:
 
     bool Initialize(const std::string& filePath, GCGraphics* pGraphics);
 
-
     inline UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
     inline ID3D12Resource* GetTextureBuffer() const { return m_pTextureBuffer; }
     inline ID3D12Resource* GetUploadTexture() const { return m_pUploadTexture; }

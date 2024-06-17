@@ -1,9 +1,8 @@
 #include "framework.h"
 
-
-// Utils 
 std::vector<std::string> split(std::string str, std::string delimiter)
 {
+	//Util splits a vector at delimiter
 	std::vector<std::string> v;
 	if (!str.empty()) {
 		int start = 0;
@@ -28,6 +27,7 @@ std::vector<std::string> split(std::string str, std::string delimiter)
 
 std::vector<float> getFloatCoordinates(std::vector<std::string>* pStrCoord)
 {
+	//Util changes string coords to floats 
 	std::vector<float> floatCoord;
 
 	for (int i = 0; i < pStrCoord->size(); i++)
@@ -37,36 +37,27 @@ std::vector<float> getFloatCoordinates(std::vector<std::string>* pStrCoord)
 
 	return floatCoord;
 }
-//
 
-
-
-
-
-
-
-
-/// CLASS
-GCModelParserObj::GCModelParserObj() {
+GCModelParserObj::GCModelParserObj() 
+{
 }
 
-GCModelParserObj::~GCModelParserObj() {
-}
-
-void GCModelParserObj::Initialize()
+GCModelParserObj::~GCModelParserObj() 
 {
 }
 
 bool GCModelParserObj::ParseObj(std::string fileName)
 {
-
+	//Parses the file into a vector with the coordinates, the triangles and the uvs
 	std::ifstream objFile(fileName);
 	std::string line;
 
-	if (objFile) {
+	if (objFile) 
+	{
 
 	}
-	else {
+	else 
+	{
 		return false;
 	}
 
@@ -146,18 +137,17 @@ bool GCModelParserObj::ParseObj(std::string fileName)
 	return true;
 }
 
-// TEXTURE
 GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 {
-
+	//Parses an obj and puts it into a geometry with textures
 	std::wstring wideFileName(fileName.begin(), fileName.end());
 
 	if (_waccess(wideFileName.c_str(), 0) == 0)
+	{
 		OutputDebugString((L"Obj file not found: " + wideFileName + L"\n").c_str());
-
+	}
 
 	ParseObj(fileName);
-
 
 	GCGeometry* objGeometry = new GCGeometry();
 
@@ -178,15 +168,17 @@ GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
 	return objGeometry;
 }
 
-// COLOR
 
-GCGeometry* GCModelParserObj::BuildObjColor(std::string fileName) {
 
+GCGeometry* GCModelParserObj::BuildObjColor(std::string fileName) 
+{
+	//Parses an obj and puts it into a geometry with colors
 	std::wstring wideFileName(fileName.begin(), fileName.end());
 
 	if (_waccess(wideFileName.c_str(), 0) == 0)
+	{
 		OutputDebugString((L"Obj file not found: " + wideFileName + L"\n").c_str());
-
+	}
 
 	ParseObj(fileName);
 

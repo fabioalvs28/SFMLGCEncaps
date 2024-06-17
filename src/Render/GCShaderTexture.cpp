@@ -1,6 +1,7 @@
 #include "framework.h"
 
-void GCShaderTexture::CompileShader() {
+void GCShaderTexture::CompileShader() 
+{
 	m_vsByteCode = LoadShaderFromFile(L"../../../src/Render/CsoCompiled/textureVS.cso");
 	m_psByteCode = LoadShaderFromFile(L"../../../src/Render/CsoCompiled/texturePS.cso");
 	m_InputLayout =

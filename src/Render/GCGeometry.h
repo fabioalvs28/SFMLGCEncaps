@@ -1,10 +1,9 @@
 #pragma once
 
-
-struct GCGeometry {
+struct GCGeometry 
+{
 public:
 	virtual ~GCGeometry() {}
-
 
 	std::vector<std::uint16_t> indices;
 	std::size_t vertexNumber;

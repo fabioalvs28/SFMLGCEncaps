@@ -1,10 +1,7 @@
 #pragma once
 class Window
 {
-
-
 public:
-
     Window(HINSTANCE hInstance);
     Window(const Window& rhs) = delete;
     Window& operator=(const Window& rhs) = delete;
@@ -27,13 +24,11 @@ public:
     HWND GetHMainWnd();
 
 private:
-
     void OnResize();
 
     bool InitMainWindow();
 
     void CalculateFrameStats();
-
 
 private:
 
@@ -57,7 +52,5 @@ private:
     IDXGIFactory4* mdxgiFactory;
     // Derived class should set these in derived constructor to customize starting values.
     std::wstring mMainWndCaption = L"Rendu";
-
-
     //GCRender* m_pRender;
 };
