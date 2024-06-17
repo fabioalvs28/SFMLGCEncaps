@@ -7,7 +7,7 @@ struct GCQUATERNION
 {
 	float x, y, z, w;
 
-	GCQUATERNION();
+	GCQUATERNION() = default;
 	GCQUATERNION(float x, float y, float z, float w);
 	~GCQUATERNION() = default;
 

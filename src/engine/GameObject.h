@@ -46,6 +46,7 @@ public:
     GCScene* GetScene() const { return m_pScene; }
     GCGameObject* GetParent() const { return m_pParent; }
 
+    GCTransform m_transform;
 private:
     GCGameObject( GCScene* pScene );
     GCGameObject( GCScene* pScene, const char* name, GCGameObject* pParent, bool active, const char* tag, int layer );
@@ -71,7 +72,6 @@ protected:
     bool m_active;
     const char* m_tag;
     int m_layer;
-    GCTransform m_transform;
     GCMap<int, Component*> m_componentsList;
 
 };
@@ -88,7 +88,7 @@ T* GCGameObject::AddComponent()
 {
     if ( GetComponent<T>() != nullptr ) return nullptr;
     T* component = new T();
-    component.SetGameObject( this );
+    component->SetGameObject( this );
     m_componentsList.Insert( T::TYPE, component );
     return component;
 }
