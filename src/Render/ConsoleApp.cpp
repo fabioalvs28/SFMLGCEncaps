@@ -33,16 +33,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
 	GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, STEnum::texture);
 
-
-	//GCShader * shader3 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath);
-
 	///// Create Render Resources
 	graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation
 
 
 	shader1->Load();
 	shader2->Load();
-	//shader3->Load();
 
 
 	// Mesh
@@ -95,75 +91,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	DirectX::XMFLOAT4X4 transposedWorld;
 	DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&I)));
-
-
-
-	//graphics->GetRender()->PrepareDraw();
-
-
-	//material->Update(&cb);
-	//material->Draw(mesh1);
-
-	//material->Draw(&cb, mesh1);
-
-
-
-
-
-
-	////Yellow 
-	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
-	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	//graphics->GetRender()->DrawObject(mesh1, material);
-
-	//////Red
-	//graphics->UpdateWorldConstantBuffer(material, transposedWorld);
-	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	//graphics->GetRender()->DrawObject(mesh, material);
-
-
-
-
-	//////Red
-	//graphics->UpdateWorldConstantBuffer(material, transposedWorld);
-	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	//graphics->GetRender()->DrawObject(mesh, material);
-
-	// Singe
-
-	//GCTest worldData;
-	//worldData.world = MathHelper::Identity4x4();
-	//worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-
-	//graphics->UpdateWorldConstantBuffer(material2, MathHelper::Identity4x4());
-
-	////Yellow 
-	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
-	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	//graphics->GetRender()->DrawObject(mesh1, material);
-
-
-
-
-
-
-	//graphics->GetRender()->PostDraw();
-
-	//Resets the count of material
-	//
-	//for (int i = 0; i < graphics->GetMaterials().size(); i++)
-	//	graphics->GetMaterials()[i]->ResetCBCount();
-
-
-	//// Loop Again < |||| >
-
-	//graphics->GetRender()->PrepareDraw();
-
-	//	//Yellow 
-	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
-	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	//graphics->GetRender()->DrawObject(mesh1, material);
-
 
 	// Réinitialisation des constant buffers des matériaux
 	for (auto& material : graphics->GetMaterials())
