@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{0FEA8DE6-F5B1-46D5-9B02-0989EFA379A9}</UniqueIdentifier>
+      <UniqueIdentifier>{4210B401-110C-4FFB-8982-E997C19ECD6E}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{DFB6F585-A509-4EE1-9B8B-A19AD18206DC}</UniqueIdentifier>
+      <UniqueIdentifier>{4E84989F-F588-48D1-A7C0-B70CC04A8141}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{5BA16748-8FD2-4B58-8588-0D1FE2B0DF04}</UniqueIdentifier>
+      <UniqueIdentifier>{B6751AF4-08DE-4050-83EF-4AC375BD4725}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -25,6 +25,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\GCGraphicsProfiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCMaterial.cpp">
@@ -63,6 +66,9 @@
     <ClCompile Include="..\..\..\src\Render\GCTextureFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\GCUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\Render\MathHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -88,6 +94,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCGraphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCGraphicsProfiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCMaterial.h">
@@ -124,6 +133,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCTextureFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\header.h">
