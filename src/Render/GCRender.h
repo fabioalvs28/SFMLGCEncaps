@@ -39,6 +39,7 @@ public:
 	void Draw(const Timer& gt);
 
 	bool DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial);
+	bool DrawOneObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial,int pixelX,int pixelY, DirectX::XMMATRIX proj, DirectX::XMMATRIX view);
 	//void BuildBoxGeometry();
 	void OnResize();
 

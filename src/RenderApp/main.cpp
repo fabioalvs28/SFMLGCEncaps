@@ -48,7 +48,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// SET CAMERA 
 
-	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
+	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -5.0f, 0.1f, 1.0f);
 	DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
 	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -100,6 +100,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	graphics->GetRender()->UpdateBuffers(material, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
 	graphics->GetRender()->DrawOneObject(mesh, material);
 
+	material2->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	material2->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	graphics->GetRender()->UpdateBuffers(material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObjectPixel(mesh1, material2,300,300,projectionMatrix,viewMatrix);
+
+	material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	material->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObjectPixel(mesh, material,1000,1000, projectionMatrix, viewMatrix);
+
+	material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	material->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObjectPixel(mesh, material, 1600, 500, projectionMatrix, viewMatrix);
 
 	graphics->GetRender()->PostDraw();
 

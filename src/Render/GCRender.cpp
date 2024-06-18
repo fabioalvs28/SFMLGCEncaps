@@ -585,3 +585,51 @@ void GCRender::UpdateBuffers(GCMaterial* pMaterial,DirectX::XMFLOAT4X4 worldMatr
 	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
 	pMaterial->UpdateConstantBufferData(cameraData, pMaterial->GetCameraCBData()[pMaterial->m_count]);
 }
+
+bool GCRender::DrawOneObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial, int pixelX, int pixelY , DirectX::XMMATRIX proj, DirectX::XMMATRIX view)
+{
+
+	if (pMaterial->GetShader() == nullptr || pMesh == nullptr) {
+		return false;
+	}
+	GCWORLDCB worldData;
+	DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pWindow->GetClientWidth(), m_pWindow->GetClientHeight(), proj, view);
+	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
+	DirectX::XMFLOAT4X4 convertedMatrix;
+	DirectX::XMStoreFloat4x4(&convertedMatrix, DirectX::XMMatrixTranspose(translationMatrix));
+	worldData.world = convertedMatrix;
+
+	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
+
+	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
+	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
+
+	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = pMesh->GetBufferGeometryData()->VertexBufferView();
+	m_CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
+	m_CommandList->IASetIndexBuffer(&indexBufferView);
+
+	//
+	if (pMaterial->GetShader()->GetType() == 1) // Texture?
+	{
+		if (pMaterial->GetTexture())
+		{
+			m_CommandList->SetGraphicsRootDescriptorTable(2, pMaterial->GetTexture()->GetTextureAddress());
+		}
+		else
+		{
+			return false;
+		}
+	}
+	// Object
+
+	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
+	// Camera
+	m_CommandList->SetGraphicsRootConstantBufferView(1, pMaterial->GetCameraCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
+	// Draw
+	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
+
+	pMaterial->m_count++;
+	return true;
+}
