@@ -14,7 +14,7 @@
 GCInputManager::GCInputManager()
 {
 
-    m_pWindow->winPos = { 10 ,10 }; m_pWindow->winSize = { 800, 500 }; m_pWindow->center = { m_pWindow->winSize.x / 2 , m_pWindow->winSize.y / 2 }; // !! valeur random de la fenêtre à changer quand on aura la bonne window !!
+    //m_pWindow->winPos = { 10 ,10 }; m_pWindow->winSize = { 800, 500 }; m_pWindow->center = { m_pWindow->winSize.x / 2 , m_pWindow->winSize.y / 2 }; // !! valeur random de la fenêtre à changer quand on aura la bonne window !!
     m_checkController = true;
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
@@ -108,10 +108,6 @@ void GCInputManager::UpdateInputs()
             m_controllerList[i]->UpdateControllerInput();
             m_controllerList[i]->UpdateJoySticksinput();
             m_controllerList[i]->UpdateTriggers();
-            for (int j = 0; j < m_controllerList[i]->m_updatedControllerKeys.GetSize(); j++)
-            {
-                m_updatedKeys.PushBack(m_controllerList[i]->m_updatedControllerKeys[j]);
-            }
         }
     }   
 }
@@ -124,6 +120,41 @@ void GCInputManager::AddToUpdateList(int index, BYTE state)
 
 
 
+
+
+bool GCInputManager::IsKeyPressed()
+{
+    if (m_updatedKeys.GetSize() != 0)
+        return true;
+    return false;
+}
+
+bool GCInputManager::IsKeyPressed(int keyID)
+{
+    if (m_keyState[keyID] != NONE)
+        return true;
+    return false;
+}
+
+
+bool GCInputManager::IsControllerPressed(int controllerID)
+{
+    if (m_controllerList[controllerID] == nullptr) return false; 
+    if (m_controllerList[controllerID]->m_updatedControllerKeys.GetSize() != 0) return true; 
+    return false;
+}
+bool GCInputManager::IsControllerKeyPressed(int controllerID, int button)
+{
+    if (m_controllerList[controllerID] == nullptr) return false;
+    if (m_controllerList[controllerID]->m_updatedControllerKeys[button] != NONE) return true;
+    return false;
+}
+
+GCVector<int>* GCInputManager::GetControllereUpdatekeys(int controllerID)
+{
+    if (m_controllerList[controllerID] == nullptr) return nullptr;
+    return &m_controllerList[controllerID]->m_updatedControllerKeys;
+}
 
 
 

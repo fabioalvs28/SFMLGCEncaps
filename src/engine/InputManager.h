@@ -6,8 +6,8 @@
 
 //////////////////////////////////////////////
 
-// 1 - 255 : Mouse + KeyBoard.  1000 - 1019 : Controller 0 , 1100 - 1119 : Controller 1 , 1200-1219 : Controller 3 , 1300 - 1319 : Controller 4 ;
-// Controller : 0 - 15 : buttons, 16 : analog State leftjoystick, 17 : analog State right joystick, 18 : analog ltrigger, 19 : analog r trigger.
+// 1 - 255 : Mouse + KeyBoard.  
+
 
 #define CONTROLLER_BUTTON_A                        0x5800
 #define CONTROLLER_BUTTON_B                        0x5801
@@ -119,7 +119,7 @@ class GCInputManager
 
     friend class GCGameManager;
 
-private:
+public:
 
     GCInputManager();
     ~GCInputManager() {};
@@ -127,6 +127,19 @@ private:
     void GetConnectedController();
 
     void UpdateInputs();
+
+    bool IsKeyPressed();
+    bool IsKeyPressed(int keyID);
+
+    bool IsControllerPressed(int controllerID); 
+    bool IsControllerKeyPressed(int controllerID, int button);
+
+    GCVector<int>* GetControllereUpdatekeys(int controllerID);
+
+    GCVector<int>* GetUpdatedKeys() { return &m_updatedKeys; }
+
+    void AddToUpdateList(int index, BYTE state);
+
 
 
 
@@ -142,11 +155,6 @@ private:
     float GetControllerLeftTriggerState( int controllerID ) { return m_controllerList[controllerID]->m_pControllerTrigger[0]; }
     float GetControllerRightTriggerState( int controllerID ) { return m_controllerList[controllerID]->m_pControllerTrigger[1]; }
 
-
-
-    GCVector<int>* GetUpdatedKeys() { return &m_updatedKeys; }
-
-    void AddToUpdateList(int index, BYTE state);
 
 private:
 
