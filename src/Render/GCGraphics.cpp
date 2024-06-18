@@ -13,7 +13,7 @@ void GCGraphics::Initialize(Window* pWindow)
 
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
-    m_pModelParserFactory = new GCModelParserObj();
+    m_pModelParserFactory = new GCModelParser();
 }
 
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) 

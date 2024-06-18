@@ -39,7 +39,7 @@ public:
 	GCRender* GetRender() const { return m_pRender; }
 
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
-	GCModelParserObj* GetModelParserFactory() const { return m_pModelParserFactory; }
+	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
 
 private:
 	// Render instance contain Window
@@ -57,6 +57,6 @@ private:
 
 	// Mesh
 	GCPrimitiveFactory* m_pPrimitiveFactory;
-	GCModelParserObj* m_pModelParserFactory;
+	GCModelParser* m_pModelParserFactory;
 };
 

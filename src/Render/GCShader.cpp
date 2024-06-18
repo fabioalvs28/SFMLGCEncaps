@@ -43,59 +43,69 @@ void GCShader::CompileShader()
 {
 }
 
-void GCShader::RootSign() 
+
+void GCShader::RootSign()
 {
-    // Déclaration des paramètres racine
-    CD3DX12_ROOT_PARAMETER slotRootParameter[3];
+	// Déclaration des paramètres racine
+	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
 
 	slotRootParameter[0].InitAsConstantBufferView(0);
 	slotRootParameter[1].InitAsConstantBufferView(1);
-    
-	// If texture
-	if (m_type == texture) 
+
+	// Configuration de l'échantillonneur statique
+	CD3DX12_STATIC_SAMPLER_DESC staticSample = CD3DX12_STATIC_SAMPLER_DESC(
+		0, // shaderRegister
+		D3D12_FILTER_MIN_MAG_MIP_LINEAR, // filter
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressU
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressV
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressW
+		0.0f, // mipLODBias
+		16, // maxAnisotropy
+		D3D12_COMPARISON_FUNC_ALWAYS, // comparisonFunc
+		D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK, // borderColor
+		0.0f, // minLOD
+		D3D12_FLOAT32_MAX // maxLOD
+	);
+
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+
+	switch (m_type)
 	{
+	case 0:
+		// Configuration de la signature racine
+		rootSigDesc.Init(2, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+		break;
+
+	case 1: //texture
 		CD3DX12_DESCRIPTOR_RANGE srvTable;
 		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 		slotRootParameter[2].InitAsDescriptorTable(1, &srvTable);
+
+		// Configuration de la signature racine
+		rootSigDesc.Init(3, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+		break;
 	}
 
-    // Configuration de l'échantillonneur statique
-    CD3DX12_STATIC_SAMPLER_DESC staticSample = CD3DX12_STATIC_SAMPLER_DESC(
-        0, // shaderRegister
-        D3D12_FILTER_MIN_MAG_MIP_LINEAR, // filter
-        D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressU
-        D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressV
-        D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressW
-        0.0f, // mipLODBias
-        16, // maxAnisotropy
-        D3D12_COMPARISON_FUNC_ALWAYS, // comparisonFunc
-        D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK, // borderColor
-        0.0f, // minLOD
-        D3D12_FLOAT32_MAX // maxLOD
-    );
 
-    // Configuration de la signature racine
-    CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(m_type+2, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	// Sérialisation de la signature racine
+	ID3DBlob* serializedRootSig = nullptr;
+	ID3DBlob* errorBlob = nullptr;
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
 
-    // Sérialisation de la signature racine
-    ID3DBlob* serializedRootSig = nullptr;
-    ID3DBlob* errorBlob = nullptr;
-    HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
+	// Gestion des erreurs de sérialisation
+	if (errorBlob != nullptr)
+	{
+		::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+	}
 
-    // Gestion des erreurs de sérialisation
-    if (errorBlob != nullptr) {
-        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-    }
-
-    // Création de la signature racine
-    m_pRender->Getmd3dDevice()->CreateRootSignature(
-        0,
-        serializedRootSig->GetBufferPointer(),
-        serializedRootSig->GetBufferSize(),
-        IID_PPV_ARGS(&m_RootSignature)
-    );
+	// Création de la signature racine
+	m_pRender->Getmd3dDevice()->CreateRootSignature(
+		0,
+		serializedRootSig->GetBufferPointer(),
+		serializedRootSig->GetBufferSize(),
+		IID_PPV_ARGS(&m_RootSignature)
+	);
 }
-
 void GCShader::Pso() 
 {
 	// Initialize the graphics pipeline state description

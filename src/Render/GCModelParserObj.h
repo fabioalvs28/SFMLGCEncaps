@@ -1,24 +1,17 @@
 #pragma once
 
-struct ObjInfo 
+struct ModelInfos
 {
 	std::vector<std::vector<float>> coords;
 	std::vector<std::vector<uint16_t>> facesInfos;
 	std::vector<std::vector<float>> uvs;
 };
 
-class GCModelParserObj
+class GCModelParserObj :public GCModelParser
 {
 public:
 	GCModelParserObj();
 	~GCModelParserObj();
-	bool ParseObj(std::string fileName);
 
-	GCGeometry* BuildObjColor(std::string fileName);
-	GCGeometry* BuildObjTexture(std::string fileName);
-
-private:
-	ObjInfo m_ParsedObj;
-	std::string m_fileName;
+	bool Parse(std::string fileName);
 };
-
