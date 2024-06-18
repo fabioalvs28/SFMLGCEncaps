@@ -426,13 +426,15 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 		}
 	}
 	// Object
-	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+	pMaterial->IncrementCBCount();
+
 	// Camera
-	m_CommandList->SetGraphicsRootConstantBufferView(1, pMaterial->GetCameraCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(1, m_pCurrentViewProj->Resource()->GetGPUVirtualAddress());
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
-	pMaterial->m_count++;
+
 	return true;
 }
 
@@ -453,54 +455,6 @@ void GCRender::PostDraw() {
 
 
 	FlushCommandQueue();
-}
-
-ID3D12Resource* GCRender::CurrentBackBuffer()const
-{
-	return m_SwapChainBuffer[m_CurrBackBuffer];
-}
-
-D3D12_CPU_DESCRIPTOR_HANDLE GCRender::CurrentBackBufferView()const
-{
-	return CD3DX12_CPU_DESCRIPTOR_HANDLE(
-		m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
-		m_CurrBackBuffer,
-		m_rtvDescriptorSize);
-}
-
-DXGI_FORMAT GCRender::GetBackBufferFormat()
-{
-	return m_BackBufferFormat;
-}
-
-bool GCRender::Get4xMsaaState() 
-{
-	return m_4xMsaaState;
-}
-
-UINT GCRender::Get4xMsaaQuality() 
-{
-	return m_4xMsaaQuality;
-}
-
-D3D12_CPU_DESCRIPTOR_HANDLE GCRender::GetDepthStencilView()const
-{
-	return m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
-}
-
-DXGI_FORMAT GCRender::GetDepthStencilFormat() 
-{
-	return m_DepthStencilFormat;
-}
-
-ID3D12GraphicsCommandList* GCRender::GetCommandList() 
-{
-	return m_CommandList;
-}
-
-ID3D12Device* GCRender::Getmd3dDevice()
-{
-	return m_d3dDevice;
 }
 
 void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)

@@ -5,18 +5,12 @@ GCMaterial::GCMaterial(){}
 GCMaterial::~GCMaterial(){}
 
 
-void GCMaterial::Initialize(GCShader* pShader, GCTexture* pTexture) 
+void GCMaterial::Initialize(GCShader* pShader, GCTexture* pTexture, GCRender* pRender) 
 {
+	m_pRender = pRender;
 	m_pShader = pShader;
 	m_pTexture = pTexture;
 }
-
-void GCMaterial::addObjectCB(GCShaderUploadBufferBase* pObjectCB) 
-{
-	m_vpObjectCB.push_back(pObjectCB);
-}
-
-
 
 void GCMaterial::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
 {

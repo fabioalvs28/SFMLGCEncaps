@@ -37,48 +37,33 @@ public:
 	void PrepareDraw();
 	void PostDraw();
 
-	// Update Constant Buffer for Camera 
-	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
-
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
 	// Getter
-	bool Get4xMsaaState();
-	ID3D12Device* Getmd3dDevice();
-	ID3D12Resource* CurrentBackBuffer() const;
-	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
-	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const;
-	UINT Get4xMsaaQuality();
-	DXGI_FORMAT GetBackBufferFormat();
-	DXGI_FORMAT GetDepthStencilFormat();
+	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
+	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
+	inline bool Get4xMsaaState() const { return m_4xMsaaState; }
+	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
+	inline DXGI_FORMAT GetDepthStencilFormat() const { return m_DepthStencilFormat; }
+	inline ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
+	inline ID3D12Device* Getmd3dDevice() const { return m_d3dDevice; }
+	inline ID3D12CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
+	inline ID3D12CommandAllocator* GetCommandAllocator() const { return m_DirectCmdListAlloc; }
 
-	ID3D12GraphicsCommandList* GetCommandList();
+	inline ID3D12Fence* GetFence() { return m_Fence; }
 
-	// Add getter by william 
-	ID3D12CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
-	ID3D12CommandAllocator* GetCommandAllocator() const { return m_DirectCmdListAlloc; }
+	inline ID3D12DescriptorHeap* GetRtvHeap() { return m_rtvHeap; }
+	inline ID3D12DescriptorHeap* GetDsvHeap() { return m_dsvHeap; }
+	inline ID3D12DescriptorHeap* GetCbvSrvUavSrvDescriptorHeap() { return m_cbvSrvUavDescriptorHeap; }
+	inline UINT GetRtvDescriptorSize() const { return m_rtvDescriptorSize; }
+	inline UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
+	inline UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
-	ID3D12Fence* GetFence() { return m_Fence; }
-
-	ID3D12DescriptorHeap* GetRtvHeap() { return m_rtvHeap; }
-	ID3D12DescriptorHeap* GetDsvHeap() { return m_dsvHeap; }
-	ID3D12DescriptorHeap* GetCbvSrvUavSrvDescriptorHeap() { return m_cbvSrvUavDescriptorHeap; }
-	UINT GetRtvDescriptorSize() const { return m_rtvDescriptorSize; }
-	UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
-	UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
-
-
-	//Creates an Object Constant Buffer(useful for changing the position of an entity)
-	template<typename ShaderTypeConstantBuffer>
-	GCShaderUploadBuffer<ShaderTypeConstantBuffer>* CreateObjectCB() {
-		return new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(Getmd3dDevice(), 1, true);
-	}
-
-	GCShaderUploadBuffer<GCCAMERACB>* CreateCameraCB();
-	
-	void UpdateBuffers(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
+	GCShaderUploadBufferBase* m_pCurrentViewProj;
 
 private:
 	Window* m_pWindow;
@@ -127,6 +112,8 @@ private:
 
 	// Camera (Temporary)
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
+
+
 };
 
 #ifndef ReleaseCom
