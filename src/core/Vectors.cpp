@@ -25,6 +25,17 @@ GCVEC2::GCVEC2( float x, float y )
 
 
 // <summary>
+// 
+// </summary>
+const char* GCVEC2::ToString() const
+{
+    char buffer[22];
+    sprintf_s(buffer, "{%f ; %f}", x, y);
+    return buffer;
+}
+
+
+// <summary>
 // This function sets the x and y components of the vector to zero.
 // </summary>
 void GCVEC2::SetZero()
@@ -315,6 +326,17 @@ GCVEC3::GCVEC3( float x, float y, float z )
     this->x = x;
     this->y = y;
     this->z = z;
+}
+
+
+// <summary>
+// 
+// </summary>
+const char* GCVEC3::ToString() const
+{
+    char buffer[30];
+    sprintf_s(buffer, "{%f ; %f ; %f}", x, y, z);
+    return buffer;
 }
 
 
