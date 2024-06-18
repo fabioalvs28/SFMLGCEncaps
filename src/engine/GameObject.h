@@ -78,6 +78,13 @@ protected:
 
 
 
+////////////////////////////////////////////////////////
+/// @brief Adds a new Component to the GameObject.
+/// 
+/// @tparam T The class of the Component to be added.
+/// 
+/// @return A pointer to the newly created Component.
+////////////////////////////////////////////////////////
 template<class T>
 T* GCGameObject::AddComponent()
 {
@@ -88,6 +95,11 @@ T* GCGameObject::AddComponent()
     return component;
 }
 
+///////////////////////////////////////////////////////////
+/// @tparam T The class of the Component to be searched.
+/// 
+/// @return A pointer to the searched Component.
+///////////////////////////////////////////////////////////
 template<class T>
 T* GCGameObject::GetComponent()
 {
@@ -97,6 +109,11 @@ T* GCGameObject::GetComponent()
     return nullptr;
 }
 
+//////////////////////////////////////////////////////////
+/// @brief Removes a Component from the GameObject.
+/// 
+/// @tparam T The class of the Component to be removed.
+//////////////////////////////////////////////////////////
 template<class T>
 void GCGameObject::RemoveComponent()
 {
