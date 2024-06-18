@@ -50,6 +50,9 @@ public:
 	std::vector<GCMesh*> GetMeshes();
 	std::vector<GCTexture*> GetTextures();
 
+	// Update Resources Need
+	//void UpdateMaterials();
+
 	// Id
 	// #TODO Se poser la question du suivi des ressources
 	int GetTextureId() const { return m_textureId; }
@@ -96,9 +99,10 @@ template<typename ShaderTypeConstantBuffer>
 void GCGraphics::UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData)
 {
 	// Don't create UploadBuffer if the number of object draw in the same material don't increase
-	if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size())
+	if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size()) {
 		pMaterial->CreateCBObject<ShaderTypeConstantBuffer>();
-	
+	}
+		
 	// Update 
 	pMaterial->UpdateConstantBuffer(objectData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
 }

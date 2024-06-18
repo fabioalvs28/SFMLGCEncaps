@@ -3,9 +3,7 @@
 class GCShaderUploadBufferBase
 {
 public:
-    GCShaderUploadBufferBase()
-        : m_pUpload(nullptr), m_data(nullptr), m_elementByteSize(0), m_isConstantBuffer(false),
-        m_isUsed(false), m_framesSinceLastUse(0) {}
+    GCShaderUploadBufferBase() : m_pUpload(nullptr), m_data(nullptr), m_elementByteSize(0), m_isConstantBuffer(false), m_isUsed(false), m_framesSinceLastUse(0) {}
     virtual ~GCShaderUploadBufferBase()
     {
         if (m_pUpload)
@@ -22,25 +20,8 @@ public:
 
     virtual void CopyData(int elementIndex, const GCSHADERCB& data) = 0;
 
-    void SetUsed(bool used)
-    {
-        m_isUsed = used;
-        if (used)
-        {
-            m_framesSinceLastUse = 0;
-        }
-    }
-    bool IsUsed() const { return m_isUsed; }
-
-    void IncrementFramesSinceLastUse()
-    {
-        // If not used
-        if (!m_isUsed)
-        {
-            m_framesSinceLastUse++;
-        }
-    }
-    int GetFramesSinceLastUse() const { return m_framesSinceLastUse; }
+    bool m_isUsed;
+    int m_framesSinceLastUse;
 
 protected:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_pUpload;
@@ -48,8 +29,7 @@ protected:
     UINT m_elementByteSize;
     bool m_isConstantBuffer;
 
-    bool m_isUsed;
-    int m_framesSinceLastUse;
+
 
     UINT CalcConstantBufferByteSize(UINT byteSize)
     {

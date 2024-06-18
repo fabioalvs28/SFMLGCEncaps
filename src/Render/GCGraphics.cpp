@@ -190,6 +190,28 @@ void GCGraphics::RemoveTexture(GCTexture* pTexture)
     delete pTexture;
 }
 
+
+
+//void GCGraphics::UpdateMaterials()
+//{
+//    // Parcourir tous les matériaux
+//    
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
     GCVIEWPROJCB cameraData;
     cameraData.view = viewMatrix;
@@ -206,7 +228,6 @@ void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
 
     if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size())
         pMaterial->CreateCBObject<GCWORLDCB>();
-    //pMaterial->CreateCBObject<GCWORLDCB>();
 
     GCWORLDCB worldData;
     worldData.world = worldMatrix;
@@ -214,6 +235,8 @@ void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
 
 }
+
+
 
 
 

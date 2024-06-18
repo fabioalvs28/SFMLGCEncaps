@@ -98,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 
-	graphics->GetRender()->PrepareDraw();
+	//graphics->GetRender()->PrepareDraw();
 
 
 	//material->Update(&cb);
@@ -131,9 +131,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// Singe
 
-	GCTest worldData;
-	worldData.world = MathHelper::Identity4x4();
-	worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	//GCTest worldData;
+	//worldData.world = MathHelper::Identity4x4();
+	//worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	//graphics->UpdateWorldConstantBuffer(material2, MathHelper::Identity4x4());
 
@@ -147,12 +147,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 
-	graphics->GetRender()->PostDraw();
+	//graphics->GetRender()->PostDraw();
 
 	//Resets the count of material
-	
-	for (int i = 0; i < graphics->GetMaterials().size(); i++)
-		graphics->GetMaterials()[i]->ResetCBCount();
+	//
+	//for (int i = 0; i < graphics->GetMaterials().size(); i++)
+	//	graphics->GetMaterials()[i]->ResetCBCount();
 
 
 	//// Loop Again < |||| >
@@ -165,58 +165,116 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//graphics->GetRender()->DrawObject(mesh1, material);
 
 
-
-
-
-
-
-	// Au début de votre boucle while, initialiser le timer
-	auto start = std::chrono::high_resolution_clock::now();
-
-	while (true) {
-		GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-		graphics->GetRender()->PrepareDraw();
-
-		GCTest worldData;
-		worldData.world = MathHelper::Identity4x4();
-		worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-
-		graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
-		graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-		graphics->GetRender()->DrawObject(mesh2, material2);
-
-		graphics->UpdateWorldConstantBuffer(material2, MathHelper::Identity4x4());
-		graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-		graphics->GetRender()->DrawObject(mesh2, material2);
-
-		//profiler.LogInfo(std::to_string(material2->GetCount()));
-
-		graphics->GetRender()->PostDraw();
-
-		for (int i = 0; i < graphics->GetMaterials().size(); i++) {
-			graphics->GetMaterials()[i]->ResetCBCount();
+	// Réinitialisation des constant buffers des matériaux
+	for (auto& material : graphics->GetMaterials())
+	{
+		for (auto& cbObject : material->GetObjectCBData())
+		{
+			cbObject->m_isUsed = false;
 		}
-
-		profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
-
-		// Vérifier si 3 secondes se sont écoulées
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = duration_cast<std::chrono::seconds>(end - start).count();
-
-		//if (duration >= 3) {
-		//	profiler.LogInfo("Il faut enlever les constant buffers inutilisés du material");
-		//	// Réinitialiser le timer
-		//	start = std::chrono::high_resolution_clock::now();
-		//}
 	}
 
+	// Préparation du rendu
+	graphics->GetRender()->PrepareDraw();
 
-	//graphics->GetRender()->PostDraw();
+	// Première objet
+	GCTest worldData;
+	worldData.world = transposedWorld;
+	worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawObject(mesh2, material2);
 
-	// *
+	// Deuxième objet
+	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawObject(mesh2, material2);
+
+	// Troisième objet
+	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawObject(mesh2, material2);
+
+	// Post traitement du rendu
+	graphics->GetRender()->PostDraw();
+
+	// Réinitialisation des compteurs CB pour tous les matériaux
+	for (int i = 0; i < graphics->GetMaterials().size(); i++) {
+		graphics->GetMaterials()[i]->ResetCBCount();
+	}
+
+	// Vérification des CB inutilisés dans les matériaux
+	// CHECK FOR REMOVE CB BUFFER IN MATERIALS 
+	for (auto& material : graphics->GetMaterials())
+	{
+		for (auto& cbObject : material->GetObjectCBData())
+		{
+			if (cbObject->m_isUsed)
+				cbObject->m_framesSinceLastUse = 0;
+			if (!cbObject->m_isUsed)
+			{
+				cbObject->m_framesSinceLastUse++;
+				if (cbObject->m_framesSinceLastUse > 180)
+				{
+					profiler.LogInfo("Constant buffer inutilisé trouvé dans le matériau : ");
+				}
+			}
+		}
+	}
+
+	// Log de la taille des CB dans material2
+	profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
 
 
+	// DEUXIEME FRAME  
+
+	// Réinitialisation des constant buffers des matériaux
+	for (auto& material : graphics->GetMaterials())
+	{
+		for (auto& cbObject : material->GetObjectCBData())
+		{
+			cbObject->m_isUsed = false;
+		}
+	}
+
+	// Préparation du rendu
+	graphics->GetRender()->PrepareDraw();
+
+	// Premier objet
+	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawObject(mesh2, material2);
+
+	// Deuxième objet
+	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawObject(mesh2, material2);
+
+	// Post traitement du rendu
+	graphics->GetRender()->PostDraw();
+
+	for (auto& material : graphics->GetMaterials())
+	{
+		for (auto& cbObject : material->GetObjectCBData())
+		{
+			if (cbObject->m_isUsed)
+				cbObject->m_framesSinceLastUse = 0;
+			if (!cbObject->m_isUsed)
+			{
+				cbObject->m_framesSinceLastUse++;
+				if (cbObject->m_framesSinceLastUse > 180)
+				{
+					profiler.LogInfo("Constant buffer inutilisé trouvé dans le matériau : ");
+				}
+			}
+		}
+	}
+
+	// Log de la taille des CB dans material2
+	profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
+
+
+	window->Run(graphics->GetRender());
 
 
 }

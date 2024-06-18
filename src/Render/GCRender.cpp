@@ -427,6 +427,8 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	}
 	// Object
 	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+	// Set cb object buffer on used
+	pMaterial->GetObjectCBData()[pMaterial->GetCount()]->m_isUsed = true;
 	pMaterial->IncrementCBCount();
 
 	// Camera
