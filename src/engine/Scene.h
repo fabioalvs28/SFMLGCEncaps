@@ -14,7 +14,7 @@ public:
 	void Load();
 	void Unload();
 	
-	GCGameObject* CreateGameObject( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 );
+	GCGameObject* CreateGameObject();
 	void DuplicateGameObject( GCGameObject* pGameObject ); 
 	GCGameObject* FindGameObjectByName( const char* name );
 	GCGameObject* FindGameObjectByID( int ID );	void MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject ); 

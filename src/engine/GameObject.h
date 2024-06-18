@@ -9,9 +9,38 @@ class GCScene;
 class GCGameObject
 {
 friend class GCScene;
+
+protected:
+    GCGameObject( GCScene* pScene );
+    ~GCGameObject() = default;
     
+    void Update();
+    void Render();
+
 public:
     void Destroy();
+    
+    void SetParent( GCGameObject* pParent );
+    void RemoveParent();
+    GCGameObject* CreateChild();
+    void AddChild( GCGameObject* pChild );
+    void RemoveChild( GCGameObject* pChild );
+    void DeleteChild( GCGameObject* pChild );
+    void DeleteChildren();
+    
+    void SetActive( bool active );
+    void SetName( const char* name );
+    void SetTag( const char* tag );
+    void SetLayer( int layer );
+    
+    unsigned int GetID() const;
+    GCScene* GetScene() const;
+    GCGameObject* GetParent() const;
+    GCList<GCGameObject*> GetChildren() const;
+    bool IsActive() const;
+    const char* GetName() const;
+    const char* GetTag() const;
+    int GetLayer() const;
     
     template<class T>
     T* AddComponent();
@@ -20,69 +49,35 @@ public:
     template<class T>
     void RemoveComponent();
     void ClearComponents();
-    
-    void CreateChild( const char* name = "GameObject", bool active = true, const char* tag = "", int layer = 0 );
-    void AddChild( GCGameObject* pChild );
-    GCGameObject* GetChild( unsigned int childIndex ) { return m_childrenList.Get( childIndex ); }
-    GCVector<GCGameObject*> GetChildren() { return m_childrenList; }
-    void MoveChild( unsigned int childIndex, unsigned int newChildIndex );
-    void RemoveChild( GCGameObject* pChild );
-    void RemoveChild( unsigned int childIndex );
-    void DeleteChild( unsigned int childIndex );
-    void ClearChildren();
-    
-    void SetName( const char* name ) { m_name = name; }
-    void SetActive( bool active ) { m_active = active; }
-    void SetTag( const char* tag ) { m_tag = tag; }
-    void SetLayer( int layer ) { m_layer = layer; }
-    void SetScene( GCScene* pScene ) { m_pScene = pScene; }
-    void SetParent( GCGameObject* pParent );
-    
-    int GetID() const { return m_ID; }
-    const char* GetName() const { return m_name; }
-    bool IsActive() const { return m_active; }
-    const char* GetTag() const { return m_tag; }
-    int GetLayer() const { return m_layer; }
-    GCScene* GetScene() const { return m_pScene; }
-    GCGameObject* GetParent() const { return m_pParent; }
-
-    GCTransform m_transform;
-private:
-    GCGameObject( GCScene* pScene );
-    GCGameObject( GCScene* pScene, const char* name, GCGameObject* pParent, bool active, const char* tag, int layer );
-    ~GCGameObject() {}
-    
-    void Update();
-    
-    void RemoveComponent( int type );
-    
-    void SetNode( GCListNode<GCGameObject*>* pNode ) { m_pNode = pNode; }
-    GCListNode<GCGameObject*>* GetNode() const { return m_pNode; }
 
 protected:
-    static inline int s_nextID = 0;
-    int m_ID;
-    GCListNode<GCGameObject*>* m_pNode;
+    void RemoveComponent( int type );
+
+public:
+    GCTransform m_transform;
+
+protected:
+    static inline unsigned int s_gameObjectsCount = 0;
+    unsigned int m_ID;
+    GCListNode<GCGameObject*>* m_pSceneNode;
+    GCListNode<GCGameObject*>* m_pChildNode;
     
     GCScene* m_pScene;
     GCGameObject* m_pParent;
-    GCVector<GCGameObject*> m_childrenList;
+    GCList<GCGameObject*> m_childrenList;
     
-    const char* m_name;
+    bool m_created;
     bool m_active;
+    const char* m_name;
     const char* m_tag;
     int m_layer;
+    
     GCMap<int, Component*> m_componentsList;
 
 };
 
-// <summary>
-// This function creates a new instance of the specified component type, initializes it with the game object, and adds it to the game object's component list.
-// If the component type already exists on the game object, the function returns nullptr.
-// The component's memory is managed internally, and it will be automatically deleted when the game object is destroyed or when the component is removed.
-// It also returns a pointer to the newly created component.
-// </summary>
-// <template param name="T"> The type of the component to be added. </template param>
+
+
 template<class T>
 T* GCGameObject::AddComponent()
 {
@@ -93,13 +88,6 @@ T* GCGameObject::AddComponent()
     return component;
 }
 
-// <summary>
-// This function searches the game object's component list for a component of the specified type.
-// If the component is found, it returns a pointer to the component.
-// If the component is not found, it returns nullptr.
-// The returned pointer should not be used to delete the component, as there is a function to do it.
-// </summary>
-// <template param name="T"> The type of the component to be retrieved. </template param>
 template<class T>
 T* GCGameObject::GetComponent()
 {
@@ -109,12 +97,6 @@ T* GCGameObject::GetComponent()
     return nullptr;
 }
 
-// <summary>
-// This function searches the game object's component list for a component of the specified type.
-// If the component is found, it is removed from the list and deleted.
-// The component's memory is managed internally, and it will be automatically deleted.
-// </summary>
-// <template param name="T"> The type of the component to be removed. </template param>
 template<class T>
 void GCGameObject::RemoveComponent()
 {

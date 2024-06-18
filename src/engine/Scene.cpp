@@ -94,11 +94,11 @@ void GCScene::Render()
 // <param name="active"> The activation status of the game object. Default value is true.</param>
 // <param name="tag"> The tag of the game object. Default value is an empty string.</param>
 // <param nam="layer"> The layer of the game object. Default value is 0.</param>
-GCGameObject* GCScene::CreateGameObject( const char* name, bool active, const char* tag, int layer )
+GCGameObject* GCScene::CreateGameObject()
 {
-	GCGameObject* pGameObject = new GCGameObject( this, name, nullptr, active, tag, layer );
+	GCGameObject* pGameObject = new GCGameObject( this );
 	m_gameObjectsList.PushBack( pGameObject );
-	pGameObject->SetNode( m_gameObjectsList.GetLastNode() );
+	pGameObject->m_pSceneNode = m_gameObjectsList.GetLastNode();
 	return pGameObject;
 }
 
@@ -111,7 +111,8 @@ GCGameObject* GCScene::CreateGameObject( const char* name, bool active, const ch
 // <param name="pGameObject"> A pointer to the game object to be duplicated. </param>
 void GCScene::DuplicateGameObject( GCGameObject* pGameObject )
 {
-	CreateGameObject( pGameObject->GetName(), pGameObject->IsActive(), pGameObject->GetTag(), pGameObject->GetLayer() );
+	CreateGameObject();
+	// todo Rework Duplicate Function
 }
 
 
@@ -164,7 +165,7 @@ void GCScene::MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject 
 { 
 	RemoveGameObjectFromScene( pGameObject );
 	pScene->m_gameObjectsList.PushBack( pGameObject ); 
-	pGameObject->SetNode( pScene->m_gameObjectsList.GetLastNode() );
+	pGameObject->m_pSceneNode = pScene->m_gameObjectsList.GetLastNode();
 }
 
 
@@ -178,8 +179,7 @@ void GCScene::MoveGameObjectToScene( GCScene* pScene, GCGameObject* pGameObject 
 // <param name="pGameObject"> A pointer to the game object to be removed. </param>
 GCGameObject* GCScene::RemoveGameObjectFromScene( GCGameObject* pGameObject )
 {
-	GCListNode<GCGameObject*>* pGameObjectNode = pGameObject->GetNode();
-    m_gameObjectsList.DeleteNode( pGameObjectNode );
+    m_gameObjectsList.DeleteNode( pGameObject->m_pSceneNode );
 	return pGameObject;
 }
 
@@ -192,9 +192,9 @@ GCGameObject* GCScene::RemoveGameObjectFromScene( GCGameObject* pGameObject )
 // <param name="pGameObject"> A pointer to the game object to be destroyed. </param>
 void GCScene::DestroyGameObject( GCGameObject* pGameObject )
 {
-	m_gameObjectsList.DeleteNode( pGameObject->GetNode() );
+	m_gameObjectsList.DeleteNode( pGameObject->m_pSceneNode );
 	pGameObject->ClearComponents();
-	pGameObject->ClearChildren();
+	pGameObject->DeleteChildren();
 	delete pGameObject;
 }
 
