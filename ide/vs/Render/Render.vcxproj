@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -13,11 +13,11 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{BDF086D6-0CB3-471D-A6C7-50D0B87C95BC})</ProjectGuid>
+    <ProjectGuid>{BDF086D6-0CB3-471D-A6C7-50D0B87C95BC}</ProjectGuid>
     <RootNamespace>Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -31,16 +31,16 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
-  <ImportGroup Label="ExtensionSettings"/>
-  <ImportGroup Label="Shared"/>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros"/>
+  <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Build\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Build\$(Configuration)\intermediate\</IntDir>
@@ -55,6 +55,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -76,70 +77,70 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Render\d3dx12.h"/>
-    <ClInclude Include="..\..\..\src\Render\DDSTextureLoader.h"/>
-    <ClInclude Include="..\..\..\src\Render\framework-header.h"/>
-    <ClInclude Include="..\..\..\src\Render\framework.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCGeometry.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCGraphics.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCGraphicsProfiler.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCMaterial.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCMesh.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCModelParser.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCModelParserObj.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCPrimitiveFactory.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCRender.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCShader.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCShaderColor.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCShaderCustom.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCShaderTexture.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCTexture.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCTextureFactory.h"/>
-    <ClInclude Include="..\..\..\src\Render\GCUtils.h"/>
-    <ClInclude Include="..\..\..\src\Render\header.h"/>
-    <ClInclude Include="..\..\..\src\Render\HLSLReader.h"/>
-    <ClInclude Include="..\..\..\src\Render\MathHelper.h"/>
-    <ClInclude Include="..\..\..\src\Render\PrimitiveTypeEnum.h"/>
-    <ClInclude Include="..\..\..\src\Render\Resource.h"/>
-    <ClInclude Include="..\..\..\src\Render\ShaderTypeEnum.h"/>
-    <ClInclude Include="..\..\..\src\Render\targetver.h"/>
-    <ClInclude Include="..\..\..\src\Render\Timer.h"/>
-    <ClInclude Include="..\..\..\src\Render\UploadBuffer.h"/>
-    <ClInclude Include="..\..\..\src\Render\Window.h"/>
+    <ClInclude Include="..\..\..\src\Render\d3dx12.h" />
+    <ClInclude Include="..\..\..\src\Render\DDSTextureLoader.h" />
+    <ClInclude Include="..\..\..\src\Render\framework-header.h" />
+    <ClInclude Include="..\..\..\src\Render\framework.h" />
+    <ClInclude Include="..\..\..\src\Render\GCGeometry.h" />
+    <ClInclude Include="..\..\..\src\Render\GCGraphics.h" />
+    <ClInclude Include="..\..\..\src\Render\GCGraphicsProfiler.h" />
+    <ClInclude Include="..\..\..\src\Render\GCMaterial.h" />
+    <ClInclude Include="..\..\..\src\Render\GCMesh.h" />
+    <ClInclude Include="..\..\..\src\Render\GCModelParser.h" />
+    <ClInclude Include="..\..\..\src\Render\GCModelParserObj.h" />
+    <ClInclude Include="..\..\..\src\Render\GCPrimitiveFactory.h" />
+    <ClInclude Include="..\..\..\src\Render\GCRender.h" />
+    <ClInclude Include="..\..\..\src\Render\GCShader.h" />
+    <ClInclude Include="..\..\..\src\Render\GCShaderColor.h" />
+    <ClInclude Include="..\..\..\src\Render\GCShaderCustom.h" />
+    <ClInclude Include="..\..\..\src\Render\GCShaderTexture.h" />
+    <ClInclude Include="..\..\..\src\Render\GCTexture.h" />
+    <ClInclude Include="..\..\..\src\Render\GCTextureFactory.h" />
+    <ClInclude Include="..\..\..\src\Render\GCUtils.h" />
+    <ClInclude Include="..\..\..\src\Render\header.h" />
+    <ClInclude Include="..\..\..\src\Render\HLSLReader.h" />
+    <ClInclude Include="..\..\..\src\Render\MathHelper.h" />
+    <ClInclude Include="..\..\..\src\Render\PrimitiveTypeEnum.h" />
+    <ClInclude Include="..\..\..\src\Render\Resource.h" />
+    <ClInclude Include="..\..\..\src\Render\ShaderTypeEnum.h" />
+    <ClInclude Include="..\..\..\src\Render\targetver.h" />
+    <ClInclude Include="..\..\..\src\Render\Timer.h" />
+    <ClInclude Include="..\..\..\src\Render\UploadBuffer.h" />
+    <ClInclude Include="..\..\..\src\Render\Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\Render\monkey.obj"/>
-    <None Include="..\..\..\src\Render\monkeyUv.obj"/>
-    <None Include="..\..\..\src\Render\Shaders\color.hlsl"/>
-    <None Include="..\..\..\src\Render\Shaders\customTest.hlsl"/>
-    <None Include="..\..\..\src\Render\Shaders\texture.hlsl"/>
-    <None Include="..\..\..\src\Render\Textures\ahah.dds"/>
-    <None Include="..\..\..\src\Render\Textures\gojo.dds"/>
-    <None Include="..\..\..\src\Render\Textures\texture.dds"/>
+    <None Include="..\..\..\src\Render\monkey.obj" />
+    <None Include="..\..\..\src\Render\monkeyUv.obj" />
+    <None Include="..\..\..\src\Render\Shaders\color.hlsl" />
+    <None Include="..\..\..\src\Render\Shaders\customTest.hlsl" />
+    <None Include="..\..\..\src\Render\Shaders\texture.hlsl" />
+    <None Include="..\..\..\src\Render\Textures\ahah.dds" />
+    <None Include="..\..\..\src\Render\Textures\gojo.dds" />
+    <None Include="..\..\..\src\Render\Textures\texture.dds" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Render\ConsoleApp.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\DDSTextureLoader.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCGeometry.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCGraphicsProfiler.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCMaterial.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCMesh.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCModelParser.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCModelParserObj.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCPrimitiveFactory.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCRender.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCShader.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCShaderColor.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCShaderCustom.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCShaderTexture.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCTexture.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCTextureFactory.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\GCUtils.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\MathHelper.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\Timer.cpp"/>
-    <ClCompile Include="..\..\..\src\Render\Window.cpp"/>
+    <ClCompile Include="..\..\..\src\Render\ConsoleApp.cpp" />
+    <ClCompile Include="..\..\..\src\Render\DDSTextureLoader.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCGeometry.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCGraphicsProfiler.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCMaterial.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCMesh.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCModelParser.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCModelParserObj.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCPrimitiveFactory.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCRender.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCShader.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCShaderColor.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCShaderCustom.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCShaderTexture.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCTexture.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCTextureFactory.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCUtils.cpp" />
+    <ClCompile Include="..\..\..\src\Render\MathHelper.cpp" />
+    <ClCompile Include="..\..\..\src\Render\Timer.cpp" />
+    <ClCompile Include="..\..\..\src\Render\Window.cpp" />
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
-  <ImportGroup Label="ExtensionTargets"/>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
 </Project>
