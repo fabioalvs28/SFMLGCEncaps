@@ -1,8 +1,7 @@
 {
     "name": "jeu_1",
     "folder": "jeu_1/",
-    "guid": "29488574-B244-49AC-884A-ADDAB715F737",
-    "nested": "5C64AA56-22B9-42B9-AF7A-0406E1F92588",
+    "nested": "Gameplay",
     "vc_project_version": "17.0",
     "root_namespace": "Jeu 1",
     "windows_target_platform_version": "10.0",
