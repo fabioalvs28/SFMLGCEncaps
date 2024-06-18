@@ -4,6 +4,7 @@ SamplerState g_sampler : register(s0); // Sampler bound to s0, register space 0
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld;
+    float4 gColor;
 };
 
 cbuffer cbPerCamera : register(b1)
@@ -40,7 +41,9 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin) : SV_Target
 {
     float4 texColor = g_texture.Sample(g_sampler, pin.UV);
-    return texColor * texColor.a; // Apply transparency using alpha channel
+    float4 finalColor = texColor * gColor; // Multiply texture color by gColor
+    
+    return finalColor * finalColor.a; // Apply transparency using alpha channel
 }
 
     //vout.PosH = mul(mul(float4(vin.PosL, 1.0f), float4x4(1.0f, 0.0f, 0.0f, 0.0f,

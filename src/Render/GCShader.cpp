@@ -26,6 +26,12 @@ void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const 
 		OutputDebugString((L"Shader not found: " + wideFilePath + L"\n").c_str());
 	}
 
+	// #TODO Check the other path
+
+	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());
+	m_vsCsoPath = baseCsoPath + L"VS.cso";
+	m_psCsoPath = baseCsoPath + L"PS.cso";
+
 	m_pRender = pRender;
 	m_type = type;
 	PreCompile(filePath, csoDestinationPath);
@@ -80,11 +86,7 @@ void GCShader::RootSign()
     }
 
     // Création de la signature racine
-    m_pRender->Getmd3dDevice()->CreateRootSignature(
-        0,
-        serializedRootSig->GetBufferPointer(),
-        serializedRootSig->GetBufferSize(),
-        IID_PPV_ARGS(&m_RootSignature)
+    m_pRender->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature)
     );
 }
 
@@ -122,7 +124,18 @@ void GCShader::Pso()
 	psoDesc.BlendState = blendDesc;
 
 	// Use default depth stencil state
-	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
+
+
+
+	//// Configure depth stencil state
+	//D3D12_DEPTH_STENCIL_DESC depthStencilDesc = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	//depthStencilDesc.DepthEnable = TRUE;
+	//depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL; // Écrira au Z-buffer
+	//depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; // Comparaison de profondeur
+
+	//psoDesc.DepthStencilState = depthStencilDesc;
+
 
 	// Set other pipeline state settings
 	//psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME; //permet de voir les bordure
@@ -177,7 +190,6 @@ ID3DBlob* GCShader::CompileShaderBase(const std::wstring& filename, const D3D_SH
 		OutputDebugStringA((char*)errors->GetBufferPointer());
 	}
 
-	//hr;
 	return byteCode;
 }
 
@@ -230,25 +242,8 @@ void GCShader::PreCompile(const std::string& filePath, const std::string& csoDes
 	SaveShaderToFile(psByteCode, wideCsoDestinationPath + L"PS.cso");
 }
 
-//void GCShader::UpdateCameraBuffer(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projMatrix)
-//{
-//    //viewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-//    //projMatrix = DirectX::XMMatrixTranspose(projMatrix);
-//
-//
-//    //XMStoreFloat4x4(&cameraCB.view, viewMatrix);
-//    //XMStoreFloat4x4(&cameraCB.proj, projMatrix);
-//
-//
-//    m_pCameraCB->CopyData(0, cameraCB);  // Pass the address of cameraCB
-//}
-
 void GCShader::Load() {
 	CompileShader();
 	RootSign();
 	Pso();
-
-	// Load in GPU CB Struct
-	//m_pObjectCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->Getmd3dDevice(), 1, true);
-	//m_pCameraCB = new GCShaderUploadBuffer<GCCAMERACB>(m_pRender->Getmd3dDevice(), 1, true);
 }

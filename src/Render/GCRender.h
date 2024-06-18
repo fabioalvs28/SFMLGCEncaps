@@ -65,6 +65,8 @@ public:
 
 	GCShaderUploadBufferBase* m_pCurrentViewProj;
 
+	
+	Window* GetCurrentWindow() { return m_pWindow; }
 private:
 	Window* m_pWindow;
 	// Swap chain size

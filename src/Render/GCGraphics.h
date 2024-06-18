@@ -14,7 +14,7 @@ public:
 
 	GCShader* CreateShaderColor();
 	GCShader* CreateShaderTexture();
-	//GCShader* CreateShaderCustom(HLSLFile* customShaderFile);
+	GCShader* CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int type);
 
 
 
@@ -34,6 +34,9 @@ public:
 
 	template<typename ShaderTypeConstantBuffer>
 	void CreateCBCamera();
+
+	template<typename ShaderTypeConstantBuffer>
+	void UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
 
 	//Delete
 	void RemoveShader(GCShader* pShader);
@@ -87,4 +90,13 @@ void GCGraphics::CreateCBCamera()
 	GCShaderUploadBufferBase* pCameraCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->Getmd3dDevice(), 1, true);
 	// Store the buffer in a vector
 	m_vpCameraCB.push_back(pCameraCB);
+}
+
+template<typename ShaderTypeConstantBuffer>
+void GCGraphics::UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData)
+{
+
+	pMaterial->CreateCBObject<ShaderTypeConstantBuffer>();
+	// Update 
+	pMaterial->UpdateConstantBuffer(objectData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
 }

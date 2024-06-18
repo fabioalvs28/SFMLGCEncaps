@@ -42,9 +42,6 @@ GCTexture* GCGraphics::CreateTexture(const std::string& filePath)
 
 GCShader* GCGraphics::CreateShaderColor() 
 {
-    //Creates a color shader / initializes it
-    //HLSLFile* shaderFile = new HLSLFile(L"Shaders\\color.hlsl");
-
     GCShader* pShader;
     pShader = new GCShaderColor();
 
@@ -58,12 +55,21 @@ GCShader* GCGraphics::CreateShaderColor()
 
 GCShader* GCGraphics::CreateShaderTexture() 
 {
-    //Creates a texture shader / initializes it
-    //HLSLFile* shaderFile = new HLSLFile(L"Shaders\\texture.hlsl");
-
     GCShader* pShader;
     pShader = new GCShaderTexture();
     pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", STEnum::texture);
+    m_vShaders.push_back(pShader);
+    m_shaderId++;
+
+    return pShader;
+}
+
+// Specify the path, with the name of the shader at the file creation , example : CsoCompiled/texture, texture is the name of the file in Cso Compiled Folder
+GCShader* GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int type) {
+    GCShader* pShader;
+    pShader = new GCShaderCustom();
+    pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, type);
+
     m_vShaders.push_back(pShader);
     m_shaderId++;
 
@@ -93,16 +99,7 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
     return pMesh;
 }
 
-//GCShader* GCGraphics::CreateShaderCustom(HLSLFile* customShaderFile) {
-//    GCShader* shader;
-//    shader = new GCShaderCustom();
-//    shader->Initialize(m_pRender, customShaderFile, STEnum::texture); // #TODO Upgrade Shader Code to Allow Custom Shader Properly
-//
-//    m_vShaders.push_back(shader);
-//    m_shaderId++;
-//
-//    return shader;
-//}
+
 
 //Creates a material (WIP)
 GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader, GCTexture* pTexture) {
@@ -215,6 +212,8 @@ void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
 
 }
+
+
 
 //Update Camera and Object Constant Buffer / But They can also send their own structure
 void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)

@@ -1,7 +1,8 @@
 #include "framework.h"
 
-struct Test : GCSHADERCB {
+struct GCTest : GCSHADERCB {
 	DirectX::XMFLOAT4X4 world; // Matrice du monde
+	DirectX::XMFLOAT4 color;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -17,10 +18,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//graphics->GetModelParserFactory()->Initialize();
 
 	// Geometry (Resource)
-	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::White));
-	GCGeometry* geo1 = graphics->GetModelParserFactory()->BuildObjTexture("../../../src/Render/monkeyUv.obj");
+	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::Red));
+	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.2f); // Rouge (1.0f, 0.0f, 0.0f) avec alpha 0.5 (50% d'opacité)
+	GCGeometry* geo1 = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", color);
+	GCGeometry* geo2 = graphics->GetModelParserFactory()->BuildObjTexture("../../../src/Render/monkeyUv.obj");
+
 	GCShader* shader1 = graphics->CreateShaderColor();
-	GCShader* shader2 = graphics->CreateShaderTexture();
+
+	std::string shaderFilePath = "../../../src/Render/Shaders/customTest.hlsl";
+	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
+	GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, STEnum::texture);
+
+
+	//GCShader * shader3 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath);
 
 	///// Create Render Resources
 	graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation
@@ -28,12 +38,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	shader1->Load();
 	shader2->Load();
+	//shader3->Load();
 
 
 	// Mesh
 	GCMesh* mesh = graphics->CreateMesh(geo);
 	GCMesh* mesh1 = graphics->CreateMesh(geo1);
-	//GCShader* shaderCustom = graphics->CreateShaderCustom(customShaderFile);
+	GCMesh* mesh2 = graphics->CreateMesh(geo2);
+	
+
 
 
 	std::string texturePath = "../../../src/Render/Textures/texture.dds";
@@ -74,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.5f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		3.0f, 0.0f, 0.0f, 1.0f);
+		1.5f, 0.0f, 0.0f, 1.0f);
 
 	DirectX::XMFLOAT4X4 transposedWorld;
 	DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&I)));
@@ -89,39 +102,70 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	//material->Draw(&cb, mesh1);
 
-	//graphics->GetRender()->DrawObject(mesh1, material2);
 
-	//problème? actuel -> moteur doit forcément updatebuffers des materials dans le même ordre qu'ils vont être dessiné,même si les matrices n'ont pas changé
-	//graphics->GetRender()->UpdateBuffers(material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
-	//graphics->GetRender()->DrawObject(mesh1, material2);
 
-	//graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+
+
+
+	////Yellow 
+	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawObject(mesh1, material);
+
+	//////Red
+	//graphics->UpdateWorldConstantBuffer(material, transposedWorld);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 	//graphics->GetRender()->DrawObject(mesh, material);
 
-	graphics->UpdateWorldConstantBuffer(material, transposedWorld);
-	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawObject(mesh, material);
 
 
-	graphics->UpdateWorldConstantBuffer(material2, MathHelper::Identity4x4());
+
+	//////Red
+	//graphics->UpdateWorldConstantBuffer(material, transposedWorld);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawObject(mesh, material);
+
+	// Singe
+
+	GCTest worldData;
+	worldData.world = MathHelper::Identity4x4();
+	worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	//graphics->UpdateWorldConstantBuffer(material2, MathHelper::Identity4x4());
+	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
 	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawObject(mesh1, material2);
-	
-	//graphics->GetRender()->UpdateBuffers(material, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawObject(mesh2, material2);
+
+	////Yellow 
+	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawObject(mesh1, material);
+
+
 
 
 
 
 	graphics->GetRender()->PostDraw();
 
-	//Resets the count of 
-	//for (int i = 0; i < graphics->GetMaterials().size(); i++)
-	//	graphics->GetMaterials()[i]->m_count = 0;
+	//Resets the count of material
+	
+	for (int i = 0; i < graphics->GetMaterials().size(); i++)
+		graphics->GetMaterials()[i]->ResetCBCount();
 
 
 	//// Loop Again < |||| >
 
 	//graphics->GetRender()->PrepareDraw();
+
+	//	//Yellow 
+	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawObject(mesh1, material);
+
+
+
+
 
 
 

@@ -19,6 +19,7 @@ public:
 	std::vector<GCShaderUploadBufferBase*> GetObjectCBData() { return m_vpObjectCB; }
 
     void IncrementCBCount() { m_iCount++; }
+	void ResetCBCount() { m_iCount = 0; }
     int GetCount() const { return m_iCount; }
 
 private:

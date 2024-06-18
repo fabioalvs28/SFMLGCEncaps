@@ -33,20 +33,23 @@ public:
 
 	void Load();
 
+protected:
 
-
-private:
 	ID3D12RootSignature* m_RootSignature = nullptr;
 	ID3D12PipelineState* m_PSO = nullptr;
-	int m_type;
 
-protected:
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
 
 	ID3DBlob* m_vsByteCode = nullptr;
 	ID3DBlob* m_psByteCode = nullptr;
 
+	// Var used in Compile Shader override func
+	std::wstring m_vsCsoPath;
+	std::wstring m_psCsoPath;
+
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
 
 	GCRender* m_pRender;
+
+	int m_type;
 };
