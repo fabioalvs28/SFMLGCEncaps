@@ -15,6 +15,11 @@ public:
 
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 
+	void CheckForRemoveNonUsedCB();
+
+
+	
+
 	// Object
 	std::vector<GCShaderUploadBufferBase*> GetObjectCBData() { return m_vpObjectCB; }
 

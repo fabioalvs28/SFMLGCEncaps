@@ -21,6 +21,7 @@
 #include <locale>
 #include <vector>
 #include <variant>
+#include <chrono>
 #include <memory>
 #include <algorithm>
 #include <array>

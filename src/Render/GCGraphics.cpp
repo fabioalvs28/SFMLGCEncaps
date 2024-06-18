@@ -204,7 +204,9 @@ void GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatr
 //using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
 void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix) {
 
-    pMaterial->CreateCBObject<GCWORLDCB>();
+    if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size())
+        pMaterial->CreateCBObject<GCWORLDCB>();
+    //pMaterial->CreateCBObject<GCWORLDCB>();
 
     GCWORLDCB worldData;
     worldData.world = worldMatrix;

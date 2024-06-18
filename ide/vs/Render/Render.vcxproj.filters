@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{0FEA8DE6-F5B1-46D5-9B02-0989EFA379A9}</UniqueIdentifier>
+      <UniqueIdentifier>{B3D25B98-B682-4956-BCEC-A72CEF9D23F2}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{DFB6F585-A509-4EE1-9B8B-A19AD18206DC}</UniqueIdentifier>
+      <UniqueIdentifier>{D72AFA3B-EF38-42B7-B517-313FEE371844}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{5BA16748-8FD2-4B58-8588-0D1FE2B0DF04}</UniqueIdentifier>
+      <UniqueIdentifier>{9CD6DAA1-49D5-4002-8600-C1B1B2F84447}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -25,6 +25,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\GCGraphicsProfiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCMaterial.cpp">
@@ -78,9 +81,6 @@
     <ClInclude Include="..\..\..\src\Render\DDSTextureLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\framework-header.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -88,6 +88,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCGraphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCGraphicsProfiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCMaterial.h">
@@ -111,6 +114,9 @@
     <ClInclude Include="..\..\..\src\Render\GCShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCShaderCBStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCShaderColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -118,6 +124,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCShaderTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCShaderVertexStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCTexture.h">

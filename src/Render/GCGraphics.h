@@ -95,8 +95,10 @@ void GCGraphics::CreateCBCamera()
 template<typename ShaderTypeConstantBuffer>
 void GCGraphics::UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData)
 {
-
-	pMaterial->CreateCBObject<ShaderTypeConstantBuffer>();
+	// Don't create UploadBuffer if the number of object draw in the same material don't increase
+	if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size())
+		pMaterial->CreateCBObject<ShaderTypeConstantBuffer>();
+	
 	// Update 
 	pMaterial->UpdateConstantBuffer(objectData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
 }

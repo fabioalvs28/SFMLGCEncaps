@@ -8,6 +8,10 @@ struct GCTest : GCSHADERCB {
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
 
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+	profiler.InitializeConsole();
+
 	Window* window = new Window(hInstance);
 	window->Initialize();
 
@@ -132,9 +136,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	//graphics->UpdateWorldConstantBuffer(material2, MathHelper::Identity4x4());
-	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
-	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawObject(mesh2, material2);
 
 	////Yellow 
 	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
@@ -169,13 +170,54 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 
+	// Au début de votre boucle while, initialiser le timer
+	auto start = std::chrono::high_resolution_clock::now();
+
+	while (true) {
+		GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+		graphics->GetRender()->PrepareDraw();
+
+		GCTest worldData;
+		worldData.world = MathHelper::Identity4x4();
+		worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+
+		graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+		graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+		graphics->GetRender()->DrawObject(mesh2, material2);
+
+		graphics->UpdateWorldConstantBuffer(material2, MathHelper::Identity4x4());
+		graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+		graphics->GetRender()->DrawObject(mesh2, material2);
+
+		//profiler.LogInfo(std::to_string(material2->GetCount()));
+
+		graphics->GetRender()->PostDraw();
+
+		for (int i = 0; i < graphics->GetMaterials().size(); i++) {
+			graphics->GetMaterials()[i]->ResetCBCount();
+		}
+
+		profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
+
+		// Vérifier si 3 secondes se sont écoulées
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = duration_cast<std::chrono::seconds>(end - start).count();
+
+		//if (duration >= 3) {
+		//	profiler.LogInfo("Il faut enlever les constant buffers inutilisés du material");
+		//	// Réinitialiser le timer
+		//	start = std::chrono::high_resolution_clock::now();
+		//}
+	}
+
 
 	//graphics->GetRender()->PostDraw();
 
 	// *
 
 
-	window->Run(graphics->GetRender());
+
 
 }
 

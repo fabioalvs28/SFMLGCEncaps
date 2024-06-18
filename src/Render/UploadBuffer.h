@@ -1,25 +1,46 @@
 #pragma once
 
-class GCShaderUploadBufferBase 
+class GCShaderUploadBufferBase
 {
-// Nouvel Upload Buffer pour les derivés de ShaderCB
 public:
-    GCShaderUploadBufferBase() : m_pUpload(nullptr), m_data(nullptr), m_elementByteSize(0), m_isConstantBuffer(false) {}
-    virtual ~GCShaderUploadBufferBase() 
+    GCShaderUploadBufferBase()
+        : m_pUpload(nullptr), m_data(nullptr), m_elementByteSize(0), m_isConstantBuffer(false),
+        m_isUsed(false), m_framesSinceLastUse(0) {}
+    virtual ~GCShaderUploadBufferBase()
     {
-        if (m_pUpload) 
+        if (m_pUpload)
         {
             m_pUpload->Unmap(0, nullptr);
         }
         m_data = nullptr;
     }
 
-    ID3D12Resource* Resource() const 
+    ID3D12Resource* Resource() const
     {
         return m_pUpload.Get();
     }
 
     virtual void CopyData(int elementIndex, const GCSHADERCB& data) = 0;
+
+    void SetUsed(bool used)
+    {
+        m_isUsed = used;
+        if (used)
+        {
+            m_framesSinceLastUse = 0;
+        }
+    }
+    bool IsUsed() const { return m_isUsed; }
+
+    void IncrementFramesSinceLastUse()
+    {
+        // If not used
+        if (!m_isUsed)
+        {
+            m_framesSinceLastUse++;
+        }
+    }
+    int GetFramesSinceLastUse() const { return m_framesSinceLastUse; }
 
 protected:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_pUpload;
@@ -27,7 +48,10 @@ protected:
     UINT m_elementByteSize;
     bool m_isConstantBuffer;
 
-    UINT CalcConstantBufferByteSize(UINT byteSize) 
+    bool m_isUsed;
+    int m_framesSinceLastUse;
+
+    UINT CalcConstantBufferByteSize(UINT byteSize)
     {
         return (byteSize + 255) & ~255;
     }
