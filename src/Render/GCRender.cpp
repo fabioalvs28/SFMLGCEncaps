@@ -8,14 +8,8 @@ bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow, int renderWidt
 	m_renderHeight = renderHeight;
 	InitDirect3D();
 	OnResize();
-	if (CheckNull(pGraphics, pWindow))
-	{
-		OutputDebugString(L"Graphics and window are empty\n");
-	}
-	else
-	{
-		OutputDebugString(L"Graphics and window loaded successfully\n");
-	}
+
+	CheckPointer((pGraphics, pWindow), "Graphics and window are empty", "Graphics and window loaded successfully");
 	return true;
 }
 

@@ -10,16 +10,7 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
     //Checks if pointer is empty
-    if (CheckNull(pWindow))
-    {
-        OutputDebugString(L"Can't initialize Graphics, Window is empty");
-        profiler.LogWarning("Can't initialize Graphics, Window is empty");
-    }
-    else 
-    {
-        OutputDebugString(L"Graphics Initialized with window sucessfully");
-        profiler.LogInfo("Graphics Initialized with window sucessfully");
-    }
+    CheckPointer(pWindow, "Can't initialize Graphics, Window is empty", "Graphics Initialized with window sucessfully");
 
     //Initializes Graphics for a window
     m_pRender = new GCRender();
@@ -38,18 +29,6 @@ GCTexture* GCGraphics::CreateTexture(const std::string& filePath)
 {
     //Creates and initializes a texture using a path
     std::wstring wideFilePath(filePath.begin(), filePath.end());
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-    if (_waccess(wideFilePath.c_str(), 0) == -1)
-    {
-        OutputDebugString((L"Texture file not found: " + wideFilePath + L"\n").c_str());
-        profiler.LogWarning("Texture file not found: " + filePath);
-    }
-    else
-    {
-        OutputDebugString((L"Texture file: " + wideFilePath + L" loaded sucessfully\n").c_str());
-        profiler.LogInfo("Texture file : " + filePath + " loaded sucessfully");
-    }
 	GCTexture* texture = new GCTexture();
 	texture->Initialize(filePath, this);
     m_vTextures.push_back(texture);
@@ -94,21 +73,9 @@ GCShader* GCGraphics::CreateShaderCustom(std::string& filePath, std::string& com
 
 GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) 
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
     //Creates mesh using a specific geometry
  
     //Checks if pointer is empty
-    if (CheckNull(pGeometry))
-    {
-        OutputDebugString(L"Can't create mesh, Geometry is empty");
-        profiler.LogWarning("Can't create mesh, Geometry is empty");
-    }
-    else
-    {
-        OutputDebugString(L"Geometry loaded successfully for mesh");
-        profiler.LogInfo("Geometry loaded successfully for mesh");
-    }
-
     GCMesh* pMesh = new GCMesh();
     pMesh->Initialize(m_pRender);
 
@@ -133,28 +100,11 @@ GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader, GCTexture* pTexture) {
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
     //Checks if pointer is empty
-    if (CheckNull(pShader))
-    {
-        OutputDebugString(L"Can't create material, Shader is empty");
-        profiler.LogWarning("Can't create material, Shader is empty");
-    }
-    else
-    {
-        OutputDebugString(L"Shader loaded successfully for material");
-        profiler.LogInfo("Shader loaded successfully for material");
-    }
+    CheckPointer(pShader, "Can't create material, Shader is empty", "Shader loaded successfully for material");
 
     //Checks if pointer is empty
-    if (CheckNull(pTexture))
-    {
-        OutputDebugString(L"Can't create material, texture is empty");
-        profiler.LogWarning("Can't create material, texture is empty");
-    }
-    else
-    {
-        OutputDebugString(L"Texture loaded successfully for material");
-        profiler.LogInfo("Texture loaded successfully for material");
-    }
+    CheckPointer(pTexture, "Can't create material, texture is empty", "Texture loaded successfully for material");
+
     GCMaterial* material = new GCMaterial();
     material->Initialize(pShader, pTexture, m_pRender);
     m_vMaterials.push_back(material);

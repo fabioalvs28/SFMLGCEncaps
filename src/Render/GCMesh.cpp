@@ -80,18 +80,14 @@ GCMesh::~GCMesh()
 
 void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry) 
 {
-    if (CheckNull(pGeometry))
-    {
-        OutputDebugString(L"Mesh geometry is NULL\n");
-    }
+    CheckPointer(pGeometry, "Mesh geometry is NULL", "Mesh geometry has been initialized in Mesh successfully");
+
     UploadGeometryData<GCVERTEX>(pGeometry);
 }
 void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) 
 {
-    if (CheckNull(pGeometry))
-    {
-        OutputDebugString(L"Mesh geometry is NULL\n");
-    }
+    CheckPointer(pGeometry, "Mesh geometry is NULL", "Mesh geometry has been initialized in Mesh successfully");
+
     UploadGeometryData<GCVERTEXTEXTURE>(pGeometry);
 }
 
