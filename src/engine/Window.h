@@ -17,6 +17,7 @@ private:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void Close() { m_isRunning = false; }
+	void EnableVirtualTerminalProcessing();
 
 private:
     HINSTANCE m_hInstance;

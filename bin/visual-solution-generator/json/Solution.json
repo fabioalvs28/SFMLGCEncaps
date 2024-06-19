@@ -1,21 +1,23 @@
 {
     "solution_name": "GC Engine",
+    "format_version": "12.00",
+    "version": "16",
+    "version_full": "16.0.28729.10",
+    "minimum_version": "10.0.40219.1",
     "poles": {
-        "all": "",
         "engine": {
-            "projects": ["Engine.json", "Core.json", "Testing.json"]
+            "projects": ["Testing.json", "Engine.json", "Core.json"]
         },
         "gameplay": {
-            "projects": ["Engine.json", "Core.json", "Jeu_1.json", "Jeu_2.json"],
+            "projects": ["Jeu_1.json", "Engine.json", "Core.json", "Jeu_2.json"],
             "folders": [
                 {
-                    "name": "Gameplay",
-                    "guid": "5C64AA56-22B9-42B9-AF7A-0406E1F92588"
+                    "name": "Gameplay"
                 }
             ]
         },
         "render": {
-            "projects": ["Engine.json", "Core.json", "Render.json"]
+            "projects": ["RenderApp.json", "Render.json"]
         },
         "tools": {
             "projects": []
@@ -23,5 +25,7 @@
         "qa": {
             "projects": []
         }
-    }
+    },
+    "projects": [],
+    "folders": []
 }

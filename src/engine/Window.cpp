@@ -11,6 +11,8 @@ GCWindow::GCWindow(HINSTANCE hInstance, int nCmdShow, GCEventSystem& eventSystem
     wc.lpszClassName = m_className;
 
     RegisterClass(&wc);
+
+	EnableVirtualTerminalProcessing();
 }
 
 GCWindow::~GCWindow()
@@ -112,3 +114,18 @@ LRESULT GCWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 }
 
+
+void GCWindow::EnableVirtualTerminalProcessing()
+{
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hOut == INVALID_HANDLE_VALUE)
+		return;
+
+	DWORD dwMode = 0;
+	if (!GetConsoleMode(hOut, &dwMode))
+		return;
+
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    if (!SetConsoleMode(hOut, dwMode))
+        return;
+}

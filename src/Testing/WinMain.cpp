@@ -3,15 +3,15 @@
 #include <iostream>
 #include <Windows.h>
 #include "ECSTesting.h"
-#include "../engine/Window.h"
-#include "../engine/EventSystem.h"
-#include "../Engine/GameManager.h"
-#include "../Engine/SceneManager.h"
-#include "../Engine/InputManager.h"
-#include "../Engine/Scene.h"
-#include "../Engine/GameObject.h"
-#include "../Engine/Components.h"
-#include "../Engine/GCColor.h"
+#include "Window.h"
+#include "EventSystem.h"
+#include "GameManager.h"
+#include "SceneManager.h"
+#include "Scene.h"
+#include "GameObject.h"
+#include "Components.h"
+#include "GCColor.h"
+#include "Log.h"
 
 
 void CreateConsole()
@@ -52,12 +52,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	myGoOne->AddComponent<BoxCollider>();
     myGoOne->Destroy();
 
+
+	LogEngineDebug("Engine Debug");
+    LogEngineError("Engine Error");
+	LogEngineWarn("Engine Warn");
+    LogEngineInfo("Engine Info");
+	LogEngineTrace("Engine Trace");
+
+	LogGameDebug("Game Debug");
+
     while (w->IsRunning())
     {
         
-		myGoTwo->m_transform.m_position.x += 0.01f;
+		//myGoTwo->m_transform.m_position.x += 0.01f;
 
-		std::cout << "Position  " << myGoTwo->m_transform.m_position.x << std::endl;
+		//std::cout << "Position  " << myGoTwo->m_transform.m_position.x << std::endl;
 
 
 	    GameManager->Update();

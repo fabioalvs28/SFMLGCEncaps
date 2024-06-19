@@ -17,7 +17,7 @@ public:
 	bool Insert(size_t index, const T& element);
 	bool Remove(size_t index);
 	T Get(size_t index);
-	size_t GetIndex( const T& element); 
+	size_t GetIndex(const T& element);
 	size_t GetSize() const { return m_size; }
 	int GetCapacity() const { return m_capacity; }
 	void PushBack(const T& element) { Insert(m_size, element); }
@@ -26,6 +26,7 @@ public:
 	void Clear();
 	void DeepClear();
 	bool IsEmpty() const;
+	bool Find(const T& element) const;
 
 	T* begin() { return &m_data[0]; }
 	T* end() { return &m_data[m_size]; }
@@ -139,13 +140,13 @@ template <typename T>
 size_t GCVector<T>::GetIndex(const T& element)
 {
 	for (size_t i = 0; i < m_size; i++)
-    {
-        if (m_data[i] == element)
-        {
-            return i;
-        }
-    }
-    return -1;
+	{
+		if (m_data[i] == element)
+		{
+			return i;
+		}
+	}
+	return -1;
 }
 
 
@@ -192,3 +193,22 @@ bool GCVector<T>::IsEmpty() const
 		return false;
 }
 
+
+/// <summary>
+///  Check if the list contains an element you give
+/// </summary>
+/// /// <returns>True if the element exist</returns>
+/// <returns>False if the element dont exist</returns>
+
+template<typename T>
+bool GCVector<T>::Find(const T& element) const
+{
+	for (size_t i = 0; i < m_size; i++)
+	{
+		if (m_data[i] == element)
+		{
+			return true;
+		}
+	}
+	return false;
+}
