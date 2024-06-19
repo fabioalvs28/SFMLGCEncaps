@@ -2,11 +2,27 @@
 
 GCShader::GCShader() 
 {
+	m_RootSignature = nullptr;
+	m_PSO = nullptr;
+	m_InputLayout.clear(); 
+	m_vsByteCode = nullptr;
+	m_psByteCode = nullptr;
+	m_vsCsoPath.clear();
+	m_psCsoPath.clear();
+	ZeroMemory(&psoDesc, sizeof(psoDesc));
+	m_pRender = nullptr;
+	m_type = 0;
 }
 
 
 GCShader::~GCShader()
 {
+	SAFE_RELEASE(m_RootSignature);
+	SAFE_RELEASE(m_PSO);
+	SAFE_RELEASE(m_vsByteCode);
+	SAFE_RELEASE(m_psByteCode);
+
+	m_InputLayout.clear();
 }
 
 void GCShader::Render() 
@@ -17,7 +33,8 @@ void GCShader::Render()
 
 void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int type)
 {
-	//#TODO Need To make documentation
+	
+
 	// Initialize Precompile the shader | And load must be called when we need it 
 	std::wstring wideFilePath(filePath.begin(), filePath.end());
 
@@ -205,8 +222,7 @@ ID3DBlob* GCShader::CompileShaderBase(const std::wstring& filename, const D3D_SH
 
 	ID3DBlob* byteCode = nullptr;
 	ID3DBlob* errors;
-	hr = D3DCompileFromFile(filename.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		entrypoint.c_str(), target.c_str(), compileFlags, 0, &byteCode, &errors);
+	hr = D3DCompileFromFile(filename.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), compileFlags, 0, &byteCode, &errors);
 
 	if (errors != nullptr)
 	{

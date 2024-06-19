@@ -3,27 +3,68 @@
 GCGraphics::GCGraphics()
 {
     m_pRender = nullptr;
+    m_pPrimitiveFactory = nullptr;
+    m_pModelParserFactory = nullptr;
+
+    m_meshId = 0;
+    m_shaderId = 0;
+    m_materialId = 0;
+    m_textureId = 0;
+
+    m_vTextures.clear();
+    m_vShaders.clear();
+    m_vMaterials.clear();
+    m_vMeshes.clear();
+    m_vpCameraCB.clear();
+}
+
+GCGraphics::~GCGraphics()
+{
+    for (auto shader : m_vShaders)
+    {
+        SAFE_DELETE(shader);
+    }
+    m_vShaders.clear();
+
+    for (auto material : m_vMaterials)
+    {
+        SAFE_DELETE(material);
+    }
+    m_vMaterials.clear();
+
+    for (auto mesh : m_vMeshes)
+    {
+        SAFE_DELETE(mesh);
+    }
+    m_vMeshes.clear();
+
+    for (auto texture : m_vTextures)
+    {
+        SAFE_DELETE(texture);
+    }
+    m_vTextures.clear();
+
+    for (auto buffer : m_vpCameraCB)
+    {
+        SAFE_DELETE(buffer);
+    }
+    m_vpCameraCB.clear();
+
+    SAFE_DELETE(m_pRender);
+    SAFE_DELETE(m_pPrimitiveFactory);
+    SAFE_DELETE(m_pModelParserFactory);
 }
 
 void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 {
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
-    //Checks if pointer is empty
-    if (CheckNull(pWindow))
-    {
-        OutputDebugString(L"Can't initialize Graphics, Window is empty");
-        profiler.LogWarning("Can't initialize Graphics, Window is empty");
-    }
-    else 
-    {
-        OutputDebugString(L"Graphics Initialized with window sucessfully");
-        profiler.LogInfo("Graphics Initialized with window sucessfully");
-    }
+    CHECK_POINTERSNULL(profiler, "Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
 
     //Initializes Graphics for a window
     m_pRender = new GCRender();
-    m_pRender->Initialize(this, pWindow, renderWidth, renderHeight);
+    m_pRender->Initialize(pWindow, renderWidth, renderHeight);
+
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
@@ -82,19 +123,8 @@ void GCGraphics::EndFrame()
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) 
 {
     //Creates and initializes a texture using a path
-    std::wstring wideFilePath(filePath.begin(), filePath.end());
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
-    if (_waccess(wideFilePath.c_str(), 0) == -1)
-    {
-        OutputDebugString((L"Texture file not found: " + wideFilePath + L"\n").c_str());
-        profiler.LogWarning("Texture file not found: " + filePath);
-    }
-    else
-    {
-        OutputDebugString((L"Texture file: " + wideFilePath + L" loaded sucessfully\n").c_str());
-        profiler.LogInfo("Texture file : " + filePath + " loaded sucessfully");
-    }
 	GCTexture* texture = new GCTexture();
 	texture->Initialize(filePath, this);
     m_vTextures.push_back(texture);
@@ -140,66 +170,23 @@ GCShader* GCGraphics::CreateShaderCustom(std::string& filePath, std::string& com
 GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) 
 {
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-    //Creates mesh using a specific geometry
- 
-    //Checks if pointer is empty
-    if (CheckNull(pGeometry))
-    {
-        OutputDebugString(L"Can't create mesh, Geometry is empty");
-        profiler.LogWarning("Can't create mesh, Geometry is empty");
-    }
-    else
-    {
-        OutputDebugString(L"Geometry loaded successfully for mesh");
-        profiler.LogInfo("Geometry loaded successfully for mesh");
-    }
+
+    CHECK_POINTERSNULL(profiler,"Geometry loaded successfully for mesh","Can't create mesh, Geometry is empty",pGeometry);
 
     GCMesh* pMesh = new GCMesh();
-    pMesh->Initialize(m_pRender);
-
-    if (pGeometry->texC.size() == 0)
-    {
-        pMesh->UploadGeometryDataColor(pGeometry);
-    }
-    else
-    {
-        pMesh->UploadGeometryDataTexture(pGeometry);
-    }
+    pMesh->Initialize(m_pRender, pGeometry);
 
     m_vMeshes.push_back(pMesh);
     return pMesh;
 }
 
-
-
-//Creates a material (WIP)
 GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader, GCTexture* pTexture) {
 
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
-    //Checks if pointer is empty
-    if (CheckNull(pShader))
-    {
-        OutputDebugString(L"Can't create material, Shader is empty");
-        profiler.LogWarning("Can't create material, Shader is empty");
-    }
-    else
-    {
-        OutputDebugString(L"Shader loaded successfully for material");
-        profiler.LogInfo("Shader loaded successfully for material");
-    }
+    CHECK_POINTERSNULL(profiler,"Texture loaded successfully for material","The material doesn't contain texture",pTexture);
+    CHECK_POINTERSNULL(profiler,"Shader loaded successfully for material","Can't create material, Shader is empty",pShader);
 
-    //Checks if pointer is empty
-    if (CheckNull(pTexture))
-    {
-        OutputDebugString(L"Can't create material, texture is empty");
-        profiler.LogWarning("Can't create material, texture is empty");
-    }
-    else
-    {
-        OutputDebugString(L"Texture loaded successfully for material");
-        profiler.LogInfo("Texture loaded successfully for material");
-    }
     GCMaterial* material = new GCMaterial();
     material->Initialize(pShader, pTexture, m_pRender);
     m_vMaterials.push_back(material);
@@ -232,13 +219,20 @@ void GCGraphics::RemoveShader(GCShader* pShader)
     //Removes Shader both from vector and the shader itself
     auto it = std::find(m_vShaders.begin(), m_vShaders.end(), pShader);
 
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
     if (it == m_vShaders.end())
     {
         OutputDebugString(L"Shader not found, can't remove it");
+        profiler.LogWarning("Shader not found, can't remove it");
+    }
+    else
+    {
+        OutputDebugString(L"Shader removed successfully");
+        profiler.LogInfo("Shader removed successfully");
     }
 
     m_vShaders.erase(it);
-
     delete pShader;
 }
 
@@ -257,11 +251,10 @@ void GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
     else 
     {
         OutputDebugString(L"Material removed successfully");
-        profiler.LogWarning("Material removed successfully");
+        profiler.LogInfo("Material removed successfully");
     }
 
     m_vMaterials.erase(it);
-
     delete pMaterial;
 }
 
@@ -280,11 +273,10 @@ void GCGraphics::RemoveMesh(GCMesh* pMesh)
     else
     {
         OutputDebugString(L"Mesh removed successfully");
-        profiler.LogWarning("Mesh removed successfully");
+        profiler.LogInfo("Mesh removed successfully");
     }
 
     m_vMeshes.erase(it);
-
     delete pMesh;
 }
 
@@ -303,31 +295,12 @@ void GCGraphics::RemoveTexture(GCTexture* pTexture)
     else
     {
         OutputDebugString(L"Texture removed successfully");
-        profiler.LogWarning("Texture removed successfully");
+        profiler.LogInfo("Texture removed successfully");
     }
 
     m_vTextures.erase(it);
-
     delete pTexture;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
     GCVIEWPROJCB cameraData;
@@ -352,10 +325,6 @@ void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
 
 }
-
-
-
-
 
 //Update Camera and Object Constant Buffer / But They can also send their own structure
 void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)

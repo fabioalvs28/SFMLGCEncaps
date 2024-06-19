@@ -59,12 +59,7 @@ void Window::Set4xMsaaState(bool value)
 int Window::Run(GCRender* pRender)
 {
 	MSG msg = { 0 };
-
 	mTimer.Reset();
-
-
-	//next time,eat a salad
-
 
 	while (msg.message != WM_QUIT)
 	{
@@ -78,18 +73,7 @@ int Window::Run(GCRender* pRender)
 		else
 		{
 			mTimer.Tick();
-
-			//if (!mAppPaused)
-			{
-				CalculateFrameStats();
-				//pRender->Draw(mTimer);
-				//Update(mTimer);
-				//Draw(mTimer);
-			}
-			//else
-			{
-				//Sleep(100);
-			}
+			CalculateFrameStats();
 		}
 	}
 

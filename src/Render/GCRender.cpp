@@ -1,21 +1,16 @@
 #include "framework.h"
 
-bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow, int renderWidth, int renderHeight)
+bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight)
 {
-	//Initialize Direct3D + Update viewport
-	m_pWindow = pWindow;
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+	CHECK_POINTERSNULL(profiler, "Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
+
 	m_renderWidth = renderWidth;
 	m_renderHeight = renderHeight;
+	m_pWindow = pWindow;
 	InitDirect3D();
 	OnResize();
-	if (CheckNull(pGraphics, pWindow))
-	{
-		OutputDebugString(L"Graphics and window are empty\n");
-	}
-	else
-	{
-		OutputDebugString(L"Graphics and window loaded successfully\n");
-	}
+
 	return true;
 }
 

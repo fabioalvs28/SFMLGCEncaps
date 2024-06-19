@@ -51,7 +51,8 @@
 struct HLSLFile;
 struct GCGeometry;
 
-struct MeshBufferData;
+struct GCMESHBUFFERDATA;
+
 struct GCVERTEX;
 struct GCVERTEXTEXTURE;
 
@@ -95,6 +96,8 @@ class Window;
 #include "./GCGraphicsProfiler.h"
 #include "./GCShaderCBStruct.h"
 #include "./GCShaderVertexStruct.h"
+#include "./GCMeshBufferData.h"
+
 
 //
 #include "d3dx12.h"

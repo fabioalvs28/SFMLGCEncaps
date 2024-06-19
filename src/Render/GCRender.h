@@ -5,7 +5,7 @@ class GCRender
 public:
 	GCRender() {}
 
-	bool Initialize(GCGraphics* pGraphics,Window* pWindow, int renderWidth, int renderHeight);
+	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
 	bool InitDirect3D();
 	//void BuildConstantBuffers();
 	void LogAdapters();

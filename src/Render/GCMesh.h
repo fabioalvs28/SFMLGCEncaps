@@ -1,57 +1,5 @@
 #pragma once
 
-struct MeshBufferData
-{
-    // Give it a name so we can look it up by name.
-    std::string Name;
-
-    // System memory copies.  Use Blobs because the vertex/index format can be generic.
-    // It is up to the client to cast appropriately.  
-    ID3DBlob* VertexBufferCPU = nullptr;
-    ID3DBlob* IndexBufferCPU = nullptr;
-
-    ID3D12Resource* VertexBufferGPU = nullptr;
-    ID3D12Resource* IndexBufferGPU = nullptr;
-
-    ID3D12Resource* VertexBufferUploader = nullptr;
-    ID3D12Resource* IndexBufferUploader = nullptr;
-
-    // Data about the buffers.
-    UINT VertexByteStride = 0;
-    UINT VertexBufferByteSize = 0;
-    DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
-    UINT IndexBufferByteSize = 0;
-
-
-    UINT IndexCount = 0;
-
-    D3D12_VERTEX_BUFFER_VIEW VertexBufferView()const
-    {
-        D3D12_VERTEX_BUFFER_VIEW vbv;
-        vbv.BufferLocation = VertexBufferGPU->GetGPUVirtualAddress();
-        vbv.StrideInBytes = VertexByteStride;
-        vbv.SizeInBytes = VertexBufferByteSize;
-
-        return vbv;
-    }
-
-    D3D12_INDEX_BUFFER_VIEW IndexBufferView()const
-    {
-        D3D12_INDEX_BUFFER_VIEW ibv;
-        ibv.BufferLocation = IndexBufferGPU->GetGPUVirtualAddress();
-        ibv.Format = IndexFormat;
-        ibv.SizeInBytes = IndexBufferByteSize;
-
-        return ibv;
-    }
-
-    void DisposeUploaders()
-    {
-        VertexBufferUploader = nullptr;
-        IndexBufferUploader = nullptr;
-    }
-};
-
 class GCMesh
 {
 public:
@@ -64,15 +12,13 @@ public:
     void UploadGeometryDataColor(GCGeometry* pGeometry);
     void UploadGeometryDataTexture(GCGeometry* pGeometry);
 
-    void Initialize(GCRender* pRender) { m_pRender = pRender; }
+    void Initialize(GCRender* pRender, GCGeometry* pGeometry);
 
-    inline MeshBufferData* GetBufferGeometryData() { return  m_pBufferGeometryData; }
+    inline GCMESHBUFFERDATA* GetBufferGeometryData() { return  m_pBufferGeometryData; }
 
 private:
     GCRender* m_pRender;
-
-
-    MeshBufferData* m_pBufferGeometryData;
+    GCMESHBUFFERDATA* m_pBufferGeometryData;
 
     // #TODO Put this in shader or Other place
     ID3D12Resource* CreateDefaultBuffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, ID3D12Resource* uploadBuffer);
@@ -101,8 +47,7 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
     const UINT vbByteSize = static_cast<UINT>(vertices.size() * sizeof(VertexType));
     const UINT ibByteSize = static_cast<UINT>(pGeometry->indices.size() * sizeof(std::uint16_t));
 
-    m_pBufferGeometryData = new MeshBufferData();
-    m_pBufferGeometryData->Name = "boxGeo";
+    m_pBufferGeometryData = new GCMESHBUFFERDATA();
 
     D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
     CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);

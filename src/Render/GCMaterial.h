@@ -15,17 +15,13 @@ public:
 
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 
-	void CheckForRemoveNonUsedCB();
-
 	// Check texture and apply if exist
 	bool UpdateTexture();
-
-
-	
 
 	// Object
 	std::vector<GCShaderUploadBufferBase*> GetObjectCBData() { return m_vpObjectCB; }
 
+	// Draw Count
     void IncrementCBCount() { m_iCount++; }
 	void ResetCBCount() { m_iCount = 0; }
     int GetCount() const { return m_iCount; }
@@ -35,7 +31,6 @@ private:
 
 	int m_iCount = 0;
 
-
 	GCShader* m_pShader;
 	GCTexture* m_pTexture;
 
@@ -43,6 +38,7 @@ private:
 	DirectX::XMFLOAT4 m_diffuseAlbedo;
 	DirectX::XMFLOAT3 m_fresnelR0;
 	float m_roughness;
+
 	// Many cb for multiple object drawing
 	std::vector<GCShaderUploadBufferBase*> m_vpObjectCB;
 };

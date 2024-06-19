@@ -69,14 +69,18 @@ GCMesh::~GCMesh()
 {
 }
 
-//void GCMesh::Initialize(GCRender* pRender) {
-//    m_pRender = pRender;
-//    //m_Buffer = new UploadBuffer<ObjectConstants>(m_pRender->Getmd3dDevice(), 1, true);
-//
-//    m_pObjectCB = new UploadBuffer<WorldCB>(m_pRender->Getmd3dDevice(), 1, true);
-//    m_pCameraCB = new UploadBuffer<CameraCB>(m_pRender->Getmd3dDevice(), 1, true);
-//
-//}
+void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
+    m_pRender = pRender;
+
+    if (pGeometry->texC.size() == 0)
+    {
+        UploadGeometryDataColor(pGeometry);
+    }
+    else
+    {
+        UploadGeometryDataTexture(pGeometry);
+    }
+}
 
 void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry) 
 {

@@ -35,13 +35,13 @@ public:
 
 protected:
 
-	ID3D12RootSignature* m_RootSignature = nullptr;
-	ID3D12PipelineState* m_PSO = nullptr;
+	ID3D12RootSignature* m_RootSignature;
+	ID3D12PipelineState* m_PSO;
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
 
-	ID3DBlob* m_vsByteCode = nullptr;
-	ID3DBlob* m_psByteCode = nullptr;
+	ID3DBlob* m_vsByteCode;
+	ID3DBlob* m_psByteCode;
 
 	// Var used in Compile Shader override func
 	std::wstring m_vsCsoPath;

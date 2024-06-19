@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{2628BC1B-9DA0-4040-91FE-65E070AD6005}</UniqueIdentifier>
+      <UniqueIdentifier>{A5AA2489-751A-4611-8CD4-7A4A262FBA2A}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{6219F480-61DF-482E-9BB3-C588DC0EF15D}</UniqueIdentifier>
+      <UniqueIdentifier>{89C110F3-E5B6-463C-B133-27C5F2B73023}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{9508BCC8-323E-414B-9A4A-FEAAA4609AB3}</UniqueIdentifier>
+      <UniqueIdentifier>{5CA5FB67-1352-46C0-B67F-69B9ED625778}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -100,6 +100,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCMeshBufferData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCModelParser.h">

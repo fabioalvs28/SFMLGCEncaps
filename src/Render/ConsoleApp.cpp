@@ -44,8 +44,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	GCMesh* mesh1 = graphics->CreateMesh(geo1);
 	GCMesh* mesh2 = graphics->CreateMesh(geo2);
 
-
-
 	// Texture (Resource)
 	std::string texturePath = "../../../src/Render/Textures/texture.dds";
 	GCTexture* texture = graphics->CreateTexture(texturePath);
@@ -96,7 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	graphics->StartFrame();
 
-	// DRAW 
+	// DRAW -> ONE FRAME
 	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 	graphics->GetRender()->DrawObjectPixel(mesh2, material2, 800, 880, projectionMatrix, viewMatrix, graphics);
 
@@ -106,6 +104,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
 
 	graphics->EndFrame();
+	// ********************
 
 	window->Run(graphics->GetRender());
 }

@@ -10,6 +10,7 @@ GCModelParser::~GCModelParser()
 
 bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 {
+    // #TODO Enlever sa ?
 	/*std::string extensionCheck;
 	for (int i = 0; i < 3; i++)
 	{
@@ -62,11 +63,8 @@ GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fi
 		objGeometry->indices.push_back(i);
 	}
 
-	if (CheckNull(objGeometry))
-	{
-		OutputDebugString(L"Model Geometry is empty \n");
-		profiler.LogWarning("Model geometry is empty");
-	}
+	CHECK_POINTERSNULL(profiler,"Model geometry loaded successfully","Model Geometry is empty",objGeometry);
+
 	return objGeometry;
 }
 
@@ -107,10 +105,7 @@ GCGeometry* GCModelParser::BuildModelColor(std::string fileName, Extensions file
 		objGeometry->indices.push_back(m_ParsedModel->facesInfos[i][0]);
 	}
 
-	if (CheckNull(objGeometry))
-	{
-		OutputDebugString(L"Obj Geometry is empty \n");
-		profiler.LogWarning("Obj geometry is empty");
-	}
+	CHECK_POINTERSNULL(profiler, "Model geometry loaded successfully", "Model Geometry is empty", objGeometry);
+
 	return objGeometry;
 }
