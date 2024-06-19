@@ -1,6 +1,6 @@
 #include "framework.h"
 
-struct GCTest : GCSHADERCB {
+struct Test : GCSHADERCB {
 	DirectX::XMFLOAT4X4 world; // Matrice du monde
 	DirectX::XMFLOAT4 color;
 };

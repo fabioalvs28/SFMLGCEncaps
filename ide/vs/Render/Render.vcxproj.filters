@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{B3D25B98-B682-4956-BCEC-A72CEF9D23F2}</UniqueIdentifier>
+      <UniqueIdentifier>{4210B401-110C-4FFB-8982-E997C19ECD6E}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{D72AFA3B-EF38-42B7-B517-313FEE371844}</UniqueIdentifier>
+      <UniqueIdentifier>{4E84989F-F588-48D1-A7C0-B70CC04A8141}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{9CD6DAA1-49D5-4002-8600-C1B1B2F84447}</UniqueIdentifier>
+      <UniqueIdentifier>{B6751AF4-08DE-4050-83EF-4AC375BD4725}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\..\src\Render\GCTextureFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\GCUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\Render\MathHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,6 +82,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\DDSTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\framework-header.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\framework.h">
@@ -114,9 +120,6 @@
     <ClInclude Include="..\..\..\src\Render\GCShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCShaderCBStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCShaderColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -126,13 +129,13 @@
     <ClInclude Include="..\..\..\src\Render\GCShaderTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCShaderVertexStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCTextureFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\header.h">

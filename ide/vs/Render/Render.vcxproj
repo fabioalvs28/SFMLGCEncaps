@@ -13,13 +13,13 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{8CD6AECD-0C60-47FD-99F3-70E0A4749F12}</ProjectGuid>
+    <ProjectGuid>{BDF086D6-0CB3-471D-A6C7-50D0B87C95BC}</ProjectGuid>
     <RootNamespace>Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -55,7 +55,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Render\d3dx12.h" />
     <ClInclude Include="..\..\..\src\Render\DDSTextureLoader.h" />
+    <ClInclude Include="..\..\..\src\Render\framework-header.h" />
     <ClInclude Include="..\..\..\src\Render\framework.h" />
     <ClInclude Include="..\..\..\src\Render\GCGeometry.h" />
     <ClInclude Include="..\..\..\src\Render\GCGraphics.h" />
@@ -90,13 +91,12 @@
     <ClInclude Include="..\..\..\src\Render\GCPrimitiveFactory.h" />
     <ClInclude Include="..\..\..\src\Render\GCRender.h" />
     <ClInclude Include="..\..\..\src\Render\GCShader.h" />
-    <ClInclude Include="..\..\..\src\Render\GCShaderCBStruct.h" />
     <ClInclude Include="..\..\..\src\Render\GCShaderColor.h" />
     <ClInclude Include="..\..\..\src\Render\GCShaderCustom.h" />
     <ClInclude Include="..\..\..\src\Render\GCShaderTexture.h" />
-    <ClInclude Include="..\..\..\src\Render\GCShaderVertexStruct.h" />
     <ClInclude Include="..\..\..\src\Render\GCTexture.h" />
     <ClInclude Include="..\..\..\src\Render\GCTextureFactory.h" />
+    <ClInclude Include="..\..\..\src\Render\GCUtils.h" />
     <ClInclude Include="..\..\..\src\Render\header.h" />
     <ClInclude Include="..\..\..\src\Render\HLSLReader.h" />
     <ClInclude Include="..\..\..\src\Render\MathHelper.h" />
@@ -136,6 +136,7 @@
     <ClCompile Include="..\..\..\src\Render\GCShaderTexture.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCTexture.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCTextureFactory.cpp" />
+    <ClCompile Include="..\..\..\src\Render\GCUtils.cpp" />
     <ClCompile Include="..\..\..\src\Render\MathHelper.cpp" />
     <ClCompile Include="..\..\..\src\Render\Timer.cpp" />
     <ClCompile Include="..\..\..\src\Render\Window.cpp" />

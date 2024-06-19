@@ -8,7 +8,7 @@ class GCGraphics
 public:
 	GCGraphics();
 
-	void Initialize(Window* window);
+	void Initialize(Window* window, int renderWidth, int renderHeight);
 
 	// Principal Object Creation
 
@@ -61,8 +61,7 @@ public:
 	GCRender* GetRender() const { return m_pRender; }
 
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
-	// #TODO -> Améliorer le lien parser 
-	GCModelParserObj* GetModelParserFactory() const { return m_pModelParserFactory; }
+	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
 
 private:
 	// Render instance contain Window
@@ -83,7 +82,7 @@ private:
 
 	// Mesh
 	GCPrimitiveFactory* m_pPrimitiveFactory;
-	GCModelParserObj* m_pModelParserFactory;
+	GCModelParser* m_pModelParserFactory;
 };
 
 template<typename ShaderTypeConstantBuffer>

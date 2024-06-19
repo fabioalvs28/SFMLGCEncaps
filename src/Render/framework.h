@@ -80,6 +80,7 @@ class GCShaderCustom;
 class GCTexture;
 class GCTextureFactory;
 class GCShaderUploadBufferBase; // 
+class GCUtils;
 //class GCShaderUploadBuffer; // 
 class MathHelper;
 class Timer;
@@ -98,8 +99,10 @@ class Window;
 //
 #include "d3dx12.h"
 #include "Window.h"
+#include "Macros.h"
 #include "UploadBuffer.h"
 #include "GCRender.h"
+//#include "GCRender.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"
@@ -116,6 +119,7 @@ class Window;
 #include "ShaderTypeEnum.h"
 #include "Timer.h"
 #include "PrimitiveTypeEnum.h"
+#include "GCUtils.h"
 
 #include "HLSLReader.h"
 

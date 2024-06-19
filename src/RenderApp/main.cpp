@@ -10,17 +10,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//Window* window = new Window(hInstance);
 	//window->Initialize();
 
-	//GCGraphics* graphics = new GCGraphics();
-	//graphics->Initialize(window);
+	GCGraphics* graphics = new GCGraphics();
+	graphics->Initialize(window,600,400);
 
 	//graphics->GetPrimitiveFactory()->Initialize();
 	////graphics->GetModelParserFactory()->Initialize();
 
-	//// Geometry (Resource)
-	//GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::White));
-	//GCGeometry* geo1 = graphics->GetModelParserFactory()->BuildObjTexture("../../../src/Render/monkeyUv.obj");
-	//GCShader* shader1 = graphics->CreateShaderColor();
-	//GCShader* shader2 = graphics->CreateShaderTexture();
+	// Geometry (Resource)
+	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::White));
+	GCGeometry* geo1 = graphics->GetModelParserFactory()->BuildModelTexture("../../../src/Render/monkeyUv.obj", obj);
+	GCShader* shader1 = graphics->CreateShaderColor();
+	GCShader* shader2 = graphics->CreateShaderTexture();
 
 	/////// Create Render Resources
 	//graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation
@@ -48,9 +48,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	//// SET CAMERA 
 
-	//DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
-	//DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
-	//DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -5.0f, 0.1f, 1.0f);
+	DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
+	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 
 	//DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, window->AspectRatio(), 1.0f, 1000.0f);
@@ -80,6 +80,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&I)));
 
 
+
+	graphics->GetRender()->PrepareDraw();
+
+
+	//problème? actuel -> moteur doit forcément updatebuffers des materials dans le même ordre qu'ils vont être dessiné,même si les matrices n'ont pas changé
+	//material2->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	//material2->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	//graphics->GetRender()->UpdateBuffers(material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawOneObject(mesh1, material2);
+	//material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	//material->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	//graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawOneObject(mesh, material);
+	//material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	//material->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	//graphics->GetRender()->UpdateBuffers(material, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawOneObject(mesh, material);
+
+	material2->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	material2->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	graphics->GetRender()->UpdateBuffers(material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObjectPixel(mesh1, material2,300,200,projectionMatrix,viewMatrix);
+	material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	material->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObjectPixel(mesh, material,100,100, projectionMatrix, viewMatrix);
+	material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	material->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	graphics->GetRender()->DrawOneObjectPixel(mesh, material, 500, 300, projectionMatrix, viewMatrix);
+
+	graphics->GetRender()->PostDraw();
+
+	//Resets the count of 
+	for (int i = 0; i < graphics->GetMaterials().size(); i++)
+		graphics->GetMaterials()[i]->m_count = 0;
+
+
+	//// Loop Again < |||| >
 
 	//graphics->GetRender()->PrepareDraw();
 

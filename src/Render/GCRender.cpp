@@ -1,12 +1,21 @@
 #include "framework.h"
 
-bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow) 
+bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow, int renderWidth, int renderHeight)
 {
 	//Initialize Direct3D + Update viewport
 	m_pWindow = pWindow;
+	m_renderWidth = renderWidth;
+	m_renderHeight = renderHeight;
 	InitDirect3D();
 	OnResize();
-
+	if (CheckNull(pGraphics, pWindow))
+	{
+		OutputDebugString(L"Graphics and window are empty\n");
+	}
+	else
+	{
+		OutputDebugString(L"Graphics and window loaded successfully\n");
+	}
 	return true;
 }
 
@@ -332,14 +341,14 @@ void GCRender::CreateDepthStencilBufferAndView()
 
 void GCRender::UpdateViewport() 
 {
-	m_ScreenViewport.TopLeftX = 0;
-	m_ScreenViewport.TopLeftY = 0;
-	m_ScreenViewport.Width = static_cast<float>(m_pWindow->GetClientWidth());
-	m_ScreenViewport.Height = static_cast<float>(m_pWindow->GetClientHeight());
+	m_ScreenViewport.TopLeftX = (m_pWindow->GetClientWidth() - m_renderWidth) / 2;
+	m_ScreenViewport.TopLeftY = (m_pWindow->GetClientHeight() - m_renderHeight) / 2;
+	m_ScreenViewport.Width = static_cast<float>(m_renderWidth);
+	m_ScreenViewport.Height = static_cast<float>(m_renderHeight);
 	m_ScreenViewport.MinDepth = 0.0f;
 	m_ScreenViewport.MaxDepth = 1.0f;
 
-	m_ScissorRect = { 0, 0, m_pWindow->GetClientWidth(), m_pWindow->GetClientHeight() };
+	m_ScissorRect = { (m_pWindow->GetClientWidth() - m_renderWidth) / 2, (m_pWindow->GetClientHeight() - m_renderHeight) / 2, (m_pWindow->GetClientWidth() - m_renderWidth)/2 + m_renderWidth,(m_pWindow->GetClientHeight() - m_renderHeight) / 2 + m_renderHeight };
 }
 
 void GCRender::Update(const Timer& gt) 
@@ -378,14 +387,16 @@ void GCRender::PrepareDraw()
 	m_DirectCmdListAlloc->Reset();
 	m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
 
+	//CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+	//m_CommandList->ResourceBarrier(1, &ResBar);
+	//m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::Black, 0, nullptr);
 	m_CommandList->RSSetViewports(1, &m_ScreenViewport);
 	m_CommandList->RSSetScissorRects(1, &m_ScissorRect);
 
 	// Swap
 	CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 	m_CommandList->ResourceBarrier(1, &ResBar);
-
-	m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightBlue, 0, nullptr);
+	m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightBlue, 1, &m_ScissorRect);
 	m_CommandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
@@ -397,11 +408,18 @@ void GCRender::PrepareDraw()
 	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
+
 // You can call many times this function without call again Prepare and Post Draw
+//Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
+//Needs all three of the matrices(world,proj,view)
+//Absolutely needs Prepare Draw to be called before it being used
+//Needs post draw to be called right after aswell
+//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
 bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 {
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
+	// Update 
 
 	// 
 	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
@@ -483,5 +501,50 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 	}
 }
 
+bool GCRender::DrawOneObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial, int pixelX, int pixelY , DirectX::XMMATRIX proj, DirectX::XMMATRIX view)
+{
 
+	if (pMaterial->GetShader() == nullptr || pMesh == nullptr) {
+		return false;
+	}
+	GCWORLDCB worldData;
+	DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);
+	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
+	DirectX::XMFLOAT4X4 convertedMatrix;
+	DirectX::XMStoreFloat4x4(&convertedMatrix, DirectX::XMMatrixTranspose(translationMatrix));
+	worldData.world = convertedMatrix;
 
+	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
+
+	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
+	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
+
+	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = pMesh->GetBufferGeometryData()->VertexBufferView();
+	m_CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
+	m_CommandList->IASetIndexBuffer(&indexBufferView);
+
+	//
+	if (pMaterial->GetShader()->GetType() == 1) // Texture?
+	{
+		if (pMaterial->GetTexture())
+		{
+			m_CommandList->SetGraphicsRootDescriptorTable(2, pMaterial->GetTexture()->GetTextureAddress());
+		}
+		else
+		{
+			return false;
+		}
+	}
+	// Object
+
+	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
+	// Camera
+	m_CommandList->SetGraphicsRootConstantBufferView(1, pMaterial->GetCameraCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
+	// Draw
+	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
+
+	pMaterial->m_count++;
+	return true;
+}

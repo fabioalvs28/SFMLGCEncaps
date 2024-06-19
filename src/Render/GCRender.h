@@ -5,7 +5,7 @@ class GCRender
 public:
 	GCRender() {}
 
-	bool Initialize(GCGraphics* pGraphics,Window* pWindow);
+	bool Initialize(GCGraphics* pGraphics,Window* pWindow, int renderWidth, int renderHeight);
 	bool InitDirect3D();
 	//void BuildConstantBuffers();
 	void LogAdapters();
@@ -40,6 +40,10 @@ public:
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
+	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
+	bool DrawOneObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial,int pixelX,int pixelY, DirectX::XMMATRIX proj, DirectX::XMMATRIX view);
+	//void BuildBoxGeometry();
+	void OnResize();
 
 	// Getter
 	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
@@ -68,6 +72,8 @@ public:
 	
 	Window* GetCurrentWindow() { return m_pWindow; }
 private:
+	int m_renderWidth;
+	int m_renderHeight;
 	Window* m_pWindow;
 	// Swap chain size
 	static const int SwapChainBufferCount = 2;
