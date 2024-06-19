@@ -20,10 +20,6 @@ void GCSceneManager::NewDelete()
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != m_gameObjectsToDeleteList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
 		DestroyGameObject( pGameObjectNode->GetData() );
 	m_gameObjectsToDeleteList.Clear();
-
-	for ( GCListNode<GCScene*>* pSceneNode = m_scenesToDeleteList.GetFirstNode(); pSceneNode != m_scenesToDeleteList.GetLastNode(); pSceneNode = pSceneNode->GetNext() )
-		DestroyScene( pSceneNode->GetData() );
-	m_scenesToDeleteList.Clear();
 }
 
 ///////////////////////////////////////
@@ -97,9 +93,4 @@ void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 ///////////////////////////////////////////////////////////////////////////////
 void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject ) { m_gameObjectsToDeleteList.PushBack( pGameObject ); }
 
-/////////////////////////////////////////////////////////////////////
-/// @brief Adds the Scene to the "Deletion Queue".
 /// 
-/// @param pScene A pointer to the Scene to be added to the queue.
-/////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddSceneToDeleteQueue( GCScene* pScene ) { m_scenesToDeleteList.PushBack( pScene ); }

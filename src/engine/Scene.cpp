@@ -45,13 +45,12 @@ void GCScene::Render()
 	if ( m_pParent != nullptr ) m_pParent->Render();
 }
 
-/// @brief 
+////////////////////////////////////////////////////
+/// @brief Creates a new Scene.
 /// 
-/// @return 
-GCScene* GCScene::Create()
-{
-	// todo Create
-}
+/// @return A pointer to the newly created Scene.
+////////////////////////////////////////////////////
+GCScene* GCScene::Create() { return GC::m_pActiveGameManager.m_pSceneManager.CreateScene(); }
 
 //////////////////////////////
 /// @brief Loads the Scene.
@@ -71,7 +70,7 @@ void GCScene::Unload() { GC::m_pActiveGameManager.m_pSceneManager.UnloadScene( t
 /////////////////////////////////////////////////////////////////////////////
 void GCScene::Destroy()
 {
-	GC::m_pActiveGameManager.m_pSceneManager.AddSceneToDeleteQueue( this );
+	GC::m_pActiveGameManager.m_pSceneManager.DestroyScene( this );
 	DestroyGameObjects(); //? Maybe there will be an issue with destroying every GameObjects including those who are already destroying their children
 	DestroyChildren();
 }
