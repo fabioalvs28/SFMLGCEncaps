@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// Geometry (Resource)
 	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::White));
-	GCGeometry* geo1 = graphics->GetModelParserFactory()->BuildObjTexture("../../../src/Render/monkeyUv.obj");
+	GCGeometry* geo1 = graphics->GetModelParserFactory()->BuildModelTexture("../../../src/Render/monkeyUv.obj", obj);
 	GCShader* shader1 = graphics->CreateShaderColor();
 	GCShader* shader2 = graphics->CreateShaderTexture();
 
