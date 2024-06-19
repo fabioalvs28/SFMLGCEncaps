@@ -15,6 +15,9 @@
 ///////////////////////////////////////
 void GCSceneManager::Update() { m_pActiveScene->Update(); }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Creates the GameObjects in the "Creation Queue" and Destroys the GameObjects in the "Deletion Queue".
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCSceneManager::NewDelete()
 {
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToCreateList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
@@ -33,6 +36,11 @@ void GCSceneManager::Render() { m_pActiveScene->Render(); }
 
 
 
+////////////////////////////////////////////////////
+/// @brief Creates a new Scene.
+/// 
+/// @return A pointer to the newly created Scene.
+////////////////////////////////////////////////////
 GCScene* GCSceneManager::CreateScene()
 {
 	GCScene* pScene = new GCScene();
@@ -41,6 +49,11 @@ GCScene* GCSceneManager::CreateScene()
 	return pScene;
 }
 
+/////////////////////////////////////////////////////////
+/// @brief Loads the Scene.
+/// 
+/// @param pScene A pointer to the Scene to be loaded.
+/////////////////////////////////////////////////////////
 void GCSceneManager::LoadScene( GCScene* pScene )
 {
 	if ( pScene->m_pLoadedNode != nullptr ) return;
@@ -48,6 +61,11 @@ void GCSceneManager::LoadScene( GCScene* pScene )
 	pScene->m_pLoadedNode = m_loadedScenesList.GetLastNode();
 }
 
+///////////////////////////////////////////////////////////
+/// @brief Unloads the Scene.
+/// 
+/// @param pScene A pointer to the Scene to be unloaded.
+///////////////////////////////////////////////////////////
 void GCSceneManager::UnloadScene( GCScene* pScene )
 {
 	GCListNode<GCScene*>* pLoadedNode = pScene->m_pLoadedNode;
@@ -73,6 +91,11 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 
 
 
+////////////////////////////////////////////////////////////////////
+/// @brief Fully creates the GameObject.
+/// 
+/// @param pGameObject A pointer to the GameObject to be created.
+////////////////////////////////////////////////////////////////////
 void GCSceneManager::CreateGameObject( GCGameObject* pGameObject )
 {
 	GCScene* pScene = pGameObject->m_pScene;
