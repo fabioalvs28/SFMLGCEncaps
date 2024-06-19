@@ -4,6 +4,7 @@
 #include "Components.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "GC.h"
 
 // todo Children inheriting from the parent m_active
 // todo GameObject being able to have multiple tags
@@ -59,27 +60,40 @@ void GCGameObject::Render()
     // todo GameObject Render
 }
 
-///////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+/// @brief Duplicates the GameObject.
+/// 
+/// @return A pointer to the newly created GameObject.
+/// 
+/// @note The children are also duplicated.
+/////////////////////////////////////////////////////////
+GCGameObject* GCGameObject::Duplicate()
+{
+    GCGameObject* pGameObject = m_pScene->CreateGameObject();
+    m_pParent->AddChild( pGameObject );
+    for ( GCListNode<GCGameObject*>* pChildNode = m_childrenList.GetFirstNode(); pChildNode != nullptr; pChildNode = pChildNode->GetNext() )
+        pChildNode->GetData()->Duplicate()->SetParent( pGameObject );
+    pGameObject->m_name = m_name;
+    pGameObject->m_active = m_active;
+    pGameObject->m_tag = m_tag;
+    pGameObject->m_layer = m_layer;
+    pGameObject->m_componentsList = m_componentsList;
+    return pGameObject;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 /// @brief Adds the GameObject to the "Deletion Queue".
 /// 
 /// @note The GameObject will be deleted the next frame.
-///////////////////////////////////////////////////////////
+/// @note The GameObject's children will also be added to the "Deletion Queue".
+//////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::Destroy()
 {
-    GCSceneManager::AddGameObjectToDeleteQueue( this );
+    GC::m_pActiveGameManager.m_pSceneManager.AddGameObjectToDeleteQueue( this );
+    DeleteChildren();
 }
 
 
-
-/////////////////////////////////////////////////////////////
-/// @brief Sets a new parent to this GameObject.
-/// 
-/// @param pParent A pointer to the new parent GameObject.
-/////////////////////////////////////////////////////////////
-void GCGameObject::SetParent( GCGameObject* pParent )
-{
-    pParent->AddChild( this );
-}
 
 /////////////////////////////////////////////////////////
 /// @brief Removes itself from it's parent GameObject.
@@ -159,6 +173,20 @@ void GCGameObject::DeleteChildren()
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////
+/// @brief Moves the GameObject to a new Scene.
+/// 
+/// @param pScene A pointer to the Scene the GameObject will be moved to.
+////////////////////////////////////////////////////////////////////////////
+void GCGameObject::SetScene( GCScene* pScene ) { pScene->MoveGameObjectToScene( this ); }
+
+/////////////////////////////////////////////////////////////
+/// @brief Sets a new parent to this GameObject.
+/// 
+/// @param pParent A pointer to the new parent GameObject.
+/////////////////////////////////////////////////////////////
+void GCGameObject::SetParent( GCGameObject* pParent ) { pParent->AddChild( this ); }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief Sets the active state of this GameObject.

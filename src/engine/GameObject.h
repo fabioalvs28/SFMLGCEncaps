@@ -18,16 +18,18 @@ protected:
     void Render();
 
 public:
+    GCGameObject* Duplicate();
     void Destroy();
     
-    void SetParent( GCGameObject* pParent );
     void RemoveParent();
     GCGameObject* CreateChild();
     void AddChild( GCGameObject* pChild );
     void RemoveChild( GCGameObject* pChild );
-    void DeleteChild( GCGameObject* pChild );
+    void DeleteChild( GCGameObject* pChild ) {}; // todo
     void DeleteChildren();
     
+    void SetScene( GCScene* pScene );
+    void SetParent( GCGameObject* pParent );
     void SetActive( bool active );
     void SetName( const char* name );
     void SetTag( const char* tag );
@@ -115,7 +117,4 @@ T* GCGameObject::GetComponent()
 /// @tparam T The class of the Component to be removed.
 //////////////////////////////////////////////////////////
 template<class T>
-void GCGameObject::RemoveComponent()
-{
-    RemoveComponent( T::TYPE );
-}
+void GCGameObject::RemoveComponent() { RemoveComponent( T::TYPE ); }
