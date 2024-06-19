@@ -432,17 +432,7 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
 	//
-	if (pMaterial->GetShader()->GetType() == 1) // Texture?
-	{
-		if(pMaterial->GetTexture())
-		{
-			m_CommandList->SetGraphicsRootDescriptorTable(2, pMaterial->GetTexture()->GetTextureAddress());
-		}
-		else 
-		{
-			return false;
-		}
-	}
+	pMaterial->UpdateTexture();
 	// Object
 	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
 	// Set cb object buffer on used
@@ -501,20 +491,31 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 	}
 }
 
-bool GCRender::DrawOneObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial, int pixelX, int pixelY , DirectX::XMMATRIX proj, DirectX::XMMATRIX view)
+bool GCRender::DrawObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial, int pixelX, int pixelY , DirectX::XMMATRIX proj, DirectX::XMMATRIX view, GCGraphics* pGraphics)
 {
 
 	if (pMaterial->GetShader() == nullptr || pMesh == nullptr) {
 		return false;
 	}
-	GCWORLDCB worldData;
+
 	DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);
 	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 	DirectX::XMFLOAT4X4 convertedMatrix;
 	DirectX::XMStoreFloat4x4(&convertedMatrix, DirectX::XMMatrixTranspose(translationMatrix));
+	
+
+	//DirectX::XMFLOAT4X4 I(
+	//	0.5f, 0.0f, 0.0f, 0.0f,
+	//	0.0f, 0.5f, 0.0f, 0.0f,
+	//	0.0f, 0.0f, 1.0f, 0.0f,
+	//	3.5f, 0.0f, 0.0f, 1.0f);
+
+	//DirectX::XMFLOAT4X4 transposedWorld;
+	//DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&I)));
+	GCWORLDCB worldData;
 	worldData.world = convertedMatrix;
 
-	pMaterial->UpdateConstantBufferData(worldData, pMaterial->GetObjectCBData()[pMaterial->m_count]);
+	pGraphics->UpdateCustomCBObject<GCWORLDCB>(pMaterial, worldData);
 
 	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
 	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
@@ -525,26 +526,20 @@ bool GCRender::DrawOneObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial, int pixe
 	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
-	//
-	if (pMaterial->GetShader()->GetType() == 1) // Texture?
-	{
-		if (pMaterial->GetTexture())
-		{
-			m_CommandList->SetGraphicsRootDescriptorTable(2, pMaterial->GetTexture()->GetTextureAddress());
-		}
-		else
-		{
-			return false;
-		}
-	}
-	// Object
+	// Check if texture
+	pMaterial->UpdateTexture();
 
-	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
+
+	// Object
+	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+	// Set cb object buffer on used
+	pMaterial->GetObjectCBData()[pMaterial->GetCount()]->m_isUsed = true;
+	pMaterial->IncrementCBCount();
+
 	// Camera
-	m_CommandList->SetGraphicsRootConstantBufferView(1, pMaterial->GetCameraCBData()[pMaterial->m_count]->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(1, m_pCurrentViewProj->Resource()->GetGPUVirtualAddress());
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
-	pMaterial->m_count++;
 	return true;
 }

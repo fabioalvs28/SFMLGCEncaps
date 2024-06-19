@@ -1,6 +1,6 @@
 #include "framework.h"
 
-struct Test : GCSHADERCB {
+struct GCTest : GCSHADERCB {
 	DirectX::XMFLOAT4X4 world; // Matrice du monde
 	DirectX::XMFLOAT4 color;
 };
@@ -16,7 +16,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	window->Initialize();
 
 	GCGraphics* graphics = new GCGraphics();
-	graphics->Initialize(window);
+	graphics->Initialize(window, 1920, 1064);
 
 	graphics->GetPrimitiveFactory()->Initialize();
 	//graphics->GetModelParserFactory()->Initialize();
@@ -25,13 +25,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::Red));
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.2f); // Rouge (1.0f, 0.0f, 0.0f) avec alpha 0.5 (50% d'opacité)
 	GCGeometry* geo1 = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", color);
-	GCGeometry* geo2 = graphics->GetModelParserFactory()->BuildObjTexture("../../../src/Render/monkeyUv.obj");
+	GCGeometry* geo2 = graphics->GetModelParserFactory()->BuildModelTexture("../../../src/Render/monkeyUv.obj", obj);
 
 	GCShader* shader1 = graphics->CreateShaderColor();
 
 	std::string shaderFilePath = "../../../src/Render/Shaders/customTest.hlsl";
 	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
-	GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, STEnum::texture);
+	//GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, STEnum::texture);
+	GCShader* shader2 = graphics->CreateShaderTexture();
 
 	///// Create Render Resources
 	graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation
@@ -106,21 +107,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// Première objet
 	GCTest worldData;
-	worldData.world = transposedWorld;
+	worldData.world = I;
 	worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
-	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawObject(mesh2, material2);
 
-	// Deuxième objet
-	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
-	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawObject(mesh2, material2);
 
-	// Troisième objet
-	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+
+
 	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawObject(mesh2, material2);
+	//graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	graphics->GetRender()->DrawObjectPixel(mesh2, material2, 800, 800, transposedProjectionMatrix, transposedViewMatrix, graphics);
+	//graphics->GetRender()->DrawObject(mesh2, material2);
+
+	//// Deuxième objet
+	//graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawObject(mesh2, material2);
+
+	//// Troisième objet
+	//graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawObject(mesh2, material2);
 
 	// Post traitement du rendu
 	graphics->GetRender()->PostDraw();
@@ -153,52 +159,52 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
 
 
-	// DEUXIEME FRAME  
+	//// DEUXIEME FRAME  
 
-	// Réinitialisation des constant buffers des matériaux
-	for (auto& material : graphics->GetMaterials())
-	{
-		for (auto& cbObject : material->GetObjectCBData())
-		{
-			cbObject->m_isUsed = false;
-		}
-	}
+	//// Réinitialisation des constant buffers des matériaux
+	//for (auto& material : graphics->GetMaterials())
+	//{
+	//	for (auto& cbObject : material->GetObjectCBData())
+	//	{
+	//		cbObject->m_isUsed = false;
+	//	}
+	//}
 
-	// Préparation du rendu
-	graphics->GetRender()->PrepareDraw();
+	//// Préparation du rendu
+	//graphics->GetRender()->PrepareDraw();
 
-	// Premier objet
-	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
-	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawObject(mesh2, material2);
+	//// Premier objet
+	//graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawObject(mesh2, material2);
 
-	// Deuxième objet
-	graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
-	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawObject(mesh2, material2);
+	//// Deuxième objet
+	//graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawObject(mesh2, material2);
 
-	// Post traitement du rendu
-	graphics->GetRender()->PostDraw();
+	//// Post traitement du rendu
+	//graphics->GetRender()->PostDraw();
 
-	for (auto& material : graphics->GetMaterials())
-	{
-		for (auto& cbObject : material->GetObjectCBData())
-		{
-			if (cbObject->m_isUsed)
-				cbObject->m_framesSinceLastUse = 0;
-			if (!cbObject->m_isUsed)
-			{
-				cbObject->m_framesSinceLastUse++;
-				if (cbObject->m_framesSinceLastUse > 180)
-				{
-					profiler.LogInfo("Constant buffer inutilisé trouvé dans le matériau : ");
-				}
-			}
-		}
-	}
+	//for (auto& material : graphics->GetMaterials())
+	//{
+	//	for (auto& cbObject : material->GetObjectCBData())
+	//	{
+	//		if (cbObject->m_isUsed)
+	//			cbObject->m_framesSinceLastUse = 0;
+	//		if (!cbObject->m_isUsed)
+	//		{
+	//			cbObject->m_framesSinceLastUse++;
+	//			if (cbObject->m_framesSinceLastUse > 180)
+	//			{
+	//				profiler.LogInfo("Constant buffer inutilisé trouvé dans le matériau : ");
+	//			}
+	//		}
+	//	}
+	//}
 
-	// Log de la taille des CB dans material2
-	profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
+	//// Log de la taille des CB dans material2
+	//profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
 
 
 	window->Run(graphics->GetRender());

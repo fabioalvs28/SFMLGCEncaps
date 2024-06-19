@@ -40,10 +40,9 @@ public:
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
-	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
-	bool DrawOneObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial,int pixelX,int pixelY, DirectX::XMMATRIX proj, DirectX::XMMATRIX view);
+
+	bool DrawObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial,int pixelX,int pixelY, DirectX::XMMATRIX proj, DirectX::XMMATRIX view, GCGraphics* pGraphics);
 	//void BuildBoxGeometry();
-	void OnResize();
 
 	// Getter
 	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }

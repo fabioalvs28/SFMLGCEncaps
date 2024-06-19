@@ -17,6 +17,9 @@ public:
 
 	void CheckForRemoveNonUsedCB();
 
+	// Check texture and apply if exist
+	bool UpdateTexture();
+
 
 	
 
