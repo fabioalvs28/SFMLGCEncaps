@@ -16,7 +16,8 @@ public:
 	GCShader* CreateShaderTexture();
 	GCShader* CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int type);
 
-
+	template<typename ShaderTypeConstantBuffer>
+	ShaderTypeConstantBuffer ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
 
 
 	GCMaterial* CreateMaterial(GCShader* pShader, GCTexture* pTexture);
@@ -65,6 +66,9 @@ public:
 
 private:
 	// Render instance contain Window
+	int m_renderWidth;
+	int	m_renderHeight;
+
 	GCRender* m_pRender;
 
 	int m_meshId = 0;
@@ -104,4 +108,18 @@ void GCGraphics::UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& o
 		
 	// Update 
 	pMaterial->UpdateConstantBuffer(objectData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
+}
+
+template<typename ShaderTypeConstantBuffer>
+ShaderTypeConstantBuffer GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view) {
+	DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);
+	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
+	DirectX::XMFLOAT4X4 convertedMatrix;
+	DirectX::XMStoreFloat4x4(&convertedMatrix, DirectX::XMMatrixTranspose(translationMatrix));
+
+
+	ShaderTypeConstantBuffer worldData;
+	worldData.world = convertedMatrix;
+
+	return worldData;
 }
