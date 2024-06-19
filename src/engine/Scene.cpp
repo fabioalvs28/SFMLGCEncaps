@@ -72,7 +72,8 @@ void GCScene::Unload() { GC::m_pActiveGameManager.m_pSceneManager.UnloadScene( t
 void GCScene::Destroy()
 {
 	GC::m_pActiveGameManager.m_pSceneManager.AddSceneToDeleteQueue( this );
-	DeleteChildren();
+	DestroyGameObjects(); //? Maybe there will be an issue with destroying every GameObjects including those who are already destroying their children
+	DestroyChildren();
 }
 
 
@@ -155,20 +156,6 @@ GCGameObject* GCScene::FindGameObjectByID( int ID )
 		if ( pGameObject->m_ID == ID )
             return pGameObject;
 	}
-}
-
-//////////////////////////////////////////////////////////////////////
-/// @brief Destroys the GameObject.
-/// 
-/// @param pGameObject A pointer to the GameObject to be destroyed.
-/// 
-/// @note The GameObject's Components are also destroyed.
-//////////////////////////////////////////////////////////////////////
-void GCScene::DestroyGameObject( GCGameObject* pGameObject )
-{
-	RemoveGameObjectFromScene( pGameObject );
-	pGameObject->ClearComponents();
-	delete pGameObject;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -254,7 +241,7 @@ void GCScene::RemoveChild( GCScene* pChild )
 /// 
 /// @note Does not destroy the parent Scene.
 ////////////////////////////////////////////////
-void GCScene::DeleteChildren()
+void GCScene::DestroyChildren()
 {
     for ( GCListNode<GCScene*>* pChildNode = m_childrenList.GetFirstNode(); pChildNode != nullptr; pChildNode = pChildNode->GetNext() )
         pChildNode->GetData()->Destroy();

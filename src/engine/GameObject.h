@@ -3,12 +3,14 @@
 
 class Component;
 class GCScene;
+class GCSceneManager;
 
 
 
 class GCGameObject
 {
 friend class GCScene;
+friend class GCSceneManager;
 
 protected:
     GCGameObject( GCScene* pScene );
@@ -25,8 +27,7 @@ public:
     GCGameObject* CreateChild();
     void AddChild( GCGameObject* pChild );
     void RemoveChild( GCGameObject* pChild );
-    void DeleteChild( GCGameObject* pChild ) {}; // todo
-    void DeleteChildren();
+    void DestroyChildren();
     
     void AddTag( const char* tag );
     void RemoveTag( const char* tag );
@@ -57,6 +58,8 @@ public:
     void ClearComponents();
 
 protected:
+    void RemoveScene();
+    
     void RemoveComponent( int type );
 
 public:

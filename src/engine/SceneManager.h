@@ -23,6 +23,8 @@ private:
 	void UnloadScene( GCScene* pScene );
 	void DestroyScene( GCScene* pScene );
 	
+	void DestroyGameObject( GCGameObject* pGameObject );
+	
 	void AddGameObjectToDeleteQueue( GCGameObject* pGameObject );
 	void AddSceneToDeleteQueue( GCScene* pScene );
 
@@ -30,6 +32,7 @@ protected:
 	GCScene* CreateScene();
 
 private:
+    GCScene* m_pActiveScene;
 	GCList<GCScene*> m_scenesList;
 	GCList<GCScene*> m_loadedScenesList;
 	GCList<GCGameObject*> m_gameObjectsToDeleteList;

@@ -6,22 +6,19 @@
 #include "GameObject.h"
 
 // todo RenderQueue
+// todo CreationQueue
 
 
 
-void GCSceneManager::Update()
-{
-	// todo Update
-}
+///////////////////////////////////////
+/// @brief Updates the active Scene.
+///////////////////////////////////////
+void GCSceneManager::Update() { m_pActiveScene->Update(); }
 
 void GCSceneManager::NewDelete()
 {
-	GCGameObject* pGameObject;
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != m_gameObjectsToDeleteList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
-	{
-		pGameObject = pGameObjectNode->GetData();
-		pGameObject->GetScene()->DestroyGameObject( pGameObject );
-	}
+		DestroyGameObject( pGameObjectNode->GetData() );
 	m_gameObjectsToDeleteList.Clear();
 
 	for ( GCListNode<GCScene*>* pSceneNode = m_scenesToDeleteList.GetFirstNode(); pSceneNode != m_scenesToDeleteList.GetLastNode(); pSceneNode = pSceneNode->GetNext() )
@@ -29,11 +26,10 @@ void GCSceneManager::NewDelete()
 	m_scenesToDeleteList.Clear();
 }
 
-void GCSceneManager::Render()
-{
-	// todo Render
-}
-
+///////////////////////////////////////
+/// @brief Renders the active Scene.
+///////////////////////////////////////
+void GCSceneManager::Render() { m_pActiveScene->Render(); }
 
 
 
@@ -60,22 +56,50 @@ void GCSceneManager::UnloadScene( GCScene* pScene )
 	pScene->m_pLoadedNode = nullptr;
 }
 
+////////////////////////////////////////////////////////////
+/// @brief Fully destroys the Scene.
+/// 
+/// @param pScene A pointer to the Scene to be destroyed.
+/// 
+/// @note The Scene's GameObjects will also be destroyed.
+////////////////////////////////////////////////////////////
 void GCSceneManager::DestroyScene( GCScene* pScene )
 {
 	UnloadScene( pScene );
 	m_scenesList.DeleteNode( pScene->m_pNode );
-	pScene->DestroyGameObjects();
-	pScene->DeleteChildren();
+	pScene->RemoveParent();
     delete pScene;
 }
 
 
-void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject )
+
+//////////////////////////////////////////////////////////////////////
+/// @brief Fully destroys the GameObject.
+/// 
+/// @param pGameObject A pointer to the GameObject to be destroyed.
+/// 
+/// @note The GameObject's Components are also destroyed.
+//////////////////////////////////////////////////////////////////////
+void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 {
-	m_gameObjectsToDeleteList.PushBack( pGameObject );
+	pGameObject->RemoveScene();
+	pGameObject->RemoveParent();
+	pGameObject->ClearComponents();
+	delete pGameObject;
 }
 
-void GCSceneManager::AddSceneToDeleteQueue( GCScene* pScene )
-{
-	m_scenesToDeleteList.PushBack( pScene );
-}
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Adds the GameObject to the "Deletion Queue".
+/// 
+/// @param pGameObject A pointer to the GameObject to be added to the queue.
+///////////////////////////////////////////////////////////////////////////////
+void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject ) { m_gameObjectsToDeleteList.PushBack( pGameObject ); }
+
+/////////////////////////////////////////////////////////////////////
+/// @brief Adds the Scene to the "Deletion Queue".
+/// 
+/// @param pScene A pointer to the Scene to be added to the queue.
+/////////////////////////////////////////////////////////////////////
+void GCSceneManager::AddSceneToDeleteQueue( GCScene* pScene ) { m_scenesToDeleteList.PushBack( pScene ); }

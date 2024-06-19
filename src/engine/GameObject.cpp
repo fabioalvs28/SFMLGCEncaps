@@ -87,7 +87,7 @@ GCGameObject* GCGameObject::Duplicate()
 void GCGameObject::Destroy()
 {
     GC::m_pActiveGameManager.m_pSceneManager.AddGameObjectToDeleteQueue( this );
-    DeleteChildren();
+    DestroyChildren();
 }
 
 
@@ -163,7 +163,7 @@ void GCGameObject::RemoveChild( GCGameObject* pChild )
 /// 
 /// @note Does not destroy the parent GameObject.
 /////////////////////////////////////////////////////
-void GCGameObject::DeleteChildren()
+void GCGameObject::DestroyChildren()
 {
     for ( GCListNode<GCGameObject*>* pChildNode = m_childrenList.GetFirstNode(); pChildNode != nullptr; pChildNode = pChildNode->GetNext() )
         pChildNode->GetData()->Destroy();
@@ -216,6 +216,11 @@ void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
 /// @param pScene A pointer to the Scene the GameObject will be moved to.
 ////////////////////////////////////////////////////////////////////////////
 void GCGameObject::SetScene( GCScene* pScene ) { pScene->MoveGameObjectToScene( this ); }
+
+////////////////////////////////////////////////////
+/// @brief Removes the GameObject from its Scene.
+////////////////////////////////////////////////////
+void GCGameObject::RemoveScene() { m_pScene->RemoveGameObjectFromScene( this ); }
 
 /////////////////////////////////////////////////////////////
 /// @brief Sets a new parent to this GameObject.
