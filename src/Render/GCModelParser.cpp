@@ -13,8 +13,8 @@ bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 	switch (fileExtension)
 	{
 	case 0:
-		dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
-		break;
+		m_ParsedModel = dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
+		return true;
 	}
 	return false;
 }
@@ -41,16 +41,16 @@ GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fi
 
 	GCGeometry* objGeometry = new GCGeometry();
 
-	objGeometry->indiceNumber = m_ParsedModel.facesInfos.size();
-	objGeometry->vertexNumber = m_ParsedModel.coords.size();
+	objGeometry->indiceNumber = m_ParsedModel->facesInfos.size();
+	objGeometry->vertexNumber = m_ParsedModel->coords.size();
 
-	for (int i = 0; i < m_ParsedModel.facesInfos.size(); i++)
+	for (int i = 0; i < m_ParsedModel->facesInfos.size(); i++)
 	{
 		objGeometry->pos.push_back(
-			DirectX::XMFLOAT3(m_ParsedModel.coords[m_ParsedModel.facesInfos[i][0]][0], m_ParsedModel.coords[m_ParsedModel.facesInfos[i][0]][1], m_ParsedModel.coords[m_ParsedModel.facesInfos[i][0]][2]));
+			DirectX::XMFLOAT3(m_ParsedModel->coords[m_ParsedModel->facesInfos[i][0]][0], m_ParsedModel->coords[m_ParsedModel->facesInfos[i][0]][1], m_ParsedModel->coords[m_ParsedModel->facesInfos[i][0]][2]));
 
 		objGeometry->texC.push_back(
-			DirectX::XMFLOAT2(m_ParsedModel.uvs[m_ParsedModel.facesInfos[i][1]][0], m_ParsedModel.uvs[m_ParsedModel.facesInfos[i][1]][1]));
+			DirectX::XMFLOAT2(m_ParsedModel->uvs[m_ParsedModel->facesInfos[i][1]][0], m_ParsedModel->uvs[m_ParsedModel->facesInfos[i][1]][1]));
 
 		objGeometry->indices.push_back(i);
 	}
@@ -62,8 +62,6 @@ GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fi
 	}
 	return objGeometry;
 }
-
-
 
 GCGeometry* GCModelParser::BuildModelColor(std::string fileName, Extensions fileExtension)
 {
@@ -87,19 +85,19 @@ GCGeometry* GCModelParser::BuildModelColor(std::string fileName, Extensions file
 
 	GCGeometry* objGeometry = new GCGeometry();
 
-	objGeometry->indiceNumber = m_ParsedModel.facesInfos.size();
-	objGeometry->vertexNumber = m_ParsedModel.coords.size();
+	objGeometry->indiceNumber = m_ParsedModel->facesInfos.size();
+	objGeometry->vertexNumber = m_ParsedModel->coords.size();
 
-	for (int i = 0; i < m_ParsedModel.coords.size(); i++) {
+	for (int i = 0; i < m_ParsedModel->coords.size(); i++) {
 		objGeometry->pos.push_back(
-			DirectX::XMFLOAT3(m_ParsedModel.coords[i][0], m_ParsedModel.coords[i][1], m_ParsedModel.coords[i][2]));
+			DirectX::XMFLOAT3(m_ParsedModel->coords[i][0], m_ParsedModel->coords[i][1], m_ParsedModel->coords[i][2]));
 
 		objGeometry->color.push_back(
 			DirectX::XMFLOAT4(DirectX::Colors::White));
 	}
 
-	for (int i = 0; i < m_ParsedModel.facesInfos.size(); i++) {
-		objGeometry->indices.push_back(m_ParsedModel.facesInfos[i][0]);
+	for (int i = 0; i < m_ParsedModel->facesInfos.size(); i++) {
+		objGeometry->indices.push_back(m_ParsedModel->facesInfos[i][0]);
 	}
 
 	if (CheckNull(objGeometry))

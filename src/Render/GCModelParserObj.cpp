@@ -46,20 +46,13 @@ GCModelParserObj::~GCModelParserObj()
 {
 }
 
-bool GCModelParserObj::Parse(std::string fileName)
+ModelInfos* GCModelParserObj::Parse(std::string fileName)
 {
 	//Parses the file into a vector with the coordinates, the triangles and the uvs
 	std::ifstream objFile(fileName);
 	std::string line;
 
-	if (objFile) 
-	{
-
-	}
-	else 
-	{
-		return false;
-	}
+	ModelInfos* parsedModel = new ModelInfos();
 
 	while (!objFile.eof()) {
 
@@ -81,7 +74,7 @@ bool GCModelParserObj::Parse(std::string fileName)
 
 			std::vector<float> coordinates = getFloatCoordinates(&strCoord);
 
-			m_ParsedModel.coords.push_back(coordinates);
+			parsedModel->coords.push_back(coordinates);
 		}
 
 		else if (line[0] == 'f') //face triangles
@@ -111,7 +104,7 @@ bool GCModelParserObj::Parse(std::string fileName)
 				for (int j = 0; j < strVertInfos[i].size(); j++)
 					tempInfos.push_back(static_cast<uint16_t>(std::stoi(strVertInfos[i][j]) - 1));
 
-				m_ParsedModel.facesInfos.push_back(tempInfos);
+				parsedModel->facesInfos.push_back(tempInfos);
 			}
 		}
 
@@ -130,9 +123,9 @@ bool GCModelParserObj::Parse(std::string fileName)
 
 			std::vector<float> uv = getFloatCoordinates(&strUv);
 
-			m_ParsedModel.uvs.push_back(uv);
+			parsedModel->uvs.push_back(uv);
 		}
 	}
 
-	return true;
+	return parsedModel;
 }
