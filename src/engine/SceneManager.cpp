@@ -133,4 +133,4 @@ void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject ) { m
 /// 
 /// @param pGameObject A pointer to the GameObject to be added to the queue.
 ///////////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject ) { m_gameObjectsToCreateList.PushBack( pGameObject ); }
+void GCSceneManager::AddGameObjectToCreateQueue( GCGameObject* pGameObject ) { m_gameObjectsToCreateList.PushBack( pGameObject ); }
