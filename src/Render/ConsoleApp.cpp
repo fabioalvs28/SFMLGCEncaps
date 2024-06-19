@@ -7,7 +7,6 @@ struct GCTest : GCSHADERCB {
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-
 	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
 	profiler.InitializeConsole();
@@ -37,19 +36,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	///// Create Render Resources
 	graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation
 
-
 	shader1->Load();
 	shader2->Load();
-
 
 	// Mesh
 	GCMesh* mesh = graphics->CreateMesh(geo);
 	GCMesh* mesh1 = graphics->CreateMesh(geo1);
 	GCMesh* mesh2 = graphics->CreateMesh(geo2);
 	
-
-
-
 	std::string texturePath = "../../../src/Render/Textures/texture.dds";
 	GCTexture* tex1 = graphics->CreateTexture(texturePath);
 	GCMaterial* material = graphics->CreateMaterial(shader1, nullptr);
@@ -57,15 +51,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	graphics->GetRender()->CloseCommandList(); // Close and Execute after creation
 	graphics->GetRender()->ExecuteCommandList();// Close and Execute after creation
-
-	///// 
-
+	
 	// SET CAMERA 
-
 	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
 	DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
 	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
 
 	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, window->AspectRatio(), 1.0f, 1000.0f);
 	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
@@ -82,8 +72,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 
 	// SET CAMERA
-
-
 	DirectX::XMFLOAT4X4 I(
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.5f, 0.0f, 0.0f,
@@ -109,9 +97,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	GCTest worldData;
 	worldData.world = I;
 	worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-
-
-
 
 	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 	//graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
@@ -157,7 +142,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// Log de la taille des CB dans material2
 	profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
-
 
 	//// DEUXIEME FRAME  
 
@@ -206,9 +190,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//// Log de la taille des CB dans material2
 	//profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
 
-
 	window->Run(graphics->GetRender());
-
-
 }
 
