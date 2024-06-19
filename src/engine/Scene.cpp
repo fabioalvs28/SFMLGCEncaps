@@ -77,16 +77,17 @@ void GCScene::Destroy()
 
 
 
-/////////////////////////////////////////////////////////
-/// @brief Creates a GameObject in the Scene.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Creates a GameObject and adds it to the "Creation queue".
 /// 
 /// @return A pointer to the newly created GameObject.
-/////////////////////////////////////////////////////////
+/// 
+/// @note It will not update nor will it render until the creation is completed (the next frame).
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GCGameObject* GCScene::CreateGameObject()
 {
 	GCGameObject* pGameObject = new GCGameObject( this );
-	m_gameObjectsList.PushBack( pGameObject );
-	pGameObject->m_pSceneNode = m_gameObjectsList.GetLastNode();
+	GC::m_pActiveGameManager.m_pSceneManager.AddGameObjectToCreateQueue( pGameObject );
 	return pGameObject;
 }
 

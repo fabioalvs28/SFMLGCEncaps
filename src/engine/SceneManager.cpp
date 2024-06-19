@@ -17,7 +17,11 @@ void GCSceneManager::Update() { m_pActiveScene->Update(); }
 
 void GCSceneManager::NewDelete()
 {
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != m_gameObjectsToDeleteList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToCreateList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
+		CreateGameObject( pGameObjectNode->GetData() );
+	m_gameObjectsToCreateList.Clear();
+	
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
 		DestroyGameObject( pGameObjectNode->GetData() );
 	m_gameObjectsToDeleteList.Clear();
 }
@@ -69,6 +73,14 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 
 
 
+void GCSceneManager::CreateGameObject( GCGameObject* pGameObject )
+{
+	GCScene* pScene = pGameObject->m_pScene;
+	pScene->m_gameObjectsList.PushBack( pGameObject );
+	pGameObject->m_pSceneNode = pScene->m_gameObjectsList.GetLastNode();
+	pGameObject->m_created = true;
+}
+
 //////////////////////////////////////////////////////////////////////
 /// @brief Fully destroys the GameObject.
 /// 
@@ -93,4 +105,9 @@ void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 ///////////////////////////////////////////////////////////////////////////////
 void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject ) { m_gameObjectsToDeleteList.PushBack( pGameObject ); }
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Adds the GameObject to the "Creation Queue".
 /// 
+/// @param pGameObject A pointer to the GameObject to be added to the queue.
+///////////////////////////////////////////////////////////////////////////////
+void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject ) { m_gameObjectsToCreateList.PushBack( pGameObject ); }
