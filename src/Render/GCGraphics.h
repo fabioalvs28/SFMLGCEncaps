@@ -50,8 +50,9 @@ public:
 	std::vector<GCMesh*> GetMeshes();
 	std::vector<GCTexture*> GetTextures();
 
-	// Update Resources Need
-	//void UpdateMaterials();
+	
+	void StartFrame();
+	void EndFrame();
 
 	// Id
 	// #TODO Se poser la question du suivi des ressources

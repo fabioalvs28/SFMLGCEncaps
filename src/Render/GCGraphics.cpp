@@ -14,11 +14,56 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
 
+    m_pPrimitiveFactory->Initialize();
+
     // Create One camera
     CreateCBCamera<GCVIEWPROJCB>();
 }
 
-//void GCGraphics::CreateShaderUploadBuffer()
+void GCGraphics::StartFrame()
+{
+    for (auto& material : m_vMaterials)
+    {
+        for (auto& cbObject : material->GetObjectCBData())
+        {
+            cbObject->m_isUsed = false;
+        }
+    }
+
+    m_pRender->PrepareDraw();
+
+};
+void GCGraphics::EndFrame()
+{
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+    m_pRender->PostDraw();
+
+
+    for (int i = 0; i < m_vMaterials.size(); i++) {
+        m_vMaterials[i]->ResetCBCount();
+    }
+
+    // Vérification des CB inutilisés dans les matériaux / CHECK FOR REMOVE CB BUFFER IN MATERIALS 
+    for (auto& material : m_vMaterials)
+    {
+        for (auto& cbObject : material->GetObjectCBData())
+        {
+            if (cbObject->m_isUsed)
+                cbObject->m_framesSinceLastUse = 0;
+            if (!cbObject->m_isUsed)
+            {
+                cbObject->m_framesSinceLastUse++;
+                if (cbObject->m_framesSinceLastUse > 180)
+                {
+                    
+                    profiler.LogInfo("Constant buffer inutilisé trouvé dans le matériau : ");
+                }
+            }
+        }
+    }
+};
 
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) 
 {
@@ -196,11 +241,7 @@ void GCGraphics::RemoveTexture(GCTexture* pTexture)
 
 
 
-//void GCGraphics::UpdateMaterials()
-//{
-//    // Parcourir tous les mat�riaux
-//    
-//}
+
 
 
 
