@@ -8,7 +8,7 @@ class GCGraphics
 public:
 	GCGraphics();
 
-	void Initialize(Window* window);
+	void Initialize(Window* window, int renderWidth, int renderHeight);
 
 	// Principal Object Creation
 	GCShader* CreateShaderColor();

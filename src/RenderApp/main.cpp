@@ -11,7 +11,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	window->Initialize();
 
 	GCGraphics* graphics = new GCGraphics();
-	graphics->Initialize(window);
+	graphics->Initialize(window,600,400);
 
 	graphics->GetPrimitiveFactory()->Initialize();
 	//graphics->GetModelParserFactory()->Initialize();
@@ -85,35 +85,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 	//problème? actuel -> moteur doit forcément updatebuffers des materials dans le même ordre qu'ils vont être dessiné,même si les matrices n'ont pas changé
-	material2->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
-	material2->addCameraCB(graphics->GetRender()->CreateCameraCB());
-	graphics->GetRender()->UpdateBuffers(material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawOneObject(mesh1, material2);
-
-	material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
-	material->addCameraCB(graphics->GetRender()->CreateCameraCB());
-	graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawOneObject(mesh, material);
-
-	material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
-	material->addCameraCB(graphics->GetRender()->CreateCameraCB());
-	graphics->GetRender()->UpdateBuffers(material, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawOneObject(mesh, material);
+	//material2->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	//material2->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	//graphics->GetRender()->UpdateBuffers(material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawOneObject(mesh1, material2);
+	//material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	//material->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	//graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawOneObject(mesh, material);
+	//material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
+	//material->addCameraCB(graphics->GetRender()->CreateCameraCB());
+	//graphics->GetRender()->UpdateBuffers(material, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
+	//graphics->GetRender()->DrawOneObject(mesh, material);
 
 	material2->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
 	material2->addCameraCB(graphics->GetRender()->CreateCameraCB());
 	graphics->GetRender()->UpdateBuffers(material2, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawOneObjectPixel(mesh1, material2,300,300,projectionMatrix,viewMatrix);
-
+	graphics->GetRender()->DrawOneObjectPixel(mesh1, material2,300,200,projectionMatrix,viewMatrix);
 	material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
 	material->addCameraCB(graphics->GetRender()->CreateCameraCB());
 	graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawOneObjectPixel(mesh, material,1000,1000, projectionMatrix, viewMatrix);
-
+	graphics->GetRender()->DrawOneObjectPixel(mesh, material,100,100, projectionMatrix, viewMatrix);
 	material->addObjectCB(graphics->GetRender()->CreateObjectCB<GCWORLDCB>());
 	material->addCameraCB(graphics->GetRender()->CreateCameraCB());
 	graphics->GetRender()->UpdateBuffers(material, transposedWorld, storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawOneObjectPixel(mesh, material, 1600, 500, projectionMatrix, viewMatrix);
+	graphics->GetRender()->DrawOneObjectPixel(mesh, material, 500, 300, projectionMatrix, viewMatrix);
 
 	graphics->GetRender()->PostDraw();
 

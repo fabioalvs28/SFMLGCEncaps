@@ -5,7 +5,7 @@ class GCRender
 public:
 	GCRender() {}
 
-	bool Initialize(GCGraphics* pGraphics,Window* pWindow);
+	bool Initialize(GCGraphics* pGraphics,Window* pWindow, int renderWidth, int renderHeight);
 	bool InitDirect3D();
 	//void BuildConstantBuffers();
 	void LogAdapters();
@@ -77,8 +77,9 @@ public:
 	GCShaderUploadBuffer<GCCAMERACB>* CreateCameraCB();
 	
 	void UpdateBuffers(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
-
 private:
+	int m_renderWidth;
+	int m_renderHeight;
 	Window* m_pWindow;
 	// Swap chain size
 	static const int SwapChainBufferCount = 2;

@@ -1,9 +1,11 @@
 #include "framework.h"
 
-bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow) 
+bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow, int renderWidth, int renderHeight)
 {
 	//Initialize Direct3D + Update viewport
 	m_pWindow = pWindow;
+	m_renderWidth = renderWidth;
+	m_renderHeight = renderHeight;
 	InitDirect3D();
 	OnResize();
 
@@ -334,14 +336,14 @@ void GCRender::CreateDepthStencilBufferAndView()
 
 void GCRender::UpdateViewport() 
 {
-	m_ScreenViewport.TopLeftX = 0;
-	m_ScreenViewport.TopLeftY = 0;
-	m_ScreenViewport.Width = static_cast<float>(m_pWindow->GetClientWidth());
-	m_ScreenViewport.Height = static_cast<float>(m_pWindow->GetClientHeight());
+	m_ScreenViewport.TopLeftX = (m_pWindow->GetClientWidth() - m_renderWidth) / 2;
+	m_ScreenViewport.TopLeftY = (m_pWindow->GetClientHeight() - m_renderHeight) / 2;
+	m_ScreenViewport.Width = static_cast<float>(m_renderWidth);
+	m_ScreenViewport.Height = static_cast<float>(m_renderHeight);
 	m_ScreenViewport.MinDepth = 0.0f;
 	m_ScreenViewport.MaxDepth = 1.0f;
 
-	m_ScissorRect = { 0, 0, m_pWindow->GetClientWidth(), m_pWindow->GetClientHeight() };
+	m_ScissorRect = { (m_pWindow->GetClientWidth() - m_renderWidth) / 2, (m_pWindow->GetClientHeight() - m_renderHeight) / 2, (m_pWindow->GetClientWidth() - m_renderWidth)/2 + m_renderWidth,(m_pWindow->GetClientHeight() - m_renderHeight) / 2 + m_renderHeight };
 }
 
 void GCRender::Update(const Timer& gt) 
@@ -380,14 +382,16 @@ void GCRender::PrepareDraw()
 	m_DirectCmdListAlloc->Reset();
 	m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
 
+	//CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+	//m_CommandList->ResourceBarrier(1, &ResBar);
+	//m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::Black, 0, nullptr);
 	m_CommandList->RSSetViewports(1, &m_ScreenViewport);
 	m_CommandList->RSSetScissorRects(1, &m_ScissorRect);
 
 	// Swap
 	CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 	m_CommandList->ResourceBarrier(1, &ResBar);
-
-	m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightBlue, 0, nullptr);
+	m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightBlue, 1, &m_ScissorRect);
 	m_CommandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
@@ -593,7 +597,7 @@ bool GCRender::DrawOneObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial, int pixe
 		return false;
 	}
 	GCWORLDCB worldData;
-	DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pWindow->GetClientWidth(), m_pWindow->GetClientHeight(), proj, view);
+	DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);
 	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 	DirectX::XMFLOAT4X4 convertedMatrix;
 	DirectX::XMStoreFloat4x4(&convertedMatrix, DirectX::XMMatrixTranspose(translationMatrix));

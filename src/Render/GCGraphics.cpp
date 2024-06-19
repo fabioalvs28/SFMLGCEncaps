@@ -5,15 +5,14 @@ GCGraphics::GCGraphics()
     m_pRender = nullptr;
 }
 
-void GCGraphics::Initialize(Window* pWindow)
+void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 {
     //Initializes Graphics for a window
     if (pWindow == nullptr)
         OutputDebugString(L"Window can't be empty\n");
 
     m_pRender = new GCRender();
-    m_pRender->Initialize(this, pWindow);
-
+    m_pRender->Initialize(this, pWindow, renderWidth, renderHeight);
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
