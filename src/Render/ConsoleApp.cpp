@@ -1,16 +1,5 @@
 #include "framework.h"
 
-
-
-
-
-
-
-
-
-
-
-
 struct Test : GCSHADERCB {
 	DirectX::XMFLOAT4X4 world; // Matrice du monde
 };
@@ -26,14 +15,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//GCGraphics* graphics = new GCGraphics();
 	//graphics->Initialize(window);
 
-	//graphics->GetPrimitiveFactory()->Initialize();
-	//graphics->GetModelParserFactory()->Initialize();
+	graphics->GetPrimitiveFactory()->Initialize();
 
-	//// Geometry (Resource)
-	//GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::White));
-	//GCGeometry* geo1 = graphics->GetModelParserFactory()->BuildObjTexture("../../../src/Render/monkeyUv.obj");
-	//GCShader* shader1 = graphics->CreateShaderColor();
-	//GCShader* shader2 = graphics->CreateShaderTexture();
+	// Geometry (Resource)
+	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::White));
+	GCGeometry* geo1 = graphics->GetModelParserFactory()->BuildModelTexture("../../../src/Render/monkeyUv.obj", obj);
+	GCShader* shader1 = graphics->CreateShaderColor();
+	GCShader* shader2 = graphics->CreateShaderTexture();
 
 	/////// Create Render Resources
 	//graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation

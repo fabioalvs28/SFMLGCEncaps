@@ -8,7 +8,14 @@ bool GCRender::Initialize(GCGraphics* pGraphics, Window* pWindow, int renderWidt
 	m_renderHeight = renderHeight;
 	InitDirect3D();
 	OnResize();
-
+	if (CheckNull(pGraphics, pWindow))
+	{
+		OutputDebugString(L"Graphics and window are empty\n");
+	}
+	else
+	{
+		OutputDebugString(L"Graphics and window loaded successfully\n");
+	}
 	return true;
 }
 
@@ -436,6 +443,9 @@ void GCRender::Draw(const Timer& gt) {
 //Needs post draw to be called right after aswell
 //(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
 
+	/*GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+	profiler.LogWarning("This is a warning message.");
+	profiler.LogInfo("This is an informational message.");*/
 
 bool GCRender::DrawOneObject(GCMesh* pMesh, GCMaterial* pMaterial) {
 	// Update 

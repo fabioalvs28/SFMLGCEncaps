@@ -95,8 +95,10 @@ class Window;
 //
 #include "d3dx12.h"
 #include "Window.h"
-#include "UploadBuffer.h"
+#include "Macros.h"
 #include "GCRender.h"
+#include "UploadBuffer.h"
+//#include "GCRender.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"
