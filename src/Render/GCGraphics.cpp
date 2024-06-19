@@ -7,6 +7,20 @@ GCGraphics::GCGraphics()
 
 void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 {
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+    //Checks if pointer is empty
+    if (CheckNull(pWindow))
+    {
+        OutputDebugString(L"Can't initialize Graphics, Window is empty");
+        profiler.LogWarning("Can't initialize Graphics, Window is empty");
+    }
+    else 
+    {
+        OutputDebugString(L"Graphics Initialized with window sucessfully");
+        profiler.LogInfo("Graphics Initialized with window sucessfully");
+    }
+
     //Initializes Graphics for a window
     m_pRender = new GCRender();
     m_pRender->Initialize(this, pWindow, renderWidth, renderHeight);
@@ -127,14 +141,22 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
 {
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
     //Creates mesh using a specific geometry
+ 
+    //Checks if pointer is empty
     if (CheckNull(pGeometry))
     {
-        OutputDebugString(L"Mesh Geometry is empty \n");
-        profiler.LogWarning("Mesh Geometry is empty");
+        OutputDebugString(L"Can't create mesh, Geometry is empty");
+        profiler.LogWarning("Can't create mesh, Geometry is empty");
+    }
+    else
+    {
+        OutputDebugString(L"Geometry loaded successfully for mesh");
+        profiler.LogInfo("Geometry loaded successfully for mesh");
     }
 
     GCMesh* pMesh = new GCMesh();
     pMesh->Initialize(m_pRender);
+
     if (pGeometry->texC.size() == 0)
     {
         pMesh->UploadGeometryDataColor(pGeometry);
@@ -152,6 +174,32 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
 
 //Creates a material (WIP)
 GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader, GCTexture* pTexture) {
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+    //Checks if pointer is empty
+    if (CheckNull(pShader))
+    {
+        OutputDebugString(L"Can't create material, Shader is empty");
+        profiler.LogWarning("Can't create material, Shader is empty");
+    }
+    else
+    {
+        OutputDebugString(L"Shader loaded successfully for material");
+        profiler.LogInfo("Shader loaded successfully for material");
+    }
+
+    //Checks if pointer is empty
+    if (CheckNull(pTexture))
+    {
+        OutputDebugString(L"Can't create material, texture is empty");
+        profiler.LogWarning("Can't create material, texture is empty");
+    }
+    else
+    {
+        OutputDebugString(L"Texture loaded successfully for material");
+        profiler.LogInfo("Texture loaded successfully for material");
+    }
     GCMaterial* material = new GCMaterial();
     material->Initialize(pShader, pTexture, m_pRender);
     m_vMaterials.push_back(material);
@@ -186,7 +234,7 @@ void GCGraphics::RemoveShader(GCShader* pShader)
 
     if (it == m_vShaders.end())
     {
-        OutputDebugString(L"Shader not found");
+        OutputDebugString(L"Shader not found, can't remove it");
     }
 
     m_vShaders.erase(it);
@@ -199,9 +247,17 @@ void GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
     //Removes material from the vector then the material itself
     auto it = std::find(m_vMaterials.begin(), m_vMaterials.end(), pMaterial);
 
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
     if (it == m_vMaterials.end())
     {
-        OutputDebugString(L"Material not found");
+        OutputDebugString(L"Material not found, can't remove it");
+        profiler.LogWarning("Material not found, can't remove it");
+    }
+    else 
+    {
+        OutputDebugString(L"Material removed successfully");
+        profiler.LogWarning("Material removed successfully");
     }
 
     m_vMaterials.erase(it);
@@ -214,9 +270,17 @@ void GCGraphics::RemoveMesh(GCMesh* pMesh)
     //Removes Mesh
     auto it = std::find(m_vMeshes.begin(), m_vMeshes.end(), pMesh);
 
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
     if (it == m_vMeshes.end())
     {
-        OutputDebugString(L"Mesh not found");
+        OutputDebugString(L"Mesh not found, can't remove it");
+        profiler.LogWarning("Mesh not found, can't remove it");
+    }
+    else
+    {
+        OutputDebugString(L"Mesh removed successfully");
+        profiler.LogWarning("Mesh removed successfully");
     }
 
     m_vMeshes.erase(it);
@@ -229,9 +293,17 @@ void GCGraphics::RemoveTexture(GCTexture* pTexture)
     //Removes Texture
     auto it = std::find(m_vTextures.begin(), m_vTextures.end(), pTexture);
 
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
     if (it == m_vTextures.end())
     {
-        OutputDebugString(L"Texture not found");
+        OutputDebugString(L"Texture not found, can't remove it");
+        profiler.LogWarning("Texture not found, can't remove it");
+    }
+    else
+    {
+        OutputDebugString(L"Texture removed successfully");
+        profiler.LogWarning("Texture removed successfully");
     }
 
     m_vTextures.erase(it);

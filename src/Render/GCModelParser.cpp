@@ -10,9 +10,16 @@ GCModelParser::~GCModelParser()
 
 bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 {
+	/*std::string extensionCheck;
+	for (int i = 0; i < 3; i++)
+	{
+		extensionCheck.insert(0, fileName);
+	}*/
+
 	switch (fileExtension)
 	{
 	case 0:
+		
 		m_ParsedModel = dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
 		return true;
 	}
@@ -28,13 +35,13 @@ GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fi
 
 	if (_waccess(wideFileName.c_str(), 0) == -1)
 	{
-		OutputDebugString((L"Obj file not found: " + wideFileName + L"\n").c_str());
-		profiler.LogWarning("Obj file not found: " + fileName);
+		OutputDebugString((L"Model file not found: " + wideFileName + L"\n").c_str());
+		profiler.LogWarning("Model file not found: " + fileName);
 	}
 	else
 	{
-		OutputDebugString((L"Obj file: " + wideFileName + L" loaded successfully \n").c_str());
-		profiler.LogInfo("Obj file:" + fileName + " loaded successfully");
+		OutputDebugString((L"Model file: " + wideFileName + L" loaded successfully \n").c_str());
+		profiler.LogInfo("Model file:" + fileName + " loaded successfully");
 	}
 
 	Parse(fileName, fileExtension);
@@ -57,8 +64,8 @@ GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fi
 
 	if (CheckNull(objGeometry))
 	{
-		OutputDebugString(L"Obj Geometry is empty \n");
-		profiler.LogWarning("Obj geometry is empty");
+		OutputDebugString(L"Model Geometry is empty \n");
+		profiler.LogWarning("Model geometry is empty");
 	}
 	return objGeometry;
 }
