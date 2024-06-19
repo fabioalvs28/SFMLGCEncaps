@@ -1,20 +1,17 @@
 #include "pch.h"
 #include "SceneManager.h"
-#include "GameObject.h"
-#include "Scene.h"
+
 #include "../core/framework.h"
+#include "Scene.h"
+#include "GameObject.h"
+
+// todo RenderQueue
 
 
 
 void GCSceneManager::Update()
 {
-	GCScene* scene;
-	for ( GCListNode<GCScene*>* sceneNode = m_loadedScenesList.GetFirstNode(); sceneNode != m_loadedScenesList.GetLastNode(); sceneNode = sceneNode->GetNext() )
-	{
-		scene = sceneNode->GetData();
-		if ( scene->IsActive() == true )
-			scene->Update();
-	}
+	// todo Update
 }
 
 void GCSceneManager::NewDelete()
@@ -34,47 +31,41 @@ void GCSceneManager::NewDelete()
 
 void GCSceneManager::Render()
 {
-	GCScene* scene;
-	for ( GCListNode<GCScene*>* sceneNode = m_loadedScenesList.GetFirstNode(); sceneNode != m_loadedScenesList.GetLastNode(); sceneNode = sceneNode->GetNext() )
-	{
-		scene = sceneNode->GetData();
-		if ( scene->IsActive() == true )
-			scene->Render();
-	}
+	// todo Render
 }
 
 
 
 
-GCScene* GCSceneManager::CreateScene( GCScene* pParent )
+GCScene* GCSceneManager::CreateScene()
 {
-	GCScene* scene = new GCScene( pParent );
-    m_scenesList.PushBack( scene );
-	scene->SetNode( m_scenesList.GetLastNode() ); 
-	return scene;
+	GCScene* pScene = new GCScene();
+    m_scenesList.PushBack( pScene );
+	pScene->m_pNode = m_scenesList.GetLastNode();
+	return pScene;
 }
 
 void GCSceneManager::LoadScene( GCScene* pScene )
 {
-	if ( pScene->GetLoadedNode() != nullptr ) return;
+	if ( pScene->m_pLoadedNode != nullptr ) return;
 	m_loadedScenesList.PushBack( pScene );
-	pScene->SetLoadedNode( m_loadedScenesList.GetLastNode() );
+	pScene->m_pLoadedNode = m_loadedScenesList.GetLastNode();
 }
 
 void GCSceneManager::UnloadScene( GCScene* pScene )
 {
-	GCListNode<GCScene*>* pLoadedNode = pScene->GetLoadedNode();
+	GCListNode<GCScene*>* pLoadedNode = pScene->m_pLoadedNode;
 	if ( pLoadedNode == nullptr ) return;
 	m_loadedScenesList.DeleteNode( pLoadedNode );
-	pScene->RemoveLoadedNode();
+	pScene->m_pLoadedNode = nullptr;
 }
 
 void GCSceneManager::DestroyScene( GCScene* pScene )
 {
 	UnloadScene( pScene );
-	m_scenesList.DeleteNode( pScene->GetNode() );
-	pScene->ClearGameObjects();
-	pScene->ClearChildren();
+	m_scenesList.DeleteNode( pScene->m_pNode );
+	pScene->DestroyGameObjects();
+	pScene->DeleteChildren();
     delete pScene;
 }
 

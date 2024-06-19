@@ -1,37 +1,37 @@
 #pragma once
 #include "../core/framework.h"
 
-class GCGameManager;
-class GCScene;
 class GCGameObject;
+class GCScene;
+class GCGameManager;
 
 class GCSceneManager
 {
-friend class GCGameManager;
-friend class GCScene;
 friend class GCGameObject;
-
-public:
-	static GCScene* CreateScene( GCScene* pParent = nullptr );
-
-private:
-    GCSceneManager() {}
-	virtual ~GCSceneManager() {}
-	
-	static void Update();
-	static void NewDelete();
-	static void Render();
-	
-	static void LoadScene( GCScene* pScene );
-	static void UnloadScene( GCScene* pScene );
-	static void DestroyScene( GCScene* pScene );
-	
-	static void AddGameObjectToDeleteQueue( GCGameObject* pGameObject );
-	static void AddSceneToDeleteQueue( GCScene* pScene );
+friend class GCScene;
+friend class GCGameManager;
 
 private:
-	static inline GCList<GCScene*> m_scenesList = GCList<GCScene*>();
-	static inline GCList<GCScene*> m_loadedScenesList = GCList<GCScene*>();
-	static inline GCList<GCGameObject*> m_gameObjectsToDeleteList = GCList<GCGameObject*>();
-    static inline GCList<GCScene*> m_scenesToDeleteList = GCList<GCScene*>();
+    GCSceneManager() = default;
+	virtual ~GCSceneManager() = default;
+	
+	void Update();
+	void NewDelete();
+	void Render();
+	
+	void LoadScene( GCScene* pScene );
+	void UnloadScene( GCScene* pScene );
+	void DestroyScene( GCScene* pScene );
+	
+	void AddGameObjectToDeleteQueue( GCGameObject* pGameObject );
+	void AddSceneToDeleteQueue( GCScene* pScene );
+
+protected:
+	GCScene* CreateScene();
+
+private:
+	GCList<GCScene*> m_scenesList;
+	GCList<GCScene*> m_loadedScenesList;
+	GCList<GCGameObject*> m_gameObjectsToDeleteList;
+    GCList<GCScene*> m_scenesToDeleteList;
 };

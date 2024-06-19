@@ -1,20 +1,26 @@
 #pragma once
 
+class GCGameObject;
+class GCScene;
 class GCSceneManager; 
 class GCInputManager;
+class GC;
 
 class GCGameManager 
 {
+friend class GCGameObject;
+friend class GCScene;
+friend class GC;
 
-public:
-    GCGameManager() {};
-    virtual ~GCGameManager() {};
+protected:
+    GCGameManager() = default;
+    virtual ~GCGameManager() = default;
     
     void Init();
     void Update();
     
-private:
-    GCSceneManager* m_pSceneManager;
-    GCInputManager* m_pInputManager;
+protected:
+    GCSceneManager m_pSceneManager;
+    GCInputManager m_pInputManager;
 
 };
