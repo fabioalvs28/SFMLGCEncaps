@@ -7,8 +7,6 @@
 #include "SceneManager.h"
 #include "GC.h"
 
-// todo Children inheriting from the parent m_active
-
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -232,8 +230,14 @@ void GCGameObject::SetParent( GCGameObject* pParent ) { pParent->AddChild( this 
 /// @param active A boolean value indicating whether the GameObject should be active or not.
 /// 
 /// @note When a GameObject is not active, it will not be updated or rendered.
+/// @note Also sets its children's active state.
 ///////////////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::SetActive( bool active ) { m_active = active; }
+void GCGameObject::SetActive( bool active )
+{
+    m_active = active;
+    for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
+        pGameObjectNode->GetData()->SetActive( active );
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief Sets the name of this GameObject.
