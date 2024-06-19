@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "GameObject.h"
 
+#include "../core/framework.h"
 #include "Components.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "GC.h"
 
 // todo Children inheriting from the parent m_active
-// todo GameObject being able to have multiple tags
 
 
 
@@ -30,7 +30,6 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_created = false;
     m_active = true;
     m_name = "GameObject";
-    m_tag = "";
     m_layer = 0;
 }
 
@@ -75,7 +74,7 @@ GCGameObject* GCGameObject::Duplicate()
         pChildNode->GetData()->Duplicate()->SetParent( pGameObject );
     pGameObject->m_name = m_name;
     pGameObject->m_active = m_active;
-    pGameObject->m_tag = m_tag;
+    pGameObject->m_tagsList = m_tagsList;
     pGameObject->m_layer = m_layer;
     pGameObject->m_componentsList = m_componentsList;
     return pGameObject;
@@ -102,6 +101,7 @@ void GCGameObject::RemoveParent()
 {
     if ( m_pParent == nullptr ) return;
     m_pParent->RemoveChild( this );
+    // todo Warn for the errors instead of simply returning nothing
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -174,6 +174,44 @@ void GCGameObject::DeleteChildren()
 
 
 
+/////////////////////////////////////////////////////////////////////////////
+/// @brief Adds a tag to the GameObject.
+/// 
+/// @param tag A string value indicating the tag to add to the GameObject.
+/////////////////////////////////////////////////////////////////////////////
+void GCGameObject::AddTag( const char* tag )
+{
+    // if ( m_tagsList.Find( tag ) == true ) return; //! To uncomment when GCVector::Find method is pushed
+    m_tagsList.PushBack( tag );
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+/// @brief Removes a tag from the GameObject.
+/// 
+/// @param tag A string value indicating the tag to remove from the GameObject.
+//////////////////////////////////////////////////////////////////////////////////
+void GCGameObject::RemoveTag( const char* tag )
+{
+    int index = m_tagsList.GetIndex( tag );
+    if ( index == -1 ) return;
+    RemoveTag( index );
+    // todo Warn for the errors instead of simply returning nothing
+}
+
+/////////////////////////////////////////////////////////////////////////
+/// @brief Removes a tag from the GameObject.
+/// 
+/// @param index An integer indicating the index of the tag to remove.
+/////////////////////////////////////////////////////////////////////////
+void GCGameObject::RemoveTag( int index ) { m_tagsList.Remove( index ); }
+
+///////////////////////////////////////////////////
+/// @brief Removes all tags from the GameObject.
+///////////////////////////////////////////////////
+void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
+
+
+
 ////////////////////////////////////////////////////////////////////////////
 /// @brief Moves the GameObject to a new Scene.
 /// 
@@ -206,15 +244,6 @@ void GCGameObject::SetActive( bool active ) { m_active = active; }
 /// @note The name can be used for identification purposes (not recommanded).
 ////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::SetName( const char* name ) { m_name = name; }
-
-//////////////////////////////////////////////////////////////////////////
-/// @brief Sets the tag of this GameObject.
-/// 
-/// @param tag A string value indicating the new tag of the GameObject.
-/// 
-/// @note The tag can be used for identification purposes.
-//////////////////////////////////////////////////////////////////////////
-void GCGameObject::SetTag( const char* tag ) { m_tag = tag; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief Sets the layer of this GameObject.
@@ -257,10 +286,10 @@ bool GCGameObject::IsActive() const { return m_active; }
 ////////////////////////////////////////////////////////////////////
 const char* GCGameObject::GetName() const { return m_name; }
 
-///////////////////////////////////////////////////////////////////
-/// @return A string value indicating the tag of the GameObject.
-///////////////////////////////////////////////////////////////////
-const char* GCGameObject::GetTag() const { return m_tag; }
+////////////////////////////////////////////////////////////////////////////
+/// @return A string value indicating the searched tag of the GameObject.
+////////////////////////////////////////////////////////////////////////////
+const char* GCGameObject::GetTag( int index ) const { return m_tagsList[ index ]; }
 
 /////////////////////////////////////////////////////////////////
 /// @return An integer indicating the layer of the GameObject.

@@ -28,11 +28,15 @@ public:
     void DeleteChild( GCGameObject* pChild ) {}; // todo
     void DeleteChildren();
     
+    void AddTag( const char* tag );
+    void RemoveTag( const char* tag );
+    void RemoveTag( int index );
+    void RemoveTags();
+    
     void SetScene( GCScene* pScene );
     void SetParent( GCGameObject* pParent );
     void SetActive( bool active );
     void SetName( const char* name );
-    void SetTag( const char* tag );
     void SetLayer( int layer );
     
     unsigned int GetID() const;
@@ -41,7 +45,7 @@ public:
     GCList<GCGameObject*> GetChildren() const;
     bool IsActive() const;
     const char* GetName() const;
-    const char* GetTag() const;
+    const char* GetTag( int index ) const;
     int GetLayer() const;
     
     template<class T>
@@ -71,7 +75,7 @@ protected:
     bool m_created;
     bool m_active;
     const char* m_name;
-    const char* m_tag;
+    GCVector<const char*> m_tagsList;
     int m_layer;
     
     GCMap<int, Component*> m_componentsList;
