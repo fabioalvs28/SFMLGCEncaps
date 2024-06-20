@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Quaternion.h"
+
 #include <math.h>
+#include "Vectors.h"
+#include "Matrix.h"
 
 /// <summary>
 /// Default constructor
@@ -9,7 +12,6 @@
 /// <param name="y">Y value of the quaternion</param>
 /// <param name="z">Z value of the quaternion</param>
 /// <param name="w">W value of the quaternion</param>
-
 GCQUATERNION::GCQUATERNION(float x, float y, float z, float w)
 {
 	this->x = x;
@@ -31,7 +33,6 @@ void GCQUATERNION::operator*=(const GCQUATERNION& other)
 /// <summary>
 /// Set the quaternion to zero
 /// </summary>
-
 void GCQUATERNION::SetZero()
 {
 	x = 0.0f;
@@ -43,7 +44,6 @@ void GCQUATERNION::SetZero()
 /// <summary>
 /// Set the quaternion to identity
 /// </summary>
-
 void GCQUATERNION::SetIdentity()
 {
 	x = 0.0f;
@@ -55,7 +55,6 @@ void GCQUATERNION::SetIdentity()
 /// <summary>
 /// Normalize the quaternion
 /// </summary>
-
 void GCQUATERNION::Normalize()
 {
 	float norm = sqrt(x * x + y * y + z * z + w * w);
@@ -73,7 +72,6 @@ void GCQUATERNION::Normalize()
 /// <summary>
 /// Inverse the quaternion
 /// </summary>
-
 void GCQUATERNION::Inverse()
 {
 	x = -x;
@@ -86,7 +84,6 @@ void GCQUATERNION::Inverse()
 /// </summary>
 /// <param name="other">Quaternion to interpolate with</param>
 /// <param name="t">Interpolation value</param>
-
 void GCQUATERNION::SLerp(const GCQUATERNION& other, float t)
 {
 	GCQUATERNION q1 = *this;
@@ -132,7 +129,6 @@ void GCQUATERNION::SLerp(const GCQUATERNION& other, float t)
 /// <param name="yaw">Yaw angle</param>
 /// <param name="pitch">Pitch angle</param>
 /// <param name="roll">Roll angle</param>
-
 void GCQUATERNION::FromEuler(float yaw, float pitch, float roll)
 {
 	float cy = cos(yaw * 0.5f);
@@ -155,7 +151,6 @@ void GCQUATERNION::FromEuler(float yaw, float pitch, float roll)
 /// </summary>
 /// <param name="axis">Axis of rotation</param>
 /// <param name="angle">Angle of rotation</param>
-
 void GCQUATERNION::FromAxisAngle(const GCVEC3& axis, float angle)
 {
 	float halfAngle = angle * 0.5f;
@@ -171,7 +166,6 @@ void GCQUATERNION::FromAxisAngle(const GCVEC3& axis, float angle)
 /// Convert the quaternion to a matrix
 /// </summary>
 /// <returns>Matrix representation of the quaternion</returns>
-
 GCMATRIX GCQUATERNION::ToMatrix()
 {
 	GCQUATERNION q = *this;

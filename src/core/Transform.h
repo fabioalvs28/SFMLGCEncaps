@@ -1,27 +1,29 @@
 #pragma once
 #include "Vectors.h"
+#include "Quaternion.h"
 #include "Matrix.h"
 
 struct GCTransform
 {
-	GCVEC3 m_scale;
-	GCVEC3 m_direction;
-	GCVEC3 m_right;
-	GCVEC3 m_up;
-	GCQUATERNION m_rotation;
-	GCMATRIX m_rotationMatrix;
-
 	GCVEC3 m_position;
+	GCVEC3 m_scale;
+	GCQUATERNION m_rotation;
+	
+	GCMATRIX m_rotationMatrix;
+	GCVEC3 m_direction;
+	GCVEC3 m_up;
+	GCVEC3 m_right;
+
 	GCMATRIX m_matrix;
 
-	GCTransform() {};
+	GCTransform();
 	~GCTransform() {};
 
 	void Identity();
 	void FromMatrix(const GCMATRIX& matrix);
-	void UpdateRotationFromVectors();
+	void UpdateMatrixFromVectors();
 	void UpdateVectorsFromQuaternion();
-	void UpdateRoationFromMatrix();
+	void UpdateVectorsFromMatrix();
 	void UpdateMatrix();
 	void Rotate(float yaw, float pitch, float roll);
 	void RotateYaw(float angle);

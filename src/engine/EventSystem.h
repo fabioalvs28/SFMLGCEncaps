@@ -1,40 +1,16 @@
 #pragma once
 #include <functional>
+
 #include "Event.h"
 #include "Layer.h"
 #include "../core/Map.h"
-#include "../core/List.h"
-
-using GCListenerID = size_t;
-
-typedef struct GCListener 
-{
-	GCEventType type;
-	std::function<void(GCEvent&)> callback;
-};
-
-class GCEventDispatcher 
-{
-public:
-	GCEventDispatcher(GCEvent& gcevent) : m_gcEvent(gcevent) {}
-
-	template<typename Type, typename Func>
-	bool Dispatch(const Func& func) {
-		if (m_gcEvent.GetEventType() == Type::GetStaticType())
-		{
-			m_gcEvent.IsHandle() = func(static_cast<Type&>(m_gcEvent));
-			return true;
-		}
-		return false;
-	}
-
-private:
-	GCEvent& m_gcEvent;
-};
+#include "../core/Vector.h"
+#include "../core/Queue.h"
 
 class GCEventSystem
 {
 public:
+	GCEventSystem() = default;
 	/// <summary>
 	/// Polls events from the operating system or framework 
 	/// and dispatches them to the appropriate handlers.
@@ -42,32 +18,25 @@ public:
 	void PollEvents();
 
 	/// <summary>
+    /// Push the created event to the event queue.
+	/// </summary>
+	/// <param name="ev">The pointer to the created event</param>
+	void PushEvent(GCEvent* ev);
+
+	/// <summary>
 	/// Registers a new event listener for a specific event type.
 	/// </summary>
 	/// <param name="type">The type of event to listen for</param>
 	/// <param name="listener">The callback function to be called when the event occurs</param>
 	/// <returns>A unique ListenerID that can be used to reference and manage the listener</returns>
-	void AddEventListener(GCListener);
+	void AddEventListener(const GCEvent& ev ,std::function<void()> func);
 
 	/// <summary>
 	/// Removes an event listener based on its type and unique ListenerID.
 	/// </summary>
 	/// <param name="type">The event type</param>
 	/// <param name="id">The unique identifier ID to the callback</param>
-	void RemoveEventListener(GCListenerID id);
-
-	/// <summary>
-	/// Adds a new layer to the event system.
-	/// Layers can be used to manage different contexts in the application.
-	/// </summary>
-	/// <param name="layer">Pointer to the Layer object</param>
-	void AddLayer(Layer* layer);
-
-	/// <summary>
-	/// Removes a layer from the event system.
-	/// </summary>
-	/// <param name="layer">Pointer to the Layer object to be removed</param>
-	void RemoveLayer(Layer* layer);
+	void RemoveEventListener();
 
 private:
 	/// <summary>
@@ -78,10 +47,8 @@ private:
 	void OnEvent(GCEvent& e);
 
 private:
-	GCListenerID m_nextListenerID = 0;
+	GCMap<GCEventType, std::vector<std::function<void()>>> m_eventListeners;
+    GCQueue<GCEvent*> m_eventQueue;
 
-	GCMap<GCListenerID, GCListener> m_eventListeners;
-    GCList<GCEvent> m_eventListenerID;
-
-	GCList<Layer*> m_layers;
+	GCVector<Layer*> m_layers;
 };

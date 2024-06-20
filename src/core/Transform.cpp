@@ -1,6 +1,16 @@
 #include "pch.h"
 #include "Transform.h"
 
+GCTransform::GCTransform()
+{
+	m_position.SetZero();
+	m_scale.SetOne();
+	m_rotation.SetZero();
+	UpdateVectorsFromQuaternion();
+	UpdateMatrixFromVectors();
+	UpdateMatrix();
+}
+
 void GCTransform::Identity()
 {
 	m_direction = GCVEC3(0, 0, 1);
@@ -16,10 +26,10 @@ void GCTransform::FromMatrix(const GCMATRIX& matrix)
 {
 	m_matrix = matrix;
 	m_position = GCVEC3(matrix._41, matrix._42, matrix._43);
-	UpdateRotationFromVectors();
+	UpdateMatrixFromVectors();
 }
 
-void GCTransform::UpdateRotationFromVectors()
+void GCTransform::UpdateMatrixFromVectors()
 {
 	m_rotationMatrix._11 = m_right.x;
 	m_rotationMatrix._12 = m_right.y;
@@ -44,7 +54,7 @@ void GCTransform::UpdateVectorsFromQuaternion()
 	m_direction = GCVEC3(m_rotationMatrix._31, m_rotationMatrix._32, m_rotationMatrix._33);
 }
 
-void GCTransform::UpdateRoationFromMatrix()
+void GCTransform::UpdateVectorsFromMatrix()
 {
 	m_rotationMatrix.Transpose();
 	m_right = GCVEC3(m_rotationMatrix._11, m_rotationMatrix._12, m_rotationMatrix._13);
@@ -76,6 +86,8 @@ void GCTransform::Rotate(float yaw, float pitch, float roll)
 	m_rotation *= q;
 	m_rotation.Normalize();
 	UpdateVectorsFromQuaternion();
+	UpdateMatrixFromVectors();
+	UpdateMatrix();
 }
 
 void GCTransform::RotateYaw(float angle)
@@ -108,7 +120,7 @@ void GCTransform::RotateRoll(float angle)
 void GCTransform::RotateWorld(const GCMATRIX& matrix)
 {
 	m_rotationMatrix *= matrix;
-	UpdateRoationFromMatrix();
+	UpdateVectorsFromMatrix();
 }
 
 void GCTransform::RotateWorldX(float angle)
@@ -134,8 +146,8 @@ void GCTransform::RotateWorldZ(float angle)
 
 void GCTransform::Scale(const GCVEC3& scale)
 {
-	m_scale = scale;
-	m_matrix.Scale(scale.x, scale.y, scale.z);
+	m_scale *= scale;
+	m_matrix.Scale(m_scale.x, m_scale.y, m_scale.z);
 }
 
 void GCTransform::Translate(const GCVEC3& translation)
