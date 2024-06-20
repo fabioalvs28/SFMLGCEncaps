@@ -13,6 +13,9 @@ template <typename Key, typename Value>
 class GCMap
 {
 public:
+	Value& operator[](const Key& key) { return m_Map[key]; }
+	const Value& operator[](const Key& key) const { return m_Map[key]; }
+
 	// Default constructor
 	GCMap() : m_Map() {}
 
@@ -48,9 +51,6 @@ public:
 	size_t GetSize() const;
 	bool IsEmpty() const;
 
-	Value& operator[](const Key& key) { return m_Map[key]; }
-	const Value& operator[](const Key& key) const { return m_Map[key]; }
-
 	// Iterator support
 	typename std::map<Key, Value>::iterator begin() { return m_Map.begin(); }
 	typename std::map<Key, Value>::iterator end() { return m_Map.end(); }
@@ -60,7 +60,6 @@ public:
 private:
 	std::map<Key, Value> m_Map;
 };
-
 
 /// <summary>
 /// Insert a new value into the map with the given key
