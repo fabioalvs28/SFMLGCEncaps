@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Quaternion.h"
 #include <math.h>
+#include "Vectors.h"
 
 /// <summary>
 /// Default constructor

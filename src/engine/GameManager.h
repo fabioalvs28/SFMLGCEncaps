@@ -1,9 +1,9 @@
 #pragma once
+#include "SceneManager.h"
+#include "InputManager.h"
 
 class GCGameObject;
 class GCScene;
-class GCSceneManager; 
-class GCInputManager;
 class GC;
 
 class GCGameManager 

@@ -71,7 +71,7 @@ void GCScene::Unload() { GC::m_pActiveGameManager.m_pSceneManager.UnloadScene( t
 void GCScene::Destroy()
 {
 	GC::m_pActiveGameManager.m_pSceneManager.DestroyScene( this );
-	DestroyGameObjects(); //? Maybe there will be an issue with destroying every GameObjects including those who are already destroying their children
+	DestroyGameObjects(); //? Maybe there will be an issue with destroying every GameObjects including the childs who are already destroyed by their parents.
 	DestroyChildren();
 }
 
