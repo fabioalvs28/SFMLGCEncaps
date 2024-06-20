@@ -67,6 +67,7 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     
     m_renderWidth = renderWidth;
     m_renderHeight = renderHeight;
+
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
@@ -86,7 +87,6 @@ void GCGraphics::StartFrame()
             cbObject->m_isUsed = false;
         }
     }
-
     m_pRender->PrepareDraw();
 
 };
@@ -96,7 +96,6 @@ void GCGraphics::EndFrame()
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
     m_pRender->PostDraw();
-
 
     for (int i = 0; i < m_vMaterials.size(); i++) {
         m_vMaterials[i]->ResetCBCount();
@@ -121,6 +120,15 @@ void GCGraphics::EndFrame()
         }
     }
 };
+
+
+void GCGraphics::InitializeGraphicsResourcesStart() {
+    m_pRender->ResetCommandList(); // Reset Command List Before Resources Creation
+}
+void GCGraphics::InitializeGraphicsResourcesEnd() {
+    m_pRender->CloseCommandList(); // Close and Execute after creation
+    m_pRender->ExecuteCommandList();
+}
 
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) 
 {

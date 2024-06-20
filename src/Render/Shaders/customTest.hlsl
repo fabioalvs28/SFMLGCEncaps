@@ -41,7 +41,7 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin) : SV_Target
 {
     float4 texColor = g_texture.Sample(g_sampler, pin.UV);
-    float4 finalColor = texColor * gColor; // Multiply texture color by gColor
+    float4 finalColor = texColor; // Multiply texture color by gColor
     
     return finalColor * finalColor.a; // Apply transparency using alpha channel
 }

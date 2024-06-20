@@ -14,6 +14,9 @@ public:
 	~GCPrimitiveFactory();
 	void Initialize();
 
+	void GenerateSphere(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices);
+	void GenerateCircle(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices);
+
 	GCGeometry* BuildGeometryColor(std::wstring name, DirectX::XMFLOAT4 color);
 	GCGeometry* BuildGeometryTexture(std::wstring name);
   

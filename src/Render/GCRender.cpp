@@ -237,6 +237,7 @@ void GCRender::OnResize()
 	m_canResize = true;
 	if (m_canResize == false)
 		return;
+
 	assert(m_d3dDevice);
 	assert(m_SwapChain);
 	assert(m_DirectCmdListAlloc);

@@ -12,6 +12,9 @@ public:
 	void StartFrame();
 	void EndFrame();
 
+	void InitializeGraphicsResourcesStart();
+	void InitializeGraphicsResourcesEnd();
+
 	// Shader
 	GCShader* CreateShaderColor();
 	GCShader* CreateShaderTexture();
