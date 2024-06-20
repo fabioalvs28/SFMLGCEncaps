@@ -64,7 +64,9 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     //Initializes Graphics for a window
     m_pRender = new GCRender();
     m_pRender->Initialize(pWindow, renderWidth, renderHeight);
-
+    
+    m_renderWidth = renderWidth;
+    m_renderHeight = renderHeight;
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();

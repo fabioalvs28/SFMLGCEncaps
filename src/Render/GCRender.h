@@ -41,7 +41,6 @@ public:
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
-	bool DrawObjectPixel(GCMesh* pMesh, GCMaterial* pMaterial,int pixelX,int pixelY, DirectX::XMMATRIX proj, DirectX::XMMATRIX view, GCGraphics* pGraphics);
 	//void BuildBoxGeometry();
 
 	// Getter
@@ -71,10 +70,10 @@ public:
 	
 	Window* GetCurrentWindow() { return m_pWindow; }
 private:
-	int m_renderWidth;
-	int m_renderHeight;
 	Window* m_pWindow;
 	// Swap chain size
+	int m_renderWidth;
+	int	m_renderHeight;
 	static const int SwapChainBufferCount = 2;
 
 	// DirectX12 3D instances

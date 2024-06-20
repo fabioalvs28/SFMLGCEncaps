@@ -1,7 +1,7 @@
 #include "framework.h"
 
 //converts pixels coordinates to ndc ones
-DirectX::XMFLOAT3 GCUtils::PixelToWorld(float x, float y, UINT windowWidth, UINT windowHeight, const DirectX::XMMATRIX& proj, const DirectX::XMMATRIX& view)
+DirectX::XMFLOAT3 GCUtils::PixelToWorld(float x, float y, UINT windowWidth, UINT windowHeight, const DirectX::XMFLOAT4X4& proj, const DirectX::XMFLOAT4X4& view)
 {
 	float ndcX = (x / windowWidth) * 2.0f - 1.0f;
 	float ndcY = 1.0f - (y / windowHeight) * 2.0f;
@@ -10,7 +10,10 @@ DirectX::XMFLOAT3 GCUtils::PixelToWorld(float x, float y, UINT windowWidth, UINT
 
 	DirectX::XMVECTOR ndcSpacePos = DirectX::XMVectorSet(ndcX, ndcY, ndcZ, 1.0f);
 
-	DirectX::XMMATRIX invViewProj = DirectX::XMMatrixInverse(nullptr, view * proj);
+	DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4(&proj);
+	DirectX::XMMATRIX viewMatrix = DirectX::XMLoadFloat4x4(&view);
+
+	DirectX::XMMATRIX invViewProj = DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixMultiply(DirectX::XMMatrixTranspose(viewMatrix), DirectX::XMMatrixTranspose(projMatrix)));
 
 	DirectX::XMVECTOR worldSpacePos = DirectX::XMVector3TransformCoord(ndcSpacePos, invViewProj);
 

@@ -220,7 +220,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// SET CAMERA 
 
-	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
+	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 0.1f, 1.0f);
 	DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
 	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -272,8 +272,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-	//graphics->UpdateCustomCBObject<GCTest>(material2, worldData);
-	graphics->GetRender()->DrawObjectPixel(mesh2, material2, 0, 0, projectionMatrix, viewMatrix, graphics);
+	GCWORLDCB test = graphics->ToPixel<GCWORLDCB>(400, 400, storedProjectionMatrix, storedViewMatrix);
+	graphics->UpdateCustomCBObject<GCTest>(material2, test);
+	graphics->GetRender()->DrawObject(mesh2, material2);
 	//graphics->GetRender()->DrawObject(mesh2, material2);
 
 	//// Deuxième objet
