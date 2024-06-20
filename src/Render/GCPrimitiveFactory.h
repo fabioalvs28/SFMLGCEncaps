@@ -14,12 +14,12 @@ public:
 	~GCPrimitiveFactory();
 	void Initialize();
 
-	GCGeometry* BuildGeometryColor(std::wstring name, DirectX::XMFLOAT4 color);
-	GCGeometry* BuildGeometryTexture(std::wstring name);
+	GCGeometry* BuildGeometryColor(int index, DirectX::XMFLOAT4 color);
+	GCGeometry* BuildGeometryTexture(int index);
   
 private:
 	GCRender* m_pRender;
-	std::map<std::wstring, std::map<std::wstring, std::variant<
+	std::map<int, std::map<std::wstring, std::variant<
 		std::vector<uint16_t>,
 		std::vector<DirectX::XMFLOAT2>,
 		std::vector<DirectX::XMFLOAT3>,

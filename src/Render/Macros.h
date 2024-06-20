@@ -28,7 +28,8 @@ bool CheckNull(T value, Args ... args)
 	}
 }
 
-// Variadic Check Ptr with 1 message Error 
+// Variadic Check Ptr with 1 message Error
+#ifdef _PROFILER
 #define CHECK_POINTERSNULL(profiler, successMsg, warningMsg, ...) \
     do { \
         bool allNotNull = true; \
@@ -49,7 +50,9 @@ bool CheckNull(T value, Args ... args)
             logWarning(warningMsgStr); \
         } \
     } while (false)
-
+#else
+#define CHECK_POINTERSNULL(profiler, successMsg, warningMsg, ...) 
+#endif
 
 // For Release Instance, used in Destructor of resources
 #define SAFE_RELEASE(p) \
@@ -79,14 +82,14 @@ inline bool CheckFile(std::string fileName, std::string errorMessage, std::strin
 
 	if (_waccess(wideFileName.c_str(), 0) == -1)
 	{
-		OutputDebugString(wideErrorMessage.c_str());
+		OutputDebugStringW(wideErrorMessage.c_str());
 		profiler.LogWarning("Model file not found: " + fileName);
 		
 		return true;
 	}
 	else
 	{
-		OutputDebugString(wideSuccessMessage.c_str());
+		OutputDebugStringW(wideSuccessMessage.c_str());
 		profiler.LogInfo("Model file:" + fileName + " loaded successfully");
 		
 		return false;

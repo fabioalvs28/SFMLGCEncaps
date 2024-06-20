@@ -376,10 +376,13 @@ void GCRender::FlushCommandQueue()
 }
 
 
-void GCRender::PrepareDraw() 
+bool GCRender::PrepareDraw() 
 {
 	//Always needs to be called right before drawing!!!
-	m_DirectCmdListAlloc->Reset();
+	if (m_DirectCmdListAlloc->Reset() != S_OK)
+	{
+		return false;
+	}
 	m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
 
 	//CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
@@ -401,6 +404,8 @@ void GCRender::PrepareDraw()
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvSrvUavDescriptorHeap };
 	m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return true;
 }
 
 

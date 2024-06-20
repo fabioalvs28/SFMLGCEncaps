@@ -9,7 +9,7 @@ public:
 	void Initialize(Window* pWindow, int renderWidth, int renderHeight);
 
 	// Each Frame
-	void StartFrame();
+	bool StartFrame();
 	void EndFrame();
 
 	// Shader

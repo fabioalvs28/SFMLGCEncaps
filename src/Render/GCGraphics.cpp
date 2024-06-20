@@ -77,7 +77,7 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     CreateCBCamera<GCVIEWPROJCB>();
 }
 
-void GCGraphics::StartFrame()
+bool GCGraphics::StartFrame()
 {
     for (auto& material : m_vMaterials)
     {
@@ -87,9 +87,9 @@ void GCGraphics::StartFrame()
         }
     }
 
-    m_pRender->PrepareDraw();
+    return m_pRender->PrepareDraw();
+}
 
-};
 void GCGraphics::EndFrame()
 {
 
@@ -109,7 +109,7 @@ void GCGraphics::EndFrame()
         {
             if (cbObject->m_isUsed)
                 cbObject->m_framesSinceLastUse = 0;
-            if (!cbObject->m_isUsed)
+            else
             {
                 cbObject->m_framesSinceLastUse++;
                 if (cbObject->m_framesSinceLastUse > 180)
