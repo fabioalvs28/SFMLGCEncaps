@@ -21,18 +21,8 @@ bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics)
     //Initializes textures
     std::wstring wideFilePath(filePath.begin(), filePath.end());
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
-    if (_waccess(wideFilePath.c_str(), 0) == -1)
-    {
-        OutputDebugString((L"Texture not found: " + wideFilePath + L"\n").c_str());
-        profiler.LogWarning("Texture not found: " + filePath);
-    }
-    else
-    {
-        OutputDebugString((L"Texture file: " + wideFilePath + L" loaded successfully\n").c_str());
-        profiler.LogInfo("Texture file : " + filePath + " loaded successfully");
-    }
+    CheckFile(filePath, "Texture not found: " + filePath, "Texture file : " + filePath + " loaded successfully");
 
     m_cbvSrvUavDescriptorSize = pGraphics->GetRender()->Getmd3dDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 

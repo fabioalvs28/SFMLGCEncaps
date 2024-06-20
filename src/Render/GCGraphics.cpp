@@ -128,6 +128,7 @@ void GCGraphics::InitializeGraphicsResourcesStart() {
 void GCGraphics::InitializeGraphicsResourcesEnd() {
     m_pRender->CloseCommandList(); // Close and Execute after creation
     m_pRender->ExecuteCommandList();
+    m_pRender->FlushCommandQueue();
 }
 
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) 
@@ -170,6 +171,7 @@ GCShader* GCGraphics::CreateShaderCustom(std::string& filePath, std::string& com
     GCShader* pShader;
     pShader = new GCShaderCustom();
     pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, type);
+    pShader->Load();
 
     m_vShaders.push_back(pShader);
     m_shaderId++;
@@ -190,15 +192,15 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
     return pMesh;
 }
 
-GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader, GCTexture* pTexture) {
+GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader) {
 
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
-    CHECK_POINTERSNULL(profiler,"Texture loaded successfully for material","The material doesn't contain texture",pTexture);
-    CHECK_POINTERSNULL(profiler,"Shader loaded successfully for material","Can't create material, Shader is empty",pShader);
+
+    CHECK_POINTERSNULL(profiler,"Shader loaded successfully for material","Can't create material, Shader is empty", pShader);
 
     GCMaterial* material = new GCMaterial();
-    material->Initialize(pShader, pTexture, m_pRender);
+    material->Initialize(pShader);
     m_vMaterials.push_back(material);
     m_materialId++;
     return material;

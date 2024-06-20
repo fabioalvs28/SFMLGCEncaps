@@ -33,6 +33,7 @@ public:
 
 	void Load();
 
+	GCRender* m_pRender;
 protected:
 
 	ID3D12RootSignature* m_RootSignature;
@@ -48,8 +49,6 @@ protected:
 	std::wstring m_psCsoPath;
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
-
-	GCRender* m_pRender;
 
 	int m_type;
 };

@@ -41,7 +41,7 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
     {
         for (size_t i = 0; i < pGeometry->pos.size(); ++i) 
         {
-            vertices[i] = VertexType(pGeometry->pos[i], pGeometry->texC[i]);
+            vertices[i] = VertexType(pGeometry->pos[i], pGeometry->uv[i]);
         }
     }
     const UINT vbByteSize = static_cast<UINT>(vertices.size() * sizeof(VertexType));

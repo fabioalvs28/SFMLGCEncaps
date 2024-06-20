@@ -32,11 +32,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, STEnum::texture);
 	//GCShader* shader2 = graphics->CreateShaderTexture();
 
-
 	graphics->InitializeGraphicsResourcesStart();
-
-	shader1->Load();
-	shader2->Load();
 
 	// Mesh (Resource)
 	GCMesh* mesh = graphics->CreateMesh(geo);
@@ -47,11 +43,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	std::string texturePath = "../../../src/Render/Textures/cottage_diffuse.dds";
 	GCTexture* texture = graphics->CreateTexture(texturePath);
 
-	// Material (Resource)
-	GCMaterial* material = graphics->CreateMaterial(shader1, nullptr);
-	GCMaterial* material2 = graphics->CreateMaterial(shader2, texture);
-
 	graphics->InitializeGraphicsResourcesEnd();
+
+	// Material (Resource)
+	GCMaterial* material = graphics->CreateMaterial(shader1);
+	GCMaterial* material2 = graphics->CreateMaterial(shader2);
+	material2->SetTexture(texture);
 
 
 	// SET CAMERA 

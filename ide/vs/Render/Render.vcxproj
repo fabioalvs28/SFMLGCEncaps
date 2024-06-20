@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{CE0784C6-9333-4447-997A-C956F11F720B}</ProjectGuid>
+    <ProjectGuid>{C95D2475-AF50-4C54-82D5-B33C70A251D8}</ProjectGuid>
     <RootNamespace>Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -112,12 +112,15 @@
     <ClInclude Include="..\..\..\src\Render\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\src\Render\cottage.obj" />
     <None Include="..\..\..\src\Render\monkey.obj" />
     <None Include="..\..\..\src\Render\monkeyUv.obj" />
     <None Include="..\..\..\src\Render\Shaders\color.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\customTest.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\texture.hlsl" />
     <None Include="..\..\..\src\Render\Textures\ahah.dds" />
+    <None Include="..\..\..\src\Render\Textures\cottage_diffuse.dds" />
+    <None Include="..\..\..\src\Render\Textures\cottage_normal.dds" />
     <None Include="..\..\..\src\Render\Textures\gojo.dds" />
     <None Include="..\..\..\src\Render\Textures\texture.dds" />
   </ItemGroup>
@@ -140,6 +143,7 @@
     <ClCompile Include="..\..\..\src\Render\GCTexture.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCTextureFactory.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCUtils.cpp" />
+    <ClCompile Include="..\..\..\src\Render\Macros.cpp" />
     <ClCompile Include="..\..\..\src\Render\MathHelper.cpp" />
     <ClCompile Include="..\..\..\src\Render\Timer.cpp" />
     <ClCompile Include="..\..\..\src\Render\Window.cpp" />

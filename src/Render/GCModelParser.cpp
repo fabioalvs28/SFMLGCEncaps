@@ -38,7 +38,7 @@ GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fi
 		objGeometry->pos.push_back(
 			DirectX::XMFLOAT3(m_ParsedModel->coords[m_ParsedModel->facesInfos[i][0]][0], m_ParsedModel->coords[m_ParsedModel->facesInfos[i][0]][1], m_ParsedModel->coords[m_ParsedModel->facesInfos[i][0]][2]));
 
-		objGeometry->texC.push_back(
+		objGeometry->uv.push_back(
 			DirectX::XMFLOAT2(m_ParsedModel->uvs[m_ParsedModel->facesInfos[i][1]][0], m_ParsedModel->uvs[m_ParsedModel->facesInfos[i][1]][1]));
 
 		objGeometry->indices.push_back(i);

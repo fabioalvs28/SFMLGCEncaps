@@ -34,8 +34,8 @@ public:
 	void FlushCommandQueue();
 	void Update(const Timer& gt);
 
-	void PrepareDraw();
-	void PostDraw();
+	bool PrepareDraw();
+	bool PostDraw();
 
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 

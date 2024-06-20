@@ -72,7 +72,7 @@ GCMesh::~GCMesh()
 void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
     m_pRender = pRender;
 
-    if (pGeometry->texC.size() == 0)
+    if (pGeometry->uv.size() == 0)
     {
         UploadGeometryDataColor(pGeometry);
     }
@@ -86,7 +86,7 @@ void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry)
 {
 
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-    CHECK_POINTERSNULL(profiler, "Mesh geometry is NULL", "Mesh geometry has been initialized in Mesh successfully", pGeometry);
+    CHECK_POINTERSNULL(profiler, "Mesh geometry has been initialized in Mesh successfully", "Mesh geometry is NULL", pGeometry);
 
     UploadGeometryData<GCVERTEX>(pGeometry);
 
@@ -104,7 +104,7 @@ void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry)
 void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) 
 {
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-    CHECK_POINTERSNULL(profiler, "Mesh geometry is NULL", "Mesh geometry has been initialized in Mesh successfully", pGeometry);
+    CHECK_POINTERSNULL(profiler, "Mesh geometry has been initialized in Mesh successfully", "Mesh geometry is NULL", pGeometry);
 
     UploadGeometryData<GCVERTEXTEXTURE>(pGeometry);
 

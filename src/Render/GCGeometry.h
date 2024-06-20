@@ -12,6 +12,6 @@ public:
 
 	std::vector<DirectX::XMFLOAT3> pos;
 	std::vector<DirectX::XMFLOAT4> color;
-	std::vector<DirectX::XMFLOAT2> texC;
+	std::vector<DirectX::XMFLOAT2> uv;
 };
 

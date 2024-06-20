@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{8DC8DFFD-712A-4D84-9649-833759ACA9D3}</UniqueIdentifier>
+      <UniqueIdentifier>{16B7EEA3-2873-476E-86A9-9D3AE6061C16}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{6FB271BC-E484-4B52-870E-B26708D82044}</UniqueIdentifier>
+      <UniqueIdentifier>{F1FA6101-0463-4DF2-BC13-A55CE89C38EB}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{20B18B7E-D8BA-41AE-A88A-724074E49540}</UniqueIdentifier>
+      <UniqueIdentifier>{E58B7499-8918-4FB7-8B03-657746034C1F}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -67,6 +67,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\Macros.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\MathHelper.cpp">
@@ -177,6 +180,9 @@
     <ClInclude Include="..\..\..\src\Render\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <None Include="..\..\..\src\Render\cottage.obj">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="..\..\..\src\Render\monkey.obj">
       <Filter>Resource Files</Filter>
     </None>
@@ -193,6 +199,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Textures\ahah.dds">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\Render\Textures\cottage_diffuse.dds">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\Render\Textures\cottage_normal.dds">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Textures\gojo.dds">

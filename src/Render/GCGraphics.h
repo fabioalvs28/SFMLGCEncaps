@@ -24,7 +24,7 @@ public:
 	ShaderTypeConstantBuffer ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
 
 
-	GCMaterial* CreateMaterial(GCShader* pShader, GCTexture* pTexture);
+	GCMaterial* CreateMaterial(GCShader* pShader);
 	GCMesh* CreateMesh(GCGeometry* pGeometry);
 	GCTexture* CreateTexture(const std::string& filePath);
 

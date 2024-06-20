@@ -154,12 +154,9 @@ void GCRender::CreateCommandObjects()
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	m_d3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_CommandQueue));
 
-	m_d3dDevice->CreateCommandAllocator(
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		IID_PPV_ARGS(&m_DirectCmdListAlloc));
+	m_d3dDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_DirectCmdListAlloc));
 
-	m_d3dDevice->CreateCommandList(
-		0,
+	m_d3dDevice->CreateCommandList(0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
 		m_DirectCmdListAlloc, // Associated command allocator
 		nullptr,                   // Initial PipelineStateObject
@@ -204,7 +201,7 @@ void GCRender::CreateCbvSrvUavDescriptorHeaps()
 {
 	// Create CBV / SRV / UAV descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-	cbvHeapDesc.NumDescriptors = 100;
+	cbvHeapDesc.NumDescriptors = 1000;
 	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	cbvHeapDesc.NodeMask = 0;
@@ -377,15 +374,22 @@ void GCRender::FlushCommandQueue()
 }
 
 
-void GCRender::PrepareDraw() 
+bool GCRender::PrepareDraw() 
 {
 	//Always needs to be called right before drawing!!!
-	m_DirectCmdListAlloc->Reset();
-	m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
 
-	//CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-	//m_CommandList->ResourceBarrier(1, &ResBar);
-	//m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::Black, 0, nullptr);
+	HRESULT hr = m_DirectCmdListAlloc->Reset();
+	if (CheckHResult(hr, "m_DirectCmdListAlloc->Reset()")) {
+		return false;
+	};
+
+	hr = m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
+
+	if (CheckHResult(hr, "m_CommandList->Reset()")) {
+		return false;
+	};
+
+
 	m_CommandList->RSSetViewports(1, &m_ScreenViewport);
 	m_CommandList->RSSetScissorRects(1, &m_ScissorRect);
 
@@ -402,7 +406,11 @@ void GCRender::PrepareDraw()
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvSrvUavDescriptorHeap };
 	m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return true;
 }
+
+
 
 
 // You can call many times this function without call again Prepare and Post Draw
@@ -415,9 +423,7 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 {
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
-	// Update 
 
-	// 
 	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
 	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
 
@@ -445,24 +451,35 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 }
 
 //Always needs to be called right after drawing!!!
-void GCRender::PostDraw() { 
+bool GCRender::PostDraw()
+{
+	// Transition to present state
 	CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-
 	m_CommandList->ResourceBarrier(1, &ResBar2);
-	m_CommandList->Close();
 
+	// Close the command list
+	HRESULT hr = m_CommandList->Close();
+	CheckHResult(hr, "Failed to close command list");
 
+	// Execute the command list
 	ID3D12CommandList* cmdsLists[] = { m_CommandList };
 	m_CommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
+	// Present the swap chain
+	hr = m_SwapChain->Present(0, 0);
 
-	m_SwapChain->Present(0, 0);
+	if (CheckHResult(hr, "Failed to present swap chain"))
+		return false;
+
+
+	// Move to the next back buffer
 	m_CurrBackBuffer = (m_CurrBackBuffer + 1) % SwapChainBufferCount;
 
-
+	// Flush the command queue
 	FlushCommandQueue();
-}
 
+	return true;
+}
 void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 {
 	UINT count = 0;
