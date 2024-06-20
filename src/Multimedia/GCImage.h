@@ -45,8 +45,5 @@ public:
 	bool BlendSTD(const GCImage& overlay, float alpha);
 	bool BlendPRE(const GCImage& overlay, float alpha);
 	bool Premultiply();
-
-	bool SavePNG(const std::string& filename);
-	bool LoadPNG(BYTE* buffer, int size);
 };
 
