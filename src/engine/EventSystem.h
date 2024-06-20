@@ -7,29 +7,10 @@
 #include "../core/Vector.h"
 #include "../core/Queue.h"
 
-class GCEventDispatcher 
-{
-public:
-	GCEventDispatcher(GCEvent& gcevent) : m_gcEvent(gcevent) {}
-
-	template<typename Type, typename Func>
-	bool Dispatch(const Func& func) {
-		if (m_gcEvent.GetEventType() == Type::GetStaticType())
-		{
-			m_gcEvent.IsHandle() = func(static_cast<Type&>(m_gcEvent));
-			return true;
-		}
-		return false;
-	}
-
-private:
-	GCEvent& m_gcEvent;
-};
-
 class GCEventSystem
 {
 public:
-	GCEventSystem();
+	GCEventSystem() = default;
 	/// <summary>
 	/// Polls events from the operating system or framework 
 	/// and dispatches them to the appropriate handlers.
@@ -56,19 +37,6 @@ public:
 	/// <param name="type">The event type</param>
 	/// <param name="id">The unique identifier ID to the callback</param>
 	void RemoveEventListener();
-
-	/// <summary>
-	/// Adds a new layer to the event system.
-	/// Layers can be used to manage different contexts in the application.
-	/// </summary>
-	/// <param name="layer">Pointer to the Layer object</param>
-	void AddLayer(Layer* layer);
-
-	/// <summary>
-	/// Removes a layer from the event system.
-	/// </summary>
-	/// <param name="layer">Pointer to the Layer object to be removed</param>
-	void RemoveLayer(Layer* layer);
 
 private:
 	/// <summary>

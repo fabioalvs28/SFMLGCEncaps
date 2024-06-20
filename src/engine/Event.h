@@ -1,16 +1,12 @@
 #pragma once
 #include <string>
+#include<functional>
 
 enum class GCEventType
 {
-	WindowClose,
-	WindowResize,
-	KeyPressed,
-	KeyReleased,
-	MouseButtonPressed,
-	MouseButtonReleased,
-	MouseMove,
-	MouseScrolled,
+	WindowClose, WindowResize,
+	KeyPressed, KeyReleased,
+	MouseButtonPressed, MouseButtonReleased, MouseMove, MouseScrolled,
 };
 
 enum class GCMouseButton
@@ -29,35 +25,80 @@ public:
 	virtual GCEventType GetEventType() const = 0;
 	virtual const char* GetName() const = 0;
 	virtual std::string ToString() const { return GetName(); }
-    virtual bool IsHandle() const { return m_isHandle; }
 	virtual ~GCEvent() = default;
 
-protected:
-	bool m_isHandle = false;
+	bool isHandled = false;
+};
+
+class GCEventDispatcher
+{
+	template<typename T>
+	using GCEventFn = std::function<bool(T&)>;
+public:
+	GCEventDispatcher(GCEvent& gcevent) : m_gcEvent(gcevent) {};
+
+	template<typename Type>
+	bool Dispatch(GCEventFn<Type> func)
+	{
+		if (m_gcEvent.GetEventType() == Type::GetStaticType())
+		{
+			m_gcEvent.isHandled = func(*(Type*)(&m_gcEvent));
+			return true;
+		}
+		return false;
+	}
+
+private:
+	GCEvent& m_gcEvent;
 };
 
 #pragma region MouseEvent
 class GCMouseButtonPressed : public GCEvent
 {
 public:
-	GCMouseButtonPressed(int x, int y, GCMouseButton mouseButton)
+	GCMouseButtonPressed(float x, float y, GCMouseButton mouseButton)
 		: m_x(x), m_y(y), m_mouseButton(mouseButton) {}
 
 	static GCEventType GetStaticType() { return GCEventType::MouseButtonPressed; }
 	GCEventType GetEventType() const override { return GetStaticType(); }
     const char* GetName() const override { return "MouseButtonPressed"; }
 
-	int GetX() const { return m_x; }
-	int GetY() const { return m_y; }
+	float GetX() const { return m_x; }
+	float GetY() const { return m_y; }
 	GCMouseButton GetMouseButton() const { return m_mouseButton; }
 
 private:
-    int m_x, m_y; //Maybe later to use the custom vector2
+	float m_x, m_y; //Maybe later to use the custom vector2
 	GCMouseButton m_mouseButton;
+};
+
+class GCMouseMoveEvent : public GCEvent
+{
+public:
+    GCMouseMoveEvent(float x, float y)
+        : m_x(x), m_y(y)
+    {
+    }
+
+    static GCEventType GetStaticType() { return GCEventType::MouseMove; }
+    GCEventType GetEventType() const override { return GetStaticType(); }
+    const char* GetName() const override { return "MouseMove"; }
+
+	float GetX() const { return m_x; }
+	float GetY() const { return m_y; }
+
+private:
+    float m_x, m_y;
+
 };
 
 #pragma endregion
 
+///
+///
+/// Events Related to Window
+/// 
+///
 #pragma region WindowEvents
 class GCWindowCloseEvent : public GCEvent {
 public:

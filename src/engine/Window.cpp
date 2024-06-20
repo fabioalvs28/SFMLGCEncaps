@@ -102,10 +102,7 @@ LRESULT GCWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         int x = LOWORD(lParam);
         int y = HIWORD(lParam);
-        GCMouseButtonPressed *event = new GCMouseButtonPressed(x, y, GCMouseButton::Left);
-        m_eventSystem.PushEvent(event);
-        m_eventSystem.AddEventListener(*event, 
-            []() { std::cout << "Left Mouse Button Pressed" << std::endl; });
+
         break;
     }
     case WM_KEYDOWN:

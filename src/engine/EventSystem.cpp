@@ -1,12 +1,6 @@
 #include "pch.h"
 #include "EventSystem.h"
 
-GCEventSystem::GCEventSystem()
-{
-    //For test, remove later
-    m_eventListeners.Insert(GCEventType::MouseButtonPressed,  std::vector<std::function<void()>>());
-}
-
 void GCEventSystem::PollEvents()
 {
     while (!m_eventQueue.IsEmpty()) 
@@ -35,13 +29,6 @@ void GCEventSystem::RemoveEventListener()
     //Check if the event is handled by the listener
 }
 
-void GCEventSystem::AddLayer(Layer* layer)
-{
-}
-
-void GCEventSystem::RemoveLayer(Layer* layer)
-{
-}
 
 void GCEventSystem::OnEvent(GCEvent& e)
 {
