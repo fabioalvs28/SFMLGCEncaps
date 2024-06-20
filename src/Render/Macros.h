@@ -45,7 +45,7 @@ bool CheckPointer(T value, Args ... args, std::string errorMessage, std::string 
 	}
 }
 
-bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage)
+inline bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage)
 {
 	//checks if the filepath exists 
 	// returns true if it exists 
@@ -73,7 +73,7 @@ bool CheckFile(std::string fileName, std::string errorMessage, std::string succe
 	}
 }
 
-bool CheckExtension(std::string filePath, std::string fileExtension)
+inline bool CheckExtension(std::string filePath, std::string fileExtension)
 {
 	//checks if the filpeath has the right extension 
 	// returns true if it is
@@ -93,12 +93,14 @@ bool CheckExtension(std::string filePath, std::string fileExtension)
 	{
 		OutputDebugString((L"The file at filepath: " + wideFilePath + L"is not of type" + wideFileExtension + L"\n").c_str());
 		profiler.LogWarning("The file at filepath: " + filePath + "is not of type" + fileExtension);
+		return false;
 	}
 
 	else 
 	{
 		OutputDebugString((L"The file at filepath: " + wideFilePath + L"has the right type: " + wideFileExtension + L"\n").c_str());
 		profiler.LogInfo("The file at filepath: " + filePath + "has the right type:" + fileExtension);
+		return true;
 	}
 
 }
