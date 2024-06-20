@@ -10,17 +10,11 @@ GCModelParser::~GCModelParser()
 
 bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 {
-    // #TODO Enlever sa ?
-	/*std::string extensionCheck;
-	for (int i = 0; i < 3; i++)
-	{
-		extensionCheck.insert(0, fileName);
-	}*/
 
 	switch (fileExtension)
 	{
 	case 0:
-		
+		CheckExtension(fileName, "obj");
 		m_ParsedModel = dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
 		return true;
 	}
@@ -30,20 +24,9 @@ bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fileExtension)
 {
 	//Parses an obj and puts it into a geometry with textures
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
 	std::wstring wideFileName(fileName.begin(), fileName.end());
 
-	if (_waccess(wideFileName.c_str(), 0) == -1)
-	{
-		OutputDebugString((L"Model file not found: " + wideFileName + L"\n").c_str());
-		profiler.LogWarning("Model file not found: " + fileName);
-	}
-	else
-	{
-		OutputDebugString((L"Model file: " + wideFileName + L" loaded successfully \n").c_str());
-		profiler.LogInfo("Model file:" + fileName + " loaded successfully");
-	}
+	CheckFile(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully"));
 
 	Parse(fileName, fileExtension);
 
@@ -71,20 +54,9 @@ GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fi
 GCGeometry* GCModelParser::BuildModelColor(std::string fileName, Extensions fileExtension)
 {
 	//Parses an obj and puts it into a geometry with colors
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
 	std::wstring wideFileName(fileName.begin(), fileName.end());
 
-	if (_waccess(wideFileName.c_str(), 0) == -1)
-	{
-		OutputDebugString((L"Obj file not found: " + wideFileName + L"\n").c_str());
-		profiler.LogWarning("Obj file not found: " + fileName);
-	}
-	else
-	{
-		OutputDebugString((L"Obj file : " + wideFileName + L" loaded successfully \n").c_str());
-		profiler.LogInfo("Obj file:" + fileName + " loaded successfully");
-	}
+	CheckFile(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully"));
 
 	Parse(fileName, fileExtension);
 
