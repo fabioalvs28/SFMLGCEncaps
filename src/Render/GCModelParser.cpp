@@ -23,8 +23,6 @@ bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 
 GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fileExtension)
 {
-	//Parses an obj and puts it into a geometry with textures
-	std::wstring wideFileName(fileName.begin(), fileName.end());
 
 	CheckFile(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully"));
 
@@ -46,15 +44,14 @@ GCGeometry* GCModelParser::BuildModelTexture(std::string fileName, Extensions fi
 		objGeometry->indices.push_back(i);
 	}
 
-	CHECK_POINTERSNULL(profiler,"Model geometry loaded successfully","Model Geometry is empty",objGeometry);
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+	CHECK_POINTERSNULL(profiler, "Model geometry loaded successfully","Model Geometry is empty", objGeometry);
 
 	return objGeometry;
 }
 
 GCGeometry* GCModelParser::BuildModelColor(std::string fileName, Extensions fileExtension)
 {
-	//Parses an obj and puts it into a geometry with colors
-	std::wstring wideFileName(fileName.begin(), fileName.end());
 
 	CheckFile(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully"));
 
@@ -77,6 +74,7 @@ GCGeometry* GCModelParser::BuildModelColor(std::string fileName, Extensions file
 		objGeometry->indices.push_back(m_ParsedModel->facesInfos[i][0]);
 	}
 
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 	CHECK_POINTERSNULL(profiler, "Model geometry loaded successfully", "Model Geometry is empty", objGeometry);
 
 	return objGeometry;

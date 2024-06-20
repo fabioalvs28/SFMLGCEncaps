@@ -153,6 +153,7 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryColor(std::wstring name, DirectX::X
 {
     //Builds a color based geometry using pre-created ones
     //Needs both a geometry name and a specific color
+
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
     
     std::string strName(name.begin(), name.end());
@@ -181,7 +182,7 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryColor(std::wstring name, DirectX::X
     for(int i = 0 ; i<primitiveGeometry->vertexNumber; i++)
 	    primitiveGeometry->color.push_back(color);
 
-    CheckPointer(primitiveGeometry, "Primitive geometry is empty", "Primitive Geometry built successfully");
+    CHECK_POINTERSNULL(profiler, "Primitive geometry is empty", "Primitive Geometry built successfully", primitiveGeometry);
 
 	return primitiveGeometry;
 }
@@ -216,7 +217,7 @@ GCGeometry* GCPrimitiveFactory::BuildGeometryTexture(std::wstring name)
 
 	primitiveGeometry->texC = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[name][L"uvs"]);
 
-    CheckPointer(primitiveGeometry, "Primitive geometry is empty", "Primitive Geometry built successfully");
+    CHECK_POINTERSNULL(profiler, "Primitive geometry is empty", "Primitive Geometry built successfully", primitiveGeometry);
 
 	return primitiveGeometry;
 }

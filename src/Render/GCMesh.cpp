@@ -84,24 +84,40 @@ void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
 
 void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry) 
 {
-    CheckPointer(pGeometry, "Mesh geometry is NULL", "Mesh geometry has been initialized in Mesh successfully");
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    CHECK_POINTERSNULL(profiler, "Mesh geometry is NULL", "Mesh geometry has been initialized in Mesh successfully", pGeometry);
 
     UploadGeometryData<GCVERTEX>(pGeometry);
+
+    CHECK_POINTERSNULL(profiler,
+        "All mesh buffers have been successfully allocated",
+        "One or more mesh buffers are not allocated",
+        m_pBufferGeometryData->VertexBufferCPU,
+        m_pBufferGeometryData->IndexBufferCPU,
+        m_pBufferGeometryData->VertexBufferGPU,
+        m_pBufferGeometryData->IndexBufferGPU,
+        m_pBufferGeometryData->VertexBufferUploader,
+        m_pBufferGeometryData->IndexBufferUploader
+    );
 }
 void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) 
 {
-    CheckPointer(pGeometry, "Mesh geometry is NULL", "Mesh geometry has been initialized in Mesh successfully");
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    CHECK_POINTERSNULL(profiler, "Mesh geometry is NULL", "Mesh geometry has been initialized in Mesh successfully", pGeometry);
 
     UploadGeometryData<GCVERTEXTEXTURE>(pGeometry);
-}
 
-//void GCMesh::UpdateObjectBuffer(DirectX::XMMATRIX worldMatrix)
-//{
-//
-//    worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
-//
-//
-//    WorldCB objectCB;
-//    XMStoreFloat4x4(&objectCB.world, worldMatrix);
-//    m_pObjectCB->CopyData(0, objectCB);
-//}
+    CHECK_POINTERSNULL(profiler,
+        "All mesh buffers have been successfully allocated",
+        "One or more mesh buffers are not allocated",
+        m_pBufferGeometryData->VertexBufferCPU,
+        m_pBufferGeometryData->IndexBufferCPU,
+        m_pBufferGeometryData->VertexBufferGPU,
+        m_pBufferGeometryData->IndexBufferGPU,
+        m_pBufferGeometryData->VertexBufferUploader,
+        m_pBufferGeometryData->IndexBufferUploader
+    );
+
+
+}

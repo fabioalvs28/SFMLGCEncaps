@@ -1,9 +1,8 @@
 #pragma once
 
 template<class T>
-bool CheckPointer(T value, std::string errorMessage, std::string successMessage)
+bool CheckNull(T value)
 {
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
 	if (value == nullptr)
 	{
@@ -16,10 +15,8 @@ bool CheckPointer(T value, std::string errorMessage, std::string successMessage)
 }
 
 template<class T, class ...Args>
-bool CheckPointer(T value, Args ... args)
+bool CheckNull(T value, Args ... args)
 {
-	//check if one or multiple pointers are null
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
 	if (value == nullptr)
 	{
