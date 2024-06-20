@@ -3,119 +3,144 @@
 
 
 
+///////////////////////////////////////////////////////////////
+/// @brief Default constructor for the GCVEC2.
+/// 
+/// @note The default values are the same as GCVEC2::Zero().
+///////////////////////////////////////////////////////////////
+GCVEC2::GCVEC2() { SetZero(); }
 
-// <summary>
-// Initializes the vector components to zero.
-// </summary>
-GCVEC2::GCVEC2()
-{
-    SetZero();
-}
-
-// <summary>
-// Initializes the vector components with the given values.
-// </summary>
-// <param name="x"> The x-coordinate of the vector. </param>
-// <param name="y"> The y-coordinate of the vector. </param>
-GCVEC2::GCVEC2( float x, float y )
+///////////////////////////////////////////////////////////////////////
+/// @brief Constructor for the GCVEC2 with specified x and y values.
+/// 
+/// @param x A float indicating the x value.
+/// @param y A float indicating the y value.
+///////////////////////////////////////////////////////////////////////
+GCVEC2::GCVEC2( const float& x, const float& y )
 {
     this->x = x;
     this->y = y;
 }
 
 
-// <summary>
-// 
-// </summary>
-const char* GCVEC2::ToString() const
+
+//////////////////////////////////////////////////
+/// @return A new GCVEC2 with SetZero() values.
+//////////////////////////////////////////////////
+GCVEC2 GCVEC2::Zero()
 {
-    char buffer[22];
-    sprintf_s(buffer, "{%f ; %f}", x, y);
-    return buffer;
+    GCVEC2 result;
+    result.SetZero();
+    return result;
 }
 
-
-// <summary>
-// This function sets the x and y components of the vector to zero.
-// </summary>
-void GCVEC2::SetZero()
+/////////////////////////////////////////////////
+/// @return A new GCVEC2 with SetOne() values.
+/////////////////////////////////////////////////
+GCVEC2 GCVEC2::One()
 {
-    x = 0.0f;
-    y = 0.0f;
+    GCVEC2 result;
+    result.SetOne();
+    return result;
 }
 
-// <summary>
-// This function sets the x and y components of the vector to one.
-// </summary>
-void GCVEC2::SetOne()
+////////////////////////////////////////////////
+/// @return A new GCVEC2 with SetUp() values.
+////////////////////////////////////////////////
+GCVEC2 GCVEC2::Up()
 {
-    x = 1.0f;
-    y = 1.0f;
+    GCVEC2 result;
+    result.SetUp();
+    return result;
 }
 
-// <summary>
-// This function sets the x and y components of the vector to (0.0f, 1.0f) respectively.
-// It is useful for initializing a 2D vector to represent the up direction.
-// </summary>
-void GCVEC2::SetUp()
+//////////////////////////////////////////////////
+/// @return A new GCVEC2 with SetDown() values.
+//////////////////////////////////////////////////
+GCVEC2 GCVEC2::Down()
 {
-    x = 0.0f;
-    y = 1.0f;
+    GCVEC2 result;
+    result.SetDown();
+    return result;
 }
 
-// <summary>
-// This function sets the x and y components of the vector to (0.0f, -1.0f) respectively.
-// It is useful for initializing a 2D vector to represent the down direction.
-// </summary>
-void GCVEC2::SetDown()
+//////////////////////////////////////////////////
+/// @return A new GCVEC2 with SetLeft() values.
+//////////////////////////////////////////////////
+GCVEC2 GCVEC2::Left()
 {
-    x = 0.0f;
-    y = -1.0f;
+    GCVEC2 result;
+    result.SetLeft();
+    return result;
 }
 
-// <summary>
-// This function sets the x and y components of the vector to (-1.0f, 0.0f) respectively.
-// It is useful for initializing a 2D vector to represent the left direction.
-// </summary>
-void GCVEC2::SetLeft()
- {
-    x = -1.0f;
-    y = 0.0f;
-}
-
-// <summary>
-// This function sets the x and y components of the vector to (1.0f, 0.0f) respectively.
-// It is useful for initializing a 2D vector to represent the right direction.
-// </summary>
-void GCVEC2::SetRight()
- {
-    x = 1.0f;
-    y = 0.0f;
+//////////////////////////////////////////////////
+/// @return A new GCVEC2 with SetRight() values.
+//////////////////////////////////////////////////
+GCVEC2 GCVEC2::Right()
+{
+    GCVEC2 result;
+    result.SetRight();
+    return result;
 }
 
 
-// <summary>
-// This function calculates the linear interpolation between two vectors based on a given interpolation factor.
-// The resulting vector is a combination of the 'from' and 'to' vectors, where 't' determines the weight given to 'to'.
-// </summary>
-// <param name="from"> The starting vector for interpolation. </param>
-// <param name="to"> The ending vector for interpolation. </param>
-// <param name="t"> The interpolation factor, where 0.0f represents 'from' and 1.0f represents 'to'. </param>
-void GCVEC2::Lerp( const GCVEC2& from, const GCVEC2& to, const float& t )
+
+//////////////////////////////////////////////
+/// @brief Sets the x and y values to 0.0f.
+//////////////////////////////////////////////
+void GCVEC2::SetZero() { x = 0.0f; y = 0.0f; }
+
+//////////////////////////////////////////////
+/// @brief Sets the x and y values to 1.0f.
+//////////////////////////////////////////////
+void GCVEC2::SetOne() { x = 1.0f; y = 1.0f; }
+
+////////////////////////////////////////////////////////////////
+/// @brief Sets the x value to 0.0f and the y value to -1.0f.
+////////////////////////////////////////////////////////////////
+void GCVEC2::SetUp() { x = 0.0f; y = -1.0f; }
+
+///////////////////////////////////////////////////////////////
+/// @brief Sets the x value to 0.0f and the y value to 1.0f.
+///////////////////////////////////////////////////////////////
+void GCVEC2::SetDown() { x = 0.0f; y = 1.0f; }
+
+////////////////////////////////////////////////////////////////
+/// @brief Sets the x value to -1.0f and the y value to 0.0f.
+////////////////////////////////////////////////////////////////
+void GCVEC2::SetLeft() { x = -1.0f; y = 0.0f; }
+
+///////////////////////////////////////////////////////////////
+/// @brief Sets the x value to 1.0f and the y value to 0.0f.
+///////////////////////////////////////////////////////////////
+void GCVEC2::SetRight() { x = 1.0f; y = 0.0f; }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Performs a linear interpolation between the specified GCVEC2.
+/// 
+/// @param from The starting GCVEC2.
+/// @param to The ending GCVEC2.
+/// @param t The interpolation factor where 0.0f represents 'from' and 1.0f represents 'to'.
+/// 
+/// @note The result of the linear interpolation is stored directly in this GCVEC2.
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+void GCVEC2::Lerp( const GCVEC2& from, const GCVEC2& to, const float& t ) // todo Clamp t between 0.0f and 1.0f
 {
     x = from.x + ( to.x - from.x ) * t;
     y = from.y + ( to.y - from.y ) * t;
 }
 
-// <summary>
-// This function ensures that the x and y components of the vector are within the specified minimum and maximum values.
-// If any component is less than the corresponding minimum value, it is set to the minimum value.
-// If any component is greater than the corresponding maximum value, it is set to the maximum value.
-// This function does not return a value. It modifies the vector in-place.
-// If the minimum value is greater than the maximum value, this function does nothing.
-// </summary>
-// <param name="min"> The minimum values for the x and y components. </param>
-// <param name="max"> The maximum values for the x and y components. </param>
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Makes sure that the values in the GCVEC2 are between the min and max values.
+/// 
+/// @param min A GCVEC2 indicating the minimum values.
+/// @param max A GCVEC2 indicating the maximum values.
+/// 
+/// @note If the values in the GCVEC2 aren't in the specified range, they are changed to the nearest value in the range.
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCVEC2::Clamp( const GCVEC2& min, const GCVEC2& max )
 {
     if ( min > max ) return;
@@ -127,40 +152,109 @@ void GCVEC2::Clamp( const GCVEC2& min, const GCVEC2& max )
     if ( this->y > max.y ) this->y = max.y;
 }
 
-// <summary>
-// This function normalizes the vector, making its length equal to 1 while maintaining its direction.
-// If the vector is already a zero vector, this function does nothing.
-// This function does not return a value. It modifies the vector in-place.
-// </summary>
+////////////////////////////////////////////////////////////////////////////////
+/// @brief Normalizes the GCVEC2 by dividing each value by the GCVEC2's norm.
+////////////////////////////////////////////////////////////////////////////////
 void GCVEC2::Normalize()
 {
-    float norm = GetNorm();
-    x /= norm;
-    y /= norm;
+    float invNorm = 1 / GetNorm();
+    x *= invNorm;
+    y *= invNorm;
 }
 
 
-// <summary>
-// This function compares the given distance and the distance between this vector and another vector.
-// If the distance between this vector and the other vector is less than the given distance, this function returns -1.
-// If the distance between this vector and the other vector is equal to the given distance, this function returns 0.
-// If the distance between this vector and the other vector is greater than the given distance, this function returns 1.
-// </summary>
-// <param name="other"> The other vector to compare the distance with. </param>
-// <param name="distance"> The distance to compare with. </param>
-int GCVEC2::DistanceCompare( const GCVEC2& other, const float& distance )
+
+//////////////////////////////////////
+/// @return The norm of the GCVEC2.
+//////////////////////////////////////
+float GCVEC2::GetNorm() const { return sqrtf( GetNormSquared() ); }
+
+//////////////////////////////////////////////
+/// @return The norm of the GCVEC2 squared.
+//////////////////////////////////////////////
+float GCVEC2::GetNormSquared() const { return x * x + y * y; }
+
+///////////////////////////////////////////////////////////////////////////
+/// @brief Performs a dot product between this GCVEC2 and the given one.
+/// 
+/// @param other The GCVEC2 to perform to dot product with.
+/// 
+/// @return A float value indicating the result of the dot product.
+///////////////////////////////////////////////////////////////////////////
+float GCVEC2::DotProduct( const GCVEC2& other ) const { return x * other.x + y * other.y; }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC2 to calculate the distance with.
+/// 
+/// @return A float value indicating the distance between this GCVEC2 and the given one.
+///////////////////////////////////////////////////////////////////////////////////////////
+float GCVEC2::DistanceTo( const GCVEC2& other ) const { return ( other - *this ).GetNorm(); }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC2 to calculate the distance with.
+/// 
+/// @return A float value indicating the distance between this GCVEC2 and the given one, squared.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+float GCVEC2::DistanceToSquared( const GCVEC2& other ) const { return ( other - *this ).GetNormSquared(); }
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Compares the distance between this GCVEC2 and the given one with the given distance.
+/// 
+/// @param other The GCVEC2 to compare the distance with.
+/// @param distance A float value indicating the distance to compare.
+/// 
+/// @return true if the real distance is smaller than the given distance, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::IsDistanceLessThan( const GCVEC2& other, const float& distance ) const { return DistanceToSquared( other ) < ( distance * distance ); };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Compares the distance between this GCVEC2 and the given one with the given distance.
+/// 
+/// @param other The GCVEC2 to compare the distance with.
+/// @param distance A float value indicating the distance to compare.
+/// 
+/// @return true if the real distance is greater than the given distance, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::IsDistanceMoreThan( const GCVEC2& other, const float& distance ) const { return DistanceToSquared( other ) > ( distance * distance ); };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Compares the distance between this GCVEC2 and the given one with the given distance.
+/// 
+/// @param other The GCVEC2 to compare the distance with.
+/// @param distance A float value indicating the distance to compare.
+/// 
+/// @return true if both distances are equal, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::IsDistanceEqualTo( const GCVEC2& other, const float& distance ) const { return DistanceToSquared( other ) == ( distance * distance ); };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Compares the distance between this GCVEC2 and the given one with the given distance.
+/// 
+/// @param other The GCVEC2 to compare the distance with.
+/// @param distance A float value indicating the distance to compare.
+/// 
+/// @return -1 if the real distance is smaller than the given distance.
+/// @return  0 if both distances are equal.
+/// @return  1 if the real distance is greater than the given distance.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+int GCVEC2::DistanceCompare( const GCVEC2& other, const float& distance ) const
 {
-    float goalDistanceSquared = distance * distance;
-    float realDistanceSquared = ( other - *this ).GetNormSquared();
-    return realDistanceSquared > goalDistanceSquared - realDistanceSquared < goalDistanceSquared;
+    float distanceSquared = distance * distance;
+    float realDistanceSquared = DistanceToSquared( other );
+    return realDistanceSquared > distanceSquared - realDistanceSquared < distanceSquared;
 }
 
 
-// <summary>
-// This operator adds the components of the current vector with the components of another vector.
-// It returns a new GCVEC2 instance with the result of the addition.
-// </summary>
-// <param name="other"> The vector to add to the current vector. </param>
+
+/////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC2 to add to this one.
+/// 
+/// @return A GCVEC2 indicating the result of the addition of both GCVEC2.
+/// 
+/// @note It doesn't change the values of this GCVEC2.
+/////////////////////////////////////////////////////////////////////////////
 GCVEC2 GCVEC2::operator+( const GCVEC2& other ) const
 {
     GCVEC2 result = *this;
@@ -168,11 +262,13 @@ GCVEC2 GCVEC2::operator+( const GCVEC2& other ) const
     return result;
 }
 
-// <summary>
-// This operator subtracts the components of another vector from the current vector.
-// It returns a new GCVEC2 instance with the result of the subtraction.
-// </summary>
-// <param name="other"> The vector to subtract from the current vector. </param>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC2 to substract from this one.
+/// 
+/// @return A GCVEC2 indicating the result of the substraction of the given GCVEC2 with this one.
+/// 
+/// @note It doesn't change the values of this GCVEC2.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GCVEC2 GCVEC2::operator-( const GCVEC2& other ) const
 {
     GCVEC2 result = *this;
@@ -180,11 +276,13 @@ GCVEC2 GCVEC2::operator-( const GCVEC2& other ) const
     return result;
 }
 
-// <summary>
-// This operator multiplies the components of the current vector with the components of another vector.
-// It returns a new GCVEC2 instance with the result of the multiplication.
-// </summary>
-// <param name="other"> The vector to multiply with the current vector. </param>
+///////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC2 to multiply to this one.
+/// 
+/// @return A GCVEC2 indicating the result of the multiplication of both GCVEC2.
+/// 
+/// @note It doesn't change the values of this GCVEC2.
+///////////////////////////////////////////////////////////////////////////////////
 GCVEC2 GCVEC2::operator*( const GCVEC2& other ) const
 {
     GCVEC2 result = *this;
@@ -192,11 +290,13 @@ GCVEC2 GCVEC2::operator*( const GCVEC2& other ) const
     return result;
 }
 
-// <summary>
-// This operator divides the components of the current vector by the components of another vector.
-// It returns a new GCVEC2 instance with the result of the division.
-// </summary>
-// <param name="other"> The vector to divide the current vector by. </param>
+////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC2 to divide from this one.
+/// 
+/// @return A GCVEC2 indicating the result of the division of this GCVEC2 with the given one.
+/// 
+/// @note It doesn't change the values of this GCVEC2.
+////////////////////////////////////////////////////////////////////////////////////////////////
 GCVEC2 GCVEC2::operator/( const GCVEC2& other ) const
 {
     GCVEC2 result = *this;
@@ -205,11 +305,14 @@ GCVEC2 GCVEC2::operator/( const GCVEC2& other ) const
 }
 
 
-// <summary>
-// This operator multiplies each component of the current vector by a scalar value.
-// It returns a new GCVEC2 instance with the result of the multiplication.
-// </summary>
-// <param name="value"> The scalar value to multiply with the vector components. </param>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param value The float value to multiply to this GCVEC2.
+/// 
+/// @return A GCVEC2 indicating the result of the multiplication of the GCVEC2 and the float value.
+/// 
+/// @note It doesn't change the values of this GCVEC2.
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 GCVEC2 GCVEC2::operator*( const float& value ) const
 {
     GCVEC2 result = *this;
@@ -217,11 +320,13 @@ GCVEC2 GCVEC2::operator*( const float& value ) const
     return result;
 }
 
-// <summary>
-// This operator divides each component of the current vector by a scalar value.
-// It returns a new GCVEC2 instance with the result of the division.
-// </summary>
-// <param name="value"> The scalar value to divide with the vector components. </param>
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param value The float value to divide from this GCVEC2.
+/// 
+/// @return A GCVEC2 indicating the result of the division of the GCVEC2 with the float value.
+/// 
+/// @note It doesn't change the values of this GCVEC2.
+/////////////////////////////////////////////////////////////////////////////////////////////////
 GCVEC2 GCVEC2::operator/( const float& value ) const
 {
     GCVEC2 result = *this;
@@ -230,68 +335,70 @@ GCVEC2 GCVEC2::operator/( const float& value ) const
 }
 
 
-// <summary>
-// This operator adds the components of the current vector with the components of another vector.
-// It modifies the current vector in-place.
-// </summary>
-// <param name="other"> The vector to add to the current vector. </param>
+
+///////////////////////////////////////////////////////////////////
+/// @brief Adds the values from the given GCVEC2 to this GCVEC2.
+/// 
+/// @param other The GCVEC2 to add to this one.
+///////////////////////////////////////////////////////////////////
 void GCVEC2::operator+=( const GCVEC2& other )
 {
     x += other.x;
     y += other.y;
 }
 
-// <summary>
-// This operator subtracts the components of another vector from the current vector.
-// It modifies the current vector in-place.
-// </summary>
-// <param name="other"> The vector to subtract from the current vector. </param>
+///////////////////////////////////////////////////////////////////////////
+/// @brief Substracts the values from the given GCVEC2 from this GCVEC2.
+/// 
+/// @param other The GCVEC2 to substract from this one.
+///////////////////////////////////////////////////////////////////////////
 void GCVEC2::operator-=( const GCVEC2& other )
 {
     x -= other.x;
     y -= other.y;
 }
 
-// <summary>
-// This operator multiplies each component of the current vector by the corresponding component of another vector.
-// It modifies the current vector in-place.
-// </summary>
-// <param name="other"> The vector to multiply with the current vector. </param>
+//////////////////////////////////////////////////////////////////////////////////////
+/// @brief Mulitplies each values of this GCVEC2 by the values of the given GCVEC2.
+/// 
+/// @param other The GCVEC2 to be multiplied by.
+//////////////////////////////////////////////////////////////////////////////////////
 void GCVEC2::operator*=( const GCVEC2& other )
 {
     x *= other.x;
     y *= other.y;
 }
 
-// <summary>
-// This operator divides each component of the current vector by the corresponding component of another vector.
-// It modifies the current vector in-place.
-// </summary>
-// <param name="other"> The vector to divide the current vector by. </param
-void GCVEC2::operator/=( const GCVEC2& other ) //! Division by zero
+///////////////////////////////////////////////////////////////////////////////////
+/// @brief Divides each values of this GCVEC2 by the values of the given GCVEC2.
+/// 
+/// @param other The GCVEC2 to be divided by.
+///////////////////////////////////////////////////////////////////////////////////
+void GCVEC2::operator/=( const GCVEC2& other ) // todo protection from division by zero
 {
     x /= other.x;
     y /= other.y;
 }
 
 
-// <summary>
-// This operator multiplies each component of the current vector by a scalar value.
-// It modifies the current vector in-place.
-// </summary>
-// <param name="value"> The scalar value to multiply with the vector components. </param>
+
+///////////////////////////////////////////////////////////////////////
+/// @brief Mulitplies each values of this GCVEC2 by the given value.
+/// 
+/// @param value The float value to be multiplied by.
+///////////////////////////////////////////////////////////////////////
 void GCVEC2::operator*=( const float& value )
 {
     x *= value;
     y *= value;
 }
 
-// <summary>
-// This operator divides each component of the current vector by a scalar value.
-// It modifies the current vector in-place.
-// </summary>
-// <param name="value"> The scalar value to divide with the vector components. </param>
-void GCVEC2::operator/=( const float& value ) //! Division by zero
+////////////////////////////////////////////////////////////////////
+/// @brief Divides each values of this GCVEC2 by the given value.
+/// 
+/// @param value The float value to be divided by.
+////////////////////////////////////////////////////////////////////
+void GCVEC2::operator/=( const float& value ) // todo protection from division by zero
 {
     x /= value;
     y /= value;
@@ -299,29 +406,86 @@ void GCVEC2::operator/=( const float& value ) //! Division by zero
 
 
 
+/////////////////////////////////////////////////////////////////////////
+/// @brief Checks if both GCVEC2 are equals.
+/// 
+/// @param other The GCVEC2 to compare with.
+/// 
+/// @return true if both GCVEC2 have the same values, false otherwise.
+/////////////////////////////////////////////////////////////////////////
+bool GCVEC2::operator==( const GCVEC2& other ) const { return x == other.x && y == other.y; };
+
+////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks if both GCVEC2 are different.
+/// 
+/// @param other The GCVEC2 to compare with.
+/// 
+/// @return true if at least one value of the given GCVEC2 is different, false otherwise.
+////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::operator!=( const GCVEC2& other ) const { return x != other.x || y != other.y; };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether the given GCVEC2 has higher or equal values than this GCVEC2 and at least one stricly higher value than this GCVEC2.
+/// 
+/// @param other The GCVEC2 to compare with.
+/// 
+/// @return true if both values of the given GCVEC2 are higher or equal to the values of this GCVEC2 and at least one of them is stricly higher, false otherwise.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::operator<( const GCVEC2& other ) const { return ( x < other.x && y <= other.y ) || ( x <= other.x && y < other.y ); };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether the given GCVEC2 has higher or equal values than this GCVEC.
+/// 
+/// @param other The GCVEC2 to compare with.
+/// 
+/// @return true if both values of the given GCVEC2 are higher or equal to the values of this GCVEC2, false otherwise.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::operator<=( const GCVEC2& other ) const { return x <= other.x && y <= other.y; };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether the given GCVEC2 has lower or equal values than this GCVEC2 and at least one stricly lower value than this GCVEC2.
+/// 
+/// @param other The GCVEC2 to compare with.
+/// 
+/// @return true if both values of the given GCVEC2 are lower or equal to the values of this GCVEC2 and at least one of them is stricly lower, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::operator>( const GCVEC2& other ) const { return x > other.x && y >= other.y || ( x >= other.x && y > other.y ); };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether the given GCVEC2 has lower or equal values than this GCVEC2.
+/// 
+/// @param other The GCVEC2 to compare with.
+/// 
+/// @return true if both values of the given GCVEC2 are lower or equal to the values of this GCVEC2, false otherwise.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::operator>=( const GCVEC2& other ) const { return x >= other.x && y >= other.y; };
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+/// @return true if both values of the GCVEC2 are equal to 0, false otherwise.
+/////////////////////////////////////////////////////////////////////////////////
+bool GCVEC2::IsZero() const { return x == 0.0f && y == 0.0f; }; //! ::IsZero(x) && ::IsZero(y)
 
 
 
 
 
 
-// <summary>
-// Initializes the vector components to zero.
-// </summary>
-GCVEC3::GCVEC3()
-{
-    x = 0.0f;
-    y = 0.0f;
-    z = 0.0f;
-}
+///////////////////////////////////////////////////////////////
+/// @brief Default constructor for the GCVEC3.
+/// 
+/// @note The default values are the same as GCVEC3::Zero().
+///////////////////////////////////////////////////////////////
+GCVEC3::GCVEC3() { SetZero(); }
 
-// <summary>
-// Initializes the vector components with the given values.
-// </summary>
-// <param name="x"> The x-coordinate of the vector. </param>
-// <param name="y"> The y-coordinate of the vector. </param>
-// <param name="z"> The z-coordinate of the vector. </param>
-GCVEC3::GCVEC3( float x, float y, float z )
+///////////////////////////////////////////////////////////////////////
+/// @brief Constructor for the GCVEC3 with specified x and y values.
+/// 
+/// @param x A float indicating the x value.
+/// @param y A float indicating the y value.
+///////////////////////////////////////////////////////////////////////
+GCVEC3::GCVEC3( const float& x, const float& y, const float& z )
 {
     this->x = x;
     this->y = y;
@@ -329,92 +493,155 @@ GCVEC3::GCVEC3( float x, float y, float z )
 }
 
 
-// <summary>
-// 
-// </summary>
-const char* GCVEC3::ToString() const
+
+//////////////////////////////////////////////////
+/// @return A new GCVEC3 with SetZero() values.
+//////////////////////////////////////////////////
+GCVEC3 GCVEC3::Zero()
 {
-    char buffer[30];
-    sprintf_s(buffer, "{%f ; %f ; %f}", x, y, z);
-    return buffer;
+    GCVEC3 result;
+    result.SetZero();
+    return result;
 }
 
-
-// <summary>
-// This function sets the x, y and z components of the vector to zero.
-// </summary>
-void GCVEC3::SetZero()
+/////////////////////////////////////////////////
+/// @return A new GCVEC3 with SetOne() values.
+/////////////////////////////////////////////////
+GCVEC3 GCVEC3::One()
 {
-    x = 0.0f;
-    y = 0.0f;
-    z = 0.0f;
+    GCVEC3 result;
+    result.SetOne();
+    return result;
 }
 
-// <summary>
-// This function sets the x, y and z components of the vector to one.
-// </summary>
-void GCVEC3::SetOne()
+////////////////////////////////////////////////
+/// @return A new GCVEC3 with SetUp() values.
+////////////////////////////////////////////////
+GCVEC3 GCVEC3::Up()
 {
-    x = 1.0f;
-    y = 1.0f;
-    z = 1.0f;
+    GCVEC3 result;
+    result.SetUp();
+    return result;
 }
 
-// <summary>
-// This function sets the x, y and z components of the vector to (0.0f, 1.0f, 0.0f) respectively.
-// It is useful for initializing a 3D vector to represent the up direction.
-// </summary>
-void GCVEC3::SetUp()
+//////////////////////////////////////////////////
+/// @return A new GCVEC3 with SetDown() values.
+//////////////////////////////////////////////////
+GCVEC3 GCVEC3::Down()
 {
-    x = 0.0f;
-    y = 1.0f;
-    z = 0.0f;
+    GCVEC3 result;
+    result.SetDown();
+    return result;
 }
 
-void GCVEC3::SetDown()
+//////////////////////////////////////////////////
+/// @return A new GCVEC3 with SetLeft() values.
+//////////////////////////////////////////////////
+GCVEC3 GCVEC3::Left()
 {
-    x = 0.0f;
-    y = -1.0f;
-    z = 0.0f;
+    GCVEC3 result;
+    result.SetLeft();
+    return result;
 }
 
-void GCVEC3::SetLeft()
- {
-    x = -1.0f;
-    y = 0.0f;
-    z = 0.0f;
-}
-
-void GCVEC3::SetRight()
- {
-    x = 1.0f;
-    y = 0.0f;
-    z = 0.0f;
-}
-
-void GCVEC3::SetForward()
+//////////////////////////////////////////////////
+/// @return A new GCVEC3 with SetRight() values.
+//////////////////////////////////////////////////
+GCVEC3 GCVEC3::Right()
 {
-    x = 0.0f;
-    y = 0.0f;
-    z = 1.0f;
+    GCVEC3 result;
+    result.SetRight();
+    return result;
 }
 
-void GCVEC3::SetBack()
+//////////////////////////////////////////////////
+/// @return A new GCVEC3 with SetFront() values.
+//////////////////////////////////////////////////
+GCVEC3 GCVEC3::Front()
 {
-    x = 0.0f;
-    y = 0.0f;
-    z = -1.0f;
+    GCVEC3 result;
+    result.SetFront();
+    return result;
+}
+
+//////////////////////////////////////////////////
+/// @return A new GCVEC3 with SetBack() values.
+//////////////////////////////////////////////////
+GCVEC3 GCVEC3::Back()
+{
+    GCVEC3 result;
+    result.SetBack();
+    return result;
 }
 
 
 
-void GCVEC3::Lerp( const GCVEC3& from, const GCVEC3& to, const float& t )
+/////////////////////////////////////////////////
+/// @brief Sets the x, y and z values to 0.0f.
+/////////////////////////////////////////////////
+void GCVEC3::SetZero() { x = 0.0f; y = 0.0f; z = 0.0f; }
+
+/////////////////////////////////////////////////
+/// @brief Sets the x, y and z values to 1.0f.
+/////////////////////////////////////////////////
+void GCVEC3::SetOne() { x = 1.0f; y = 1.0f; z = 1.0f; }
+
+//////////////////////////////////////////////////////////////////////
+/// @brief Sets the x and z value to 0.0f and the y value to -1.0f.
+//////////////////////////////////////////////////////////////////////
+void GCVEC3::SetUp() { x = 0.0f; y = -1.0f; z = 0.0f; }
+
+/////////////////////////////////////////////////////////////////////
+/// @brief Sets the x and z value to 0.0f and the y value to 1.0f.
+/////////////////////////////////////////////////////////////////////
+void GCVEC3::SetDown() { x = 0.0f; y = 1.0f; z = 0.0f; }
+
+//////////////////////////////////////////////////////////////////////
+/// @brief Sets the x value to -1.0f and the y and z value to 0.0f.
+//////////////////////////////////////////////////////////////////////
+void GCVEC3::SetLeft() { x = -1.0f; y = 0.0f; z = 0.0f; }
+
+/////////////////////////////////////////////////////////////////////
+/// @brief Sets the x value to 1.0f and the y and z value to 0.0f.
+/////////////////////////////////////////////////////////////////////
+void GCVEC3::SetRight() { x = 1.0f; y = 0.0f; z = 0.0f; }
+
+/////////////////////////////////////////////////////////////////////
+/// @brief Sets the x and y value to 0.0f and the z value to 1.0f.
+/////////////////////////////////////////////////////////////////////
+void GCVEC3::SetFront() { x = 0.0f; y = 0.0f; z = 1.0f; }
+
+//////////////////////////////////////////////////////////////////////
+/// @brief Sets the x and y value to 0.0f and the z value to -1.0f.
+//////////////////////////////////////////////////////////////////////
+void GCVEC3::SetBack() { x = 0.0f; y = 0.0f; z = -1.0f; }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Performs a linear interpolation between the specified GCVEC3.
+/// 
+/// @param from The starting GCVEC3.
+/// @param to The ending GCVEC3.
+/// @param t The interpolation factor where 0.0f represents 'from' and 1.0f represents 'to'.
+/// 
+/// @note The result of the linear interpolation is stored directly in this GCVEC3.
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+void GCVEC3::Lerp( const GCVEC3& from, const GCVEC3& to, const float& t ) // todo Clamp t between 0.0f and 1.0f
 {
     x = from.x + ( to.x - from.x ) * t;
     y = from.y + ( to.y - from.y ) * t;
     z = from.z + ( to.z - from.z ) * t;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Makes sure that the values in the GCVEC3 are between the min and max values.
+/// 
+/// @param min A GCVEC3 indicating the minimum values.
+/// @param max A GCVEC3 indicating the maximum values.
+/// 
+/// @note If the values in the GCVEC3 aren't in the specified range, they are changed to the nearest value in the range.
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCVEC3::Clamp( const GCVEC3& min, const GCVEC3& max )
 {
     if ( min > max ) return;
@@ -428,25 +655,110 @@ void GCVEC3::Clamp( const GCVEC3& min, const GCVEC3& max )
     if ( this->z > max.z ) this->z = max.z;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// @brief Normalizes the GCVEC3 by dividing each value by the GCVEC3's norm.
+////////////////////////////////////////////////////////////////////////////////
 void GCVEC3::Normalize()
 {
-    float norm = GetNorm();
-    x /= norm;
-    y /= norm;
-    z /= norm;
+    float invNorm = 1 / GetNorm();
+    x *= invNorm;
+    y *= invNorm;
+    z *= invNorm;
 }
 
 
 
-int GCVEC3::DistanceCompare( const GCVEC3& other, const float& distance )
+//////////////////////////////////////
+/// @return The norm of the GCVEC3.
+//////////////////////////////////////
+float GCVEC3::GetNorm() const { return sqrtf( GetNormSquared() ); }
+
+//////////////////////////////////////////////
+/// @return The norm of the GCVEC3 squared.
+//////////////////////////////////////////////
+float GCVEC3::GetNormSquared() const { return x * x + y * y + z * z; }
+
+///////////////////////////////////////////////////////////////////////////
+/// @brief Performs a dot product between this GCVEC3 and the given one.
+/// 
+/// @param other The GCVEC3 to perform to dot product with.
+/// 
+/// @return A float value indicating the result of the dot product.
+///////////////////////////////////////////////////////////////////////////
+float GCVEC3::DotProduct( const GCVEC3& other ) const { return x * other.x + y * other.y + z * other.z; }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC3 to calculate the distance with.
+/// 
+/// @return A float value indicating the distance between this GCVEC3 and the given one.
+///////////////////////////////////////////////////////////////////////////////////////////
+float GCVEC3::DistanceTo( const GCVEC3& other ) const { return ( other - *this ).GetNorm(); }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC3 to calculate the distance with.
+/// 
+/// @return A float value indicating the distance between this GCVEC3 and the given one, squared.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+float GCVEC3::DistanceToSquared( const GCVEC3& other ) const { return ( other - *this ).GetNormSquared(); }
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Compares the distance between this GCVEC3 and the given one with the given distance.
+/// 
+/// @param other The GCVEC3 to compare the distance with.
+/// @param distance A float value indicating the distance to compare.
+/// 
+/// @return true if the real distance is smaller than the given distance, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::IsDistanceLessThan( const GCVEC3& other, const float& distance ) const { return DistanceToSquared( other ) < ( distance * distance ); };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Compares the distance between this GCVEC3 and the given one with the given distance.
+/// 
+/// @param other The GCVEC3 to compare the distance with.
+/// @param distance A float value indicating the distance to compare.
+/// 
+/// @return true if the real distance is greater than the given distance, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::IsDistanceMoreThan( const GCVEC3& other, const float& distance ) const { return DistanceToSquared( other ) > ( distance * distance ); };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Compares the distance between this GCVEC3 and the given one with the given distance.
+/// 
+/// @param other The GCVEC3 to compare the distance with.
+/// @param distance A float value indicating the distance to compare.
+/// 
+/// @return true if both distances are equal, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::IsDistanceEqualTo( const GCVEC3& other, const float& distance ) const { return DistanceToSquared( other ) == ( distance * distance ); };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Compares the distance between this GCVEC3 and the given one with the given distance.
+/// 
+/// @param other The GCVEC3 to compare the distance with.
+/// @param distance A float value indicating the distance to compare.
+/// 
+/// @return -1 if the real distance is smaller than the given distance.
+/// @return  0 if both distances are equal.
+/// @return  1 if the real distance is greater than the given distance.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+int GCVEC3::DistanceCompare( const GCVEC3& other, const float& distance ) const
 {
-    float goalDistanceSquared = distance * distance;
-    float realDistanceSquared = ( other - *this ).GetNormSquared();
-    return realDistanceSquared > goalDistanceSquared - realDistanceSquared < goalDistanceSquared;
+    float distanceSquared = distance * distance;
+    float realDistanceSquared = DistanceToSquared( other );
+    return realDistanceSquared > distanceSquared - realDistanceSquared < distanceSquared;
 }
 
 
 
+/////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC3 to add to this one.
+/// 
+/// @return A GCVEC3 indicating the result of the addition of both GCVEC3.
+/// 
+/// @note It doesn't change the values of this GCVEC3.
+/////////////////////////////////////////////////////////////////////////////
 GCVEC3 GCVEC3::operator+( const GCVEC3& other ) const
 {
     GCVEC3 result = *this;
@@ -454,6 +766,13 @@ GCVEC3 GCVEC3::operator+( const GCVEC3& other ) const
     return result;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC3 to substract from this one.
+/// 
+/// @return A GCVEC3 indicating the result of the substraction of the given GCVEC3 with this one.
+/// 
+/// @note It doesn't change the values of this GCVEC3.
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GCVEC3 GCVEC3::operator-( const GCVEC3& other ) const
 {
     GCVEC3 result = *this;
@@ -461,6 +780,13 @@ GCVEC3 GCVEC3::operator-( const GCVEC3& other ) const
     return result;
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC3 to multiply to this one.
+/// 
+/// @return A GCVEC3 indicating the result of the multiplication of both GCVEC3.
+/// 
+/// @note It doesn't change the values of this GCVEC3.
+///////////////////////////////////////////////////////////////////////////////////
 GCVEC3 GCVEC3::operator*( const GCVEC3& other ) const
 {
     GCVEC3 result = *this;
@@ -468,6 +794,13 @@ GCVEC3 GCVEC3::operator*( const GCVEC3& other ) const
     return result;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param other The GCVEC3 to divide from this one.
+/// 
+/// @return A GCVEC3 indicating the result of the division of this GCVEC3 with the given one.
+/// 
+/// @note It doesn't change the values of this GCVEC3.
+////////////////////////////////////////////////////////////////////////////////////////////////
 GCVEC3 GCVEC3::operator/( const GCVEC3& other ) const
 {
     GCVEC3 result = *this;
@@ -477,6 +810,13 @@ GCVEC3 GCVEC3::operator/( const GCVEC3& other ) const
 
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param value The float value to multiply to this GCVEC3.
+/// 
+/// @return A GCVEC3 indicating the result of the multiplication of the GCVEC3 and the float value.
+/// 
+/// @note It doesn't change the values of this GCVEC3.
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 GCVEC3 GCVEC3::operator*( const float& value ) const
 {
     GCVEC3 result = *this;
@@ -484,6 +824,13 @@ GCVEC3 GCVEC3::operator*( const float& value ) const
     return result;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/// @param value The float value to divide from this GCVEC3.
+/// 
+/// @return A GCVEC3 indicating the result of the division of the GCVEC3 with the float value.
+/// 
+/// @note It doesn't change the values of this GCVEC3.
+/////////////////////////////////////////////////////////////////////////////////////////////////
 GCVEC3 GCVEC3::operator/( const float& value ) const
 {
     GCVEC3 result = *this;
@@ -493,6 +840,11 @@ GCVEC3 GCVEC3::operator/( const float& value ) const
 
 
 
+///////////////////////////////////////////////////////////////////
+/// @brief Adds the values from the given GCVEC3 to this GCVEC3.
+/// 
+/// @param other The GCVEC3 to add to this one.
+///////////////////////////////////////////////////////////////////
 void GCVEC3::operator+=( const GCVEC3& other )
 {
     x += other.x;
@@ -500,6 +852,11 @@ void GCVEC3::operator+=( const GCVEC3& other )
     z += other.z;
 }
 
+///////////////////////////////////////////////////////////////////////////
+/// @brief Substracts the values from the given GCVEC3 from this GCVEC3.
+/// 
+/// @param other The GCVEC3 to substract from this one.
+///////////////////////////////////////////////////////////////////////////
 void GCVEC3::operator-=( const GCVEC3& other )
 {
     x -= other.x;
@@ -507,6 +864,11 @@ void GCVEC3::operator-=( const GCVEC3& other )
     z -= other.z;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+/// @brief Mulitplies each values of this GCVEC3 by the values of the given GCVEC3.
+/// 
+/// @param other The GCVEC3 to be multiplied by.
+//////////////////////////////////////////////////////////////////////////////////////
 void GCVEC3::operator*=( const GCVEC3& other )
 {
     x *= other.x;
@@ -514,7 +876,12 @@ void GCVEC3::operator*=( const GCVEC3& other )
     z *= other.z;
 }
 
-void GCVEC3::operator/=( const GCVEC3& other ) //! Division by zero
+///////////////////////////////////////////////////////////////////////////////////
+/// @brief Divides each values of this GCVEC3 by the values of the given GCVEC3.
+/// 
+/// @param other The GCVEC3 to be divided by.
+///////////////////////////////////////////////////////////////////////////////////
+void GCVEC3::operator/=( const GCVEC3& other ) // todo protection from division by zero
 {
     x /= other.x;
     y /= other.y;
@@ -523,6 +890,11 @@ void GCVEC3::operator/=( const GCVEC3& other ) //! Division by zero
 
 
 
+///////////////////////////////////////////////////////////////////////
+/// @brief Mulitplies each values of this GCVEC3 by the given value.
+/// 
+/// @param value The float value to be multiplied by.
+///////////////////////////////////////////////////////////////////////
 void GCVEC3::operator*=( const float& value )
 {
     x *= value;
@@ -530,9 +902,78 @@ void GCVEC3::operator*=( const float& value )
     z *= value;
 }
 
-void GCVEC3::operator/=( const float& value ) //! Division by zero
+////////////////////////////////////////////////////////////////////
+/// @brief Divides each values of this GCVEC3 by the given value.
+/// 
+/// @param value The float value to be divided by.
+////////////////////////////////////////////////////////////////////
+void GCVEC3::operator/=( const float& value ) // todo protection from division by zero
 {
-    x /= value;
-    y /= value;
-    z /= value;
+    float invValue = 1 / value;
+    x *= invValue;
+    y *= invValue;
+    z *= invValue;
 }
+
+
+
+/////////////////////////////////////////////////////////////////////////
+/// @brief Checks if both GCVEC3 are equals.
+/// 
+/// @param other The GCVEC3 to compare with.
+/// 
+/// @return true if both GCVEC3 have the same values, false otherwise.
+/////////////////////////////////////////////////////////////////////////
+bool GCVEC3::operator==( const GCVEC3& other ) const { return x == other.x && y == other.y && z == other.z; };
+
+////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks if both GCVEC3 are different.
+/// 
+/// @param other The GCVEC3 to compare with.
+/// 
+/// @return true if at least one value of the given GCVEC3 is different, false otherwise.
+////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::operator!=( const GCVEC3& other ) const { return x != other.x || y != other.y || z != other.z; };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether the given GCVEC3 has higher or equal values than this GCVEC3 and at least one stricly higher value than this GCVEC3.
+/// 
+/// @param other The GCVEC3 to compare with.
+/// 
+/// @return true if both values of the given GCVEC3 are higher or equal to the values of this GCVEC3 and at least one of them is stricly higher, false otherwise.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::operator<( const GCVEC3& other ) const { return ( x < other.x && y <= other.y && z <= other.z ) || ( x <= other.x && y < other.y && z <= other.z ) || ( x <= other.x && y <= other.y && z < other.z ); };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether the given GCVEC3 has higher or equal values than this GCVEC.
+/// 
+/// @param other The GCVEC3 to compare with.
+/// 
+/// @return true if both values of the given GCVEC3 are higher or equal to the values of this GCVEC3, false otherwise.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::operator<=( const GCVEC3& other ) const { return x <= other.x && y <= other.y && z <= other.z; };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether the given GCVEC3 has lower or equal values than this GCVEC3 and at least one stricly lower value than this GCVEC3.
+/// 
+/// @param other The GCVEC3 to compare with.
+/// 
+/// @return true if both values of the given GCVEC3 are lower or equal to the values of this GCVEC3 and at least one of them is stricly lower, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::operator>( const GCVEC3& other ) const { return ( x > other.x && y >= other.y && z >= other.z ) || ( x >= other.x && y > other.y && z >= other.z ) || ( x >= other.x && y >= other.y && z > other.z ); };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks whether the given GCVEC3 has lower or equal values than this GCVEC3.
+/// 
+/// @param other The GCVEC3 to compare with.
+/// 
+/// @return true if both values of the given GCVEC3 are lower or equal to the values of this GCVEC3, false otherwise.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::operator>=( const GCVEC3& other ) const { return x >= other.x && y >= other.y && z >= other.z; };
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+/// @return true if both values of the GCVEC3 are equal to 0, false otherwise.
+/////////////////////////////////////////////////////////////////////////////////
+bool GCVEC3::IsZero() const { return x == 0.0f && y == 0.0f && z == 0.0f; }; //! ::IsZero(x) && ::IsZero(y) && ::IsZero(z)
