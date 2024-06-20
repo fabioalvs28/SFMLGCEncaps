@@ -15,15 +15,15 @@ struct GCWindowProperties
 
 using GCEventCallback = std::function<void(GCEvent& ev)>;
 
-class GCWindow
+class GCWindowBase
 {
 public:
-    GCWindow(const GCWindowProperties& properties)
+    GCWindowBase(const GCWindowProperties& properties)
         : m_properties(properties) {}
 
-    virtual ~GCWindow() = default;
+    virtual ~GCWindowBase() = default;
 
-    virtual void SetWindowCallBack(const GCEventCallback) = 0;
+    virtual void SetWindowCallBack(const GCEventCallback&) = 0;
 
     virtual void OnUpdate() = 0;
 
@@ -34,7 +34,7 @@ public:
 private:
 	void EnableVirtualTerminalProcessing(); //TODO: Move it to Testing.proj
 
-private:
+protected:
     GCWindowProperties m_properties;
     GCEventCallback m_windowCallback = nullptr;
 };

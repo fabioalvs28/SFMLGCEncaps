@@ -3,7 +3,7 @@
 
 
 
-void GCWindow::EnableVirtualTerminalProcessing()
+void GCWindowBase::EnableVirtualTerminalProcessing()
 {
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hOut == INVALID_HANDLE_VALUE)
