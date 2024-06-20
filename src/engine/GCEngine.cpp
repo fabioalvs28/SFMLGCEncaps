@@ -1,9 +1,12 @@
+#include "pch.h"
 #include "GCEngine.h"
+#include "../core/Log.h"
 
 GCEngine::GCEngine()
 {
+    //TODO: maybe use an encapsulated method to initialize the window
     m_window = new GCWindow(GCWindowProperties(L"GC Engine", 1600, 800));
-    m_window->SetWindowCallBack(std::bind(&GCEngine::OnEvent, this, std::placeholders::_1));
+    m_window->SetWindowCallBack(GC_BIND_EVENT_FN(GCEngine::OnEvent));
 }
 
 GCEngine::~GCEngine()
@@ -31,5 +34,9 @@ bool GCEngine::InitWindow()
 bool GCEngine::InitD3D12()
 {
     return false;
+}
+
+void GCEngine::Cleanup()
+{
 }
 
