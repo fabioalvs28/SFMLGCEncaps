@@ -2,6 +2,7 @@
 
 #include "Window.h"
 
+typedef void(*WindowCloseCallback)();
 
 class GCWindow : public GCWindowBase
 {
@@ -9,11 +10,16 @@ public:
     GCWindow(const GCWindowProperties& properties);
     virtual ~GCWindow() = default;
 
-    void SetWindowCallBack(const GCEventCallback&) override;
+    void SetWindowCallBack(const GCEventCallback& callback) override { m_windowCallback = callback; }
     void OnUpdate() override;
 
-    void* GetNativeWindow() const { return m_window; }
+private:
+    bool InitializeWindow();
+    void DestroyWindow();
+    static LRESULT WINAPI OnEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
-    void* m_window;
+    HWND m_hWnd = nullptr;
+    WindowCloseCallback m_windowCloseCallback = nullptr;
+    GCEventCallback m_windowCallback = nullptr;
 };
