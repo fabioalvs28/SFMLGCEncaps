@@ -34,24 +34,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     w->Create(L"Testing", 800, 600);
     w->Show(nCmdShow);
 
-	GCGameManager *GameManager = new GCGameManager();
-    GameManager->Init();
-
-	GCScene *myScene = GCSceneManager::CreateScene();
-	myScene->SetActive(true);
-
-    GCGameObject *myGoOne = myScene->CreateGameObject("go", true);
-	GCGameObject *myGoTwo = myScene->CreateGameObject("go2", true);
-
-	myGoOne->AddComponent<SpriteRenderer>();
-	myGoTwo->AddComponent<SpriteRenderer>();
-
-	GCColor color = GCColor(1.0f, 1.0f, 1.0f, 1.0f);
-	myGoOne->GetComponent<SpriteRenderer>()->SetColor(color);
-	myGoTwo->RemoveComponent<SpriteRenderer>();
-	myGoOne->AddComponent<BoxCollider>();
-    myGoOne->Destroy();
-
+	
 
 	LogEngineDebug("Engine Debug");
     LogEngineError("Engine Error");
@@ -63,13 +46,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     while (w->IsRunning())
     {
-        
-		//myGoTwo->m_transform.m_position.x += 0.01f;
-
-		//std::cout << "Position  " << myGoTwo->m_transform.m_position.x << std::endl;
-
-
-	    GameManager->Update();
         w->PollEvents();
     }
 

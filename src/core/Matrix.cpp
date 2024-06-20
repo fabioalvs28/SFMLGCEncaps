@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Matrix.h"
 
+struct GCVEC3;
+
 /// <summary>
 /// Default constructor
 /// </summary>
