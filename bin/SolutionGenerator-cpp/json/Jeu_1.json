@@ -1,0 +1,45 @@
+{
+    "name": "jeu_1",
+    "folder": "jeu_1/",
+    "nested": "Gameplay",
+    "vc_project_version": "17.0",
+    "root_namespace": "Jeu 1",
+    "windows_target_platform_version": "10.0",
+    "configuration": [
+        {
+            "name": "Debug|x64",
+            "type": "Application",
+            "use_debug_libraries": "true",
+            "platform_toolset": "v143",
+            "character_set": "Unicode",
+            "warning_level": "Level3",
+            "sdl_check": "true",
+            "preprocessor_definitions": "_DEBUG;_CONSOLE;%(PreprocessorDefinitions)",
+            "conformance_mode": "true",
+            "generate_debug_information": "true",
+            "subsystem": "Console",
+            "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
+            "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
+        },
+        {
+            "name": "Release|x64",
+            "type": "Application",
+            "use_debug_libraries": "false",
+            "platform_toolset": "v143",
+            "whole_program_optimization": "true",
+            "character_set": "Unicode",
+            "warning_level": "Level3",
+            "function_level_linking": "true",
+            "intrinsic_functions": "true",
+            "sdl_check": "true",
+            "preprocessor_definitions": "NDEBUG;_CONSOLE;%(PreprocessorDefinitions)",
+            "conformance_mode": "true",
+            "enable_comdat_folding": "true",
+            "optimize_references": "true",
+            "generate_debug_information": "true",
+            "subsystem": "Console",
+            "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
+            "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
+        }
+    ]
+}
