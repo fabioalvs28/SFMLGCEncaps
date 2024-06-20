@@ -1,13 +1,26 @@
 #include "pch.h"
 #include "Matrix.h"
 
-struct GCVEC3;
+#include "Vectors.h"
 
 /// <summary>
 /// Default constructor
 /// </summary>
 
 GCMATRIX::GCMATRIX() { SetZero(); }
+
+GCMATRIX::GCMATRIX(
+	float _11, float _12, float _13, float _14,
+	float _21, float _22, float _23, float _24,
+	float _31, float _32, float _33, float _34,
+	float _41, float _42, float _43, float _44
+)
+{
+	this->_11 = _11, this->_12 = _12; this->_13 = _13; this->_14 = _14;
+	this->_21 = _11, this->_22 = _12; this->_23 = _13; this->_24 = _14;
+	this->_31 = _11, this->_32 = _12; this->_33 = _13; this->_34 = _14;
+	this->_41 = _11, this->_42 = _12; this->_43 = _13; this->_44 = _14;
+}
 
 
 void GCMATRIX::operator*=(const GCMATRIX& other)
