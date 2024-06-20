@@ -22,6 +22,7 @@ public:
     
     virtual void Init() = 0;
     virtual void Update() = 0;
+    virtual void Render() = 0;
     virtual void Destroy() = 0;
     
     void SetActive( bool active ) { m_active = active; }
@@ -48,11 +49,11 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {};
-    void Update() override {};
-    void Destroy() override {};
+    void Init() override {}
+    void Update() override {}
+    void Render() override {}
+    void Destroy() override {}
     
-    void Render() {}
     
     void SetSprite() {};
     void SetColor( GCColor& color ) { m_color = color; }
@@ -96,6 +97,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void Render() override {}
     void Destroy() override {}
 
 };
@@ -113,6 +115,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void Render() override {}
     void Destroy() override {}
 
 };
@@ -130,6 +133,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void Render() override {}
     void Destroy() override {}
     
     void AddForce( GCVEC2 force ) {}
@@ -149,6 +153,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void Render() override {}
     void Destroy() override {}
 
 };
@@ -166,6 +171,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void Render() override {}
     void Destroy() override {}
 
 };
@@ -183,6 +189,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void Render() override {}
     void Destroy() override {}
 
 };

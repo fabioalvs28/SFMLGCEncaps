@@ -39,11 +39,9 @@ GCGameObject::GCGameObject( GCScene* pScene )
 void GCGameObject::Update()
 {
     if ( m_active == false || m_created == false ) return;
-    Component* component; 
-    for (int i = 1 ; i <= 7 ; i++)
-        if ( m_componentsList.Find(i, component) == true ) 
-            if ( component->m_active == true )
-                component->Update();
+    for ( auto it : m_componentsList )
+        if ( it.second->m_active == true )
+            it.second->Update();
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -54,7 +52,9 @@ void GCGameObject::Update()
 void GCGameObject::Render()
 {
     if ( m_active == false || m_created == false ) return;
-    // todo GameObject Render
+    for ( auto it : m_componentsList )
+        if ( it.second->m_active == true )
+            it.second->Render();
 }
 
 /////////////////////////////////////////////////////////
@@ -320,7 +320,6 @@ void GCGameObject::RemoveComponent( int type )
         delete component;
         m_componentsList.Remove( type );
     }
-    // todo Try to think of another way to store components
 }
 
 ////////////////////////////////////////////////////////////
@@ -328,6 +327,6 @@ void GCGameObject::RemoveComponent( int type )
 ////////////////////////////////////////////////////////////
 void GCGameObject::ClearComponents()
 {
-    for ( int i = 1; i <= 7; i++ ) RemoveComponent( i ); //! Limited to 7 components
-    // todo Try to think of another way to store components
+    for ( auto it : m_componentsList )
+        RemoveComponent( it.second->GetType() );
 }

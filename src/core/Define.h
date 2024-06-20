@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <cstdlib>
 
 enum LogLevel{
     LOG_WARNING,
@@ -23,7 +24,7 @@ enum LogLevel{
             std::cerr << "Assertion failed: (" << #condition << "), function " << __FUNCTION__ \
                       << ", file " << __FILE__ << ", line " << __LINE__ << ".\n" << "Message: " << message << std::endl; \
             if(level == LOG_FATAL){ \
-                ifstd::terminate(); \
+                std::terminate(); \
             } \
             else if(level == LOG_WARNING){ \
                 std::cerr << "Warning: " << message <<std::endl; \
