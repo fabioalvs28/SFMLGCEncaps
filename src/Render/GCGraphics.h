@@ -1,90 +1,123 @@
 #pragma once
 
-#define FLAG_COORDS 0x01
-#define FLAG_UV 0x02
-
-
-//
-//class GCGeometry;
-//class GCMesh;
-
-//#include "GCMesh.h"
-
 class GCGraphics
 {
 public:
 	GCGraphics();
+	~GCGraphics();
 
-	void Initialize(Window* window);
+	void Initialize(Window* pWindow, int renderWidth, int renderHeight);
 
+	// Each Frame
+	void StartFrame();
+	void EndFrame();
 
-	// Principal Object Creation
+	void InitializeGraphicsResourcesStart();
+	void InitializeGraphicsResourcesEnd();
 
+	// Shader
 	GCShader* CreateShaderColor();
 	GCShader* CreateShaderTexture();
-	//GCShader* CreateShaderCustom(HLSLFile* customShaderFile);
+	GCShader* CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int type);
+
+	template<typename ShaderTypeConstantBuffer>
+	ShaderTypeConstantBuffer ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
 
 
-	GCMaterial* CreateMaterial();
-
-
-
+	GCMaterial* CreateMaterial(GCShader* pShader);
 	GCMesh* CreateMesh(GCGeometry* pGeometry);
-
 	GCTexture* CreateTexture(const std::string& filePath);
 
+	// Update Constant Buffer 
+	//Updates a cb data of a given material, using a count for now that'll need to be reset after each draw, might be subject to changes in the near future
+	//Update Camera and Object Constant Buffer / But They can also send their own structure
+	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
+	// Base
+	void UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	void UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
+	// Custom
+	template<typename ShaderTypeConstantBuffer>
+	void UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
+	// Near Update Camera
 
-	//Delete
+	template<typename ShaderTypeConstantBuffer>
+	void CreateCBCamera();
+
+	// Remove Resources
 	void RemoveShader(GCShader* pShader);
 	void RemoveMaterial(GCMaterial* pMaterial);
 	void RemoveMesh(GCMesh* pMesh);
 	void RemoveTexture(GCTexture* pTexture);
 
-
-	//// Resources Manager
 	std::vector<GCShader*> GetShaders();
 	std::vector<GCMaterial*> GetMaterials();
 	std::vector<GCMesh*> GetMeshes();
 	std::vector<GCTexture*> GetTextures();
 
-	// Id
-	// #TODO Se poser la question du suivi des ressources
+	// Id / #TODO Se poser la question du suivi des ressources
 	int GetTextureId() const { return m_textureId; }
 
 
-	// Render
 	GCRender* GetRender() const { return m_pRender; }
-
-
-
+	
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
-	GCModelParserObj* GetModelParserFactory() const { return m_pModelParserFactory; }
-
-
+	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
 
 private:
 	// Render instance contain Window
+	int m_renderWidth;
+	int	m_renderHeight;
+
 	GCRender* m_pRender;
 
-	int m_meshId = 0;
-	int m_shaderId = 0;
-	int m_materialId = 0;
-	int m_textureId = 0;
+	int m_meshId;
+	int m_shaderId;
+	int m_materialId;
+	int m_textureId;
 
 	std::vector<GCTexture*> m_vTextures;
 	std::vector<GCShader*> m_vShaders;
 	std::vector<GCMaterial*> m_vMaterials;
 	std::vector<GCMesh*> m_vMeshes;
 
-	// Mesh
+	std::vector<GCShaderUploadBufferBase*> m_vpCameraCB;
+
 	GCPrimitiveFactory* m_pPrimitiveFactory;
-	GCModelParserObj* m_pModelParserFactory;
-
-
-
-
-
-
-
+	GCModelParser* m_pModelParserFactory;
 };
 
+
+template<typename ShaderTypeConstantBuffer>
+void GCGraphics::CreateCBCamera()
+{
+	// Create a new shader upload buffer for the camera constant buffer
+	GCShaderUploadBufferBase* pCameraCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->Getmd3dDevice(), 1, true);
+	// Store the buffer in a vector
+	m_vpCameraCB.push_back(pCameraCB);
+}
+
+template<typename ShaderTypeConstantBuffer>
+void GCGraphics::UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData)
+{
+	// Don't create UploadBuffer if the number of object draw in the same material don't increase
+	if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size()) {
+		pMaterial->CreateCBObject<ShaderTypeConstantBuffer>();
+	}
+		
+	// Update 
+	pMaterial->UpdateConstantBuffer(objectData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
+}
+
+template<typename ShaderTypeConstantBuffer>
+ShaderTypeConstantBuffer GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view) {
+	DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);
+	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
+	DirectX::XMFLOAT4X4 convertedMatrix;
+	DirectX::XMStoreFloat4x4(&convertedMatrix, DirectX::XMMatrixTranspose(translationMatrix));
+
+
+	ShaderTypeConstantBuffer worldData;
+	worldData.world = convertedMatrix;
+
+	return worldData;
+}

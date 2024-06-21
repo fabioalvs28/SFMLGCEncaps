@@ -17,8 +17,11 @@
 #include "Timer.h"
 #include <string>
 #include <map>
+#include <codecvt>
+#include <locale>
 #include <vector>
 #include <variant>
+#include <chrono>
 #include <memory>
 #include <algorithm>
 #include <array>
@@ -48,15 +51,21 @@
 struct HLSLFile;
 struct GCGeometry;
 
-struct MeshBufferData;
+struct GCMESHBUFFERDATA;
+
 struct GCVERTEX;
 struct GCVERTEXTEXTURE;
+
 struct GCSHADERCB;
 struct GCWORLDCB;
-struct GCLIGHTANDWORLD;
-struct GCCAMERACB;
+struct GCVIEWPROJCB;
 
-//template<typename T>;
+
+
+// Add William 
+class GCGraphicsProfiler;
+//
+
 
 class GCGraphics;
 class GCMaterial;
@@ -72,6 +81,7 @@ class GCShaderCustom;
 class GCTexture;
 class GCTextureFactory;
 class GCShaderUploadBufferBase; // 
+class GCUtils;
 //class GCShaderUploadBuffer; // 
 class MathHelper;
 class Timer;
@@ -81,10 +91,21 @@ class Window;
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
 
+
+// Add William 
+#include "./GCGraphicsProfiler.h"
+#include "./GCShaderCBStruct.h"
+#include "./GCShaderVertexStruct.h"
+#include "./GCMeshBufferData.h"
+
+
+//
 #include "d3dx12.h"
 #include "Window.h"
-#include "GCRender.h"
+#include "Macros.h"
 #include "UploadBuffer.h"
+#include "GCRender.h"
+//#include "GCRender.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"
@@ -101,6 +122,7 @@ class Window;
 #include "ShaderTypeEnum.h"
 #include "Timer.h"
 #include "PrimitiveTypeEnum.h"
+#include "GCUtils.h"
 
 #include "HLSLReader.h"
 

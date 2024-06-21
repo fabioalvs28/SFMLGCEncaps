@@ -1,5 +1,57 @@
 #include "framework.h"
 
-GCMaterial::GCMaterial(){}
+GCMaterial::GCMaterial()
+{
+    m_pRender = nullptr;
+    m_pShader = nullptr;
+    m_pTexture = nullptr;
+}
 
-GCMaterial::~GCMaterial(){}
+GCMaterial::~GCMaterial()
+{
+    delete(m_pRender);
+    delete(m_pShader);
+    delete(m_pTexture);
+}
+
+
+bool GCMaterial::Initialize(GCShader* pShader) 
+{
+	m_pShader = pShader;
+    m_pRender = m_pShader->m_pRender;
+
+    return true;
+}
+
+bool GCMaterial::SetTexture(GCTexture* pTexture) {
+    m_pTexture = pTexture;
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    CHECK_POINTERSNULL(profiler, "Texture loaded successfully for material", "The material doesn't contain texture", pTexture);
+
+    return true;
+}
+
+void GCMaterial::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
+{
+	uploadBufferInstance->CopyData(0, objectData);
+}
+
+bool GCMaterial::UpdateTexture()
+{
+    if (m_pShader->GetType() == texture)
+    {
+        if (m_pTexture)
+        {
+            auto commandList = m_pRender->GetCommandList();
+            m_pRender->GetCommandList()->SetGraphicsRootDescriptorTable(2, m_pTexture->GetTextureAddress());
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    return false;
+}

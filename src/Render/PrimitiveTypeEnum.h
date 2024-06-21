@@ -1,5 +1,6 @@
 #pragma once
-enum PIEnum {
+enum PIEnum 
+{
 	BoxColor,
 	BoxTexture,
 	PlaneTexture,

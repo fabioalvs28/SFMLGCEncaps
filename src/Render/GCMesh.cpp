@@ -61,43 +61,63 @@ ID3D12Resource* GCMesh::CreateDefaultBuffer(
     return defaultBuffer;
 }
 
-
-//// CLASS
-GCMesh::GCMesh() {
+GCMesh::GCMesh() 
+{
 }
 
-GCMesh::~GCMesh() {
-
+GCMesh::~GCMesh() 
+{
 }
 
-//void GCMesh::Initialize(GCRender* pRender) {
-//    m_pRender = pRender;
-//    //m_Buffer = new UploadBuffer<ObjectConstants>(m_pRender->Getmd3dDevice(), 1, true);
-//
-//    m_pObjectCB = new UploadBuffer<WorldCB>(m_pRender->Getmd3dDevice(), 1, true);
-//    m_pCameraCB = new UploadBuffer<CameraCB>(m_pRender->Getmd3dDevice(), 1, true);
-//
-//}
+void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
+    m_pRender = pRender;
 
+    if (pGeometry->uv.size() == 0)
+    {
+        UploadGeometryDataColor(pGeometry);
+    }
+    else
+    {
+        UploadGeometryDataTexture(pGeometry);
+    }
+}
 
-void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry) {
+void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry) 
+{
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    CHECK_POINTERSNULL(profiler, "Mesh geometry has been initialized in Mesh successfully", "Mesh geometry is NULL", pGeometry);
+
     UploadGeometryData<GCVERTEX>(pGeometry);
+
+    CHECK_POINTERSNULL(profiler,
+        "All mesh buffers have been successfully allocated",
+        "One or more mesh buffers are not allocated",
+        m_pBufferGeometryData->VertexBufferCPU,
+        m_pBufferGeometryData->IndexBufferCPU,
+        m_pBufferGeometryData->VertexBufferGPU,
+        m_pBufferGeometryData->IndexBufferGPU,
+        m_pBufferGeometryData->VertexBufferUploader,
+        m_pBufferGeometryData->IndexBufferUploader
+    );
 }
-void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) {
+void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) 
+{
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    CHECK_POINTERSNULL(profiler, "Mesh geometry has been initialized in Mesh successfully", "Mesh geometry is NULL", pGeometry);
+
     UploadGeometryData<GCVERTEXTEXTURE>(pGeometry);
+
+    CHECK_POINTERSNULL(profiler,
+        "All mesh buffers have been successfully allocated",
+        "One or more mesh buffers are not allocated",
+        m_pBufferGeometryData->VertexBufferCPU,
+        m_pBufferGeometryData->IndexBufferCPU,
+        m_pBufferGeometryData->VertexBufferGPU,
+        m_pBufferGeometryData->IndexBufferGPU,
+        m_pBufferGeometryData->VertexBufferUploader,
+        m_pBufferGeometryData->IndexBufferUploader
+    );
+
+
 }
-
-
-//void GCMesh::UpdateObjectBuffer(DirectX::XMMATRIX worldMatrix)
-//{
-//
-//    worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
-//
-//
-//    WorldCB objectCB;
-//    XMStoreFloat4x4(&objectCB.world, worldMatrix);
-//    m_pObjectCB->CopyData(0, objectCB);
-//}
-
-////
-

@@ -10,19 +10,17 @@
 class GCPrimitiveFactory
 {
 public:
-
-
-
 	GCPrimitiveFactory();
 	~GCPrimitiveFactory();
-  void Initialize();
-	/*GCGeometry* BuildBoxGeometryColor();
-	GCGeometry* BuildBoxGeometryTexture();*/
+	void Initialize();
+
+	void GenerateSphere(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices);
+	void GenerateCircle(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices);
+
 	GCGeometry* BuildGeometryColor(std::wstring name, DirectX::XMFLOAT4 color);
 	GCGeometry* BuildGeometryTexture(std::wstring name);
   
 private:
-
 	GCRender* m_pRender;
 	std::map<std::wstring, std::map<std::wstring, std::variant<
 		std::vector<uint16_t>,

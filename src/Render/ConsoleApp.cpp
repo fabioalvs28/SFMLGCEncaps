@@ -1,51 +1,57 @@
 #include "framework.h"
 
-struct Test : GCSHADERCB {
-	DirectX::XMFLOAT4X4 world; // Matrice du monde
+struct GCTest : GCSHADERCB {
+	DirectX::XMFLOAT4X4 world; 
+	DirectX::XMFLOAT4 color;
 };
+
+
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+	profiler.InitializeConsole();
 
 	Window* window = new Window(hInstance);
 	window->Initialize();
 
 	GCGraphics* graphics = new GCGraphics();
-	graphics->Initialize(window);
+	graphics->Initialize(window, 1920, 1080);
 
-	graphics->GetPrimitiveFactory()->Initialize();
-	graphics->GetModelParserFactory()->Initialize();
 
 	// Geometry (Resource)
-	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::White));
-	GCGeometry* geo1 = graphics->GetModelParserFactory()->BuildObjTexture("../../../src/Render/monkeyUv.obj");
+	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"sphere", DirectX::XMFLOAT4(DirectX::Colors::Gray));
+	GCGeometry* geo1 = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::Red));
+	GCGeometry* geo2 = graphics->GetModelParserFactory()->BuildModelTexture("../../../src/Render/monkeyUv.obj", obj);
+
+	std::string shaderFilePath = "../../../src/Render/Shaders/customTest.hlsl";
+	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
+
 	GCShader* shader1 = graphics->CreateShaderColor();
-	GCShader* shader2 = graphics->CreateShaderTexture();
+	GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, STEnum::texture);
+	//GCShader* shader2 = graphics->CreateShaderTexture();
 
-	///// Create Render Resources
-	graphics->GetRender()->ResetCommandList(); // Reset Command List Before Resources Creation
+	graphics->InitializeGraphicsResourcesStart();
 
-
-	shader1->Load<GCWORLDCB>();
-	shader2->Load<GCWORLDCB>();
-
-
-	// Mesh
+	// Mesh (Resource)
 	GCMesh* mesh = graphics->CreateMesh(geo);
 	GCMesh* mesh1 = graphics->CreateMesh(geo1);
-	//GCShader* shaderCustom = graphics->CreateShaderCustom(customShaderFile);
+	GCMesh* mesh2 = graphics->CreateMesh(geo2);
 
+	// Texture (Resource)
+	std::string texturePath = "../../../src/Render/Textures/cottage_diffuse.dds";
+	GCTexture* texture = graphics->CreateTexture(texturePath);
 
-	std::string texturePath = "../../../src/Render/Textures/texture.dds";
-	GCTexture* tex1 = graphics->CreateTexture(texturePath);
-		
-	graphics->GetRender()->CloseCommandList(); // Close and Execute after creation
-	graphics->GetRender()->ExecuteCommandList();// Close and Execute after creation
+	graphics->InitializeGraphicsResourcesEnd();
 
-	///// 
+	// Material (Resource)
+	GCMaterial* material = graphics->CreateMaterial(shader1);
+	GCMaterial* material2 = graphics->CreateMaterial(shader2);
+	material2->SetTexture(texture);
+
 
 	// SET CAMERA 
-
 	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
 	DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
 	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -54,51 +60,58 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, window->AspectRatio(), 1.0f, 1000.0f);
 	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
 
-	// Transposez les matrices
 	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
 	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
 
-	// Stockez les matrices transpos�es dans des XMFLOAT4X4
 	DirectX::XMFLOAT4X4 storedProjectionMatrix;
 	DirectX::XMFLOAT4X4 storedViewMatrix;
 
 	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
 	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+	// ***********
 
-	// SET CAMERA
-
+	// SET WORLD
 
 	DirectX::XMFLOAT4X4 I(
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.5f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		3.0f, 0.0f, 0.0f, 1.0f);
+		1.5f, 0.0f, 0.0f, 1.0f);
 
 	DirectX::XMFLOAT4X4 transposedWorld;
 	DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&I)));
 
 
 
-	graphics->GetRender()->PrepareDraw();
+	//DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
+	//DirectX::XMStoreFloat4x4(&worldData.world, identityMatrix);
 
+	// ***********
 
+	graphics->StartFrame();
 
-	graphics->GetRender()->DrawOneObject(mesh1, shader2, tex1, MathHelper::Identity4x4(), storedProjectionMatrix, storedViewMatrix);
-	graphics->GetRender()->DrawOneObject(mesh, shader1, nullptr, transposedWorld, storedProjectionMatrix, storedViewMatrix);
+	// DRAW -> ONE FRAME
+	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
+	GCTest test = graphics->ToPixel<GCTest>(400, 400, storedProjectionMatrix, storedViewMatrix);
 
-	graphics->GetRender()->PostDraw();
+	// Première objet
+	//GCTest worldData;
+	//worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);;
+	//worldData.world = 
+	//test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);;
 
-	//// Loop Again < |||| >
-	
-	//graphics->GetRender()->PrepareDraw();
+	graphics->UpdateCustomCBObject<GCTest>(material2, test);
+	graphics->GetRender()->DrawObject(mesh2, material2);
 
-	//graphics->GetRender()->PostDraw();
+	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
+	//graphics->GetRender()->DrawObject(mesh, material);
 
-	// *
+	//profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
 
+	graphics->EndFrame();
+	// ********************
 
 	window->Run(graphics->GetRender());
-
 }
 

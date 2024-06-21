@@ -1,114 +1,26 @@
 #pragma once
 
-//struct SubmeshGeometry
-//{
-//    UINT IndexCount = 0;
-//    UINT StartIndexLocation = 0;
-//    INT BaseVertexLocation = 0;
-//
-//    // Bounding box of the geometry defined by this submesh. 
-//    // This is used in later chapters of the book.
-//    DirectX::BoundingBox Bounds;
-//};
-
-
-
-struct MeshBufferData
-{
-    // Give it a name so we can look it up by name.
-    std::string Name;
-
-    // System memory copies.  Use Blobs because the vertex/index format can be generic.
-    // It is up to the client to cast appropriately.  
-    ID3DBlob* VertexBufferCPU = nullptr;
-    ID3DBlob* IndexBufferCPU = nullptr;
-
-    ID3D12Resource* VertexBufferGPU = nullptr;
-    ID3D12Resource* IndexBufferGPU = nullptr;
-
-    ID3D12Resource* VertexBufferUploader = nullptr;
-    ID3D12Resource* IndexBufferUploader = nullptr;
-
-    // Data about the buffers.
-    UINT VertexByteStride = 0;
-    UINT VertexBufferByteSize = 0;
-    DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
-    UINT IndexBufferByteSize = 0;
-
-    // A MeshGeometry may store multiple geometries in one vertex/index buffer.
-    // Use this container to define the Submesh geometries so we can draw
-    // the Submeshes individually.
-    /*std::unordered_map<std::string, SubmeshGeometry> DrawArgs;*/
-    UINT IndexCount = 0;
-
-    D3D12_VERTEX_BUFFER_VIEW VertexBufferView()const
-    {
-        D3D12_VERTEX_BUFFER_VIEW vbv;
-        vbv.BufferLocation = VertexBufferGPU->GetGPUVirtualAddress();
-        vbv.StrideInBytes = VertexByteStride;
-        vbv.SizeInBytes = VertexBufferByteSize;
-
-        return vbv;
-    }
-
-    D3D12_INDEX_BUFFER_VIEW IndexBufferView()const
-    {
-        D3D12_INDEX_BUFFER_VIEW ibv;
-        ibv.BufferLocation = IndexBufferGPU->GetGPUVirtualAddress();
-        ibv.Format = IndexFormat;
-        ibv.SizeInBytes = IndexBufferByteSize;
-
-        return ibv;
-    }
-
-    // We can free this memory after we finish upload to the GPU.
-    void DisposeUploaders()
-    {
-        VertexBufferUploader = nullptr;
-        IndexBufferUploader = nullptr;
-    }
-};
-
-
-
 class GCMesh
 {
 public:
 	GCMesh();
     ~GCMesh();
 
-    //void Initialize(GCRender* pRender);
-
-    template<typename VertexType>
+    template<typename VertexStructType>
     void UploadGeometryData(GCGeometry* pGeometry);
 
     void UploadGeometryDataColor(GCGeometry* pGeometry);
     void UploadGeometryDataTexture(GCGeometry* pGeometry);
 
-    
+    void Initialize(GCRender* pRender, GCGeometry* pGeometry);
 
-    void Initialize(GCRender* pRender) {
-        m_pRender = pRender;
-    }
-
-
-
-
-    // Getter
-    inline MeshBufferData* GetBufferGeometryData() { return  m_pBufferGeometryData; }
-
-
+    inline GCMESHBUFFERDATA* GetBufferGeometryData() { return  m_pBufferGeometryData; }
 
 private:
     GCRender* m_pRender;
-
-    //Buffer Data #TODO -> Change structure name
-    MeshBufferData* m_pBufferGeometryData;
+    GCMESHBUFFERDATA* m_pBufferGeometryData;
 
     // #TODO Put this in shader or Other place
-
-
-
     ID3D12Resource* CreateDefaultBuffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, ID3D12Resource* uploadBuffer);
 };
 
@@ -118,24 +30,24 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
 
     vertices.resize(pGeometry->pos.size());
 
-    if constexpr (std::is_same<VertexType, GCVERTEX>::value) {
-        for (size_t i = 0; i < pGeometry->pos.size(); ++i) {
+    if constexpr (std::is_same<VertexType, GCVERTEX>::value) 
+    {
+        for (size_t i = 0; i < pGeometry->pos.size(); ++i) 
+        {
             vertices[i] = VertexType(pGeometry->pos[i], pGeometry->color[i]);
         }
     }
-    else if constexpr (std::is_same<VertexType, GCVERTEXTEXTURE>::value) {
-        for (size_t i = 0; i < pGeometry->pos.size(); ++i) {
-            vertices[i] = VertexType(pGeometry->pos[i], pGeometry->texC[i]);
+    else if constexpr (std::is_same<VertexType, GCVERTEXTEXTURE>::value) 
+    {
+        for (size_t i = 0; i < pGeometry->pos.size(); ++i) 
+        {
+            vertices[i] = VertexType(pGeometry->pos[i], pGeometry->uv[i]);
         }
     }
-
-
-
     const UINT vbByteSize = static_cast<UINT>(vertices.size() * sizeof(VertexType));
     const UINT ibByteSize = static_cast<UINT>(pGeometry->indices.size() * sizeof(std::uint16_t));
 
-    m_pBufferGeometryData = new MeshBufferData();
-    m_pBufferGeometryData->Name = "boxGeo";
+    m_pBufferGeometryData = new GCMESHBUFFERDATA();
 
     D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
     CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
@@ -151,13 +63,5 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
     m_pBufferGeometryData->IndexFormat = DXGI_FORMAT_R16_UINT;
     m_pBufferGeometryData->IndexBufferByteSize = ibByteSize;
 
-    //// Initialize submesh
-    //SubmeshGeometry submesh;
-    //submesh.IndexCount = static_cast<UINT>(pGeometry->indices.size());
-    //submesh.StartIndexLocation = 0;
-    //submesh.BaseVertexLocation = 0;
-
     m_pBufferGeometryData->IndexCount = static_cast<UINT>(pGeometry->indices.size());
-
-    //m_pBufferGeometryData->DrawArgs["mesh"] = submesh;
 }

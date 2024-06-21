@@ -1,43 +1,13 @@
 #pragma once
 
-//struct ObjectConstants
-//{
-//	DirectX::XMFLOAT4X4 WorldViewProj;
-//};
-
-
-//struct ObjectCB {
-//	
-//};
-//
-//struct WorldCB : ObjectCB {
-//	DirectX::XMFLOAT4X4 world; // Matrice du monde
-//};
-//
-//struct LightAndWorld : ObjectCB {
-//	DirectX::XMFLOAT4X4 world; // Matrice du monde
-//	DirectX::XMFLOAT4X4 light; // Matrice du monde
-//	DirectX::XMFLOAT4X4 normal; // Matrice du monde
-//};
-
-
-
-
-
-
-
-
 class GCRender
 {
 public:
 	GCRender() {}
 
-	bool Initialize(GCGraphics* pGraphics,Window* pWindow);
+	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
 	bool InitDirect3D();
-
-
 	//void BuildConstantBuffers();
-
 	void LogAdapters();
 	void LogAdapterOutputs(IDXGIAdapter* adapter);
 	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
@@ -50,15 +20,11 @@ public:
 	void CreateSwapChain();
 
 	// Resize 
-
-
-
 	void ReleasePreviousResources();
 	void ResizeSwapChain();
 	void CreateRenderTargetViews();
 	void CreateDepthStencilBufferAndView();
 	void UpdateViewport();
-
 
 	// Draw Part
 	void ResetCommandList();
@@ -68,47 +34,46 @@ public:
 	void FlushCommandQueue();
 	void Update(const Timer& gt);
 
-	void PrepareDraw();
-	void PostDraw();
-	void Draw(const Timer& gt);
+	bool PrepareDraw();
+	bool PostDraw();
 
-	bool DrawOneObject(GCMesh* pMesh, GCShader* pShader,GCTexture* pTexture, DirectX::XMFLOAT4X4 worldMatrix, DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
+
+	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
+
 	//void BuildBoxGeometry();
 
-
-	void OnResize();
-
 	// Getter
-	bool Get4xMsaaState();
-	ID3D12Device* Getmd3dDevice();
-	ID3D12Resource* CurrentBackBuffer() const;
-	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
-	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const;
-	UINT Get4xMsaaQuality();
-	DXGI_FORMAT GetBackBufferFormat();
-	DXGI_FORMAT GetDepthStencilFormat();
+	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
+	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
+	inline bool Get4xMsaaState() const { return m_4xMsaaState; }
+	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
+	inline DXGI_FORMAT GetDepthStencilFormat() const { return m_DepthStencilFormat; }
+	inline ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
+	inline ID3D12Device* Getmd3dDevice() const { return m_d3dDevice; }
+	inline ID3D12CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
+	inline ID3D12CommandAllocator* GetCommandAllocator() const { return m_DirectCmdListAlloc; }
 
-	ID3D12GraphicsCommandList* GetCommandList();
+	inline ID3D12Fence* GetFence() { return m_Fence; }
 
-	// Add getter by william 
-	ID3D12CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
-	ID3D12CommandAllocator* GetCommandAllocator() const { return m_DirectCmdListAlloc; }
+	inline ID3D12DescriptorHeap* GetRtvHeap() { return m_rtvHeap; }
+	inline ID3D12DescriptorHeap* GetDsvHeap() { return m_dsvHeap; }
+	inline ID3D12DescriptorHeap* GetCbvSrvUavSrvDescriptorHeap() { return m_cbvSrvUavDescriptorHeap; }
+	inline UINT GetRtvDescriptorSize() const { return m_rtvDescriptorSize; }
+	inline UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
+	inline UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
-	ID3D12Fence* GetFence() { return m_Fence; }
+	GCShaderUploadBufferBase* m_pCurrentViewProj;
 
-
-	ID3D12DescriptorHeap* GetRtvHeap() { return m_rtvHeap; }
-	ID3D12DescriptorHeap* GetDsvHeap() { return m_dsvHeap; }
-	ID3D12DescriptorHeap* GetCbvSrvUavSrvDescriptorHeap() { return m_cbvSrvUavDescriptorHeap; }
-	UINT GetRtvDescriptorSize() const { return m_rtvDescriptorSize; }
-	UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
-	UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
-
-
-private:
 	
+	Window* GetCurrentWindow() { return m_pWindow; }
+private:
 	Window* m_pWindow;
 	// Swap chain size
+	int m_renderWidth;
+	int	m_renderHeight;
 	static const int SwapChainBufferCount = 2;
 
 	// DirectX12 3D instances
@@ -125,8 +90,6 @@ private:
 	ID3D12Fence* m_Fence;
 	UINT64 m_CurrentFence = 0;
 	// Descriptor heaps
-
-
 	ID3D12DescriptorHeap* m_rtvHeap;
 	ID3D12DescriptorHeap* m_dsvHeap;
 	ID3D12DescriptorHeap* m_cbvSrvUavDescriptorHeap;
@@ -136,7 +99,6 @@ private:
 	UINT m_dsvDescriptorSize = 0;
 
 	UINT m_cbvSrvUavDescriptorSize = 0;
-
 
 	// State var
 	bool m_canResize = true;
@@ -150,7 +112,6 @@ private:
 	bool      m_4xMsaaState = false;    // 4X MSAA enabled
 	UINT      m_4xMsaaQuality = 0;      // quality level of 4X MSAA
 
-
 	// Screen
 	D3D12_VIEWPORT m_ScreenViewport;
 	D3D12_RECT m_ScissorRect;
@@ -158,8 +119,8 @@ private:
 	// Camera (Temporary)
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
 
-};
 
+};
 
 #ifndef ReleaseCom
 #define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }
