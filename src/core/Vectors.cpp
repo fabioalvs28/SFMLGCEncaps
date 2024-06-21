@@ -55,12 +55,12 @@ GCVEC2 GCVEC2::Right()
 }
 
 //////////////////////////////////////////////////
-/// @return A new GCVEC2 with SetDown() values.
+/// @return A new GCVEC2 with SetUp() values.
 //////////////////////////////////////////////////
-GCVEC2 GCVEC2::Down()
+GCVEC2 GCVEC2::Up()
 {
     GCVEC2 result;
-    result.SetDown();
+    result.SetUp();
     return result;
 }
 
@@ -84,7 +84,7 @@ void GCVEC2::SetRight() { x = 1.0f; y = 0.0f; }
 ///////////////////////////////////////////////////////////////
 /// @brief Sets the x value to 0.0f and the y value to 1.0f.
 ///////////////////////////////////////////////////////////////
-void GCVEC2::SetDown() { x = 0.0f; y = 1.0f; }
+void GCVEC2::SetUp() { x = 0.0f; y = 1.0f; }
 
 
 
@@ -495,12 +495,12 @@ GCVEC3 GCVEC3::Right()
 }
 
 //////////////////////////////////////////////////
-/// @return A new GCVEC3 with SetDown() values.
+/// @return A new GCVEC3 with SetUp() values.
 //////////////////////////////////////////////////
-GCVEC3 GCVEC3::Down()
+GCVEC3 GCVEC3::Up()
 {
     GCVEC3 result;
-    result.SetDown();
+    result.SetUp();
     return result;
 }
 
@@ -534,7 +534,7 @@ void GCVEC3::SetRight() { x = 1.0f; y = 0.0f; z = 0.0f; }
 /////////////////////////////////////////////////////////////////////
 /// @brief Sets the x and z value to 0.0f and the y value to 1.0f.
 /////////////////////////////////////////////////////////////////////
-void GCVEC3::SetDown() { x = 0.0f; y = 1.0f; z = 0.0f; }
+void GCVEC3::SetUp() { x = 0.0f; y = 1.0f; z = 0.0f; }
 
 /////////////////////////////////////////////////////////////////////
 /// @brief Sets the x and y value to 0.0f and the z value to 1.0f.
