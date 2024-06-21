@@ -19,6 +19,7 @@ GCScene::GCScene()
 	m_pParent = nullptr;
 	
 	m_name = "GCScene";
+	m_active = false;
 }
 
 ////////////////////////////////////////////////////////////////

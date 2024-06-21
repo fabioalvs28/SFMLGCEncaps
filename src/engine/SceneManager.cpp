@@ -45,7 +45,15 @@ GCScene* GCSceneManager::CreateScene()
 	GCScene* pScene = new GCScene();
     m_scenesList.PushBack( pScene );
 	pScene->m_pNode = m_scenesList.GetLastNode();
+	if ( m_pActiveScene == nullptr ) SetActiveScene( pScene );
 	return pScene;
+}
+
+void GCSceneManager::SetActiveScene( GCScene* pScene )
+{
+	if ( m_pActiveScene != nullptr ) m_pActiveScene->m_active = false;
+    m_pActiveScene = pScene;
+    m_pActiveScene->m_active = true;
 }
 
 /////////////////////////////////////////////////////////

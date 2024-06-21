@@ -1,5 +1,5 @@
 #pragma once
-#include "../core/framework.h"
+#include "List.h"
 
 class GCGameObject;
 class GCSceneManager;
@@ -52,6 +52,7 @@ protected:
 	GCList<GCScene*> m_childrenList;
 	
 	const char* m_name;
+	bool m_active;
 	
 	GCList<GCGameObject*> m_gameObjectsList;
 
