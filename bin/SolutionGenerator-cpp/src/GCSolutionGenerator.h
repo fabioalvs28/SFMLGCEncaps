@@ -4,6 +4,12 @@
 #include "json.hpp"
 #include "tinyxml2.h"
 
+// ANSI color codes for console
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+
 class GCSolutionGenerator
 {
 public:
@@ -43,4 +49,5 @@ private:
 	static void AddFilesToItemGroup(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* itemGroup, const std::string tag, nlohmann::json files, const std::string filterName);
 	static std::string GetStr(nlohmann::json obj, std::string key);
 	static bool DeleteFolderSafe(std::string path);
+	static bool MoveFileToSource(std::string path);
 };

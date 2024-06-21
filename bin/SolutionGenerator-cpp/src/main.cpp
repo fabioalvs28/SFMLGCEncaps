@@ -1,13 +1,18 @@
 #include "GCSolutionGenerator.h"
 #include <iostream>
 #include <fstream>
+#include <windows.h>
 #include "json.hpp"
 
 using namespace std;
 using json = nlohmann::json;
 
+void EnableANSIColors();
+
 int main()
 {
+    EnableANSIColors();
+
     // Read the json file
     const string solutionJson = "./json/Solution.json";
     ifstream inputFile(solutionJson);
@@ -36,9 +41,9 @@ int main()
         for (vector<string>::iterator it = polesAvailable.begin(); it != polesAvailable.end(); it++)
         {
             if (it == polesAvailable.begin())
-                cout << *it;
+                cout << GREEN << *it << RESET;
             else
-                cout << ", " << *it;
+                cout << ", " << GREEN << *it << RESET;
         }
         cout << endl;
 
@@ -64,4 +69,19 @@ int main()
     GCSolutionGenerator::GenerateSolution(args);
 
     return 0;
+}
+
+void EnableANSIColors() {
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut == INVALID_HANDLE_VALUE) {
+        return;
+    }
+
+    DWORD dwMode = 0;
+    if (!GetConsoleMode(hOut, &dwMode)) {
+        return;
+    }
+
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, dwMode);
 }
