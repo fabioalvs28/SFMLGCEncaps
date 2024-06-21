@@ -41,7 +41,7 @@ friend class GCListNode<T>;
 
 public:
     GCList();
-    ~GCList() {}
+    ~GCList() = default;
     
     void Init();
     
@@ -203,7 +203,11 @@ void GCList<T>::PushBack( const T& data )
     pNewNode->m_data = data;
     pNewNode->m_pList = this;
     pNewNode->m_pNext = nullptr;
-    pNewNode->m_pPrev = m_pTail;
+    if ( m_pTail != nullptr )
+    {
+        pNewNode->m_pPrev = m_pTail;
+        pNewNode->m_pPrev->m_pNext = pNewNode;
+    }
     m_pTail = pNewNode;
     if ( m_pHead == nullptr ) m_pHead = pNewNode;
 }
@@ -220,8 +224,12 @@ void GCList<T>::PushFront( const T& data )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
-    pNewNode->m_pNext = m_pHead;
     pNewNode->m_pList = this;
+    if ( m_pHead != nullptr )
+    {
+        pNewNode->m_pNext = m_pHead;
+        pNewNode->m_pNext->m_pPrev = pNewNode;
+    }
     pNewNode->m_pPrev = nullptr;
     m_pHead = pNewNode;
     if ( m_pTail == nullptr ) m_pTail = pNewNode;
