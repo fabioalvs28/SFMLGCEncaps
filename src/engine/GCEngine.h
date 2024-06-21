@@ -9,6 +9,12 @@
 class GCEngine
 {
 public:
+    static GCEngine& Get()
+    {
+        static GCEngine instance;
+        return instance;
+    }
+
     void Shutdown();
     void Run();
 
@@ -27,4 +33,6 @@ private:
 
 private:
     GCWindow* m_window = nullptr;
+
+    bool m_isRunning;
 };

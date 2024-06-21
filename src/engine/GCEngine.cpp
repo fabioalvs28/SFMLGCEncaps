@@ -16,19 +16,39 @@ GCEngine::~GCEngine()
 
 void GCEngine::Shutdown()
 {
+    Cleanup();
+    m_isRunning = false;
 }
 
 void GCEngine::Run()
 {
+    if (!InitWindow())
+    {
+        return;
+    }
+
+    m_isRunning = true;
+
+    while (m_isRunning)
+    {
+        m_window->PollEvents();
+        m_window->OnUpdate();
+    }
+
 }
 
 void GCEngine::OnEvent(GCEvent& ev)
 {
+    std::cout << ev.ToString() << std::endl;
 }
 
 bool GCEngine::InitWindow()
 {
-    return false;
+    if (!m_window->Initialize([this](){ Shutdown(); }))
+    {
+        return false;
+    }
+    return true;
 }
 
 bool GCEngine::InitD3D12()

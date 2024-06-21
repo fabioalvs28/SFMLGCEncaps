@@ -11,8 +11,20 @@ void GCWindow::OnUpdate()
 {
 }
 
-bool GCWindow::InitializeWindow()
+void GCWindow::PollEvents()
 {
+    MSG msg;
+    while (PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+}
+
+bool GCWindow::Initialize(WindowCloseCallback closeCallback)
+{
+    m_windowCloseCallback = closeCallback;
+
     WNDCLASSEX wc
     {
         .cbSize = sizeof(WNDCLASSEX),
@@ -39,7 +51,7 @@ bool GCWindow::InitializeWindow()
         m_properties.Title,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, m_properties.Width, m_properties.Height,
-        NULL, NULL, NULL, NULL);
+        NULL, NULL, GetModuleHandle(NULL), this);
 
     if (m_hWnd == NULL)
     {
@@ -59,16 +71,51 @@ void GCWindow::DestroyWindow()
 
 LRESULT GCWindow::OnEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    GCWindow* window = nullptr;
+
+    if (msg == WM_NCCREATE)
+    {
+        CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+        window = reinterpret_cast<GCWindow*>(pCreate->lpCreateParams);
+        SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)window);
+
+        window->m_hWnd = hWnd;
+    }
+    else
+    {
+        window = reinterpret_cast<GCWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    }
+
+    if (window)
+    {
+        return window->HandleEvent(hWnd, msg, wParam, lParam);
+    }
+    return DefWindowProc(hWnd, msg, wParam, lParam); 
+}
+
+LRESULT GCWindow::HandleEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
     switch (msg)
     {
     case WM_DESTROY:
+    {
         PostQuitMessage(0);
         break;
-
+    }
     case WM_SIZE:
+    {
+        GCWindowResizeEvent ev(LOWORD(lParam), HIWORD(lParam));
+        m_windowCallback(ev);
         break;
+    }
+    case WM_MOUSEMOVE:
+    {
+        GCMouseMoveEvent ev(LOWORD(lParam), HIWORD(lParam));
+        m_windowCallback(ev);
+        break;
+    }
     default:
         break;
     }
-    return 0;
+    return DefWindowProc(m_hWnd, msg, wParam, lParam);
 }
