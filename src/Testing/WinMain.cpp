@@ -12,9 +12,10 @@
 #include "Transform.h"
 #include "Components.h"
 #include "GameObject.h"
-#include "SceneManager.h"
-// #include "GameManager.h"
 #include "Scene.h"
+#include "SceneManager.h"
+#include "GameManager.h"
+#include "GC.h"
 #include "SFML/Graphics.hpp"
 
 
@@ -40,8 +41,9 @@ int main()
 	goombaSprite.setOrigin(sf::Vector2f(goombaTexture.getSize().x / 2, goombaTexture.getSize().y / 2));
 
 
+
 	
-	
+
 	GCScene* pTest1Scene = GCScene::Create();
 
 	GCGameObject* pMario = nullptr;
@@ -97,13 +99,24 @@ int main()
 
 
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Delete) && pSelected != nullptr)
+		{
+			pSelected->Destroy();
+			if (pSelected == pMario) pMario = nullptr;
+			if (pSelected == pLuigi) pLuigi = nullptr;
+			if (pSelected == pGoomba) pGoomba = nullptr;
+			pSelected = nullptr;
+		}
+
+
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) pSelected->m_transform.m_position += GCVEC3::Up() * 0.3f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) pSelected->m_transform.m_position += GCVEC3::Down() * 0.3f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) pSelected->m_transform.m_position += GCVEC3::Left() * 0.3f;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) pSelected->m_transform.m_position -= GCVEC3::Up() * 0.3f;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) pSelected->m_transform.m_position -= GCVEC3::Right() * 0.3f;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) pSelected->m_transform.m_position += GCVEC3::Right() * 0.3f;
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) pSelected->m_transform.Scale( GCVEC3::One() * 1.01f );
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) pSelected->m_transform.Scale( GCVEC3::One() * 0.99f );
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) pSelected->m_transform.Scale( GCVEC3::One() * 1.001f );
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) pSelected->m_transform.Scale( GCVEC3::One() * 0.999f );
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) pSelected->m_transform.Rotate(0, 0, -15);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) pSelected->m_transform.Rotate(0, 0, 15);
@@ -114,7 +127,7 @@ int main()
 		if (pMario != nullptr)
 		{
 			std::cout << "{" << (int)pMario->m_transform.m_rotation.x << " ; " << (int)pMario->m_transform.m_rotation.y << " ; " << (int)pMario->m_transform.m_rotation.z << "}" << std::endl;
-			marioSprite.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, pMario->m_transform.m_position.y));
+			marioSprite.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, -pMario->m_transform.m_position.y));
 			marioSprite.setScale(sf::Vector2f(pMario->m_transform.m_scale.x, pMario->m_transform.m_scale.y));
 			marioSprite.setRotation(pMario->m_transform.m_rotation.z);
 			window.draw(marioSprite);
@@ -122,14 +135,14 @@ int main()
 		
 		if (pLuigi != nullptr)
 		{
-			luigiSprite.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, pLuigi->m_transform.m_position.y));
+			luigiSprite.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, -pLuigi->m_transform.m_position.y));
 			luigiSprite.setScale(sf::Vector2f(pLuigi->m_transform.m_scale.x, pLuigi->m_transform.m_scale.y));
 			window.draw(luigiSprite);
 		}
 		
 		if (pGoomba != nullptr)
 		{
-			goombaSprite.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, pGoomba->m_transform.m_position.y));
+			goombaSprite.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, -pGoomba->m_transform.m_position.y));
 			goombaSprite.setScale(sf::Vector2f(pGoomba->m_transform.m_scale.x, pGoomba->m_transform.m_scale.y));
 			window.draw(goombaSprite);
 		}
@@ -137,6 +150,7 @@ int main()
 
 
 
+		GC::m_pActiveGameManager.Update();
 		window.display();
 	}
 
