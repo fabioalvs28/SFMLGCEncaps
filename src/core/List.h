@@ -37,6 +37,7 @@ private:
 template <typename T>
 class GCList
 {
+friend class GCListNode<T>;
 
 public:
     GCList();
