@@ -7,6 +7,9 @@
 #include "SceneManager.h"
 #include "GC.h"
 
+// todo A GameObject needs 2 transforms (self and world)
+// todo DESTROY( GameObject*& pGameObject ) -> also does pGameObject = nullptr
+
 
 
 //////////////////////////////////////////////////////////////////////////////

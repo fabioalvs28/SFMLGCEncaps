@@ -1,6 +1,6 @@
 #pragma once
 #include "SceneManager.h"
-#include "InputManager.h"
+// #include "InputManager.h"
 
 class GCGameObject;
 class GCScene;
@@ -16,11 +16,11 @@ protected:
     GCGameManager() = default;
     virtual ~GCGameManager() = default;
     
-    void Init();
-    void Update();
+public: void Init();
+public: void Update();
     
 protected:
     GCSceneManager m_pSceneManager;
-    GCInputManager m_pInputManager;
+    // GCInputManager m_pInputManager;
 
 };

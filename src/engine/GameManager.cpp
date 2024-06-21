@@ -7,7 +7,7 @@
 void GCGameManager::Init()
 {
     m_pSceneManager = GCSceneManager();
-    m_pInputManager = GCInputManager();
+    // m_pInputManager = GCInputManager();
 }
 
 void GCGameManager::Update()
