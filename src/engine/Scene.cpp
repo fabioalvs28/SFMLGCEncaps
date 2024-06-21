@@ -116,7 +116,7 @@ void GCScene::MoveGameObjectToScene( GCGameObject* pGameObject )
 void GCScene::RemoveGameObjectFromScene( GCGameObject* pGameObject )
 {
 	if ( pGameObject->m_pScene != this ) return;
-    m_gameObjectsList.DeleteNode( pGameObject->m_pSceneNode );
+    pGameObject->m_pSceneNode->Delete();
 	pGameObject->m_pSceneNode = nullptr;
 	pGameObject->m_pScene = nullptr;
 	// todo Assert for the errors instead of returning nothing
@@ -230,7 +230,7 @@ void GCScene::RemoveChild( GCScene* pChild )
 {
     if ( pChild->m_pParent != this ) return;
     
-    m_childrenList.RemoveNode( pChild->m_pChildNode );
+    pChild->m_pChildNode->Delete();
     pChild->m_pChildNode = nullptr;
     pChild->m_pParent = nullptr;
     // todo Assert for the errors instead of simply returning nothing

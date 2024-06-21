@@ -151,7 +151,7 @@ void GCGameObject::RemoveChild( GCGameObject* pChild )
 {
     if ( pChild->m_pParent != this ) return;
     
-    m_childrenList.RemoveNode( pChild->m_pChildNode );
+    pChild->m_pChildNode->Delete();
     pChild->m_pChildNode = nullptr;
     pChild->m_pParent = nullptr;
     // todo Updating the transform so that the GameObject stays where it was before it was removed
