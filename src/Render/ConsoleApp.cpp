@@ -19,28 +19,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	GCGraphics* graphics = new GCGraphics();
 	graphics->Initialize(window, 1920, 1080);
 
+	int flagsTexture = 0;
+	SET_FLAG(flagsTexture, HAS_POSITION);
+	SET_FLAG(flagsTexture, HAS_UV);
+
+	int flagsColor = 0;
+	SET_FLAG(flagsColor, HAS_POSITION);
+	SET_FLAG(flagsColor, HAS_COLOR);
+
 
 	// Geometry (Resource)
-	GCGeometry* geo = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"sphere", DirectX::XMFLOAT4(DirectX::Colors::Gray));
-	GCGeometry* geo1 = graphics->GetPrimitiveFactory()->BuildGeometryColor(L"cube", DirectX::XMFLOAT4(DirectX::Colors::Red));
-	GCGeometry* geo2 = graphics->GetModelParserFactory()->BuildModelTexture("../../../src/Render/monkeyUv.obj", obj);
+	//GCGeometry* geo = graphics->CreateGeometryPrimitiveColor("sphere", DirectX::XMFLOAT4(DirectX::Colors::Gray));
+	//GCGeometry* geo1 = graphics->CreateGeometryPrimitiveTexture("cube");
+	GCGeometry* geo2 = graphics->GetModelParserFactory()->BuildModel("../../../src/Render/monkeyUv.obj", DirectX::XMFLOAT4(DirectX::Colors::Black), obj, flagsColor);
 
 	std::string shaderFilePath = "../../../src/Render/Shaders/customTest.hlsl";
 	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
 
 	GCShader* shader1 = graphics->CreateShaderColor();
-	GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, STEnum::texture);
+	GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, flagsTexture);
+
+
 	//GCShader* shader2 = graphics->CreateShaderTexture();
 
 	graphics->InitializeGraphicsResourcesStart();
 
 	// Mesh (Resource)
-	GCMesh* mesh = graphics->CreateMesh(geo);
-	GCMesh* mesh1 = graphics->CreateMesh(geo1);
+	//GCMesh* mesh = graphics->CreateMesh(geo);
+	//GCMesh* mesh1 = graphics->CreateMesh(geo1);
+
 	GCMesh* mesh2 = graphics->CreateMesh(geo2);
 
 	// Texture (Resource)
-	std::string texturePath = "../../../src/Render/Textures/cottage_diffuse.dds";
+	std::string texturePath = "../../../src/Render/Textures/texture.dds";
 	GCTexture* texture = graphics->CreateTexture(texturePath);
 
 	graphics->InitializeGraphicsResourcesEnd();
@@ -83,8 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 
-	//DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
-	//DirectX::XMStoreFloat4x4(&worldData.world, identityMatrix);
+
 
 	// ***********
 
@@ -93,21 +103,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	// DRAW -> ONE FRAME
 	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-	GCTest test = graphics->ToPixel<GCTest>(400, 400, storedProjectionMatrix, storedViewMatrix);
+	//GCTest test = graphics->ToPixel<GCTest>(400, 400, storedProjectionMatrix, storedViewMatrix);
+	GCTest test;
 
-	// Première objet
-	//GCTest worldData;
-	//worldData.color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);;
-	//worldData.world = 
-	//test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);;
+	DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
+	DirectX::XMStoreFloat4x4(&test.world, identityMatrix);
+	test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
 
-	graphics->UpdateCustomCBObject<GCTest>(material2, test);
-	graphics->GetRender()->DrawObject(mesh2, material2);
+	graphics->UpdateCustomCBObject<GCTest>(material, test);
+	graphics->GetRender()->DrawObject(mesh2, material);
 
 	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
 	//graphics->GetRender()->DrawObject(mesh, material);
 
 	//profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
+
 
 	graphics->EndFrame();
 	// ********************

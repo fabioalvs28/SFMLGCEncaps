@@ -66,6 +66,28 @@ bool CheckNull(T value, Args ... args)
         (p) = nullptr; \
     }
 
+// Define flags
+#define HAS_POSITION  0x01 // 00000001
+#define HAS_COLOR     0x02 // 00000010
+#define HAS_UV        0x04 // 00000100
+#define HAS_NORMAL    0x08 // 00001000
+#define HAS_TANGENT   0x10 // 00010000
+#define HAS_BINORMAL  0x20 // 00100000
+
+// Check if a specific flag is set
+#define HAS_FLAG(flags, flag) (((flags) & (flag)) != 0)
+
+// Set a specific flag
+#define SET_FLAG(flags, flag) ((flags) |= (flag))
+
+// Unset a specific flag
+#define UNSET_FLAG(flags, flag) ((flags) &= ~(flag))
+
+// Emplacement Root Parameter Index
+#define CBV_SLOT_CB0 0
+#define CBV_SLOT_CB1 1
+#define DESCRIPTOR_TABLE_SLOT_TEXTURE 2
+
 bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage);
 
 bool CheckExtension(std::string filePath, std::string fileExtension);

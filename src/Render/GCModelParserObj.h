@@ -8,5 +8,5 @@ public:
 	GCModelParserObj();
 	~GCModelParserObj();
 
-	ModelInfos* Parse(std::string fileName);
+	ModelInfos* Parse(std::string filePath);
 };

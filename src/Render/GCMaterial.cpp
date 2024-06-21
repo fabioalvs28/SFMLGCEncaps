@@ -39,12 +39,12 @@ void GCMaterial::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 
 bool GCMaterial::UpdateTexture()
 {
-    if (m_pShader->GetType() == texture)
+    if (HAS_FLAG(m_pShader->GetFlagEnabledBits(), HAS_UV))
     {
         if (m_pTexture)
         {
             auto commandList = m_pRender->GetCommandList();
-            m_pRender->GetCommandList()->SetGraphicsRootDescriptorTable(2, m_pTexture->GetTextureAddress());
+            m_pRender->GetCommandList()->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, m_pTexture->GetTextureAddress());
             return true;
         }
         else
@@ -52,6 +52,5 @@ bool GCMaterial::UpdateTexture()
             return false;
         }
     }
-
     return false;
 }

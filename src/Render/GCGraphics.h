@@ -18,7 +18,7 @@ public:
 	// Shader
 	GCShader* CreateShaderColor();
 	GCShader* CreateShaderTexture();
-	GCShader* CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int type);
+	GCShader* CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits);
 
 	template<typename ShaderTypeConstantBuffer>
 	ShaderTypeConstantBuffer ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
@@ -26,6 +26,13 @@ public:
 
 	GCMaterial* CreateMaterial(GCShader* pShader);
 	GCMesh* CreateMesh(GCGeometry* pGeometry);
+
+	GCGeometry* CreateGeometryPrimitiveTexture(const std::string& primitiveName);
+	GCGeometry* CreateGeometryPrimitiveColor(const std::string& primitiveName, const DirectX::XMFLOAT4& color);
+
+	GCGeometry* CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType);
+	GCGeometry* CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType);
+
 	GCTexture* CreateTexture(const std::string& filePath);
 
 	// Update Constant Buffer 

@@ -53,8 +53,11 @@ struct GCGeometry;
 
 struct GCMESHBUFFERDATA;
 
-struct GCVERTEX;
+
+struct GCVERTEXCOLOR;
 struct GCVERTEXTEXTURE;
+
+
 
 struct GCSHADERCB;
 struct GCWORLDCB;
@@ -75,9 +78,6 @@ class GCModelParserObj;
 class GCPrimitiveFactory;
 class GCRender;
 class GCShader;
-class GCShaderColor;
-class GCShaderTexture;
-class GCShaderCustom;
 class GCTexture;
 class GCTextureFactory;
 class GCShaderUploadBufferBase; // 
@@ -113,9 +113,6 @@ class Window;
 #include "GCModelParser.h"
 #include "GCModelParserObj.h"
 #include "GCPrimitiveFactory.h"
-#include "GCShaderColor.h"
-#include "GCShaderTexture.h"
-#include "GCShaderCustom.h"
 #include "GCTexture.h"
 #include "GCGraphics.h"
 #include "GCTextureFactory.h"

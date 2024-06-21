@@ -436,13 +436,14 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	//
 	pMaterial->UpdateTexture();
 	// Object
-	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+
 	// Set cb object buffer on used
 	pMaterial->GetObjectCBData()[pMaterial->GetCount()]->m_isUsed = true;
 	pMaterial->IncrementCBCount();
 
 	// Camera
-	m_CommandList->SetGraphicsRootConstantBufferView(1, m_pCurrentViewProj->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB1, m_pCurrentViewProj->Resource()->GetGPUVirtualAddress());
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 

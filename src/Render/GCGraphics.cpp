@@ -144,11 +144,14 @@ GCTexture* GCGraphics::CreateTexture(const std::string& filePath)
 
 GCShader* GCGraphics::CreateShaderColor() 
 {
-    GCShader* pShader;
-    pShader = new GCShaderColor();
+    GCShader* pShader = new GCShader();
 
-    pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", STEnum::color);
+    int flags = 0;
+    SET_FLAG(flags, HAS_POSITION);
+    SET_FLAG(flags, HAS_COLOR);
 
+    pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags);
+    pShader->Load();
     m_vShaders.push_back(pShader);
     m_shaderId++;
 
@@ -157,20 +160,25 @@ GCShader* GCGraphics::CreateShaderColor()
 
 GCShader* GCGraphics::CreateShaderTexture() 
 {
-    GCShader* pShader;
-    pShader = new GCShaderTexture();
-    pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", STEnum::texture);
+    GCShader* pShader = new GCShader();
+
+    int flags = 0;
+    SET_FLAG(flags, HAS_POSITION);
+    SET_FLAG(flags, HAS_UV);
+
+    pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags);
+    pShader->Load();
     m_vShaders.push_back(pShader);
     m_shaderId++;
 
     return pShader;
 }
 
+
 // Specify the path, with the name of the shader at the file creation , example : CsoCompiled/texture, texture is the name of the file in Cso Compiled Folder
-GCShader* GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int type) {
-    GCShader* pShader;
-    pShader = new GCShaderCustom();
-    pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, type);
+GCShader* GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits) {
+    GCShader* pShader = new GCShader();
+    pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits);
     pShader->Load();
 
     m_vShaders.push_back(pShader);
@@ -179,7 +187,7 @@ GCShader* GCGraphics::CreateShaderCustom(std::string& filePath, std::string& com
     return pShader;
 }
 
-GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry) 
+GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
 {
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
@@ -191,6 +199,72 @@ GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
     m_vMeshes.push_back(pMesh);
     return pMesh;
 }
+
+GCGeometry* GCGraphics::CreateGeometryPrimitiveColor(const std::string& primitiveName, const DirectX::XMFLOAT4& color)
+{
+    int flagsColor = 0;
+    SET_FLAG(flagsColor, HAS_POSITION);
+    SET_FLAG(flagsColor, HAS_COLOR);
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+    // Call the unified BuildGeometry function
+    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagsColor);
+
+    CHECK_POINTERSNULL(profiler, "Primitive Geometry with Color created successfully", "Failed to create Primitive Geometry with Color", pGeometry);
+
+    return pGeometry;
+}
+
+GCGeometry* GCGraphics::CreateGeometryPrimitiveTexture(const std::string& primitiveName)
+{
+    int flagsTexture = 0;
+    SET_FLAG(flagsTexture, HAS_POSITION);
+    SET_FLAG(flagsTexture, HAS_UV);
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+
+    // Call the unified BuildGeometry function without color (nullptr)
+    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
+
+    CHECK_POINTERSNULL(profiler, "Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+
+    return pGeometry;
+}
+
+GCGeometry* GCGraphics::CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
+{
+    int flagsColor = 0;
+    SET_FLAG(flagsColor, HAS_POSITION);
+    SET_FLAG(flagsColor, HAS_COLOR);
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+    // Call the unified BuildGeometry function without color (nullptr)
+    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagsColor);
+
+    CHECK_POINTERSNULL(profiler, "Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+
+    return pGeometry;
+}
+
+GCGeometry* GCGraphics::CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType)
+{
+    int flagsTexture = 0;
+    SET_FLAG(flagsTexture, HAS_POSITION);
+    SET_FLAG(flagsTexture, HAS_UV);
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+    // Call the unified BuildGeometry function without color (nullptr)
+    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, flagsTexture);
+
+    CHECK_POINTERSNULL(profiler, "Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+
+    return pGeometry;
+}
+
 
 GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader) {
 
