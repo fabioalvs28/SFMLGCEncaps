@@ -13,17 +13,13 @@ struct GCVEC2
 
     static GCVEC2 Zero();
     static GCVEC2 One();
-    static GCVEC2 Up();
-    static GCVEC2 Down();
-    static GCVEC2 Left();
     static GCVEC2 Right();
+    static GCVEC2 Down();
     
     void SetZero();
     void SetOne();
-    void SetUp();
-    void SetDown();
-    void SetLeft();
     void SetRight();
+    void SetDown();
     
     void Lerp( const GCVEC2& from, const GCVEC2& to, const float& t );
     void Clamp( const GCVEC2& min, const GCVEC2& max );
@@ -79,21 +75,15 @@ struct GCVEC3
 
     static GCVEC3 Zero();
     static GCVEC3 One();
-    static GCVEC3 Up();
-    static GCVEC3 Down();
-    static GCVEC3 Left();
     static GCVEC3 Right();
+    static GCVEC3 Down();
     static GCVEC3 Front();
-    static GCVEC3 Back();
     
     void SetZero();
     void SetOne();
-    void SetUp();
-    void SetDown();
-    void SetLeft();
     void SetRight();
+    void SetDown();
     void SetFront();
-    void SetBack();
     
     void Lerp( const GCVEC3& from, const GCVEC3& to, const float& t );
     void Clamp( const GCVEC3& min, const GCVEC3& max );
