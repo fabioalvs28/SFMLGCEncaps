@@ -201,6 +201,7 @@ void GCList<T>::PushBack( const T& data )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
+    pNewNode->m_pList = this;
     pNewNode->m_pNext = nullptr;
     pNewNode->m_pPrev = m_pTail;
     m_pTail = pNewNode;
@@ -220,6 +221,7 @@ void GCList<T>::PushFront( const T& data )
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
     pNewNode->m_pNext = m_pHead;
+    pNewNode->m_pList = this;
     pNewNode->m_pPrev = nullptr;
     m_pHead = pNewNode;
     if ( m_pTail == nullptr ) m_pTail = pNewNode;
@@ -240,6 +242,7 @@ GCListNode<T>* GCList<T>::PushBefore( const T& data, const GCListNode<T>* pNode 
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
+    pNewNode->m_pList = this;
     
     if ( pNode == m_pHead ) m_pHead = pNewNode;
     else
@@ -271,6 +274,7 @@ GCListNode<T>* GCList<T>::PushAfter( const T& data, const GCListNode<T>* pNode )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
+    pNewNode->m_pList = this;
     
     if ( pNode == m_pHead ) m_pHead = pNewNode;
     else
