@@ -16,7 +16,7 @@ public:
     void Remove();
     void Delete();
     
-    T& GetData() const;
+    T& GetData();
     GCListNode<T>* GetPrevious() const;
     GCListNode<T>* GetNext() const;
 
@@ -142,7 +142,7 @@ void GCListNode<T>::Delete() { m_pList->DeleteNode( this ); }
 /// @return The data stored in the ListNode.
 /////////////////////////////////////////////////////
 template <typename T>
-T& GCListNode<T>::GetData() const { return m_data; };
+T& GCListNode<T>::GetData() { return m_data; };
 
 //////////////////////////////////////////////////////////
 /// @tparam T The type that is stored in the List.
