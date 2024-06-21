@@ -14,7 +14,7 @@ class GCSolutionGenerator
 {
 public:
 	// Main function to generate the whole solution
-	static void GenerateSolution(std::unordered_set<std::string> args);
+	static void GenerateSolution(std::unordered_set<std::string> args, bool deleteFolder);
 
 private:
 	GCSolutionGenerator() = delete;

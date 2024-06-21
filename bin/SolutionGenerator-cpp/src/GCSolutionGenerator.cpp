@@ -25,14 +25,16 @@ const string GCSolutionGenerator::s_rcExt = "hlsl;jpg;jpeg;png;wav;mp3;ico;dds;r
 json GCSolutionGenerator::m_data;
 unordered_set<string> GCSolutionGenerator::m_args;
 
-void GCSolutionGenerator::GenerateSolution(unordered_set<string> args)
+void GCSolutionGenerator::GenerateSolution(unordered_set<string> args, bool deleteFolder)
 {
     m_args = args;
 
     // Get Data
     FillData();
+
     // Delete folder without deleting source files
-    DeleteFolderSafe(s_idePath);
+    if(deleteFolder)
+        DeleteFolderSafe(s_idePath);
     
     // Generate
     GenerateSln();
