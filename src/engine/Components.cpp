@@ -11,5 +11,6 @@ Component::Component()
 Collider::Collider()
 {
     m_trigger = false;
+	m_visible = false;
 }
 
