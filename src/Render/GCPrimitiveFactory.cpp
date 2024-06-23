@@ -110,20 +110,21 @@ void GCPrimitiveFactory::Initialize()
 
     //Put all data in map
     m_primitiveInfos = {
+    // Only in 2d
     {L"plane", {
-        { L"index", std::vector<uint16_t>{0, 2, 1, 0, 3, 2} },
-        { L"pos", std::vector<DirectX::XMFLOAT3>{
-            DirectX::XMFLOAT3(-0.5f, +0.0f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.0f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.0f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.0f, -0.5f)
-        }},
-        { L"uvs", std::vector<DirectX::XMFLOAT2>{
-            DirectX::XMFLOAT2(0, 0),
-            DirectX::XMFLOAT2(0, 1),
-            DirectX::XMFLOAT2(1, 1),
-            DirectX::XMFLOAT2(1, 0)
-        }}
+            { L"index", std::vector<uint16_t>{0, 1, 2, 0, 2, 3} },
+            { L"pos", std::vector<DirectX::XMFLOAT3>{
+                DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f),
+                DirectX::XMFLOAT3(-0.5f, 0.5f, 0.0f),
+                DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f),
+                DirectX::XMFLOAT3(0.5f, -0.5f, 0.0f)
+            }},
+            { L"uvs", std::vector<DirectX::XMFLOAT2>{
+                DirectX::XMFLOAT2(0.0f, 1.0f),
+                DirectX::XMFLOAT2(0.0f, 0.0f),
+                DirectX::XMFLOAT2(1.0f, 0.0f),
+                DirectX::XMFLOAT2(1.0f, 1.0f)
+            }}
     }},
 
     {L"cube", {
@@ -188,6 +189,7 @@ void GCPrimitiveFactory::Initialize()
             DirectX::XMFLOAT2(1, 1),
         }}
     }},
+    // #TODO -> Doesn't work in 2d thereas, it need be 2d
     {L"circle", {
         {L"index", circleIndices},
         {L"pos", circleVertices},
@@ -206,8 +208,6 @@ GCGeometry* GCPrimitiveFactory::BuildGeometry(std::string name, DirectX::XMFLOAT
 {
     //Builds a texture based geometry using pre-created ones
     //Needs a geometry name
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
     std::wstring wName(name.begin(), name.end());
 
     auto it = m_primitiveInfos.find(wName);
@@ -246,7 +246,7 @@ GCGeometry* GCPrimitiveFactory::BuildGeometry(std::string name, DirectX::XMFLOAT
     primitiveGeometry->m_flagEnabledBits = flagEnabledBits;
 
 
-    CHECK_POINTERSNULL(profiler, "Primitive Geometry built successfully", "Primitive geometry is empty", primitiveGeometry);
+    CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", primitiveGeometry);
 
 	return primitiveGeometry;
 }

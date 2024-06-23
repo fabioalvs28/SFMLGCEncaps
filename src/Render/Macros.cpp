@@ -16,15 +16,13 @@ bool CheckFile(std::string fileName, std::string errorMessage, std::string succe
 	{
 		OutputDebugString(wideErrorMessage.c_str());
 		profiler.LogWarning("Model file not found: " + fileName);
-
-		return true;
+		return false;
 	}
 	else
 	{
 		OutputDebugString(wideSuccessMessage.c_str());
 		profiler.LogInfo("Model file:" + fileName + " loaded successfully");
-
-		return false;
+		return true;
 	}
 }
 
@@ -69,8 +67,9 @@ bool CheckHResult(HRESULT hr, const std::string& msg)
 		std::wstring wMsg(msg.begin(), msg.end());
 		OutputDebugString((L"Error: " + wMsg).c_str());
 		profiler.LogWarning(msg);
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
+

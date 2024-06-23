@@ -14,7 +14,7 @@ bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 	switch (fileExtension)
 	{
 	case 0:
-		CheckExtension(fileName, "obj");
+		CHECK_EXTENSION(fileName, "obj");
 		m_ParsedModel = dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
 		return true;
 	}
@@ -24,7 +24,7 @@ bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 GCGeometry* GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Extensions fileExtension, int& flagEnabledBits)
 {
 
-	CheckFile(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully"));
+	CHECK_FILE(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully"));
 
 	Parse(fileName, fileExtension);
 
@@ -64,8 +64,7 @@ GCGeometry* GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 co
 
 	objGeometry->m_flagEnabledBits = flagEnabledBits;
 
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-	CHECK_POINTERSNULL(profiler, "Model geometry loaded successfully","Model Geometry is empty", objGeometry);
+	CHECK_POINTERSNULL("Model geometry loaded successfully","Model Geometry is empty", objGeometry);
 
 	return objGeometry;
 }

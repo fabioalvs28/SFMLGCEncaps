@@ -34,7 +34,7 @@ void GCShader::Render()
 void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits)
 {
 	
-	CheckFile(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully");
+	CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully");
 
 	// #TODO Check the other path
 
@@ -154,6 +154,8 @@ void GCShader::Pso()
 
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+
+
 
 	// Customize the blend state for transparency
 	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);

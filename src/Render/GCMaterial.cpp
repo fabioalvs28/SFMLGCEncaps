@@ -25,9 +25,7 @@ bool GCMaterial::Initialize(GCShader* pShader)
 
 bool GCMaterial::SetTexture(GCTexture* pTexture) {
     m_pTexture = pTexture;
-
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-    CHECK_POINTERSNULL(profiler, "Texture loaded successfully for material", "The material doesn't contain texture", pTexture);
+    CHECK_POINTERSNULL("Texture loaded successfully for material", "The material doesn't contain texture", pTexture);
 
     return true;
 }

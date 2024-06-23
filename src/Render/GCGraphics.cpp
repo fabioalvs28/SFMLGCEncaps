@@ -57,9 +57,7 @@ GCGraphics::~GCGraphics()
 
 void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-    CHECK_POINTERSNULL(profiler, "Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
+    CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
 
     //Initializes Graphics for a window
     m_pRender = new GCRender();
@@ -134,7 +132,6 @@ void GCGraphics::InitializeGraphicsResourcesEnd() {
 GCTexture* GCGraphics::CreateTexture(const std::string& filePath) 
 {
     //Creates and initializes a texture using a path
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
 	GCTexture* texture = new GCTexture();
 	texture->Initialize(filePath, this);
@@ -189,9 +186,7 @@ GCShader* GCGraphics::CreateShaderCustom(std::string& filePath, std::string& com
 
 GCMesh* GCGraphics::CreateMesh(GCGeometry* pGeometry)
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-    CHECK_POINTERSNULL(profiler,"Geometry loaded successfully for mesh","Can't create mesh, Geometry is empty",pGeometry);
+    CHECK_POINTERSNULL("Geometry loaded successfully for mesh","Can't create mesh, Geometry is empty", pGeometry);
 
     GCMesh* pMesh = new GCMesh();
     pMesh->Initialize(m_pRender, pGeometry);
@@ -206,12 +201,10 @@ GCGeometry* GCGraphics::CreateGeometryPrimitiveColor(const std::string& primitiv
     SET_FLAG(flagsColor, HAS_POSITION);
     SET_FLAG(flagsColor, HAS_COLOR);
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
     // Call the unified BuildGeometry function
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagsColor);
 
-    CHECK_POINTERSNULL(profiler, "Primitive Geometry with Color created successfully", "Failed to create Primitive Geometry with Color", pGeometry);
+    CHECK_POINTERSNULL("Primitive Geometry with Color created successfully", "Failed to create Primitive Geometry with Color", pGeometry);
 
     return pGeometry;
 }
@@ -222,13 +215,20 @@ GCGeometry* GCGraphics::CreateGeometryPrimitiveTexture(const std::string& primit
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
 
-    CHECK_POINTERSNULL(profiler, "Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+    CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+
+    return pGeometry;
+}
+
+GCGeometry* GCGraphics::CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int& flagEnabledBits)
+{
+    // Call the unified BuildGeometry function without color (nullptr)
+    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagEnabledBits);
+
+    CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
 
     return pGeometry;
 }
@@ -239,12 +239,20 @@ GCGeometry* GCGraphics::CreateGeometryModelParserColor(const std::string& filePa
     SET_FLAG(flagsColor, HAS_POSITION);
     SET_FLAG(flagsColor, HAS_COLOR);
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagsColor);
 
-    CHECK_POINTERSNULL(profiler, "Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+    CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+
+    return pGeometry;
+}
+
+GCGeometry* GCGraphics::CreateGeometryModelParserCustom(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType, int& flagEnabledBits)
+{
+    // Call the unified BuildGeometry function without color (nullptr)
+    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagEnabledBits);
+
+    CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
 
     return pGeometry;
 }
@@ -255,23 +263,18 @@ GCGeometry* GCGraphics::CreateGeometryModelParserTexture(const std::string& file
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, flagsTexture);
 
-    CHECK_POINTERSNULL(profiler, "Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+    CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
 
     return pGeometry;
 }
 
 
-GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader) {
-
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-
-    CHECK_POINTERSNULL(profiler,"Shader loaded successfully for material","Can't create material, Shader is empty", pShader);
+GCMaterial* GCGraphics::CreateMaterial(GCShader* pShader) 
+{
+    CHECK_POINTERSNULL("Shader loaded successfully for material","Can't create material, Shader is empty", pShader);
 
     GCMaterial* material = new GCMaterial();
     material->Initialize(pShader);
@@ -305,43 +308,22 @@ void GCGraphics::RemoveShader(GCShader* pShader)
     //Removes Shader both from vector and the shader itself
     auto it = std::find(m_vShaders.begin(), m_vShaders.end(), pShader);
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-    if (it == m_vShaders.end())
-    {
-        OutputDebugString(L"Shader not found, can't remove it");
-        profiler.LogWarning("Shader not found, can't remove it");
-    }
-    else
-    {
-        OutputDebugString(L"Shader removed successfully");
-        profiler.LogInfo("Shader removed successfully");
-    }
+    LOG_REMOVE_RESOURCE(it, "Shader", m_vShaders);
 
     m_vShaders.erase(it);
     delete pShader;
 }
 
-void GCGraphics::RemoveMaterial(GCMaterial* pMaterial) 
+void GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 {
-    //Removes material from the vector then the material itself
     auto it = std::find(m_vMaterials.begin(), m_vMaterials.end(), pMaterial);
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    LOG_REMOVE_RESOURCE(it, "Material", m_vMaterials);
 
-    if (it == m_vMaterials.end())
-    {
-        OutputDebugString(L"Material not found, can't remove it");
-        profiler.LogWarning("Material not found, can't remove it");
+    if (it != m_vMaterials.end()) {
+        m_vMaterials.erase(it);
+        delete pMaterial;
     }
-    else 
-    {
-        OutputDebugString(L"Material removed successfully");
-        profiler.LogInfo("Material removed successfully");
-    }
-
-    m_vMaterials.erase(it);
-    delete pMaterial;
 }
 
 void GCGraphics::RemoveMesh(GCMesh* pMesh) 
@@ -349,18 +331,7 @@ void GCGraphics::RemoveMesh(GCMesh* pMesh)
     //Removes Mesh
     auto it = std::find(m_vMeshes.begin(), m_vMeshes.end(), pMesh);
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-    if (it == m_vMeshes.end())
-    {
-        OutputDebugString(L"Mesh not found, can't remove it");
-        profiler.LogWarning("Mesh not found, can't remove it");
-    }
-    else
-    {
-        OutputDebugString(L"Mesh removed successfully");
-        profiler.LogInfo("Mesh removed successfully");
-    }
+    LOG_REMOVE_RESOURCE(it, "Mesh", m_vMeshes);
 
     m_vMeshes.erase(it);
     delete pMesh;
@@ -371,18 +342,7 @@ void GCGraphics::RemoveTexture(GCTexture* pTexture)
     //Removes Texture
     auto it = std::find(m_vTextures.begin(), m_vTextures.end(), pTexture);
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-    if (it == m_vTextures.end())
-    {
-        OutputDebugString(L"Texture not found, can't remove it");
-        profiler.LogWarning("Texture not found, can't remove it");
-    }
-    else
-    {
-        OutputDebugString(L"Texture removed successfully");
-        profiler.LogInfo("Texture removed successfully");
-    }
+    LOG_REMOVE_RESOURCE(it, "Texture", m_vTextures);
 
     m_vTextures.erase(it);
     delete pTexture;
