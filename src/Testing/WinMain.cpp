@@ -37,6 +37,9 @@ void CreateDebugConsole()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     CreateDebugConsole();
+
     GCEngine::Get().Run();
+
+    FreeConsole();
     return 0;
 }

@@ -28,6 +28,8 @@ public:
 
     virtual void OnUpdate() = 0;
 
+    virtual void* GetNativeWindow() = 0;
+
     int32_t GetWidth() const { return m_properties.Width; }
     int32_t GetHeight() const { return m_properties.Height; }
 

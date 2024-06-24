@@ -2,7 +2,7 @@
 
 #include "Window.h"
 
-typedef std::function<void()> WindowCloseCallback;
+typedef std::function<void()> WindowCallback;
 
 class GCWindow : public GCWindowBase
 {
@@ -14,14 +14,17 @@ public:
     void OnUpdate() override;
     void PollEvents();
 
-    bool Initialize(WindowCloseCallback closeCallback);
+    bool Initialize(WindowCallback closeCallback);
     void DestroyWindow();
+
+    void* GetNativeWindow() override { return m_hWnd; }
+
 private:
     static LRESULT WINAPI OnEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
     LRESULT HandleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
     HWND m_hWnd = nullptr;
-    WindowCloseCallback m_windowCloseCallback = nullptr;
+    WindowCallback m_windowCloseCallback = nullptr;
     GCEventCallback m_windowCallback = nullptr;
 };

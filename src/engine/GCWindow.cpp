@@ -21,7 +21,7 @@ void GCWindow::PollEvents()
     }
 }
 
-bool GCWindow::Initialize(WindowCloseCallback closeCallback)
+bool GCWindow::Initialize(WindowCallback closeCallback)
 {
     m_windowCloseCallback = closeCallback;
 
@@ -67,6 +67,7 @@ bool GCWindow::Initialize(WindowCloseCallback closeCallback)
 
 void GCWindow::DestroyWindow()
 {
+    UnregisterClass(m_properties.Title, GetModuleHandle(NULL));
 }
 
 LRESULT GCWindow::OnEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -112,6 +113,10 @@ LRESULT GCWindow::HandleEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
         GCMouseMoveEvent ev(LOWORD(lParam), HIWORD(lParam));
         m_windowCallback(ev);
+        break;
+    }
+    case WM_LBUTTONDBLCLK:
+    {
         break;
     }
     default:

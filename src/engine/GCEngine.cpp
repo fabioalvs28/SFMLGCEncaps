@@ -39,7 +39,23 @@ void GCEngine::Run()
 
 void GCEngine::OnEvent(GCEvent& ev)
 {
-    std::cout << ev.ToString() << std::endl;
+    std::cout << "Event: {0}" << ev.GetName() << std::endl;
+    GCEventDispatcher dispatcher(ev);
+    dispatcher.Dispatch<GCWindowResizeEvent>([](GCWindowResizeEvent& e)
+        {
+            std::cout << "Window Resize Event: {0}" << e.GetName() << std::endl;
+            std::cout << "Width: {0}" << e.GetWidth() << std::endl;
+            std::cout << "Height: {0}" << e.GetHeight() << std::endl;
+            return true;
+        });
+
+    dispatcher.Dispatch<GCMouseMoveEvent>([](GCMouseMoveEvent& e)
+        {
+            std::cout << "Mouse Move Event: {0}" << e.GetName() << std::endl;
+            std::cout << "X: {0}" << e.GetX() << std::endl;
+            std::cout << "Y: {0}" << e.GetY() << std::endl;
+            return true;
+        });
 }
 
 bool GCEngine::InitWindow()
@@ -58,5 +74,6 @@ bool GCEngine::InitD3D12()
 
 void GCEngine::Cleanup()
 {
+    m_window->DestroyWindow();
 }
 
