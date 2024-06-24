@@ -1,76 +1,129 @@
 #include "framework.h"
 
-
-
-
-GCShader::GCShader() {
-
+GCShader::GCShader() 
+{
+	m_RootSignature = nullptr;
+	m_PSO = nullptr;
+	m_InputLayout.clear(); 
+	m_vsByteCode = nullptr;
+	m_psByteCode = nullptr;
+	m_vsCsoPath.clear();
+	m_psCsoPath.clear();
+	ZeroMemory(&psoDesc, sizeof(psoDesc));
+	m_pRender = nullptr;
+	m_flagEnabledBits = 0;
 }
 
 
 GCShader::~GCShader()
 {
+	SAFE_RELEASE(m_RootSignature);
+	SAFE_RELEASE(m_PSO);
+	SAFE_RELEASE(m_vsByteCode);
+	SAFE_RELEASE(m_psByteCode);
 
-};
+	m_InputLayout.clear();
+}
 
-
-
-void GCShader::Render() {
+void GCShader::Render() 
+{
 	m_pRender->GetCommandList()->SetPipelineState(GetPso());
 	m_pRender->GetCommandList()->SetGraphicsRootSignature(GetRootSign());
 }
 
+void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits)
+{
+	
+	CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully");
 
-//#TODO Need To make documentation
-// Initialize Precompile the shader | And load must be call when we need it 
-void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int type) {
+	// #TODO Check the other path
+
+	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());
+	m_vsCsoPath = baseCsoPath + L"VS.cso";
+	m_psCsoPath = baseCsoPath + L"PS.cso";
+
 	m_pRender = pRender;
-	m_type = type;
+	m_flagEnabledBits = flagEnabledBits;
 	PreCompile(filePath, csoDestinationPath);
 }
  
-void GCShader::CompileShader() {
+void GCShader::CompileShader()
+{
+	m_vsByteCode = LoadShaderFromFile(m_vsCsoPath);
+	m_psByteCode = LoadShaderFromFile(m_psCsoPath);
 
-}
+	m_InputLayout.clear();
 
-void GCShader::RootSign() {
-    // Déclaration des paramètres racine
-    CD3DX12_ROOT_PARAMETER slotRootParameter[3];
-
-	slotRootParameter[0].InitAsConstantBufferView(0);
-	slotRootParameter[1].InitAsConstantBufferView(1);
-    
-	// If texture
-	if (m_type == texture) {
-		CD3DX12_DESCRIPTOR_RANGE srvTable;
-		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-		slotRootParameter[2].InitAsDescriptorTable(1, &srvTable);
+	UINT offset = 0; 
+	if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) {
+		m_InputLayout.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		offset += sizeof(DirectX::XMFLOAT3); 
 	}
 
-    // Configuration de l'échantillonneur statique
-    CD3DX12_STATIC_SAMPLER_DESC staticSample = CD3DX12_STATIC_SAMPLER_DESC(
-        0, // shaderRegister
-        D3D12_FILTER_MIN_MAG_MIP_LINEAR, // filter
-        D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressU
-        D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressV
-        D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressW
-        0.0f, // mipLODBias
-        16, // maxAnisotropy
-        D3D12_COMPARISON_FUNC_ALWAYS, // comparisonFunc
-        D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK, // borderColor
-        0.0f, // minLOD
-        D3D12_FLOAT32_MAX // maxLOD
-    );
+	if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) {
+		m_InputLayout.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		offset += sizeof(DirectX::XMFLOAT4); 
+	}
+
+	if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
+		m_InputLayout.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		offset += sizeof(DirectX::XMFLOAT2); // Taille des coordonnées de texture
+	}
+
+
+	// #TODO Need To Interpret HLSL Data to Adapt Root Signature and Input Layout 
+}
+
+
+void GCShader::RootSign()
+{
+	// Déclaration des paramètres racine
+	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
+
+	slotRootParameter[CBV_SLOT_CB0].InitAsConstantBufferView(0);
+	slotRootParameter[CBV_SLOT_CB1].InitAsConstantBufferView(1);
+	UINT numParameters = 2;
+
+
+	// Configuration de l'échantillonneur statique
+	CD3DX12_STATIC_SAMPLER_DESC staticSample = CD3DX12_STATIC_SAMPLER_DESC(
+		0, // shaderRegister
+		D3D12_FILTER_MIN_MAG_MIP_LINEAR, // filter
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressU
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressV
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // addressW
+		0.0f, // mipLODBias
+		16, // maxAnisotropy
+		D3D12_COMPARISON_FUNC_ALWAYS, // comparisonFunc
+		D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK, // borderColor
+		0.0f, // minLOD
+		D3D12_FLOAT32_MAX // maxLOD
+	);
+
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+
+
+	if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
+		CD3DX12_DESCRIPTOR_RANGE srvTable;
+		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE].InitAsDescriptorTable(1, &srvTable);
+		numParameters++;
+	}
+
+	rootSigDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 
 
-    // Configuration de la signature racine
-    CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(m_type+2, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	// Sérialisation de la signature racine
+	ID3DBlob* serializedRootSig = nullptr;
+	ID3DBlob* errorBlob = nullptr;
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
 
-    // Sérialisation de la signature racine
-    ID3DBlob* serializedRootSig = nullptr;
-    ID3DBlob* errorBlob = nullptr;
-    HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
+	// Gestion des erreurs de sérialisation
+	if (errorBlob != nullptr)
+	{
+		::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+	}
 
     // Gestion des erreurs de sérialisation
     if (errorBlob != nullptr) {
@@ -78,20 +131,15 @@ void GCShader::RootSign() {
     }
 
     // Création de la signature racine
-    m_pRender->Getmd3dDevice()->CreateRootSignature(
-        0,
-        serializedRootSig->GetBufferPointer(),
-        serializedRootSig->GetBufferSize(),
-        IID_PPV_ARGS(&m_RootSignature)
+    m_pRender->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature)
     );
 }
-
-void GCShader::Pso() {
+void GCShader::Pso() 
+{
 	// Initialize the graphics pipeline state description
 	ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 	psoDesc.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
 	psoDesc.pRootSignature = m_RootSignature;
-
 
 	psoDesc.VS =
 	{
@@ -107,6 +155,8 @@ void GCShader::Pso() {
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 
+
+
 	// Customize the blend state for transparency
 	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
 	blendDesc.RenderTarget[0].BlendEnable = TRUE;
@@ -120,7 +170,18 @@ void GCShader::Pso() {
 	psoDesc.BlendState = blendDesc;
 
 	// Use default depth stencil state
-	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
+
+
+
+	//// Configure depth stencil state
+	//D3D12_DEPTH_STENCIL_DESC depthStencilDesc = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	//depthStencilDesc.DepthEnable = TRUE;
+	//depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL; // Écrira au Z-buffer
+	//depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; // Comparaison de profondeur
+
+	//psoDesc.DepthStencilState = depthStencilDesc;
+
 
 	// Set other pipeline state settings
 	//psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME; //permet de voir les bordure
@@ -136,27 +197,25 @@ void GCShader::Pso() {
 	m_pRender->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO));
 }
 
-
-
-ID3D12RootSignature* GCShader::GetRootSign() {
+ID3D12RootSignature* GCShader::GetRootSign() 
+{
 	return m_RootSignature;
 }
 
-ID3D12PipelineState* GCShader::GetPso() {
+ID3D12PipelineState* GCShader::GetPso() 
+{
 	return m_PSO;
 }
-
 
 ID3DBlob* GCShader::GetmvsByteCode()
 {
 	return m_vsByteCode;
-};
+}
 
 ID3DBlob* GCShader::GetmpsByteCode()
 {
 	return m_psByteCode;
-};
-
+}
 
 ID3DBlob* GCShader::CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint,const std::string& target)
 {
@@ -169,29 +228,32 @@ ID3DBlob* GCShader::CompileShaderBase(const std::wstring& filename, const D3D_SH
 
 	ID3DBlob* byteCode = nullptr;
 	ID3DBlob* errors;
-	hr = D3DCompileFromFile(filename.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		entrypoint.c_str(), target.c_str(), compileFlags, 0, &byteCode, &errors);
+	hr = D3DCompileFromFile(filename.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), compileFlags, 0, &byteCode, &errors);
 
 	if (errors != nullptr)
+	{
 		OutputDebugStringA((char*)errors->GetBufferPointer());
-
-	//hr;
+	}
 
 	return byteCode;
 }
 
-void GCShader::SaveShaderToFile(ID3DBlob* shaderBlob, const std::wstring& filename) {
+void GCShader::SaveShaderToFile(ID3DBlob* shaderBlob, const std::wstring& filename) 
+{
 	std::ofstream file(filename, std::ios::binary);
-	if (!file.is_open()) {
+	if (!file.is_open()) 
+	{
 		throw std::runtime_error("Failed to open file for writing");
 	}
 	file.write(static_cast<const char*>(shaderBlob->GetBufferPointer()), shaderBlob->GetBufferSize());
 	file.close();
 }
 
-ID3DBlob* GCShader::LoadShaderFromFile(const std::wstring& filename) {
+ID3DBlob* GCShader::LoadShaderFromFile(const std::wstring& filename) 
+{
 	std::ifstream file(filename, std::ios::binary | std::ios::ate);
-	if (!file.is_open()) {
+	if (!file.is_open()) 
+	{
 		throw std::runtime_error("Failed to open file for reading");
 	}
 	std::streamsize size = file.tellg();
@@ -199,11 +261,13 @@ ID3DBlob* GCShader::LoadShaderFromFile(const std::wstring& filename) {
 
 	ID3DBlob* shaderBlob = nullptr;
 	HRESULT hr = D3DCreateBlob(size, &shaderBlob);
-	if (FAILED(hr)) {
+	if (FAILED(hr)) 
+	{
 		throw std::runtime_error("Failed to create shader blob");
 	}
 
-	if (!file.read(static_cast<char*>(shaderBlob->GetBufferPointer()), size)) {
+	if (!file.read(static_cast<char*>(shaderBlob->GetBufferPointer()), size)) 
+	{
 		shaderBlob->Release();
 		throw std::runtime_error("Failed to read file");
 	}
@@ -211,7 +275,8 @@ ID3DBlob* GCShader::LoadShaderFromFile(const std::wstring& filename) {
 	return shaderBlob;
 }
 
-void GCShader::PreCompile(const std::string& filePath, const std::string& csoDestinationPath) {
+void GCShader::PreCompile(const std::string& filePath, const std::string& csoDestinationPath) 
+{
 	std::wstring wideFilePath(filePath.begin(), filePath.end());
 	std::wstring wideCsoDestinationPath(csoDestinationPath.begin(), csoDestinationPath.end());
 
@@ -222,15 +287,8 @@ void GCShader::PreCompile(const std::string& filePath, const std::string& csoDes
 	SaveShaderToFile(psByteCode, wideCsoDestinationPath + L"PS.cso");
 }
 
-//void GCShader::UpdateCameraBuffer(DirectX::XMFLOAT4X4 viewMatrix, DirectX::XMFLOAT4X4 projMatrix)
-//{
-//    //viewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-//    //projMatrix = DirectX::XMMatrixTranspose(projMatrix);
-//
-//
-//    //XMStoreFloat4x4(&cameraCB.view, viewMatrix);
-//    //XMStoreFloat4x4(&cameraCB.proj, projMatrix);
-//
-//
-//    m_pCameraCB->CopyData(0, cameraCB);  // Pass the address of cameraCB
-//}
+void GCShader::Load() {
+	CompileShader();
+	RootSign();
+	Pso();
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4E9E85AE-314A-4E77-A453-8BBBCF9917BC}</UniqueIdentifier>
+      <Extensions>cpp;c</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1ECE7B19-D609-4262-BDA4-0434756D804D}</UniqueIdentifier>
+      <Extensions>h;hpp</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{A8908FBA-BDEB-49FB-9940-FB187132E446}</UniqueIdentifier>
+      <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\RenderApp\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <None Include="..\..\..\src\RenderApp\monkey.obj">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\monkeyUv.obj">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Shaders\color.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Shaders\customTest.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Shaders\texture.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Textures\ahah.dds">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Textures\gojo.dds">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Textures\texture.dds">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

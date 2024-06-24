@@ -61,43 +61,70 @@ ID3D12Resource* GCMesh::CreateDefaultBuffer(
     return defaultBuffer;
 }
 
-
-//// CLASS
-GCMesh::GCMesh() {
+GCMesh::GCMesh() 
+{
 }
 
-GCMesh::~GCMesh() {
-
+GCMesh::~GCMesh() 
+{
 }
 
-//void GCMesh::Initialize(GCRender* pRender) {
-//    m_pRender = pRender;
-//    //m_Buffer = new UploadBuffer<ObjectConstants>(m_pRender->Getmd3dDevice(), 1, true);
-//
-//    m_pObjectCB = new UploadBuffer<WorldCB>(m_pRender->Getmd3dDevice(), 1, true);
-//    m_pCameraCB = new UploadBuffer<CameraCB>(m_pRender->Getmd3dDevice(), 1, true);
-//
-//}
+void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
+    m_pRender = pRender;
 
-
-void GCMesh::UploadGeometryDataColor(GCGeometry* pGeometry) {
-    UploadGeometryData<GCVERTEX>(pGeometry);
-}
-void GCMesh::UploadGeometryDataTexture(GCGeometry* pGeometry) {
-    UploadGeometryData<GCVERTEXTEXTURE>(pGeometry);
+    UploadGeometryData(pGeometry);
 }
 
+void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
+    std::vector<float> vertexData;
 
-//void GCMesh::UpdateObjectBuffer(DirectX::XMMATRIX worldMatrix)
-//{
-//
-//    worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
-//
-//
-//    WorldCB objectCB;
-//    XMStoreFloat4x4(&objectCB.world, worldMatrix);
-//    m_pObjectCB->CopyData(0, objectCB);
-//}
+    int flagEnabledBits = pGeometry->m_flagEnabledBits;
 
-////
+    size_t vertexSize = 0;
+    if (HAS_FLAG(flagEnabledBits, HAS_POSITION)) vertexSize += 3; // 3 floats pour la position
+    if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) vertexSize += 4; // 4 floats pour la couleur
+    if (HAS_FLAG(flagEnabledBits, HAS_UV)) vertexSize += 2; // 2 floats pour les UV
+    if (HAS_FLAG(flagEnabledBits, HAS_NORMAL)) vertexSize += 3; // 3 floats pour la normale
 
+    vertexData.reserve(pGeometry->pos.size() * vertexSize);
+
+
+    for (size_t i = 0; i < pGeometry->pos.size(); ++i) {
+        if (HAS_FLAG(flagEnabledBits, HAS_POSITION)) {
+            vertexData.push_back(pGeometry->pos[i].x);
+            vertexData.push_back(pGeometry->pos[i].y);
+            vertexData.push_back(pGeometry->pos[i].z);
+        }
+        if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) {
+            vertexData.push_back(pGeometry->color[i].x);
+            vertexData.push_back(pGeometry->color[i].y);
+            vertexData.push_back(pGeometry->color[i].z);
+            vertexData.push_back(pGeometry->color[i].w);
+        }
+        if (HAS_FLAG(flagEnabledBits, HAS_UV)) {
+            vertexData.push_back(pGeometry->uv[i].x);
+            vertexData.push_back(pGeometry->uv[i].y);
+        }
+    }
+
+    const UINT vbByteSize = static_cast<UINT>(vertexData.size() * sizeof(float));
+    const UINT ibByteSize = static_cast<UINT>(pGeometry->indices.size() * sizeof(std::uint16_t));
+
+    m_pBufferGeometryData = new GCMESHBUFFERDATA();
+
+    D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
+    CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
+
+    D3DCreateBlob(ibByteSize, &m_pBufferGeometryData->IndexBufferCPU);
+    CopyMemory(m_pBufferGeometryData->IndexBufferCPU->GetBufferPointer(), pGeometry->indices.data(), ibByteSize);
+
+    m_pBufferGeometryData->VertexBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), vertexData.data(), vbByteSize, m_pBufferGeometryData->VertexBufferUploader);
+    m_pBufferGeometryData->IndexBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), pGeometry->indices.data(), ibByteSize, m_pBufferGeometryData->IndexBufferUploader);
+
+    m_pBufferGeometryData->VertexByteStride = static_cast<UINT>(vertexSize * sizeof(float));
+    m_pBufferGeometryData->VertexBufferByteSize = vbByteSize;
+    m_pBufferGeometryData->IndexFormat = DXGI_FORMAT_R16_UINT;
+    m_pBufferGeometryData->IndexBufferByteSize = ibByteSize;
+
+    m_pBufferGeometryData->IndexCount = static_cast<UINT>(pGeometry->indices.size());
+}

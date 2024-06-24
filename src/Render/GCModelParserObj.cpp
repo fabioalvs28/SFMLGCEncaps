@@ -1,9 +1,8 @@
 #include "framework.h"
 
-
-// Utils 
 std::vector<std::string> split(std::string str, std::string delimiter)
 {
+	//Util splits a vector at delimiter
 	std::vector<std::string> v;
 	if (!str.empty()) {
 		int start = 0;
@@ -28,6 +27,7 @@ std::vector<std::string> split(std::string str, std::string delimiter)
 
 std::vector<float> getFloatCoordinates(std::vector<std::string>* pStrCoord)
 {
+	//Util changes string coords to floats 
 	std::vector<float> floatCoord;
 
 	for (int i = 0; i < pStrCoord->size(); i++)
@@ -37,38 +37,22 @@ std::vector<float> getFloatCoordinates(std::vector<std::string>* pStrCoord)
 
 	return floatCoord;
 }
-//
 
-
-
-
-
-
-
-
-/// CLASS
-GCModelParserObj::GCModelParserObj() {
-}
-
-GCModelParserObj::~GCModelParserObj() {
-}
-
-void GCModelParserObj::Initialize()
+GCModelParserObj::GCModelParserObj() 
 {
 }
 
-bool GCModelParserObj::ParseObj(std::string fileName)
+GCModelParserObj::~GCModelParserObj() 
 {
+}
 
-	std::ifstream objFile(fileName);
+ModelInfos* GCModelParserObj::Parse(std::string filePath)
+{
+	//Parses the file into a vector with the coordinates, the triangles and the uvs
+	std::ifstream objFile(filePath);
 	std::string line;
 
-	if (objFile) {
-
-	}
-	else {
-		return false;
-	}
+	ModelInfos* parsedModel = new ModelInfos();
 
 	while (!objFile.eof()) {
 
@@ -90,7 +74,7 @@ bool GCModelParserObj::ParseObj(std::string fileName)
 
 			std::vector<float> coordinates = getFloatCoordinates(&strCoord);
 
-			m_ParsedObj.coords.push_back(coordinates);
+			parsedModel->coords.push_back(coordinates);
 		}
 
 		else if (line[0] == 'f') //face triangles
@@ -120,7 +104,7 @@ bool GCModelParserObj::ParseObj(std::string fileName)
 				for (int j = 0; j < strVertInfos[i].size(); j++)
 					tempInfos.push_back(static_cast<uint16_t>(std::stoi(strVertInfos[i][j]) - 1));
 
-				m_ParsedObj.facesInfos.push_back(tempInfos);
+				parsedModel->facesInfos.push_back(tempInfos);
 			}
 		}
 
@@ -139,62 +123,9 @@ bool GCModelParserObj::ParseObj(std::string fileName)
 
 			std::vector<float> uv = getFloatCoordinates(&strUv);
 
-			m_ParsedObj.uvs.push_back(uv);
+			parsedModel->uvs.push_back(uv);
 		}
 	}
 
-	return true;
+	return parsedModel;
 }
-
-// TEXTURE
-GCGeometry* GCModelParserObj::BuildObjTexture(std::string fileName)
-{
-
-	ParseObj(fileName);
-
-
-	GCGeometry* objGeometry = new GCGeometry();
-
-	objGeometry->indiceNumber = m_ParsedObj.facesInfos.size();
-	objGeometry->vertexNumber = m_ParsedObj.coords.size();
-
-	for (int i = 0; i < m_ParsedObj.facesInfos.size(); i++)
-	{
-		objGeometry->pos.push_back(
-			DirectX::XMFLOAT3(m_ParsedObj.coords[m_ParsedObj.facesInfos[i][0]][0], m_ParsedObj.coords[m_ParsedObj.facesInfos[i][0]][1], m_ParsedObj.coords[m_ParsedObj.facesInfos[i][0]][2]));
-
-		objGeometry->texC.push_back(
-				DirectX::XMFLOAT2(m_ParsedObj.uvs[m_ParsedObj.facesInfos[i][1]][0], m_ParsedObj.uvs[m_ParsedObj.facesInfos[i][1]][1]) );
-
-		objGeometry->indices.push_back(i);
-	}
-
-	return objGeometry;
-}
-
-// COLOR
-
-GCGeometry* GCModelParserObj::BuildObjColor(std::string fileName) {
-
-	GCGeometry* objGeometry = new GCGeometry();
-
-	objGeometry->indiceNumber = m_ParsedObj.facesInfos.size();
-	objGeometry->vertexNumber = m_ParsedObj.coords.size();
-
-	for (int i = 0; i < m_ParsedObj.coords.size(); i++) {
-		objGeometry->pos.push_back(
-			DirectX::XMFLOAT3(m_ParsedObj.coords[i][0], m_ParsedObj.coords[i][1], m_ParsedObj.coords[i][2]));
-
-		objGeometry->color.push_back(
-			DirectX::XMFLOAT4(DirectX::Colors::White));
-	}
-
-	for (int i = 0; i < m_ParsedObj.facesInfos.size(); i++) {
-		objGeometry->indices.push_back(m_ParsedObj.facesInfos[i][0]);
-	}
-
-
-
-	return objGeometry;
-}
-

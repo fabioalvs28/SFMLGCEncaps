@@ -18,6 +18,7 @@
             "precompiled_header": "Use",
             "precompiled_header_file": "pch.h",
             "generate_debug_information": "true",
+            "language_standard": "stdcpp20",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         },
@@ -39,6 +40,7 @@
             "enable_comdat_folding": "true",
             "optimize_references": "true",
             "generate_debug_information": "true",
+            "language_standard": "stdcpp20",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         }

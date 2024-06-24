@@ -1,23 +1,27 @@
 #pragma once
-//
-//#include "d3dUtil.h"
 
-// Nouveau Upload Buffer pour les derivés de ShaderCB
-class GCShaderUploadBufferBase {
+class GCShaderUploadBufferBase
+{
 public:
-    GCShaderUploadBufferBase() : m_pUpload(nullptr), m_data(nullptr), m_elementByteSize(0), m_isConstantBuffer(false) {}
-    virtual ~GCShaderUploadBufferBase() {
-        if (m_pUpload) {
+    GCShaderUploadBufferBase() : m_pUpload(nullptr), m_data(nullptr), m_elementByteSize(0), m_isConstantBuffer(false), m_isUsed(false), m_framesSinceLastUse(0) {}
+    virtual ~GCShaderUploadBufferBase()
+    {
+        if (m_pUpload)
+        {
             m_pUpload->Unmap(0, nullptr);
         }
         m_data = nullptr;
     }
 
-    ID3D12Resource* Resource() const {
+    ID3D12Resource* Resource() const
+    {
         return m_pUpload.Get();
     }
 
     virtual void CopyData(int elementIndex, const GCSHADERCB& data) = 0;
+
+    bool m_isUsed;
+    int m_framesSinceLastUse;
 
 protected:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_pUpload;
@@ -25,19 +29,25 @@ protected:
     UINT m_elementByteSize;
     bool m_isConstantBuffer;
 
-    UINT CalcConstantBufferByteSize(UINT byteSize) {
+
+
+    UINT CalcConstantBufferByteSize(UINT byteSize)
+    {
         return (byteSize + 255) & ~255;
     }
 };
 
 template<typename T>
-class GCShaderUploadBuffer : public GCShaderUploadBufferBase {
+class GCShaderUploadBuffer : public GCShaderUploadBufferBase 
+{
 public:
-    GCShaderUploadBuffer(ID3D12Device* device, UINT elementCount, bool isConstantBuffer) {
+    GCShaderUploadBuffer(ID3D12Device* device, UINT elementCount, bool isConstantBuffer) 
+    {
         m_isConstantBuffer = isConstantBuffer;
         m_elementByteSize = sizeof(T);
 
-        if (isConstantBuffer) {
+        if (isConstantBuffer) 
+        {
             m_elementByteSize = CalcConstantBufferByteSize(sizeof(T));
         }
 
