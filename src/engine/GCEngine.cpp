@@ -39,21 +39,23 @@ void GCEngine::Run()
 
 void GCEngine::OnEvent(GCEvent& ev)
 {
-    std::cout << "Event: {0}" << ev.GetName() << std::endl;
     GCEventDispatcher dispatcher(ev);
-    dispatcher.Dispatch<GCWindowResizeEvent>([](GCWindowResizeEvent& e)
+    dispatcher.Dispatch<GCWindowResizeEvent>([this](GCWindowResizeEvent& e)
         {
-            std::cout << "Window Resize Event: {0}" << e.GetName() << std::endl;
-            std::cout << "Width: {0}" << e.GetWidth() << std::endl;
-            std::cout << "Height: {0}" << e.GetHeight() << std::endl;
+            std::cout << "Window Resize Event: {0}" << e.GetName() 
+                << " Width: {0}" << e.GetWidth() 
+                << " Height: {0}" << e.GetHeight() 
+                << std::endl;
+            m_window->Resize(e.GetWidth(), e.GetHeight());
             return true;
         });
 
     dispatcher.Dispatch<GCMouseMoveEvent>([](GCMouseMoveEvent& e)
         {
-            std::cout << "Mouse Move Event: {0}" << e.GetName() << std::endl;
-            std::cout << "X: {0}" << e.GetX() << std::endl;
-            std::cout << "Y: {0}" << e.GetY() << std::endl;
+            std::cout << "Mouse Move Event: {0}" << e.GetName() 
+                << " X: {0}" << e.GetX() 
+                << " Y: {0}" << e.GetY() 
+                << std::endl;
             return true;
         });
 }

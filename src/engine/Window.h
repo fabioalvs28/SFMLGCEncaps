@@ -30,6 +30,12 @@ public:
 
     virtual void* GetNativeWindow() = 0;
 
+    void Resize(int32_t width, int32_t height)
+    {
+        m_properties.Width = width;
+        m_properties.Height = height;
+    }
+
     int32_t GetWidth() const { return m_properties.Width; }
     int32_t GetHeight() const { return m_properties.Height; }
 
