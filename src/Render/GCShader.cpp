@@ -11,7 +11,7 @@ GCShader::GCShader()
 	m_psCsoPath.clear();
 	ZeroMemory(&psoDesc, sizeof(psoDesc));
 	m_pRender = nullptr;
-	m_type = 0;
+	m_flagEnabledBits = 0;
 }
 
 
@@ -31,10 +31,10 @@ void GCShader::Render()
 	m_pRender->GetCommandList()->SetGraphicsRootSignature(GetRootSign());
 }
 
-void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int type)
+void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits)
 {
 	
-	CheckFile(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully");
+	CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully");
 
 	// #TODO Check the other path
 
@@ -43,12 +43,35 @@ void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const 
 	m_psCsoPath = baseCsoPath + L"PS.cso";
 
 	m_pRender = pRender;
-	m_type = type;
+	m_flagEnabledBits = flagEnabledBits;
 	PreCompile(filePath, csoDestinationPath);
 }
  
-void GCShader::CompileShader() 
+void GCShader::CompileShader()
 {
+	m_vsByteCode = LoadShaderFromFile(m_vsCsoPath);
+	m_psByteCode = LoadShaderFromFile(m_psCsoPath);
+
+	m_InputLayout.clear();
+
+	UINT offset = 0; 
+	if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) {
+		m_InputLayout.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		offset += sizeof(DirectX::XMFLOAT3); 
+	}
+
+	if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) {
+		m_InputLayout.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		offset += sizeof(DirectX::XMFLOAT4); 
+	}
+
+	if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
+		m_InputLayout.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		offset += sizeof(DirectX::XMFLOAT2); // Taille des coordonnées de texture
+	}
+
+
+	// #TODO Need To Interpret HLSL Data to Adapt Root Signature and Input Layout 
 }
 
 
@@ -57,8 +80,10 @@ void GCShader::RootSign()
 	// Déclaration des paramètres racine
 	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
 
-	slotRootParameter[0].InitAsConstantBufferView(0);
-	slotRootParameter[1].InitAsConstantBufferView(1);
+	slotRootParameter[CBV_SLOT_CB0].InitAsConstantBufferView(0);
+	slotRootParameter[CBV_SLOT_CB1].InitAsConstantBufferView(1);
+	UINT numParameters = 2;
+
 
 	// Configuration de l'échantillonneur statique
 	CD3DX12_STATIC_SAMPLER_DESC staticSample = CD3DX12_STATIC_SAMPLER_DESC(
@@ -77,22 +102,16 @@ void GCShader::RootSign()
 
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
 
-	switch (m_type)
-	{
-	case 0:
-		// Configuration de la signature racine
-		rootSigDesc.Init(2, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-		break;
 
-	case 1: //texture
+	if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
 		CD3DX12_DESCRIPTOR_RANGE srvTable;
 		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-		slotRootParameter[2].InitAsDescriptorTable(1, &srvTable);
-
-		// Configuration de la signature racine
-		rootSigDesc.Init(3, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-		break;
+		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE].InitAsDescriptorTable(1, &srvTable);
+		numParameters++;
 	}
+
+	rootSigDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
 
 
 	// Sérialisation de la signature racine
@@ -135,6 +154,8 @@ void GCShader::Pso()
 
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+
+
 
 	// Customize the blend state for transparency
 	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);

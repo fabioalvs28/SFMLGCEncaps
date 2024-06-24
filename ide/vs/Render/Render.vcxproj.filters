@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{82BD52D9-A9A5-47EA-801F-A85A7F4591FB}</UniqueIdentifier>
+      <UniqueIdentifier>{58BEF206-572B-418B-A449-AF2AE54C485F}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{3C530082-7C11-457E-B724-601A4E80B088}</UniqueIdentifier>
+      <UniqueIdentifier>{1230682D-3528-41ED-B9F7-5F0080D0FD14}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{0F0D8BB7-14F9-4882-8EEC-CC51C5190B5A}</UniqueIdentifier>
+      <UniqueIdentifier>{2E0DBF63-3F4C-40EB-9EFC-C0E576C18BB9}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -49,15 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Render\GCShaderColor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Render\GCShaderCustom.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Render\GCShaderTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCTexture.cpp">
@@ -124,15 +115,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCShaderCBStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCShaderColor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCShaderCustom.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCShaderTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCShaderVertexStruct.h">

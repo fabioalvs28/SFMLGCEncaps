@@ -22,7 +22,7 @@ bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics)
     std::wstring wideFilePath(filePath.begin(), filePath.end());
 
 
-    CheckFile(filePath, "Texture not found: " + filePath, "Texture file : " + filePath + " loaded successfully");
+    CHECK_FILE(filePath, "Texture not found: " + filePath, "Texture file : " + filePath + " loaded successfully");
 
     m_cbvSrvUavDescriptorSize = pGraphics->GetRender()->Getmd3dDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 

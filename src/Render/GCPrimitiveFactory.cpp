@@ -110,20 +110,21 @@ void GCPrimitiveFactory::Initialize()
 
     //Put all data in map
     m_primitiveInfos = {
+    // Only in 2d
     {L"plane", {
-        { L"index", std::vector<uint16_t>{0, 2, 1, 0, 3, 2} },
-        { L"pos", std::vector<DirectX::XMFLOAT3>{
-            DirectX::XMFLOAT3(-0.5f, +0.0f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.0f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.0f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.0f, -0.5f)
-        }},
-        { L"uvs", std::vector<DirectX::XMFLOAT2>{
-            DirectX::XMFLOAT2(0, 0),
-            DirectX::XMFLOAT2(0, 1),
-            DirectX::XMFLOAT2(1, 1),
-            DirectX::XMFLOAT2(1, 0)
-        }}
+            { L"index", std::vector<uint16_t>{0, 1, 2, 0, 2, 3} },
+            { L"pos", std::vector<DirectX::XMFLOAT3>{
+                DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f),
+                DirectX::XMFLOAT3(-0.5f, 0.5f, 0.0f),
+                DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f),
+                DirectX::XMFLOAT3(0.5f, -0.5f, 0.0f)
+            }},
+            { L"uvs", std::vector<DirectX::XMFLOAT2>{
+                DirectX::XMFLOAT2(0.0f, 1.0f),
+                DirectX::XMFLOAT2(0.0f, 0.0f),
+                DirectX::XMFLOAT2(1.0f, 0.0f),
+                DirectX::XMFLOAT2(1.0f, 1.0f)
+            }}
     }},
 
     {L"cube", {
@@ -188,6 +189,7 @@ void GCPrimitiveFactory::Initialize()
             DirectX::XMFLOAT2(1, 1),
         }}
     }},
+    // #TODO -> Doesn't work in 2d thereas, it need be 2d
     {L"circle", {
         {L"index", circleIndices},
         {L"pos", circleVertices},
@@ -201,75 +203,50 @@ void GCPrimitiveFactory::Initialize()
     };
 }
 
-GCGeometry* GCPrimitiveFactory::BuildGeometryColor(std::wstring name, DirectX::XMFLOAT4 color)
-{
-    //Builds a color based geometry using pre-created ones
-    //Needs both a geometry name and a specific color
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-    
-    std::string strName(name.begin(), name.end());
-
-    auto it = m_primitiveInfos.find(name);
-
-    if (it == m_primitiveInfos.end())
-    {
-        OutputDebugString((L"Primitive not found: " + name + L"\n").c_str());
-        profiler.LogWarning("Primitive not found: " + strName);
-    }
-    else
-    {
-        OutputDebugString((L"Primitive: " + name + L" loaded successfully\n").c_str());
-        profiler.LogInfo("Primitive: " + strName + " loaded successfully");
-    }
-
-	GCGeometry* primitiveGeometry = new GCGeometry();
-
-	primitiveGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[name][L"index"]);
-	primitiveGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[name][L"index"]).size();
-
-	primitiveGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[name][L"pos"]);
-	primitiveGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[name][L"pos"]).size();
-
-    for(int i = 0 ; i<primitiveGeometry->vertexNumber; i++)
-	    primitiveGeometry->color.push_back(color);
-
-    CHECK_POINTERSNULL(profiler, "Primitive Geometry built successfully", "Primitive geometry is empty", primitiveGeometry);
-
-	return primitiveGeometry;
-}
-
-GCGeometry* GCPrimitiveFactory::BuildGeometryTexture(std::wstring name)
+GCGeometry* GCPrimitiveFactory::BuildGeometry(std::string name, DirectX::XMFLOAT4 color, int& flagEnabledBits)
 {
     //Builds a texture based geometry using pre-created ones
     //Needs a geometry name
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    std::wstring wName(name.begin(), name.end());
 
-    std::string strName(name.begin(), name.end());
-
-    auto it = m_primitiveInfos.find(name);
-    if (it == m_primitiveInfos.end())
+    auto it = m_primitiveInfos.find(wName);
+    /*if (it == m_primitiveInfos.end())
     {
-        OutputDebugString((L"Primitive not found: " + name + L"\n").c_str());
-        profiler.LogWarning("Primitive not found: " + strName);
+        std::wstring warningMsg = L"Primitive not found: " + wName + L"\n";
+        OutputDebugString(warningMsg.c_str());
+        profiler.LogWarning("Primitive not found: " + std::string(name.begin(), name.end()));
     }
     else
     {
-        OutputDebugString((L"Primitive: " + name + L" loaded successfully\n").c_str());
-        profiler.LogInfo("Primitive: " + strName + " loaded successfully");
-    }
+        std::wstring successMsg = L"Primitive: " + wName + L" loaded successfully\n";
+        OutputDebugString(successMsg.c_str());
+        profiler.LogInfo("Primitive: " + std::string(name.begin(), name.end()) + " loaded successfully");
+    }*/
 
 	GCGeometry* primitiveGeometry = new GCGeometry();
 
-	primitiveGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[name][L"index"]);
-	primitiveGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[name][L"index"]).size();
+	primitiveGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[wName][L"index"]);
+	primitiveGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[wName][L"index"]).size();
 
-	primitiveGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[name][L"pos"]);
-	primitiveGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[name][L"pos"]).size();
+    if (HAS_FLAG(flagEnabledBits, HAS_POSITION)) {
+        primitiveGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[wName][L"pos"]);
+        primitiveGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[wName][L"pos"]).size();
+    }
 
-	primitiveGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[name][L"uvs"]);
+    if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) {
+        for (int i = 0; i < primitiveGeometry->vertexNumber; i++)
+            primitiveGeometry->color.push_back(color);
+    }
 
-    CHECK_POINTERSNULL(profiler, "Primitive Geometry built successfully", "Primitive geometry is empty", primitiveGeometry);
+    if (HAS_FLAG(flagEnabledBits, HAS_UV)) {
+        primitiveGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[wName][L"uvs"]);
+    }
+
+    primitiveGeometry->m_flagEnabledBits = flagEnabledBits;
+
+
+    CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", primitiveGeometry);
 
 	return primitiveGeometry;
 }

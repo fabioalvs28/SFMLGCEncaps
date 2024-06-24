@@ -16,13 +16,12 @@ public:
 	GCModelParser();
 	virtual ~GCModelParser();
 
-	GCGeometry* BuildModelColor(std::string fileName, Extensions fileExtension);
-	GCGeometry* BuildModelTexture(std::string fileName, Extensions fileExtension);
+	GCGeometry* BuildModel(std::string filePath, DirectX::XMFLOAT4 color, Extensions fileExtension, int& flagEnabledBits);
 
-	bool Parse(std::string fileName, Extensions fileExtension);
+	bool Parse(std::string filePath, Extensions fileExtension);
 
 protected:
-	std::string m_fileName;
+	std::string m_filePath;
 	ModelInfos* m_ParsedModel;
 	
 };

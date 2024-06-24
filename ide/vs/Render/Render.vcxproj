@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{83BFFCA1-9F94-43E4-8C32-D58F0D904343}</ProjectGuid>
+    <ProjectGuid>{EE2DBAA0-DA9E-4F89-A91B-91996F2FC566}</ProjectGuid>
     <RootNamespace>Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -53,7 +53,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_PROFILER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -69,7 +69,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -93,9 +92,6 @@
     <ClInclude Include="..\..\..\src\Render\GCRender.h" />
     <ClInclude Include="..\..\..\src\Render\GCShader.h" />
     <ClInclude Include="..\..\..\src\Render\GCShaderCBStruct.h" />
-    <ClInclude Include="..\..\..\src\Render\GCShaderColor.h" />
-    <ClInclude Include="..\..\..\src\Render\GCShaderCustom.h" />
-    <ClInclude Include="..\..\..\src\Render\GCShaderTexture.h" />
     <ClInclude Include="..\..\..\src\Render\GCShaderVertexStruct.h" />
     <ClInclude Include="..\..\..\src\Render\GCTexture.h" />
     <ClInclude Include="..\..\..\src\Render\GCTextureFactory.h" />
@@ -138,9 +134,6 @@
     <ClCompile Include="..\..\..\src\Render\GCPrimitiveFactory.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCRender.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCShader.cpp" />
-    <ClCompile Include="..\..\..\src\Render\GCShaderColor.cpp" />
-    <ClCompile Include="..\..\..\src\Render\GCShaderCustom.cpp" />
-    <ClCompile Include="..\..\..\src\Render\GCShaderTexture.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCTexture.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCTextureFactory.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCUtils.cpp" />

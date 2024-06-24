@@ -2,8 +2,7 @@
 
 bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight)
 {
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-	CHECK_POINTERSNULL(profiler, "Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
+	CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
 
 	m_renderWidth = renderWidth;
 	m_renderHeight = renderHeight;
@@ -353,7 +352,6 @@ void GCRender::FlushCommandQueue()
 {
 	// Advance the fence value to mark commands up to this fence point.
 	m_CurrentFence++;
-
 	// Add an instruction to the command queue to set a new fence point.  Because we 
 	// are on the GPU timeline, the new fence point won't be set until the GPU finishes
 	// processing all the commands prior to this Signal().
@@ -379,16 +377,15 @@ bool GCRender::PrepareDraw()
 	//Always needs to be called right before drawing!!!
 
 	HRESULT hr = m_DirectCmdListAlloc->Reset();
-	if (CheckHResult(hr, "m_DirectCmdListAlloc->Reset()")) {
+	if (!CHECK_HRESULT(hr, "m_DirectCmdListAlloc->Reset()")) {
 		return false;
 	};
 
 	hr = m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
 
-	if (CheckHResult(hr, "m_CommandList->Reset()")) {
+	if (!CHECK_HRESULT(hr, "m_CommandList->Reset()")) {
 		return false;
 	};
-
 
 	m_CommandList->RSSetViewports(1, &m_ScreenViewport);
 	m_CommandList->RSSetScissorRects(1, &m_ScissorRect);
@@ -436,13 +433,14 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	//
 	pMaterial->UpdateTexture();
 	// Object
-	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+
 	// Set cb object buffer on used
 	pMaterial->GetObjectCBData()[pMaterial->GetCount()]->m_isUsed = true;
 	pMaterial->IncrementCBCount();
 
 	// Camera
-	m_CommandList->SetGraphicsRootConstantBufferView(1, m_pCurrentViewProj->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB1, m_pCurrentViewProj->Resource()->GetGPUVirtualAddress());
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
@@ -459,7 +457,8 @@ bool GCRender::PostDraw()
 
 	// Close the command list
 	HRESULT hr = m_CommandList->Close();
-	CheckHResult(hr, "Failed to close command list");
+	if (!CHECK_HRESULT(hr, "Failed to close command list")) 
+		return false;
 
 	// Execute the command list
 	ID3D12CommandList* cmdsLists[] = { m_CommandList };
@@ -468,7 +467,7 @@ bool GCRender::PostDraw()
 	// Present the swap chain
 	hr = m_SwapChain->Present(0, 0);
 
-	if (CheckHResult(hr, "Failed to present swap chain"))
+	if (!CHECK_HRESULT(hr, "Failed to present swap chain"))
 		return false;
 
 

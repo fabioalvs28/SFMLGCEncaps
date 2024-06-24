@@ -5,6 +5,8 @@ struct GCGeometry
 public:
 	virtual ~GCGeometry() {}
 
+	int m_flagEnabledBits;
+
 	std::vector<std::uint16_t> indices;
 
 	std::size_t vertexNumber;
@@ -13,5 +15,9 @@ public:
 	std::vector<DirectX::XMFLOAT3> pos;
 	std::vector<DirectX::XMFLOAT4> color;
 	std::vector<DirectX::XMFLOAT2> uv;
+
+	std::vector<DirectX::XMFLOAT3> normals; 
+	std::vector<DirectX::XMFLOAT3> tangents;   
+	std::vector<DirectX::XMFLOAT3> binormals;  
 };
 
