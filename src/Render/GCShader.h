@@ -8,7 +8,7 @@ public:
 	GCShader();
 	~GCShader();
 
-	virtual void CompileShader();
+	void CompileShader();
 
 	ID3DBlob* GetmvsByteCode();
 	ID3DBlob* GetmpsByteCode();
@@ -19,10 +19,10 @@ public:
 	ID3D12RootSignature* GetRootSign();
 	ID3D12PipelineState* GetPso();
 
-	void Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int type);
+	void Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits);
 	void Render();
 
-	int GetType() const { return m_type; }
+	int GetFlagEnabledBits() const { return m_flagEnabledBits; }
 
 	ID3DBlob* CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint, const std::string& target);
 
@@ -33,6 +33,7 @@ public:
 
 	void Load();
 
+	GCRender* m_pRender;
 protected:
 
 	ID3D12RootSignature* m_RootSignature;
@@ -49,7 +50,6 @@ protected:
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
 
-	GCRender* m_pRender;
-
-	int m_type;
+	//int m_type;
+	int m_flagEnabledBits;
 };

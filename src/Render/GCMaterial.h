@@ -5,7 +5,8 @@ public:
 	GCMaterial();
 	~GCMaterial();
 
-	void Initialize(GCShader* m_pShader, GCTexture* m_pTexture, GCRender* pRender);
+	bool Initialize(GCShader* pShader);
+	bool SetTexture(GCTexture* pTexture);
 
 	GCTexture* GetTexture() const { return m_pTexture; }
 	GCShader* GetShader() const { return m_pShader; }
@@ -25,7 +26,6 @@ public:
     void IncrementCBCount() { m_iCount++; }
 	void ResetCBCount() { m_iCount = 0; }
     int GetCount() const { return m_iCount; }
-
 private:
 	GCRender* m_pRender;
 

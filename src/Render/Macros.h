@@ -1,16 +1,40 @@
 #pragma once
 
+bool CheckHResult(HRESULT hr, const std::string& msg);
+bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage);
+bool CheckExtension(std::string filePath, std::string fileExtension);
+
+template <typename Iterator, typename Container>
+bool LogRemoveResource(Iterator it, const std::string& resourceName, Container& container)
+{
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    if (it == std::end(container))
+    {
+        std::wstring wideMessage = L"Resource " + std::wstring(resourceName.begin(), resourceName.end()) + L" not found, can't remove it\n";
+        OutputDebugString(wideMessage.c_str());
+        profiler.LogWarning("Resource " + resourceName + " not found, can't remove it");
+        return false;
+    }
+    else
+    {
+        std::wstring wideMessage = L"Resource " + std::wstring(resourceName.begin(), resourceName.end()) + L" removed successfully\n";
+        OutputDebugString(wideMessage.c_str());
+        profiler.LogInfo("Resource " + resourceName + " removed successfully");
+        return true;
+    }
+}
+
 template<class T>
 bool CheckNull(T value)
 {
 
 	if (value == nullptr)
 	{
-		return false;
+		return true;
 	}
 	else
 	{
-		return true;
+		return false;
 	}
 }
 
@@ -20,7 +44,7 @@ bool CheckNull(T value, Args ... args)
 
 	if (value == nullptr)
 	{
-		return false;
+		return true;
 	}
 	else 
 	{
@@ -28,31 +52,85 @@ bool CheckNull(T value, Args ... args)
 	}
 }
 
-// Variadic Check Ptr with 1 message Error
+
+template<typename... Args>
+bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... args)
+{
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    do {
+        bool allNotNull = true;
+        const char* successMsgStr = successMsg;
+        const char* warningMsgStr = warningMsg;
+
+        auto logWarning = [&](const char* msg) {
+            OutputDebugStringA("Warning: ");
+            OutputDebugStringA(msg);
+            OutputDebugStringA("\n");
+            profiler.LogWarning(msg);
+            allNotNull = false;
+            };
+
+        auto logInfo = [&](const char* msg) {
+            OutputDebugStringA("Success: ");
+            OutputDebugStringA(msg);
+            OutputDebugStringA("\n");
+            profiler.LogInfo(msg);
+            };
+
+        if (!(CheckNull(args...))) {
+            logInfo(successMsgStr);
+            return true;
+        }
+        else {
+            logWarning(warningMsgStr);
+            return false;
+        }
+    } while (false);
+}
+
+
+// Variadic Check Ptr with 1 message Error 
 #ifdef _PROFILER
-#define CHECK_POINTERSNULL(profiler, successMsg, warningMsg, ...) \
-    do { \
-        bool allNotNull = true; \
-        const char* successMsgStr = successMsg; \
-        const char* warningMsgStr = warningMsg; \
-        auto logWarning = [&](const char* msg) { \
-            OutputDebugStringA("Warning: "); OutputDebugStringA(msg); OutputDebugStringA("\n"); \
-            profiler.LogWarning(msg); \
-            allNotNull = false; \
-        }; \
-        auto logInfo = [&](const char* msg) { \
-            OutputDebugStringA("Success: "); OutputDebugStringA(msg); OutputDebugStringA("\n"); \
-            profiler.LogInfo(msg); \
-        }; \
-        if (!(CheckNull(__VA_ARGS__))) { \
-            logInfo(successMsgStr); \
-        } else { \
-            logWarning(warningMsgStr); \
-        } \
-    } while (false)
+#define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
+    CheckPointersNull(successMsg, warningMsg, __VA_ARGS__)
 #else
-#define CHECK_POINTERSNULL(profiler, successMsg, warningMsg, ...) 
+#define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
+    do { } while (false)
 #endif
+    
+
+#ifdef _PROFILER
+#define CHECK_FILE(fileName, errorMessage, successMessage) \
+    CheckFile(fileName, errorMessage, successMessage)
+#else
+#define CHECK_FILE(fileName, errorMessage, successMessage) \
+    false
+#endif
+
+#ifdef _PROFILER
+#define CHECK_EXTENSION(filePath, fileExtension) \
+    CheckExtension(filePath, fileExtension)
+#else
+#define CHECK_EXTENSION(filePath, fileExtension) \
+    false
+#endif
+
+#ifdef _PROFILER
+#define CHECK_HRESULT(hr, msg) \
+    CheckHResult(hr, msg)
+#else
+#define CHECK_HRESULT(hr, msg) \
+    false
+#endif
+
+#ifdef _PROFILER
+#define LOG_REMOVE_RESOURCE(it, resourceName, container) \
+    LogRemoveResource(it, resourceName, container)
+#else
+#define LOG_REMOVE_RESOURCE(it, resourceName, container) \
+    do { } while (false)
+#endif
+
 
 // For Release Instance, used in Destructor of resources
 #define SAFE_RELEASE(p) \
@@ -67,63 +145,29 @@ bool CheckNull(T value, Args ... args)
         (p) = nullptr; \
     }
 
+// Define flags
+#define HAS_POSITION  0x01 // 00000001
+#define HAS_COLOR     0x02 // 00000010
+#define HAS_UV        0x04 // 00000100
+#define HAS_NORMAL    0x08 // 00001000
+#define HAS_TANGENT   0x10 // 00010000
+#define HAS_BINORMAL  0x20 // 00100000
 
-inline bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage)
-{
-	//checks if the filepath exists 
-	// returns true if it exists 
-	// false if it doesn't
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+// Check if a specific flag is set
+#define HAS_FLAG(flags, flag) (((flags) & (flag)) != 0)
 
-	std::wstring wideFileName(fileName.begin(), fileName.end());
+// Set a specific flag
+#define SET_FLAG(flags, flag) ((flags) |= (flag))
 
-	std::wstring wideErrorMessage(errorMessage.begin(), errorMessage.end());
-	std::wstring wideSuccessMessage(successMessage.begin(), successMessage.end());
+// Unset a specific flag
+#define UNSET_FLAG(flags, flag) ((flags) &= ~(flag))
 
-	if (_waccess(wideFileName.c_str(), 0) == -1)
-	{
-		OutputDebugStringW(wideErrorMessage.c_str());
-		profiler.LogWarning("Model file not found: " + fileName);
-		
-		return true;
-	}
-	else
-	{
-		OutputDebugStringW(wideSuccessMessage.c_str());
-		profiler.LogInfo("Model file:" + fileName + " loaded successfully");
-		
-		return false;
-	}
-}
+// Emplacement Root Parameter Index
+#define CBV_SLOT_CB0 0
+#define CBV_SLOT_CB1 1
+#define DESCRIPTOR_TABLE_SLOT_TEXTURE 2
 
-inline bool CheckExtension(std::string filePath, std::string fileExtension)
-{
-	//checks if the filpeath has the right extension 
-	// returns true if it is
-	//  false if it isn't
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
-	std::string extensionCheck;
-	for (int i = 0; i < 3; i++)
-	{
-		extensionCheck.push_back(filePath[filePath.size() - 3 + i]);
-	}
 
-	std::wstring wideFilePath(filePath.begin(), filePath.end());
-	std::wstring wideFileExtension(fileExtension.begin(), fileExtension.end());
 
-	if (extensionCheck != fileExtension)
-	{
-		OutputDebugString((L"The file at filepath: " + wideFilePath + L"is not of type" + wideFileExtension + L"\n").c_str());
-		profiler.LogWarning("The file at filepath: " + filePath + "is not of type" + fileExtension);
-		return false;
-	}
 
-	else 
-	{
-		OutputDebugString((L"The file at filepath: " + wideFilePath + L"has the right type: " + wideFileExtension + L"\n").c_str());
-		profiler.LogInfo("The file at filepath: " + filePath + "has the right type:" + fileExtension);
-		return true;
-	}
-
-}

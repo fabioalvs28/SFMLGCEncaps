@@ -14,12 +14,15 @@ public:
 	~GCPrimitiveFactory();
 	void Initialize();
 
-	GCGeometry* BuildGeometryColor(int index, DirectX::XMFLOAT4 color);
-	GCGeometry* BuildGeometryTexture(int index);
+	void GenerateSphere(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices);
+	void GenerateCircle(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices);
+
+	GCGeometry* BuildGeometry(std::string name, DirectX::XMFLOAT4 color, int& flagEnabledBits);
+
   
 private:
 	GCRender* m_pRender;
-	std::map<int, std::map<std::wstring, std::variant<
+	std::map<std::wstring, std::map<std::wstring, std::variant<
 		std::vector<uint16_t>,
 		std::vector<DirectX::XMFLOAT2>,
 		std::vector<DirectX::XMFLOAT3>,

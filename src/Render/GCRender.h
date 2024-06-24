@@ -35,7 +35,7 @@ public:
 	void Update(const Timer& gt);
 
 	bool PrepareDraw();
-	void PostDraw();
+	bool PostDraw();
 
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 

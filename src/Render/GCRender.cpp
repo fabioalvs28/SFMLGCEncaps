@@ -2,8 +2,7 @@
 
 bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight)
 {
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-	CHECK_POINTERSNULL(profiler, "Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
+	CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
 
 	m_renderWidth = renderWidth;
 	m_renderHeight = renderHeight;
@@ -154,12 +153,9 @@ void GCRender::CreateCommandObjects()
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	m_d3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_CommandQueue));
 
-	m_d3dDevice->CreateCommandAllocator(
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		IID_PPV_ARGS(&m_DirectCmdListAlloc));
+	m_d3dDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_DirectCmdListAlloc));
 
-	m_d3dDevice->CreateCommandList(
-		0,
+	m_d3dDevice->CreateCommandList(0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
 		m_DirectCmdListAlloc, // Associated command allocator
 		nullptr,                   // Initial PipelineStateObject
@@ -204,7 +200,7 @@ void GCRender::CreateCbvSrvUavDescriptorHeaps()
 {
 	// Create CBV / SRV / UAV descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-	cbvHeapDesc.NumDescriptors = 100;
+	cbvHeapDesc.NumDescriptors = 1000;
 	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	cbvHeapDesc.NodeMask = 0;
@@ -237,6 +233,7 @@ void GCRender::OnResize()
 	m_canResize = true;
 	if (m_canResize == false)
 		return;
+
 	assert(m_d3dDevice);
 	assert(m_SwapChain);
 	assert(m_DirectCmdListAlloc);
@@ -355,7 +352,6 @@ void GCRender::FlushCommandQueue()
 {
 	// Advance the fence value to mark commands up to this fence point.
 	m_CurrentFence++;
-
 	// Add an instruction to the command queue to set a new fence point.  Because we 
 	// are on the GPU timeline, the new fence point won't be set until the GPU finishes
 	// processing all the commands prior to this Signal().
@@ -379,15 +375,18 @@ void GCRender::FlushCommandQueue()
 bool GCRender::PrepareDraw() 
 {
 	//Always needs to be called right before drawing!!!
-	if (m_DirectCmdListAlloc->Reset() != S_OK)
-	{
-		return false;
-	}
-	m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
 
-	//CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-	//m_CommandList->ResourceBarrier(1, &ResBar);
-	//m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::Black, 0, nullptr);
+	HRESULT hr = m_DirectCmdListAlloc->Reset();
+	if (!CHECK_HRESULT(hr, "m_DirectCmdListAlloc->Reset()")) {
+		return false;
+	};
+
+	hr = m_CommandList->Reset(m_DirectCmdListAlloc, nullptr);
+
+	if (!CHECK_HRESULT(hr, "m_CommandList->Reset()")) {
+		return false;
+	};
+
 	m_CommandList->RSSetViewports(1, &m_ScreenViewport);
 	m_CommandList->RSSetScissorRects(1, &m_ScissorRect);
 
@@ -409,6 +408,8 @@ bool GCRender::PrepareDraw()
 }
 
 
+
+
 // You can call many times this function without call again Prepare and Post Draw
 //Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
 //Needs all three of the matrices(world,proj,view)
@@ -419,9 +420,7 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 {
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
-	// Update 
 
-	// 
 	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
 	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
 
@@ -434,13 +433,14 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	//
 	pMaterial->UpdateTexture();
 	// Object
-	m_CommandList->SetGraphicsRootConstantBufferView(0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB0, pMaterial->GetObjectCBData()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+
 	// Set cb object buffer on used
 	pMaterial->GetObjectCBData()[pMaterial->GetCount()]->m_isUsed = true;
 	pMaterial->IncrementCBCount();
 
 	// Camera
-	m_CommandList->SetGraphicsRootConstantBufferView(1, m_pCurrentViewProj->Resource()->GetGPUVirtualAddress());
+	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB1, m_pCurrentViewProj->Resource()->GetGPUVirtualAddress());
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
@@ -449,24 +449,36 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 }
 
 //Always needs to be called right after drawing!!!
-void GCRender::PostDraw() { 
+bool GCRender::PostDraw()
+{
+	// Transition to present state
 	CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-
 	m_CommandList->ResourceBarrier(1, &ResBar2);
-	m_CommandList->Close();
 
+	// Close the command list
+	HRESULT hr = m_CommandList->Close();
+	if (!CHECK_HRESULT(hr, "Failed to close command list")) 
+		return false;
 
+	// Execute the command list
 	ID3D12CommandList* cmdsLists[] = { m_CommandList };
 	m_CommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
+	// Present the swap chain
+	hr = m_SwapChain->Present(0, 0);
 
-	m_SwapChain->Present(0, 0);
+	if (!CHECK_HRESULT(hr, "Failed to present swap chain"))
+		return false;
+
+
+	// Move to the next back buffer
 	m_CurrBackBuffer = (m_CurrBackBuffer + 1) % SwapChainBufferCount;
 
-
+	// Flush the command queue
 	FlushCommandQueue();
-}
 
+	return true;
+}
 void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 {
 	UINT count = 0;
