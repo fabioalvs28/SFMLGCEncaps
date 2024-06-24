@@ -89,22 +89,20 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 }
 
 
-// Variadic Check Ptr with 1 message Error 
 #ifdef _PROFILER
 #define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
     CheckPointersNull(successMsg, warningMsg, __VA_ARGS__)
 #else
 #define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
-    do { } while (false)
+    true
 #endif
-    
 
 #ifdef _PROFILER
 #define CHECK_FILE(fileName, errorMessage, successMessage) \
     CheckFile(fileName, errorMessage, successMessage)
 #else
 #define CHECK_FILE(fileName, errorMessage, successMessage) \
-    false
+    true
 #endif
 
 #ifdef _PROFILER
@@ -112,7 +110,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     CheckExtension(filePath, fileExtension)
 #else
 #define CHECK_EXTENSION(filePath, fileExtension) \
-    false
+    true
 #endif
 
 #ifdef _PROFILER
@@ -120,7 +118,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     CheckHResult(hr, msg)
 #else
 #define CHECK_HRESULT(hr, msg) \
-    false
+    true
 #endif
 
 #ifdef _PROFILER
@@ -128,8 +126,9 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     LogRemoveResource(it, resourceName, container)
 #else
 #define LOG_REMOVE_RESOURCE(it, resourceName, container) \
-    do { } while (false)
+    true
 #endif
+
 
 
 // For Release Instance, used in Destructor of resources
