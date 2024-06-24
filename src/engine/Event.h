@@ -104,7 +104,8 @@ class GCWindowCloseEvent : public GCEvent {
 public:
 	GCWindowCloseEvent() {}
 
-	GCEventType GetEventType() const override { return GCEventType::WindowClose; }
+    static GCEventType GetStaticType() { return GCEventType::WindowClose; }
+	GCEventType GetEventType() const override { return GetStaticType(); }
 	const char* GetName() const override { return "WindowCloseEvent"; }
 };
 

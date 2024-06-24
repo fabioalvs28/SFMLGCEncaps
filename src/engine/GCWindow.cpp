@@ -21,10 +21,8 @@ void GCWindow::PollEvents()
     }
 }
 
-bool GCWindow::Initialize(WindowCallback closeCallback)
+bool GCWindow::Initialize()
 {
-    m_windowCloseCallback = closeCallback;
-
     WNDCLASSEX wc
     {
         .cbSize = sizeof(WNDCLASSEX),
@@ -100,6 +98,8 @@ LRESULT GCWindow::HandleEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:
     {
+        GCWindowCloseEvent ev;
+        m_windowCallback(ev);
         PostQuitMessage(0);
         break;
     }
@@ -115,8 +115,16 @@ LRESULT GCWindow::HandleEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         m_windowCallback(ev);
         break;
     }
-    case WM_LBUTTONDBLCLK:
+    case WM_LBUTTONDOWN:
     {
+        GCMouseButtonPressed ev(LOWORD(lParam), HIWORD(lParam), GCMouseButton::Left);
+        m_windowCallback(ev);
+        break;
+    }
+    case WM_RBUTTONDOWN:
+    {
+        GCMouseButtonPressed ev(LOWORD(lParam), HIWORD(lParam), GCMouseButton::Right);
+        m_windowCallback(ev);
         break;
     }
     default:

@@ -14,7 +14,7 @@ public:
     void OnUpdate() override;
     void PollEvents();
 
-    bool Initialize(WindowCallback closeCallback);
+    bool Initialize();
     void DestroyWindow();
 
     void* GetNativeWindow() override { return m_hWnd; }
@@ -25,6 +25,5 @@ private:
 
 private:
     HWND m_hWnd = nullptr;
-    WindowCallback m_windowCloseCallback = nullptr;
     GCEventCallback m_windowCallback = nullptr;
 };

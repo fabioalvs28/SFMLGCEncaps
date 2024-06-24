@@ -40,11 +40,19 @@ void GCEngine::Run()
 void GCEngine::OnEvent(GCEvent& ev)
 {
     GCEventDispatcher dispatcher(ev);
+
+    dispatcher.Dispatch<GCWindowCloseEvent>([this](GCWindowCloseEvent& e)
+        {
+            std::cout << "Window Close Event: " << e.GetName() << std::endl;
+            Shutdown();
+            return true;
+        });
+
     dispatcher.Dispatch<GCWindowResizeEvent>([this](GCWindowResizeEvent& e)
         {
-            std::cout << "Window Resize Event: {0}" << e.GetName() 
-                << " Width: {0}" << e.GetWidth() 
-                << " Height: {0}" << e.GetHeight() 
+            std::cout << "Window Resize Event: " << e.GetName() 
+                << " Width: " << e.GetWidth() 
+                << " Height: " << e.GetHeight() 
                 << std::endl;
             m_window->Resize(e.GetWidth(), e.GetHeight());
             return true;
@@ -52,9 +60,17 @@ void GCEngine::OnEvent(GCEvent& ev)
 
     dispatcher.Dispatch<GCMouseMoveEvent>([](GCMouseMoveEvent& e)
         {
-            std::cout << "Mouse Move Event: {0}" << e.GetName() 
-                << " X: {0}" << e.GetX() 
-                << " Y: {0}" << e.GetY() 
+            std::cout << "Mouse Move Event: " << e.GetName() 
+                << " X: " << e.GetX() 
+                << " Y: " << e.GetY() 
+                << std::endl;
+            return true;
+        });
+
+    dispatcher.Dispatch<GCMouseButtonPressed>([](GCMouseButtonPressed& e)
+        {
+            std::cout << "Mouse Button Event: " << e.GetName()
+                << " Button: Left" 
                 << std::endl;
             return true;
         });
@@ -62,7 +78,7 @@ void GCEngine::OnEvent(GCEvent& ev)
 
 bool GCEngine::InitWindow()
 {
-    if (!m_window->Initialize([this](){ Shutdown(); }))
+    if (!m_window->Initialize())
     {
         return false;
     }

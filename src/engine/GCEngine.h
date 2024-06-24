@@ -34,5 +34,5 @@ private:
 private:
     GCWindow* m_window = nullptr;
 
-    bool m_isRunning;
+    bool m_isRunning = false;
 };
