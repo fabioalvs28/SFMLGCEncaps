@@ -12,6 +12,15 @@
 /// <param name="y">Y value of the quaternion</param>
 /// <param name="z">Z value of the quaternion</param>
 /// <param name="w">W value of the quaternion</param>
+
+GCQUATERNION::GCQUATERNION()
+{
+	x = 0.0f;
+	y = 0.0f;
+	z = 0.0f;
+	w = 1.0f;
+}
+
 GCQUATERNION::GCQUATERNION(float x, float y, float z, float w)
 {
 	this->x = x;
@@ -20,19 +29,29 @@ GCQUATERNION::GCQUATERNION(float x, float y, float z, float w)
 	this->w = w;
 }
 
+
+/// <summary>
+/// Multiply two quaternions
+/// </summary>
+/// <param name="other">Quaternion to multiply with</param>
+
 void GCQUATERNION::operator*=(const GCQUATERNION& other)
 {
-	GCQUATERNION pQ = *this;
+	float qx = x;
+	float qy = y;
+	float qz = z;
+	float qw = w;
 
-	x = pQ.w * other.x + pQ.x * other.w + pQ.y * other.z - pQ.z * other.y;
-	y = pQ.w * other.y + pQ.y * other.w + pQ.z * other.x - pQ.x * other.z;
-	z = pQ.w * other.z + pQ.z * other.w + pQ.x * other.y - pQ.y * other.x;
-	w = pQ.w * other.w - pQ.x * other.x - pQ.y * other.y - pQ.z * other.z;
+	x = qw * other.x + qx * other.w + qy * other.z - qz * other.y;
+	y = qw * other.y + qy * other.w + qz * other.x - qx * other.z;
+	z = qw * other.z + qz * other.w + qx * other.y - qy * other.x;
+	w = qw * other.w - qx * other.x - qy * other.y - qz * other.z;
 }
 
 /// <summary>
 /// Set the quaternion to zero
 /// </summary>
+
 void GCQUATERNION::SetZero()
 {
 	x = 0.0f;
@@ -44,6 +63,7 @@ void GCQUATERNION::SetZero()
 /// <summary>
 /// Set the quaternion to identity
 /// </summary>
+
 void GCQUATERNION::SetIdentity()
 {
 	x = 0.0f;
@@ -55,6 +75,7 @@ void GCQUATERNION::SetIdentity()
 /// <summary>
 /// Normalize the quaternion
 /// </summary>
+
 void GCQUATERNION::Normalize()
 {
 	float norm = sqrt(x * x + y * y + z * z + w * w);
@@ -67,11 +88,19 @@ void GCQUATERNION::Normalize()
 		z *= invNorm;
 		w *= invNorm;
 	}
+	else
+	{
+		std::cout << "Zero norm quaternion, setting to identity" << std::endl;
+		SetIdentity();
+	}
+	std::cout << "Quaternion after normalization: (" << x << ", " << y << ", " << z << ", " << w << ")" << std::endl;
+
 }
 
 /// <summary>
 /// Inverse the quaternion
 /// </summary>
+
 void GCQUATERNION::Inverse()
 {
 	x = -x;
@@ -84,6 +113,7 @@ void GCQUATERNION::Inverse()
 /// </summary>
 /// <param name="other">Quaternion to interpolate with</param>
 /// <param name="t">Interpolation value</param>
+
 void GCQUATERNION::SLerp(const GCQUATERNION& other, float t)
 {
 	GCQUATERNION q1 = *this;
@@ -129,19 +159,29 @@ void GCQUATERNION::SLerp(const GCQUATERNION& other, float t)
 /// <param name="yaw">Yaw angle</param>
 /// <param name="pitch">Pitch angle</param>
 /// <param name="roll">Roll angle</param>
+
 void GCQUATERNION::FromEuler(float yaw, float pitch, float roll)
 {
-	float cy = cos(yaw * 0.5f);
-	float sy = sin(yaw * 0.5f);
-	float cp = cos(pitch * 0.5f);
-	float sp = sin(pitch * 0.5f);
-	float cr = cos(roll * 0.5f);
-	float sr = sin(roll * 0.5f);
+
+	float halfYaw = yaw * 0.5f;
+	float halfPitch = pitch * 0.5f;
+	float halfRoll = roll * 0.5f;
+
+	float cy = cos(halfYaw);
+	float sy = sin(halfYaw);
+	float cp = cos(halfPitch);
+	float sp = sin(halfPitch);
+	float cr = cos(halfRoll);
+	float sr = sin(halfRoll);
 
 	w = cy * cp * cr + sy * sp * sr;
 	x = cy * cp * sr - sy * sp * cr;
-	y = sy * cp * sr + cy * sp * cr;
-	z = sy * cp * cr - cy * sp * sr;
+	y = sy * cp * cr + cy * sp * sr;
+	z = sy * cp * sr - cy * sp * cr;
+
+	Normalize();
+
+	std::cout << "From Euler: (" << x << ", " << y << ", " << z << ", " << w << ")" << std::endl;
 }
 
 
@@ -151,6 +191,7 @@ void GCQUATERNION::FromEuler(float yaw, float pitch, float roll)
 /// </summary>
 /// <param name="axis">Axis of rotation</param>
 /// <param name="angle">Angle of rotation</param>
+
 void GCQUATERNION::FromAxisAngle(const GCVEC3& axis, float angle)
 {
 	float halfAngle = angle * 0.5f;
@@ -166,6 +207,7 @@ void GCQUATERNION::FromAxisAngle(const GCVEC3& axis, float angle)
 /// Convert the quaternion to a matrix
 /// </summary>
 /// <returns>Matrix representation of the quaternion</returns>
+
 GCMATRIX GCQUATERNION::ToMatrix()
 {
 	GCQUATERNION q = *this;
@@ -205,5 +247,29 @@ GCMATRIX GCQUATERNION::ToMatrix()
 	m._44 = 1.0f;
 
 	return m;
+}
+
+GCVEC3 GCQUATERNION::ToEuler() const
+{
+	GCVEC3 euler;
+
+	//Roll (x-axis rotation)
+	float sinr_cosp = 2.0f * (w * x + y * z);
+	float cosr_cosp = 1.0f - 2.0f * (x * x + y * y);
+	euler.x = atan2(sinr_cosp, cosr_cosp);
+
+	//Pitch (y-axis rotation)
+	float sinp = 2.0f * (w * y - z * x);
+	if (fabs(sinp) >= 1)
+		euler.y = copysign(PI / 2.0f, sinp); // Use 90 degrees if out of range
+	else
+		euler.y = asin(sinp);
+
+	//Yaw (z-axis rotation)
+	float siny_cosp = 2.0f * (w * z + x * y);
+	float cosy_cosp = 1.0f - 2.0f * (y * y + z * z);
+	euler.z = atan2(siny_cosp, cosy_cosp);
+
+	return euler;
 }
 

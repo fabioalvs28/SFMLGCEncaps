@@ -51,6 +51,8 @@ int main()
 	GCGameObject* pSelected = nullptr;
 
 
+	float angle = 0;
+
 	for (int framesSinceStart = 0; window.isOpen(); framesSinceStart++)
 	{
 		sf::Event event;
@@ -105,18 +107,28 @@ int main()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) pSelected->m_transform.Scale( GCVEC3::One() * 1.01f );
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) pSelected->m_transform.Scale( GCVEC3::One() * 0.99f );
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) pSelected->m_transform.Rotate(0, 0, -15);
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) pSelected->m_transform.Rotate(0, 0, 15);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			pSelected->m_transform.Rotate(0, 0, 0.2f * (PI / 100.f));
+			angle += 0.2f;
+			std::cout << "Rotation A: {" << pSelected->m_transform.m_rotation.x << " ; " << pSelected->m_transform.m_rotation.y << " ; " << pSelected->m_transform.m_rotation.z << "}" << std::endl;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		{
+			pSelected->m_transform.Rotate(0, 0, -0.2f * (PI / 100.f));
+			angle -= 0.2f;
+		}
 
 
 
 
 		if (pMario != nullptr)
 		{
-			std::cout << "{" << (int)pMario->m_transform.m_rotation.x << " ; " << (int)pMario->m_transform.m_rotation.y << " ; " << (int)pMario->m_transform.m_rotation.z << "}" << std::endl;
+			//std::cout << "{" << (int)pMario->m_transform.m_rotation.x << " ; " << (int)pMario->m_transform.m_rotation.y << " ; " << (int)pMario->m_transform.m_rotation.z << "}" << std::endl;
 			marioSprite.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, pMario->m_transform.m_position.y));
 			marioSprite.setScale(sf::Vector2f(pMario->m_transform.m_scale.x, pMario->m_transform.m_scale.y));
-			marioSprite.setRotation(pMario->m_transform.m_rotation.z);
+
+			marioSprite.setRotation(angle);
 			window.draw(marioSprite);
 		}
 		
