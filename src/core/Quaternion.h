@@ -1,7 +1,7 @@
 #pragma once
 
-struct GCMATRIX;
 struct GCVEC3;
+struct GCMATRIX;
 
 
 struct GCQUATERNION

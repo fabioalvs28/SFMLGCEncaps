@@ -179,7 +179,7 @@ void GCGameObject::DestroyChildren()
 /////////////////////////////////////////////////////////////////////////////
 void GCGameObject::AddTag( const char* tag )
 {
-    // if ( m_tagsList.Find( tag ) == true ) return; //! To uncomment when GCVector::Find method is pushed
+    if ( m_tagsList.Find( tag ) == true ) return;
     m_tagsList.PushBack( tag );
 }
 
