@@ -30,8 +30,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// Geometry (Resource)
 	GCGeometry* geo = graphics->CreateGeometryPrimitiveTexture("plane");
-	GCGeometry* geo1 = graphics->CreateGeometryPrimitiveTexture("cube");
-	GCGeometry* geo2 = graphics->CreateGeometryModelParserColor("../../../src/Render/monkeyUv.obj", DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f), obj);
+	GCGeometry* geo1 = graphics->CreateGeometryPrimitiveColor("cube", DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f));
+	//GCGeometry* geo2 = graphics->CreateGeometryModelParserColor("../../../src/Render/monkey.obj", DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f), obj);
+	GCGeometry* geo2 = graphics->CreateGeometryModelParserTexture("../../../src/Render/cube.obj", obj);
 
 	std::string shaderFilePath = "../../../src/Render/Shaders/customTest.hlsl";
 	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
@@ -137,10 +138,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	DirectX::XMFLOAT4X4 transposedWorld;
 	DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&I)));
 
-
-
-
-
 	// ***********
 
 	graphics->StartFrame();
@@ -156,7 +153,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
 
 	graphics->UpdateCustomCBObject<GCTest>(material2, test);
-	graphics->GetRender()->DrawObject(mesh2, material2);
+	graphics->GetRender()->DrawObject(mesh, material2);
 
 	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
 	//graphics->GetRender()->DrawObject(mesh, material);
