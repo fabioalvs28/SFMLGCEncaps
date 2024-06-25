@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{58BEF206-572B-418B-A449-AF2AE54C485F}</UniqueIdentifier>
+      <UniqueIdentifier>{19A2544B-910B-4B5F-93D1-2B71F8F86F44}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{1230682D-3528-41ED-B9F7-5F0080D0FD14}</UniqueIdentifier>
+      <UniqueIdentifier>{6BFDDC8E-D744-4E11-BD8A-AE2B56A9207C}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{2E0DBF63-3F4C-40EB-9EFC-C0E576C18BB9}</UniqueIdentifier>
+      <UniqueIdentifier>{451F4A16-3128-4523-8488-A5D77C81B251}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -19,6 +19,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\DDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\framework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCGeometry.cpp">

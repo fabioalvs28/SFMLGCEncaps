@@ -73,3 +73,14 @@ bool CheckHResult(HRESULT hr, const std::string& msg)
 	return true;
 }
 
+void CompareShaderMeshFlags(GCMaterial* pMaterial, GCMesh* pMesh)
+{
+	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+	if (pMaterial->GetShader()->GetFlagEnabledBits() == pMesh->GetFlagEnabledBits()) {
+		profiler.LogInfo("Shader flag identique au Mesh flag");
+	}
+	else {
+		profiler.LogWarning("Shader flag pas identique au Mesh flag");
+	}
+}

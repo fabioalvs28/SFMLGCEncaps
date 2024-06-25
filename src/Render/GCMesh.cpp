@@ -63,45 +63,65 @@ ID3D12Resource* GCMesh::CreateDefaultBuffer(
 
 GCMesh::GCMesh() 
 {
+    m_pRender = nullptr;
+    m_pBufferGeometryData = nullptr;
+    m_flagEnabledBits = 0;
 }
 
-GCMesh::~GCMesh() 
+GCMesh::~GCMesh()
 {
+    if (m_pBufferGeometryData)
+    {
+        SAFE_RELEASE(m_pBufferGeometryData->VertexBufferCPU);
+        SAFE_RELEASE(m_pBufferGeometryData->IndexBufferCPU);
+
+        SAFE_RELEASE(m_pBufferGeometryData->VertexBufferGPU);
+        SAFE_RELEASE(m_pBufferGeometryData->IndexBufferGPU);
+
+        SAFE_RELEASE(m_pBufferGeometryData->VertexBufferUploader);
+        SAFE_RELEASE(m_pBufferGeometryData->IndexBufferUploader);
+
+        m_pBufferGeometryData->VertexByteStride = 0;
+        m_pBufferGeometryData->VertexBufferByteSize = 0;
+        m_pBufferGeometryData->IndexFormat = DXGI_FORMAT_R16_UINT;
+        m_pBufferGeometryData->IndexBufferByteSize = 0;
+        m_pBufferGeometryData->IndexCount = 0;
+
+        SAFE_DELETE(m_pBufferGeometryData);
+    }
 }
 
 void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
     m_pRender = pRender;
-
     UploadGeometryData(pGeometry);
 }
 
 void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
     std::vector<float> vertexData;
 
-    int flagEnabledBits = pGeometry->m_flagEnabledBits;
+    m_flagEnabledBits = pGeometry->m_flagEnabledBits;
 
     size_t vertexSize = 0;
-    if (HAS_FLAG(flagEnabledBits, HAS_POSITION)) vertexSize += 3; // 3 floats pour la position
-    if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) vertexSize += 4; // 4 floats pour la couleur
-    if (HAS_FLAG(flagEnabledBits, HAS_UV)) vertexSize += 2; // 2 floats pour les UV
-    if (HAS_FLAG(flagEnabledBits, HAS_NORMAL)) vertexSize += 3; // 3 floats pour la normale
+    if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) vertexSize += 3; // 3 floats pour la position
+    if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) vertexSize += 4; // 4 floats pour la couleur
+    if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) vertexSize += 2; // 2 floats pour les UV
+    if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) vertexSize += 3; // 3 floats pour la normale
 
     vertexData.reserve(pGeometry->pos.size() * vertexSize);
 
-
     for (size_t i = 0; i < pGeometry->pos.size(); ++i) {
-        if (HAS_FLAG(flagEnabledBits, HAS_POSITION)) {
+        if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) {
             vertexData.push_back(pGeometry->pos[i].x);
             vertexData.push_back(pGeometry->pos[i].y);
             vertexData.push_back(pGeometry->pos[i].z);
         }
-        if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) {
+        if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) {
             vertexData.push_back(pGeometry->color[i].x);
             vertexData.push_back(pGeometry->color[i].y);
             vertexData.push_back(pGeometry->color[i].z);
             vertexData.push_back(pGeometry->color[i].w);
         }
-        if (HAS_FLAG(flagEnabledBits, HAS_UV)) {
+        if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
             vertexData.push_back(pGeometry->uv[i].x);
             vertexData.push_back(pGeometry->uv[i].y);
         }

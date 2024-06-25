@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{EE2DBAA0-DA9E-4F89-A91B-91996F2FC566}</ProjectGuid>
+    <ProjectGuid>{54DBC60B-1779-4178-B275-3A83791AE788}</ProjectGuid>
     <RootNamespace>Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -56,6 +56,8 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;_PROFILER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>framework.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -124,6 +126,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Render\ConsoleApp.cpp" />
     <ClCompile Include="..\..\..\src\Render\DDSTextureLoader.cpp" />
+    <ClCompile Include="..\..\..\src\Render\framework.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCGeometry.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCGraphicsProfiler.cpp" />

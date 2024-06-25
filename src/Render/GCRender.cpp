@@ -430,6 +430,8 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
+	COMPARE_SHADER_MESH_FLAGS(pMaterial, pMesh);
+
 	//
 	pMaterial->UpdateTexture();
 	// Object

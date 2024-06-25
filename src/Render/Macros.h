@@ -3,6 +3,7 @@
 bool CheckHResult(HRESULT hr, const std::string& msg);
 bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage);
 bool CheckExtension(std::string filePath, std::string fileExtension);
+void CompareShaderMeshFlags(GCMaterial* pMaterial, GCMesh* pMesh);
 
 template <typename Iterator, typename Container>
 bool LogRemoveResource(Iterator it, const std::string& resourceName, Container& container)
@@ -95,16 +96,15 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     CheckPointersNull(successMsg, warningMsg, __VA_ARGS__)
 #else
 #define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
-    do { } while (false)
+    true
 #endif
-    
 
 #ifdef _PROFILER
 #define CHECK_FILE(fileName, errorMessage, successMessage) \
     CheckFile(fileName, errorMessage, successMessage)
 #else
 #define CHECK_FILE(fileName, errorMessage, successMessage) \
-    false
+    true
 #endif
 
 #ifdef _PROFILER
@@ -112,7 +112,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     CheckExtension(filePath, fileExtension)
 #else
 #define CHECK_EXTENSION(filePath, fileExtension) \
-    false
+    true
 #endif
 
 #ifdef _PROFILER
@@ -120,7 +120,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     CheckHResult(hr, msg)
 #else
 #define CHECK_HRESULT(hr, msg) \
-    false
+    true
 #endif
 
 #ifdef _PROFILER
@@ -128,9 +128,16 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     LogRemoveResource(it, resourceName, container)
 #else
 #define LOG_REMOVE_RESOURCE(it, resourceName, container) \
-    do { } while (false)
+    true
 #endif
 
+#ifdef _PROFILER
+#define COMPARE_SHADER_MESH_FLAGS(material, mesh) \
+    CompareShaderMeshFlags(material, mesh)
+#else
+#define COMPARE_SHADER_MESH_FLAGS(material, mesh) \
+    true
+#endif
 
 // For Release Instance, used in Destructor of resources
 #define SAFE_RELEASE(p) \

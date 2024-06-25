@@ -1,10 +1,10 @@
 #pragma once
 
-//template<typename ResourcePtr>
-//struct ResourceCreationResult {
-//	bool success;
-//	ResourcePtr resource;
-//};
+template<typename ResourcePtr>
+struct ResourceCreationResult {
+	bool success;
+	ResourcePtr resource;
+};
 
 class GCGraphics
 {
@@ -22,26 +22,27 @@ public:
 	void InitializeGraphicsResourcesEnd();
 
 	// Shader
-	GCShader* CreateShaderColor();
-	GCShader* CreateShaderTexture();
-	GCShader* CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits);
-
-	template<typename ShaderTypeConstantBuffer>
-	ShaderTypeConstantBuffer ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
+	ResourceCreationResult<GCShader*> CreateShaderColor();
+	ResourceCreationResult<GCShader*> CreateShaderTexture();
+	ResourceCreationResult<GCShader*> CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits);
 
 
-	GCMaterial* CreateMaterial(GCShader* pShader);
-	GCMesh* CreateMesh(GCGeometry* pGeometry);
 
-	GCGeometry* CreateGeometryPrimitiveTexture(const std::string& primitiveName);
-	GCGeometry* CreateGeometryPrimitiveColor(const std::string& primitiveName, const DirectX::XMFLOAT4& color);
-	GCGeometry* CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int& flagEnabledBits);
+	DirectX::XMFLOAT4X4 ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
 
-	GCGeometry* CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType);
-	GCGeometry* CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType);
-	GCGeometry* CreateGeometryModelParserCustom(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType, int& flagEnabledBits);
+	ResourceCreationResult<GCMaterial*> CreateMaterial(GCShader* pShader);
 
-	GCTexture* CreateTexture(const std::string& filePath);
+	ResourceCreationResult<GCMesh*> CreateMesh(GCGeometry* pGeometry);
+
+	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveTexture(const std::string& primitiveName);
+	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveColor(const std::string& primitiveName, const DirectX::XMFLOAT4& color);
+	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int& flagEnabledBits);
+
+	ResourceCreationResult<GCGeometry*> CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType);
+	ResourceCreationResult<GCGeometry*> CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType);
+	ResourceCreationResult<GCGeometry*> CreateGeometryModelParserCustom(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType, int& flagEnabledBits);
+
+	ResourceCreationResult<GCTexture*> CreateTexture(const std::string& filePath);
 
 	// Update Constant Buffer 
 	//Updates a cb data of a given material, using a count for now that'll need to be reset after each draw, might be subject to changes in the near future
@@ -59,10 +60,10 @@ public:
 	void CreateCBCamera();
 
 	// Remove Resources
-	void RemoveShader(GCShader* pShader);
-	void RemoveMaterial(GCMaterial* pMaterial);
-	void RemoveMesh(GCMesh* pMesh);
-	void RemoveTexture(GCTexture* pTexture);
+	bool RemoveShader(GCShader* pShader);
+	bool RemoveMaterial(GCMaterial* pMaterial);
+	bool RemoveMesh(GCMesh* pMesh);
+	bool RemoveTexture(GCTexture* pTexture);
 
 	std::vector<GCShader*> GetShaders();
 	std::vector<GCMaterial*> GetMaterials();
@@ -70,13 +71,15 @@ public:
 	std::vector<GCTexture*> GetTextures();
 
 	// Id / #TODO Se poser la question du suivi des ressources
-	int GetTextureId() const { return m_textureId; }
-
+	//int GetTextureId() const { return m_textureId; }
 
 	GCRender* GetRender() const { return m_pRender; }
 	
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
 	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
+
+	std::vector<bool> m_vTextureActiveFlags;
+	std::vector<bool> m_vMeshActiveFlags;
 
 private:
 	// Render instance contain Window
@@ -84,11 +87,6 @@ private:
 	int	m_renderHeight;
 
 	GCRender* m_pRender;
-
-	int m_meshId;
-	int m_shaderId;
-	int m_materialId;
-	int m_textureId;
 
 	std::vector<GCTexture*> m_vTextures;
 	std::vector<GCShader*> m_vShaders;
@@ -123,16 +121,3 @@ void GCGraphics::UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& o
 	pMaterial->UpdateConstantBuffer(objectData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
 }
 
-template<typename ShaderTypeConstantBuffer>
-ShaderTypeConstantBuffer GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view) {
-	DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);
-	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
-	DirectX::XMFLOAT4X4 convertedMatrix;
-	DirectX::XMStoreFloat4x4(&convertedMatrix, DirectX::XMMatrixTranspose(translationMatrix));
-
-
-	ShaderTypeConstantBuffer worldData;
-	worldData.world = convertedMatrix;
-
-	return worldData;
-}

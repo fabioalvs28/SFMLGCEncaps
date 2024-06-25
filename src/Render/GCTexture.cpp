@@ -9,18 +9,18 @@ GCTexture::GCTexture()
 
 GCTexture::~GCTexture()
 {
-    //Free texture from GPU, for create new texture at same place after
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
     SAFE_RELEASE(m_pTextureBuffer);
     SAFE_RELEASE(m_pUploadTexture);
 
     m_textureAddress = CD3DX12_GPU_DESCRIPTOR_HANDLE(D3D12_DEFAULT);
 }
 
-bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics)
+bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics, size_t& textureOffset)
 {
     //Initializes textures
     std::wstring wideFilePath(filePath.begin(), filePath.end());
-
 
     CHECK_FILE(filePath, "Texture not found: " + filePath, "Texture file : " + filePath + " loaded successfully");
 
@@ -36,7 +36,7 @@ bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics)
 
     //Heap
     CD3DX12_CPU_DESCRIPTOR_HANDLE handleDescriptor(pGraphics->GetRender()->GetCbvSrvUavSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
-    handleDescriptor.Offset(pGraphics->GetTextureId(), m_cbvSrvUavDescriptorSize);
+    handleDescriptor.Offset(textureOffset, m_cbvSrvUavDescriptorSize);
 
     //Desc texture
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -52,6 +52,6 @@ bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics)
     pGraphics->GetRender()->Getmd3dDevice()->CreateShaderResourceView(m_pTextureBuffer, &srvDesc, handleDescriptor);
 
     m_textureAddress = CD3DX12_GPU_DESCRIPTOR_HANDLE(pGraphics->GetRender()->GetCbvSrvUavSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart());
-    m_textureAddress.Offset(pGraphics->GetTextureId(), m_cbvSrvUavDescriptorSize);
+    m_textureAddress.Offset(textureOffset, m_cbvSrvUavDescriptorSize);
     return true;
 }
