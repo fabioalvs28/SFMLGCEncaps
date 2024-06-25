@@ -1,7 +1,7 @@
 #pragma once
 #include <windows.h>
 #include "../core/framework.h"
-
+#include "EventSystem.h"
 
 
 //////////////////////////////////////////////
@@ -164,4 +164,6 @@ private:
     GCVector<GCControllerInput*> m_controllerList;
     GCVector<int> m_updatedKeys;
     GCVector<BYTE> m_keyState;
+
+    GCEventSystem* m_eventSystem;
 };

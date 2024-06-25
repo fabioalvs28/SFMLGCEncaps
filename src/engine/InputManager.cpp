@@ -116,8 +116,18 @@ void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
     m_keyState[index] = state;
     m_updatedKeys.PushBack(index);
-}
 
+    if (state == GCKeyState::DOWN || state == GCKeyState::PUSH)
+    {
+        GCKeyPressedEvent evl(index);
+        m_eventSystem->PushEvent(&evl); 
+    }
+    else if (state == GCKeyState::UP) 
+    {
+        GCKeyReleased evr(index);
+        m_eventSystem->PushEvent(&evr);
+    }
+}
 
 
 

@@ -128,3 +128,32 @@ private:
 	unsigned int m_width, m_height;
 };
 #pragma endregion
+
+class GCKeyEvent : public GCEvent
+{
+public:
+	GCKeyEvent(int id) : keyID(id) {}
+
+protected:
+	int keyID;
+};
+
+class GCKeyPressedEvent : public GCKeyEvent
+{
+public:
+    GCKeyPressedEvent(int id) : GCKeyEvent(id) {};
+	
+    static GCEventType GetStaticType() { return GCEventType::KeyPressed; }
+    GCEventType GetEventType() const override { return GetStaticType(); }
+    const char* GetName() const override { return "KeyPressedEvent"; }
+};
+
+class GCKeyReleased : public GCKeyEvent
+{
+public:
+    GCKeyReleased(int id) : GCKeyEvent(id) {};
+
+    static GCEventType GetStaticType() { return GCEventType::KeyReleased; }
+    GCEventType GetEventType() const override { return GetStaticType(); }
+    const char* GetName() const override { return "KeyReleased"; }
+};

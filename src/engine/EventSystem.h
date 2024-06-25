@@ -49,6 +49,4 @@ private:
 private:
 	GCMap<GCEventType, std::vector<std::function<void()>>> m_eventListeners;
     GCQueue<GCEvent*> m_eventQueue;
-
-	GCVector<Layer*> m_layers;
 };
