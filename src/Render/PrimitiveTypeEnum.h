@@ -1,8 +1,8 @@
 #pragma once
 enum PIEnum 
 {
-	BoxColor,
-	BoxTexture,
-	PlaneTexture,
-	Total
+	Cube,
+	Sphere,
+	Circle,
+	Plane,
 };

@@ -21,3 +21,45 @@ DirectX::XMFLOAT3 GCUtils::PixelToWorld(float x, float y, UINT windowWidth, UINT
 	DirectX::XMStoreFloat3(&worldPos, worldSpacePos);
 	return worldPos;
 }
+
+GCVEC3 GCUtils::Xmfloat3ToGcvec3(const DirectX::XMFLOAT3& v1)
+{
+	GCVEC3 vec;
+
+	vec.x = v1.x;
+	vec.y = v1.y;
+	vec.z = v1.z;
+
+	return vec;
+}
+
+DirectX::XMFLOAT3 GCUtils::Gcvec3oXmfloat3(const GCVEC3& v1)
+{
+	DirectX::XMFLOAT3 vec;
+
+	vec.x = v1.x;
+	vec.y = v1.y;
+	vec.z = v1.z;
+
+	return vec;
+}
+
+
+DirectX::XMFLOAT3 GCUtils::GetNormal(const GCVEC3& v1, const GCVEC3& v2, const GCVEC3& v3, bool inverse)
+{
+	GCVEC3 normal;
+	GCVEC3 vA, vB;
+	vA = v1 - v2;
+	vB = v3 - v2;
+
+	GCVEC3::CrossProduct(vA, vB, normal);
+	normal.Normalize();
+
+	DirectX::XMFLOAT3 norm;
+
+	norm.x = normal.x;
+	norm.y = normal.y;
+	norm.z = normal.z;
+
+	return norm;
+}

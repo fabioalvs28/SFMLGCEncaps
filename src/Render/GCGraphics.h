@@ -15,7 +15,7 @@ public:
 	void Initialize(Window* pWindow, int renderWidth, int renderHeight);
 
 	// Each Frame
-	bool StartFrame();
+	void StartFrame();
 	void EndFrame();
 
 	void InitializeGraphicsResourcesStart();
