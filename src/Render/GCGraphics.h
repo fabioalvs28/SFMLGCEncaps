@@ -26,8 +26,6 @@ public:
 	ResourceCreationResult<GCShader*> CreateShaderTexture();
 	ResourceCreationResult<GCShader*> CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits);
 
-
-
 	DirectX::XMFLOAT4X4 ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
 
 	ResourceCreationResult<GCMaterial*> CreateMaterial(GCShader* pShader);
@@ -45,23 +43,21 @@ public:
 	ResourceCreationResult<GCTexture*> CreateTexture(const std::string& filePath);
 
 	// Update Constant Buffer 
-	//Updates a cb data of a given material, using a count for now that'll need to be reset after each draw, might be subject to changes in the near future
-	//Update Camera and Object Constant Buffer / But They can also send their own structure
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
-	// Base
+
+	// Update ViewProj, use for Camera
 	void UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	// Update world cb buffer with GCWORLDCB Struct
 	void UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
-	// Custom
+	// Update world with custom struct
 	template<typename ShaderTypeConstantBuffer>
 	void UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
-	// Near Update Camera
-
-	template<typename ShaderTypeConstantBuffer>
-	void CreateCBCamera();
 
 	// Remove Resources
 	bool RemoveShader(GCShader* pShader);
 	bool RemoveMaterial(GCMaterial* pMaterial);
+
+	// Remove using active flags
 	bool RemoveMesh(GCMesh* pMesh);
 	bool RemoveTexture(GCTexture* pTexture);
 
@@ -70,18 +66,19 @@ public:
 	std::vector<GCMesh*> GetMeshes();
 	std::vector<GCTexture*> GetTextures();
 
-	// Id / #TODO Se poser la question du suivi des ressources
-	//int GetTextureId() const { return m_textureId; }
-
 	GCRender* GetRender() const { return m_pRender; }
 	
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
 	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
 
+	// Manage inactive slot to push resource
 	std::vector<bool> m_vTextureActiveFlags;
 	std::vector<bool> m_vMeshActiveFlags;
 
 private:
+	template<typename ShaderTypeConstantBuffer>
+	void CreateCBCamera();
+
 	// Render instance contain Window
 	int m_renderWidth;
 	int	m_renderHeight;

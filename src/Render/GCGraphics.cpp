@@ -114,7 +114,6 @@ void GCGraphics::EndFrame()
     }
 };
 
-
 void GCGraphics::InitializeGraphicsResourcesStart() {
     m_pRender->ResetCommandList(); // Reset Command List Before Resources Creation
 }
@@ -324,7 +323,6 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserTexture
 
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
-
 
 ResourceCreationResult<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pShader)
 {

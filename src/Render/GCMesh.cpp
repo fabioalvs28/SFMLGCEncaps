@@ -1,11 +1,6 @@
 #include "framework.h"
 
-ID3D12Resource* GCMesh::CreateDefaultBuffer(
-    ID3D12Device* device,
-    ID3D12GraphicsCommandList* cmdList,
-    const void* initData,
-    UINT64 byteSize,
-    ID3D12Resource* uploadBuffer)
+ID3D12Resource* GCMesh::CreateDefaultBuffer(ID3D12Device* device,ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, ID3D12Resource* uploadBuffer)
 {
     ID3D12Resource* defaultBuffer;
 
@@ -44,20 +39,18 @@ ID3D12Resource* GCMesh::CreateDefaultBuffer(
     // will copy the CPU memory into the intermediate upload heap.  Then, using ID3D12CommandList::CopySubresourceRegion,
     // the intermediate upload heap data will be copied to mBuffer.
 
-    CD3DX12_RESOURCE_BARRIER ResBarrier(CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer,
-        D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST));
+    CD3DX12_RESOURCE_BARRIER ResBarrier(CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST));
     cmdList->ResourceBarrier(1, &ResBarrier);
+
     UpdateSubresources<1>(cmdList, defaultBuffer, uploadBuffer, 0, 0, 1, &subResourceData);
-    CD3DX12_RESOURCE_BARRIER ResBarrier2(CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer,
-        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ));
+
+    CD3DX12_RESOURCE_BARRIER ResBarrier2(CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ));
     cmdList->ResourceBarrier(1, &ResBarrier2);
 
 
     // Note: uploadBuffer has to be kept alive after the above function calls because
     // the command list has not been executed yet that performs the actual copy.
     // The caller can Release the uploadBuffer after it knows the copy has been executed.
-
-
     return defaultBuffer;
 }
 
@@ -97,15 +90,16 @@ void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
 }
 
 void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
-    std::vector<float> vertexData;
-
     m_flagEnabledBits = pGeometry->m_flagEnabledBits;
 
+    std::vector<float> vertexData;
     size_t vertexSize = 0;
-    if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) vertexSize += 3; // 3 floats pour la position
-    if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) vertexSize += 4; // 4 floats pour la couleur
-    if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) vertexSize += 2; // 2 floats pour les UV
-    if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) vertexSize += 3; // 3 floats pour la normale
+
+    // Manage offset bits size for reserve vector
+    if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) vertexSize += 3; 
+    if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) vertexSize += 4;
+    if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) vertexSize += 2; 
+    if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) vertexSize += 3; 
 
     vertexData.reserve(pGeometry->pos.size() * vertexSize);
 

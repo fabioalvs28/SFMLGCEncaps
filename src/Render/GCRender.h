@@ -3,7 +3,7 @@
 class GCRender
 {
 public:
-	GCRender() {}
+	GCRender();
 
 	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
 	bool InitDirect3D();
@@ -32,7 +32,6 @@ public:
 	void CloseCommandList();
 
 	void FlushCommandQueue();
-	void Update(const Timer& gt);
 
 	bool PrepareDraw();
 	bool PostDraw();
@@ -40,8 +39,6 @@ public:
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
-
-	//void BuildBoxGeometry();
 
 	// Getter
 	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
@@ -67,7 +64,6 @@ public:
 
 	GCShaderUploadBufferBase* m_pCurrentViewProj;
 
-	
 	Window* GetCurrentWindow() { return m_pWindow; }
 private:
 	Window* m_pWindow;
@@ -118,8 +114,6 @@ private:
 
 	// Camera (Temporary)
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
-
-
 };
 
 #ifndef ReleaseCom

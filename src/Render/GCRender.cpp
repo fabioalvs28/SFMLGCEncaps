@@ -31,14 +31,14 @@ void GCRender::CloseCommandList()
 
 void GCRender::EnableDebugController() 
 {
-#if defined(DEBUG) || defined(_DEBUG) 
-	// Enable the D3D12 debug layer.
-	{
-		ID3D12Debug* debugController;
-		D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
-		debugController->EnableDebugLayer();
-	}
-#endif
+	#if defined(DEBUG) || defined(_DEBUG) 
+		// Enable the D3D12 debug layer.
+		{
+			ID3D12Debug* debugController;
+			D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
+			debugController->EnableDebugLayer();
+		}
+	#endif
 }
 
 bool GCRender::InitDirect3D()
@@ -62,8 +62,7 @@ bool GCRender::InitDirect3D()
 			IID_PPV_ARGS(&m_d3dDevice));
 	}
 
-	m_d3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,
-		IID_PPV_ARGS(&m_Fence));
+	m_d3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence));
 
 	m_rtvDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	m_dsvDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
@@ -80,9 +79,9 @@ bool GCRender::InitDirect3D()
 	m_4xMsaaQuality = msQualityLevels.NumQualityLevels;
 	assert(m_4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
 
-#ifdef _DEBUG
-	LogAdapters();
-#endif
+	#ifdef _DEBUG
+		LogAdapters();
+	#endif
 
 	CreateCommandObjects();
 	CreateSwapChain();
@@ -142,7 +141,6 @@ void GCRender::LogAdapterOutputs(IDXGIAdapter* pAdapter)
 
 		++i;
 	}
-
 	m_canResize = true;
 }
 
@@ -158,8 +156,9 @@ void GCRender::CreateCommandObjects()
 	m_d3dDevice->CreateCommandList(0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
 		m_DirectCmdListAlloc, // Associated command allocator
-		nullptr,                   // Initial PipelineStateObject
-		IID_PPV_ARGS(&m_CommandList));
+		nullptr, // Initial PipelineStateObject
+		IID_PPV_ARGS(&m_CommandList)
+	);
 
 	// Start off in a closed state.  This is because the first time we refer 
 	// to the command list we will Reset it, and it needs to be closed before
@@ -205,8 +204,6 @@ void GCRender::CreateCbvSrvUavDescriptorHeaps()
 	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	cbvHeapDesc.NodeMask = 0;
 	m_d3dDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_cbvSrvUavDescriptorHeap));
-
-	//m_cbvSrvUavDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void GCRender::CreateRtvAndDsvDescriptorHeaps()
@@ -275,7 +272,9 @@ void GCRender::ResizeSwapChain()
 		SwapChainBufferCount,
 		m_pWindow->GetClientWidth(), m_pWindow->GetClientHeight(),
 		m_BackBufferFormat,
-		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
+	);
+
 	m_CurrBackBuffer = 0;
 }
 
@@ -317,7 +316,8 @@ void GCRender::CreateDepthStencilBufferAndView()
 		&depthStencilDesc,
 		D3D12_RESOURCE_STATE_COMMON,
 		&optClear,
-		IID_PPV_ARGS(&m_DepthStencilBuffer));
+		IID_PPV_ARGS(&m_DepthStencilBuffer)
+	);
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
@@ -326,8 +326,8 @@ void GCRender::CreateDepthStencilBufferAndView()
 	dsvDesc.Texture2D.MipSlice = 0;
 	m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, &dsvDesc, GetDepthStencilView());
 
-	CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(m_DepthStencilBuffer,
-		D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+	CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(m_DepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+
 	m_CommandList->ResourceBarrier(1, &ResBar);
 }
 
@@ -340,12 +340,12 @@ void GCRender::UpdateViewport()
 	m_ScreenViewport.MinDepth = 0.0f;
 	m_ScreenViewport.MaxDepth = 1.0f;
 
-	m_ScissorRect = { (m_pWindow->GetClientWidth() - m_renderWidth) / 2, (m_pWindow->GetClientHeight() - m_renderHeight) / 2, (m_pWindow->GetClientWidth() - m_renderWidth)/2 + m_renderWidth,(m_pWindow->GetClientHeight() - m_renderHeight) / 2 + m_renderHeight };
-}
-
-void GCRender::Update(const Timer& gt) 
-{
-
+	m_ScissorRect = { 
+		(m_pWindow->GetClientWidth() - m_renderWidth) / 2, 
+		(m_pWindow->GetClientHeight() - m_renderHeight) / 2,
+		(m_pWindow->GetClientWidth() - m_renderWidth)/ 2 + m_renderWidth,
+		(m_pWindow->GetClientHeight() - m_renderHeight) / 2 + m_renderHeight
+	};
 }
 
 void GCRender::FlushCommandQueue()
@@ -371,7 +371,7 @@ void GCRender::FlushCommandQueue()
 	}
 }
 
-
+//Always needs to be called right before drawing!!!
 bool GCRender::PrepareDraw() 
 {
 	//Always needs to be called right before drawing!!!
@@ -410,12 +410,8 @@ bool GCRender::PrepareDraw()
 
 
 
-// You can call many times this function without call again Prepare and Post Draw
-//Draws an object specified in the arguments using a specified shader,applying a selected texture(or not)(can be set to nullptr)
-//Needs all three of the matrices(world,proj,view)
-//Absolutely needs Prepare Draw to be called before it being used
-//Needs post draw to be called right after aswell
-//(you can actually call multiple drawoneobject as long as you're doing it between prepare/post draws)
+
+//Draws an object specified in the arguments using a specified material and mesh, You can call many times this function without call again a each draw Prepare and Post function, 
 bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 {
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
@@ -481,6 +477,7 @@ bool GCRender::PostDraw()
 
 	return true;
 }
+
 void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 {
 	UINT count = 0;
