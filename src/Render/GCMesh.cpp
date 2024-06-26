@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "pch.h"
 
 ID3D12Resource* GCMesh::CreateDefaultBuffer(ID3D12Device* device,ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, ID3D12Resource* uploadBuffer)
 {

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "pch.h"
 
 //converts pixels coordinates to ndc ones
 DirectX::XMFLOAT3 GCUtils::PixelToWorld(float x, float y, UINT windowWidth, UINT windowHeight, const DirectX::XMFLOAT4X4& proj, const DirectX::XMFLOAT4X4& view)

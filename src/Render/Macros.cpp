@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "pch.h"
 
 bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage)
 {

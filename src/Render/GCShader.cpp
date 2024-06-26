@@ -1,5 +1,5 @@
-#include "framework.h"
-
+#include "pch.h"
+//test
 GCShader::GCShader() 
 {
 	m_RootSignature = nullptr;

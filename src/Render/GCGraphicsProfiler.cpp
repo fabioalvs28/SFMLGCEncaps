@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "pch.h"
 
 GCGraphicsProfiler* GCGraphicsProfiler::s_instance = nullptr;
 

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "pch.h"
 
 ///////////////////////////////////////////////////////////////
 /// @brief Default constructor for the GCVEC2.
