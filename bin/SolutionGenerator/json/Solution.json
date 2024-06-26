@@ -20,7 +20,7 @@
             "projects": ["RenderApp.json", "Render.json"]
         },
         "tools": {
-            "projects": []
+            "projects": ["Multimedia.json"]
         },
         "qa": {
             "projects": []
