@@ -129,9 +129,6 @@ void GCInputManager::AddToUpdateList(int index, BYTE state)
     }
 }
 
-
-
-
 bool GCInputManager::IsKeyPressed()
 {
     if (m_updatedKeys.GetSize() != 0)

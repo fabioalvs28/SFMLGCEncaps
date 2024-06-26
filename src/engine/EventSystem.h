@@ -7,6 +7,8 @@
 #include "../core/Vector.h"
 #include "../core/Queue.h"
 
+
+
 class GCEventSystem
 {
 public:
@@ -49,4 +51,15 @@ private:
 private:
 	GCMap<GCEventType, std::vector<std::function<void()>>> m_eventListeners;
     GCQueue<GCEvent*> m_eventQueue;
+};
+
+class GCIEventListener {
+public:
+	/// <summary>
+	/// Create a virtual
+	/// </summary>
+	virtual void OnEvent() = 0;
+
+protected:
+	GCEventSystem& eventSystem;
 };
