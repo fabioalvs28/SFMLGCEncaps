@@ -8,6 +8,7 @@ struct ModelInfos
 	std::vector<std::vector<float>> coords;
 	std::vector<std::vector<uint16_t>> facesInfos;
 	std::vector<std::vector<float>> uvs;
+	std::vector<std::vector<float>> normals;
 };
 
 class GCModelParser

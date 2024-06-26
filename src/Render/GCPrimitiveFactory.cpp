@@ -9,6 +9,19 @@ GCPrimitiveFactory::~GCPrimitiveFactory()
 {
 }
 
+std::vector<DirectX::XMFLOAT3> GCPrimitiveFactory::GenerateNormal(const std::vector<uint16_t>& index, const std::vector<DirectX::XMFLOAT3>& pos)
+{
+    std::vector <DirectX::XMFLOAT3> normals;
+    for (int i = 0; i < index.size(); i+=2)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            normals.push_back(GCUtils::GetNormal(GCUtils::Xmfloat3ToGcvec3(pos[index[i]]), GCUtils::Xmfloat3ToGcvec3(pos[index[i + 1]]), GCUtils::Xmfloat3ToGcvec3(pos[index[i + 2]]), false));
+        }
+    }
+    return normals;
+}
+
 void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices)
 {
     outVertices.clear();
@@ -124,7 +137,14 @@ void GCPrimitiveFactory::Initialize()
                 DirectX::XMFLOAT2(0.0f, 0.0f),
                 DirectX::XMFLOAT2(1.0f, 0.0f),
                 DirectX::XMFLOAT2(1.0f, 1.0f)
-            }}
+            }},
+            { L"normals", GenerateNormal(std::vector<uint16_t>{0, 1, 2, 0, 2, 3}, std::vector<DirectX::XMFLOAT3>{
+                DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f),
+                DirectX::XMFLOAT3(-0.5f, 0.5f, 0.0f),
+                DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f),
+                DirectX::XMFLOAT3(0.5f, -0.5f, 0.0f) 
+            })
+            }
     }},
 
     {L"cube", {
@@ -187,18 +207,53 @@ void GCPrimitiveFactory::Initialize()
             DirectX::XMFLOAT2(0, 0),
             DirectX::XMFLOAT2(1, 0),
             DirectX::XMFLOAT2(1, 1),
-        }}
+        }},
+        { L"normals", GenerateNormal(std::vector<uint16_t>{
+            0, 1, 2, 0, 2, 3,
+            4, 6, 5, 4, 7, 6,
+            4, 5, 1, 4, 1, 0,
+            3, 2, 6, 3, 6, 7,
+            1, 5, 6, 1, 6, 2,
+            4, 0, 3, 4, 3, 7,
+            }, std::vector<DirectX::XMFLOAT3>{
+            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
+            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
+            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
+            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),
+            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
+            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
+            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
+            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
+            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
+            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
+            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
+            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
+            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),
+            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
+            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
+            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
+            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
+            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
+            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
+            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
+            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
+            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
+            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
+            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),})
+        }
     }},
     // #TODO -> Doesn't work in 2d thereas, it need be 2d
     {L"circle", {
         {L"index", circleIndices},
         {L"pos", circleVertices},
-        {L"uvs", circleUvs}
+        {L"uvs", circleUvs},
+        {L"normals", GenerateNormal(circleIndices, circleVertices)}
     }},
     {L"sphere", {
         {L"index", sphereIndices},
         {L"pos", sphereVertices},
-        {L"uvs", sphereUvs}
+        {L"uvs", sphereUvs},
+        {L"normals", GenerateNormal(sphereIndices, sphereVertices)}
     }}
     };
 }

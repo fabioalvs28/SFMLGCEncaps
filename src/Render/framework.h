@@ -105,6 +105,7 @@ class Window;
 #include "Macros.h"
 #include "UploadBuffer.h"
 #include "GCRender.h"
+#include "Vectors.h"
 //#include "GCRender.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
