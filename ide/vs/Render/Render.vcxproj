@@ -81,7 +81,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Render\d3dx12.h" />
     <ClInclude Include="..\..\..\src\Render\DDSTextureLoader.h" />
-    <ClInclude Include="..\..\..\src\Render\framework.h" />
     <ClInclude Include="..\..\..\src\Render\GCGeometry.h" />
     <ClInclude Include="..\..\..\src\Render\GCGraphics.h" />
     <ClInclude Include="..\..\..\src\Render\GCGraphicsProfiler.h" />
@@ -130,7 +129,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Render\ConsoleApp.cpp" />
     <ClCompile Include="..\..\..\src\Render\DDSTextureLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Render\framework.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCGeometry.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCGraphicsProfiler.cpp" />
