@@ -13,13 +13,13 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{1F828ABC-A17D-40B0-884E-6752077F451D}</ProjectGuid>
+    <ProjectGuid>{48A60C8D-93B5-4980-AF29-3A207BE74ECC}</ProjectGuid>
     <RootNamespace>Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -56,6 +56,8 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -100,6 +102,7 @@
     <ClInclude Include="..\..\..\src\Render\HLSLReader.h" />
     <ClInclude Include="..\..\..\src\Render\Macros.h" />
     <ClInclude Include="..\..\..\src\Render\MathHelper.h" />
+    <ClInclude Include="..\..\..\src\Render\pch.h" />
     <ClInclude Include="..\..\..\src\Render\PrimitiveTypeEnum.h" />
     <ClInclude Include="..\..\..\src\Render\Resource.h" />
     <ClInclude Include="..\..\..\src\Render\ShaderTypeEnum.h" />
@@ -143,6 +146,10 @@
     <ClCompile Include="..\..\..\src\Render\GCUtils.cpp" />
     <ClCompile Include="..\..\..\src\Render\Macros.cpp" />
     <ClCompile Include="..\..\..\src\Render\MathHelper.cpp" />
+    <ClCompile Include="..\..\..\src\Render\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\Render\Timer.cpp" />
     <ClCompile Include="..\..\..\src\Render\Vectors.cpp" />
     <ClCompile Include="..\..\..\src\Render\Window.cpp" />

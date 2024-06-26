@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{A785CC13-885B-4000-8E18-665C6C4250C6}</UniqueIdentifier>
+      <UniqueIdentifier>{F4097B80-F092-4329-A78A-0179FAB5732A}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{2895D1C5-81FE-4F96-BAD4-BAFEAC1B3CA3}</UniqueIdentifier>
+      <UniqueIdentifier>{33C51AEF-C2A1-4B0E-BEC6-69331250A290}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{35CE31BD-53A6-4287-BF7A-0E6B8DC0F511}</UniqueIdentifier>
+      <UniqueIdentifier>{2E38354C-F495-4BB6-B241-499EC456801E}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -67,6 +67,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\MathHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\Timer.cpp">
@@ -145,6 +148,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\MathHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\PrimitiveTypeEnum.h">
