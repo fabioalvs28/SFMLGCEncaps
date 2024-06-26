@@ -11,16 +11,35 @@
 #include "Components.h"
 #include "GCColor.h"
 #include "Log.h"
+#include "GCEngine.h"
 
-
-
-
-int main()
+void CreateDebugConsole()
 {
-	LogEngineDebug("Engine Debug");
-    LogEngineError("Engine Error");
-	LogEngineWarn("Engine Warn");
-    LogEngineInfo("Engine Info");
-	LogEngineTrace("Engine Trace");
-	LogGameDebug("Game Debug");
+    AllocConsole();
+
+    FILE* fDummy;
+    freopen_s(&fDummy, "CONIN$", "r", stdin);
+    freopen_s(&fDummy, "CONOUT$", "w", stdout);
+    freopen_s(&fDummy, "CONOUT$", "w", stderr);
+
+    SetConsoleTitle(L"Debug Console");
+
+    std::cin.clear();
+    std::cout.clear();
+    std::cerr.clear();
+    std::wcin.clear();
+    std::wcout.clear();
+    std::wcerr.clear();
+
+    std::ios::sync_with_stdio();
+}
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+    CreateDebugConsole();
+
+    GCEngine::Get().Run();
+
+    FreeConsole();
+    return 0;
 }

@@ -109,11 +109,8 @@ void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
     m_keyState[index] = state;
     m_updatedKeys.PushBack(index);
+
 }
-
-
-
-
 
 bool GCInputManager::IsKeyPressed()
 {
