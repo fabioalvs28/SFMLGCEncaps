@@ -167,7 +167,7 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
     int flags = 0;
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_COLOR);
-    //SET_FLAG(flags, HAS_NORMAL);
+    SET_FLAG(flags, HAS_NORMAL);
 
     pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags);
     pShader->Load();
@@ -249,7 +249,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveColor(con
     int flagsColor = 0;
     SET_FLAG(flagsColor, HAS_POSITION);
     SET_FLAG(flagsColor, HAS_COLOR);
-    //SET_FLAG(flagsColor, HAS_NORMAL);
+    SET_FLAG(flagsColor, HAS_NORMAL);
 
     // Call the unified BuildGeometry function
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagsColor);

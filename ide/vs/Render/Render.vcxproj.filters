@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{F4097B80-F092-4329-A78A-0179FAB5732A}</UniqueIdentifier>
+      <UniqueIdentifier>{B023E4E6-18AD-4CF5-BF31-BF025F02E575}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{33C51AEF-C2A1-4B0E-BEC6-69331250A290}</UniqueIdentifier>
+      <UniqueIdentifier>{365F36F6-C6A0-4EC9-821B-C926730D5FE9}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{2E38354C-F495-4BB6-B241-499EC456801E}</UniqueIdentifier>
+      <UniqueIdentifier>{66D93A14-BE0E-46AB-85CB-F5966F062F84}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>

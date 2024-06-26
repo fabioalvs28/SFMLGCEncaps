@@ -208,7 +208,7 @@ void GCPrimitiveFactory::Initialize()
             DirectX::XMFLOAT2(1, 0),
             DirectX::XMFLOAT2(1, 1),
         }},
-        { L"normals", GenerateNormal(std::vector<uint16_t>{
+        /*{ L"normals", GenerateNormal(std::vector<uint16_t>{
             0, 1, 2, 0, 2, 3,
             4, 6, 5, 4, 7, 6,
             4, 5, 1, 4, 1, 0,
@@ -240,20 +240,53 @@ void GCPrimitiveFactory::Initialize()
             DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
             DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
             DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),})
-        }
+        }*/
+        { L"normals", std::vector<DirectX::XMFLOAT3>{
+            // Face -Z
+            DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), // Normal for vertex 0
+            DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), // Normal for vertex 1
+            DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), // Normal for vertex 2
+            DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), // Normal for vertex 3
+            // Face +Z
+            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for vertex 4
+            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for vertex 5
+            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for vertex 6
+            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for vertex 7
+            // Face -X
+            DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), // Normal for vertex 8
+            DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), // Normal for vertex 9
+            DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), // Normal for vertex 10
+            DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), // Normal for vertex 11
+            // Face +X
+            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // Normal for vertex 12
+            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // Normal for vertex 13
+            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // Normal for vertex 14
+            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // Normal for vertex 15
+            // Face +Y
+            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // Normal for vertex 16
+            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // Normal for vertex 17
+            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // Normal for vertex 18
+            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // Normal for vertex 19
+            // Face -Y
+            DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), // Normal for vertex 20
+            DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), // Normal for vertex 21
+            DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), // Normal for vertex 22
+            DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), // Normal for vertex 23
+        }}
+
     }},
     // #TODO -> Doesn't work in 2d thereas, it need be 2d
     {L"circle", {
         {L"index", circleIndices},
         {L"pos", circleVertices},
         {L"uvs", circleUvs},
-        {L"normals", GenerateNormal(circleIndices, circleVertices)}
+        //{L"normals", GenerateNormal(circleIndices, circleVertices)}
     }},
     {L"sphere", {
         {L"index", sphereIndices},
         {L"pos", sphereVertices},
         {L"uvs", sphereUvs},
-        {L"normals", GenerateNormal(sphereIndices, sphereVertices)}
+        //{L"normals", GenerateNormal(sphereIndices, sphereVertices)}
     }}
     };
 }
@@ -296,6 +329,10 @@ GCGeometry* GCPrimitiveFactory::BuildGeometry(std::string name, DirectX::XMFLOAT
 
     if (HAS_FLAG(flagEnabledBits, HAS_UV)) {
         primitiveGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[wName][L"uvs"]);
+    }
+
+    if (HAS_FLAG(flagEnabledBits, HAS_NORMAL)) {
+        primitiveGeometry->normals = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[wName][L"normals"]);
     }
 
     primitiveGeometry->m_flagEnabledBits = flagEnabledBits;
