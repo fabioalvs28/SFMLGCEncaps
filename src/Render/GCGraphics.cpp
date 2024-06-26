@@ -309,6 +309,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserCustom(
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
 
+
 ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType)
 {
     int flagsTexture = 0;
@@ -466,6 +467,7 @@ void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 {
     uploadBufferInstance->CopyData(0, objectData);
 }
+
 
 DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view) {
     DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);

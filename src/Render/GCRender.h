@@ -32,10 +32,35 @@ public:
 	void CloseCommandList();
 
 	void FlushCommandQueue();
-
+	/**
+	* Pre-Draw.
+	 * @brief
+	 *
+	 * This function always needs to be called right before drawing!
+	 *
+	 * @return True if the preparation was a success/false otherwise.
+	 */
 	bool PrepareDraw();
+	/**
+	* Post-Draw.
+	 * @brief
+	 *
+	 * This function always needs to be called right after drawing!
+	 *
+	 * @return True if the execution of the drawing was a success/false otherwise.
+	 */
 	bool PostDraw();
-
+	/**
+	*  Draws an object(sends the data to the commandlist to be exact).
+	 * @brief
+	 *
+	 * This function takes into account the mesh you want to draw as well as the material you want to use to draw it.
+	 * Always call PrepareDraw before starting drawing/PostDraw after finishing drawing(you can call DrawObject multiple times in between the two PrepareDraw/PostDraw calls)
+	 *
+	 * @param Mesh.
+	 * @param Material.
+	 * @return True if the drawing was a success/false otherwise.
+	 */
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport

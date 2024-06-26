@@ -375,10 +375,9 @@ void GCRender::FlushCommandQueue()
 	}
 }
 
-//Always needs to be called right before drawing!!!
+
 bool GCRender::PrepareDraw() 
 {
-	//Always needs to be called right before drawing!!!
 
 	HRESULT hr = m_DirectCmdListAlloc->Reset();
 	if (!CHECK_HRESULT(hr, "m_DirectCmdListAlloc->Reset()")) {
@@ -415,7 +414,7 @@ bool GCRender::PrepareDraw()
 
 
 
-//Draws an object specified in the arguments using a specified material and mesh, You can call many times this function without call again a each draw Prepare and Post function, 
+
 bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 {
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
@@ -450,7 +449,8 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	return true;
 }
 
-//Always needs to be called right after drawing!!!
+
+
 bool GCRender::PostDraw()
 {
 	// Transition to present state
