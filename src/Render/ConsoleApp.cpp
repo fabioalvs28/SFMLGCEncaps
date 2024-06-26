@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	graphics->Initialize(window, 1920, 1080);
 
 	// Geometry (Resource)
-	auto geo = graphics->CreateGeometryPrimitiveColor("cube", DirectX::XMFLOAT4(DirectX::Colors::Gray));
+	auto geo = graphics->CreateGeometryPrimitiveColor("sphere", DirectX::XMFLOAT4(DirectX::Colors::Gray));
 	auto geo1 = graphics->CreateGeometryPrimitiveTexture("cube");
 	auto geo2 = graphics->CreateGeometryModelParserTexture("../../../src/Render/monkeyUv.obj", obj);
 
@@ -146,10 +146,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	// SET WORLD
 
 	DirectX::XMFLOAT4X4 II(
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+		3.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 3.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 3.0f, 0.0f,
+		4.0f, 0.0f, 0.0f, 1.0f);
 
 	DirectX::XMFLOAT4X4 transposedWorld;
 	DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&II)));
@@ -177,11 +177,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//graphics->UpdateCustomCBObject<GCTest>(material2.resource, test);
 	//graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
 
-	graphics->UpdateWorldConstantBuffer(material3.resource, world);
-	graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);
+	//graphics->UpdateWorldConstantBuffer(material3.resource, world);
+	//graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);
 
-	graphics->UpdateCustomCBObject<GCTest>(material2.resource, test);
-	graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
+	//graphics->UpdateCustomCBObject<GCTest>(material2.resource, test);
+	//graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
 
 	//graphics->UpdateWorldConstantBuffer(material3.resource, transposedWorld);
 	//graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);
@@ -197,14 +197,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	// ********************
 
 	DirectX::XMFLOAT4X4 I(
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
+		3.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 3.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 3.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Initialisation des variables
 	float totalTime = 0.0f;
-	float rotationSpeed = 0.005f; // Vitesse de rotation en radians par seconde
+	float rotationSpeed = 0.0005f; // Vitesse de rotation en radians par seconde
 
 	// Boucle principale de rendu
 	while (true)
@@ -219,7 +219,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 		float rotationAngle = totalTime * rotationSpeed;
 
 		// Construction de la matrice de rotation autour de l'axe Y
-		XMMATRIX rotationMatrix = XMMatrixRotationX(rotationAngle);
+		XMMATRIX rotationMatrix = XMMatrixRotationZ(rotationAngle);
 
 		// Chargement de la matrice I dans DirectXMath
 		XMMATRIX I_matrix = XMLoadFloat4x4(&I);
@@ -242,13 +242,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 		// Mettre à jour le constant buffer pour la matrice world
 		graphics->UpdateWorldConstantBuffer(material.resource, world);
-
-		// Dessiner l'objet avec la matrice world mise à jour
 		graphics->GetRender()->DrawObject(mesh.resource, material.resource);
+
+		graphics->UpdateWorldConstantBuffer(material.resource, transposedWorld);
+		graphics->GetRender()->DrawObject(mesh.resource, material.resource);
+
+
 
 		// Finaliser le frame de rendu
 		graphics->EndFrame();
+
+		window->Run(graphics->GetRender());
 	}
 
-	//window->Run(graphics->GetRender());
+
 }

@@ -183,6 +183,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	graphics->UpdateCustomCBObject<GCTest>(material2.resource, test);
 	graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
 
+	graphics->UpdateWorldConstantBuffer(material3.resource, world);
+	graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);
+
+	graphics->UpdateCustomCBObject<GCTest>(material2.resource, test);
+	graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
+
 	//graphics->UpdateWorldConstantBuffer(material3.resource, transposedWorld);
 	//graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);
 

@@ -112,6 +112,11 @@ void GCGraphics::EndFrame()
             }
         }
     }
+
+    //for (auto& material : m_vMaterials)
+    //    profiler.LogInfo(std::to_string(material->GetObjectCBData().size()));
+
+
 };
 
 void GCGraphics::InitializeGraphicsResourcesStart() {
@@ -183,7 +188,7 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     int flags = 0;
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_UV);
-    //SET_FLAG(flags, HAS_NORMAL);
+    SET_FLAG(flags, HAS_NORMAL);
 
     pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags);
     pShader->Load();
@@ -264,7 +269,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(c
     int flagsTexture = 0;
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
-    //SET_FLAG(flagsTexture, HAS_NORMAL);
+    SET_FLAG(flagsTexture, HAS_NORMAL);
 
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
@@ -451,8 +456,10 @@ void GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatr
 //using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
 void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix) {
 
-    if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size())
+    if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size()) {
         pMaterial->CreateCBObject<GCWORLDCB>();
+    }
+        
 
     GCWORLDCB worldData;
     worldData.world = worldMatrix;

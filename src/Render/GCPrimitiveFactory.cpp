@@ -63,13 +63,14 @@ void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vect
     outIndices.push_back(1);
 }
 
-void GCPrimitiveFactory::GenerateSphere(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices)
+void GCPrimitiveFactory::GenerateSphere(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices, std::vector<DirectX::XMFLOAT3>& outNormals)
 {
     outVertices.clear();
     outUvs.clear();
     outIndices.clear();
+    outNormals.clear();
 
-    // Generate sphere vertices and uvs (you can use a more refined method like icosphere subdivision)
+    // Generate sphere vertices, uvs, and normals
     for (int i = 0; i <= numSegments; ++i)
     {
         float phi = DirectX::XM_PI * i / numSegments;  // azimuth angle
@@ -84,6 +85,12 @@ void GCPrimitiveFactory::GenerateSphere(float radius, int numSegments, std::vect
             float u = 1.0f - (j / (float)numSegments);  // horizontal texture coordinate
             float v = 1.0f - (i / (float)numSegments);  // vertical texture coordinate
             outUvs.push_back(DirectX::XMFLOAT2(u, v));
+
+            // Calculate normal (normalized vertex position)
+            DirectX::XMFLOAT3 normal(x, y, z);
+            DirectX::XMVECTOR normalVec = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&normal));
+            DirectX::XMStoreFloat3(&normal, normalVec);
+            outNormals.push_back(normal);
         }
     }
 
@@ -118,8 +125,9 @@ void GCPrimitiveFactory::Initialize()
     std::vector<DirectX::XMFLOAT3> sphereVertices;
     std::vector<DirectX::XMFLOAT2> sphereUvs;
     std::vector<uint16_t> sphereIndices;
+    std::vector<DirectX::XMFLOAT3> sphereNormals;
 
-    GenerateSphere(0.5f, 32, sphereVertices, sphereUvs, sphereIndices);
+    GenerateSphere(0.5f, 32, sphereVertices, sphereUvs, sphereIndices, sphereNormals);
 
     //Put all data in map
     m_primitiveInfos = {
@@ -286,6 +294,7 @@ void GCPrimitiveFactory::Initialize()
         {L"index", sphereIndices},
         {L"pos", sphereVertices},
         {L"uvs", sphereUvs},
+        {L"normals", sphereNormals},
         //{L"normals", GenerateNormal(sphereIndices, sphereVertices)}
     }}
     };
