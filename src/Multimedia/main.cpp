@@ -1,3 +1,4 @@
+#include "Core/pch.h"
 #include "GCImage.h"
 #include <cstdint>
 #include <iostream>

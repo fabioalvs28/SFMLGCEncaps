@@ -1,5 +1,5 @@
 #pragma once
-#include "GCUtilities.h"
+#include "Core/GCUtilities.h"
 #include <vector>
 
 #ifdef __cplusplus

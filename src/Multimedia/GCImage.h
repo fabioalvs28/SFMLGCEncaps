@@ -8,6 +8,9 @@ class GCImage
 {
 private:
 
+	int width;
+	int height;
+	int bitCount;
 	int channels = bitCount / 8;
 	int rowPadded = (width * channels + 3) & (~3);
 	uint32_t rowStride() const { return ((width * bitCount / 8) + 3) & ~3; }
@@ -17,9 +20,6 @@ private:
 
 public:
 
-	int width;
-	int height;
-	int bitCount;
 	std::vector<uint8_t> data;
 
 	GCImage(int w = 1600, int h = 1200, int bpp = 32) : width(w), height(h), bitCount(bpp)

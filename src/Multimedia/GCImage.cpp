@@ -1,12 +1,12 @@
+#include "Core/pch.h"
 #include "GCImage.h"
 #include "BMPHeader.h"
-#include "GCFile.h"
+#include "Core/GCFile.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <cstdint>
 #include <cstring>
-#include "pch.h"
 
 bool GCImage::LoadBMP(const std::string& filename)
 {

@@ -1,8 +1,8 @@
+#include "pch.h"
 #include "GCFile.h"
 #include <cstdio>
 #include <iostream>
 #include <fstream>
-#include "pch.h"
 
 GCFile::GCFile(const std::string& filename, const char* mode)
 {
