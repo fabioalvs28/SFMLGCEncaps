@@ -127,7 +127,7 @@ void GCList<T>::DeleteNode( const GCListNode<T>* pNode )
 template <typename T>
 void GCList<T>::Clear()
 {
-	if (m_pHead == nullptr) return;
+	if ( m_pHead == nullptr ) return;
     for ( GCListNode<T>* pTemp = m_pHead->m_pNext; pTemp != nullptr; pTemp = pTemp->m_pNext )
     {
         delete m_pHead;

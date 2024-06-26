@@ -1,90 +1,136 @@
 #include "pch.h"
 #include "SceneManager.h"
-#include "GameObject.h"
-#include "Scene.h"
+
 #include "../core/framework.h"
+#include "Scene.h"
+#include "GameObject.h"
+
+// todo RenderQueue
+// todo CreationQueue
 
 
 
-void GCSceneManager::Update()
-{
-	GCScene* scene;
-	for ( GCListNode<GCScene*>* sceneNode = m_loadedScenesList.GetFirstNode(); sceneNode != m_loadedScenesList.GetLastNode(); sceneNode = sceneNode->GetNext() )
-	{
-		scene = sceneNode->GetData();
-		if ( scene->IsActive() == true )
-			scene->Update();
-	}
-}
+///////////////////////////////////////
+/// @brief Updates the active Scene.
+///////////////////////////////////////
+void GCSceneManager::Update() { m_pActiveScene->Update(); }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Creates the GameObjects in the "Creation Queue" and Destroys the GameObjects in the "Deletion Queue".
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCSceneManager::NewDelete()
 {
-	GCGameObject* pGameObject;
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != m_gameObjectsToDeleteList.GetLastNode(); pGameObjectNode = pGameObjectNode->GetNext() )
-	{
-		pGameObject = pGameObjectNode->GetData();
-		pGameObject->GetScene()->DestroyGameObject( pGameObject );
-	}
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToCreateList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
+		CreateGameObject( pGameObjectNode->GetData() );
+	m_gameObjectsToCreateList.Clear();
+	
+	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
+		DestroyGameObject( pGameObjectNode->GetData() );
 	m_gameObjectsToDeleteList.Clear();
-
-	for ( GCListNode<GCScene*>* pSceneNode = m_scenesToDeleteList.GetFirstNode(); pSceneNode != m_scenesToDeleteList.GetLastNode(); pSceneNode = pSceneNode->GetNext() )
-		DestroyScene( pSceneNode->GetData() );
-	m_scenesToDeleteList.Clear();
 }
 
-void GCSceneManager::Render()
+///////////////////////////////////////
+/// @brief Renders the active Scene.
+///////////////////////////////////////
+void GCSceneManager::Render() { m_pActiveScene->Render(); }
+
+
+
+////////////////////////////////////////////////////
+/// @brief Creates a new Scene.
+/// 
+/// @return A pointer to the newly created Scene.
+////////////////////////////////////////////////////
+GCScene* GCSceneManager::CreateScene()
 {
-	GCScene* scene;
-	for ( GCListNode<GCScene*>* sceneNode = m_loadedScenesList.GetFirstNode(); sceneNode != m_loadedScenesList.GetLastNode(); sceneNode = sceneNode->GetNext() )
-	{
-		scene = sceneNode->GetData();
-		if ( scene->IsActive() == true )
-			scene->Render();
-	}
+	GCScene* pScene = new GCScene();
+    m_scenesList.PushBack( pScene );
+	pScene->m_pNode = m_scenesList.GetLastNode();
+	return pScene;
 }
 
-
-
-
-GCScene* GCSceneManager::CreateScene( GCScene* pParent )
-{
-	GCScene* scene = new GCScene( pParent );
-    m_scenesList.PushBack( scene );
-	scene->SetNode( m_scenesList.GetLastNode() ); 
-	return scene;
-}
-
+/////////////////////////////////////////////////////////
+/// @brief Loads the Scene.
+/// 
+/// @param pScene A pointer to the Scene to be loaded.
+/////////////////////////////////////////////////////////
 void GCSceneManager::LoadScene( GCScene* pScene )
 {
-	if ( pScene->GetLoadedNode() != nullptr ) return;
+	if ( pScene->m_pLoadedNode != nullptr ) return;
 	m_loadedScenesList.PushBack( pScene );
-	pScene->SetLoadedNode( m_loadedScenesList.GetLastNode() );
+	pScene->m_pLoadedNode = m_loadedScenesList.GetLastNode();
 }
 
+///////////////////////////////////////////////////////////
+/// @brief Unloads the Scene.
+/// 
+/// @param pScene A pointer to the Scene to be unloaded.
+///////////////////////////////////////////////////////////
 void GCSceneManager::UnloadScene( GCScene* pScene )
 {
-	GCListNode<GCScene*>* pLoadedNode = pScene->GetLoadedNode();
+	GCListNode<GCScene*>* pLoadedNode = pScene->m_pLoadedNode;
 	if ( pLoadedNode == nullptr ) return;
 	m_loadedScenesList.DeleteNode( pLoadedNode );
-	pScene->RemoveLoadedNode();
+	pScene->m_pLoadedNode = nullptr;
 }
 
+////////////////////////////////////////////////////////////
+/// @brief Fully destroys the Scene.
+/// 
+/// @param pScene A pointer to the Scene to be destroyed.
+/// 
+/// @note The Scene's GameObjects will also be destroyed.
+////////////////////////////////////////////////////////////
 void GCSceneManager::DestroyScene( GCScene* pScene )
 {
 	UnloadScene( pScene );
-	m_scenesList.DeleteNode( pScene->GetNode() );
-	pScene->ClearGameObjects();
-	pScene->ClearChildren();
+	m_scenesList.DeleteNode( pScene->m_pNode );
+	pScene->RemoveParent();
     delete pScene;
 }
 
 
-void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject )
+
+////////////////////////////////////////////////////////////////////
+/// @brief Fully creates the GameObject.
+/// 
+/// @param pGameObject A pointer to the GameObject to be created.
+////////////////////////////////////////////////////////////////////
+void GCSceneManager::CreateGameObject( GCGameObject* pGameObject )
 {
-	m_gameObjectsToDeleteList.PushBack( pGameObject );
+	GCScene* pScene = pGameObject->m_pScene;
+	pScene->m_gameObjectsList.PushBack( pGameObject );
+	pGameObject->m_pSceneNode = pScene->m_gameObjectsList.GetLastNode();
+	pGameObject->m_created = true;
 }
 
-void GCSceneManager::AddSceneToDeleteQueue( GCScene* pScene )
+//////////////////////////////////////////////////////////////////////
+/// @brief Fully destroys the GameObject.
+/// 
+/// @param pGameObject A pointer to the GameObject to be destroyed.
+/// 
+/// @note The GameObject's Components are also destroyed.
+//////////////////////////////////////////////////////////////////////
+void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 {
-	m_scenesToDeleteList.PushBack( pScene );
+	pGameObject->RemoveScene();
+	pGameObject->RemoveParent();
+	pGameObject->ClearComponents();
+	delete pGameObject;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Adds the GameObject to the "Deletion Queue".
+/// 
+/// @param pGameObject A pointer to the GameObject to be added to the queue.
+///////////////////////////////////////////////////////////////////////////////
+void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject ) { m_gameObjectsToDeleteList.PushBack( pGameObject ); }
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Adds the GameObject to the "Creation Queue".
+/// 
+/// @param pGameObject A pointer to the GameObject to be added to the queue.
+///////////////////////////////////////////////////////////////////////////////
+void GCSceneManager::AddGameObjectToCreateQueue( GCGameObject* pGameObject ) { m_gameObjectsToCreateList.PushBack( pGameObject ); }

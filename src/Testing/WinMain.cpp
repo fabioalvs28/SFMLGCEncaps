@@ -6,16 +6,15 @@
 
 #include <iostream>
 #include <Windows.h>
-#include "ECSTesting.h"
-#include "../engine/Window.h"
-#include "../engine/EventSystem.h"
-#include "../Engine/GameManager.h"
-#include "../Engine/SceneManager.h"
-#include "../Engine/InputManager.h"
-#include "../Engine/Scene.h"
-#include "../Engine/GameObject.h"
-#include "../Engine/Components.h"
-#include "../Engine/GCColor.h"
+#include "Window.h"
+#include "EventSystem.h"
+#include "GameManager.h"
+#include "SceneManager.h"
+#include "Scene.h"
+#include "GameObject.h"
+#include "Components.h"
+#include "GCColor.h"
+#include "Log.h"
 
 
 #include "../../src/render/framework.h"
@@ -251,4 +250,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     
     FreeConsole();
+
+
+int main()
+{
+	LogEngineDebug("Engine Debug");
+    LogEngineError("Engine Error");
+	LogEngineWarn("Engine Warn");
+    LogEngineInfo("Engine Info");
+	LogEngineTrace("Engine Trace");
+	LogGameDebug("Game Debug");
 }

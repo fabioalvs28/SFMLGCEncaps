@@ -25,5 +25,7 @@
         "qa": {
             "projects": []
         }
-    }
+    },
+    "projects": [],
+    "folders": []
 }
