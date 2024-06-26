@@ -15,7 +15,6 @@ GCInputManager::GCInputManager()
 {
 
     //m_pWindow->winPos = { 10 ,10 }; m_pWindow->winSize = { 800, 500 }; m_pWindow->center = { m_pWindow->winSize.x / 2 , m_pWindow->winSize.y / 2 }; // !! valeur random de la fenêtre à changer quand on aura la bonne window !!
-    m_checkController = true;
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
         m_controllerList.PushBack( nullptr );
@@ -97,17 +96,11 @@ void GCInputManager::UpdateInputs()
             }
         }
     }
-
-
-    if ( m_checkController == false ) return; 
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
         if ( m_controllerList[i] != nullptr )
         {
-            m_controllerList[i]->m_updatedControllerKeys.Clear();
             m_controllerList[i]->UpdateControllerInput();
-            m_controllerList[i]->UpdateJoySticksinput();
-            m_controllerList[i]->UpdateTriggers();
         }
     }   
 }
@@ -162,6 +155,62 @@ GCVector<int>* GCInputManager::GetControllereUpdatekeys(int controllerID)
     if (m_controllerList[controllerID] == nullptr) return nullptr;
     return &m_controllerList[controllerID]->m_updatedControllerKeys;
 }
+
+
+bool GCInputManager::GetControllerButtonDown(int key)
+{
+    if (m_keyState[key] == DOWN)
+    {
+        return true;
+    }
+    return false;
+}
+bool GCInputManager::GetControllerButtonStay(int key)
+{
+    if (m_keyState[key] == PUSH)
+    {
+        return true;
+    }
+    return false;
+}
+bool GCInputManager::GetControllerButtonUp(int key)
+{
+    if (m_keyState[key] == UP)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool GCInputManager::GetKeyDown(int key)
+{
+    if (m_keyState[key] == DOWN)
+    {
+        return true;
+    }
+    return false;
+}
+
+
+bool GCInputManager::GetKeyStay(int key)
+{
+    if (m_keyState[key] == PUSH)
+    {
+        return true;
+    }
+    return false;
+}
+
+
+bool GCInputManager::GetKeyUp(int key)
+{
+    if (m_keyState[key] == UP)
+    {
+        return true;
+    }
+    return false;
+}
+
 
 
 
@@ -225,69 +274,6 @@ void GCMouseInput::UpdateMouseInput(const WinTest* pWinInfos)
 
 
 // <summary>
-// Function to check if a specific mouse button is in the DOWN state.
-// This function checks the state of a given mouse button in the m_pMouseButtons array.
-// If the state is DOWN, it returns true. Otherwise, it returns false.
-// </summary>
-// <param name="mouseButton"> The mouse button code to check. It should be a valid mouse button code. From 1 to 5 </param>
-bool GCMouseInput::GetMouseDown(int mouseButton)
-{
-    if ( mouseButton > 5 || mouseButton < 1 )
-        return false;
-    if ( mouseButton > 2 )
-        mouseButton += 1;
-
-    if ( m_pMouseButtons[mouseButton] == DOWN )
-    {
-        return true;
-    }
-    return false;
-}
-
-
-// <summary>
-// Function to check if a specific mouse button is in the PUSH state.
-// This function checks the state of a given mouse button in the m_pMouseButtons array.
-// If the state is PUSH, it returns true. Otherwise, it returns false.
-// </summary>
-// <param name="mouseButton"> The mouse button code to check. It should be a valid mouse button code. From 1 to 5  </param>
-bool GCMouseInput::GetMouseStay(int mouseButton)
-{
-    if ( mouseButton > 5 || mouseButton < 1 )
-        return false;
-
-    if ( mouseButton > 2 )
-        mouseButton += 1;
-
-    if ( m_pMouseButtons[mouseButton] == PUSH )
-    {
-        return true;
-    }
-    return false;
-}
-
-
-// <summary>
-// Function to check if a specific mouse button is in the UP state.
-// This function checks the state of a given mouse button in the m_pMouseButtons array.
-// It returns true if the mouse button is in the UP state, false otherwise.
-// </summary>
-// <param name="mouseButton"> The mouse button code to check. It should be a valid mouse button. From 1 to 5 </param>
-bool GCMouseInput::GetMouseUp(int mouseButton)
-{
-    if ( mouseButton > 5 || mouseButton < 1 )
-        return false;
-    if ( mouseButton > 2 )
-        mouseButton += 1;
-    if ( m_pMouseButtons[mouseButton] == UP )
-    {
-        return true;
-    }
-    return false;
-}
-
-
-// <summary>
 // Function to check if the mouse cursor is within a specified object's boundaries.
 // This function checks if the mouse cursor's position is within the boundaries of a given object.
 // The object's position and size are provided as parameters.
@@ -312,9 +298,9 @@ bool GCMouseInput::OnMouseHover(GCVEC2* objectPos, GCVEC2* objSize) {
 GCControllerInput::GCControllerInput()
 {
     m_ID = -1;
-    m_pControllersLeftAxis[0] = 0.0; m_pControllersLeftAxis[1] = 0.0;
-    m_pControllersRightAxis[0] = 0.0; m_pControllersRightAxis[1] = 0.0;
-    m_pControllerTrigger[0] = 0.0; m_pControllerTrigger[1] = 0.0; 
+    m_pControllersLeftAxis.x = 0.0; m_pControllersLeftAxis.y = 0.0;
+    m_pControllersRightAxis.x = 0.0; m_pControllersRightAxis.y = 0.0;
+    m_pControllerTrigger.x = 0.0; m_pControllerTrigger.y = 0.0;
 
     for (int j = 0; j < 16; j++)
     {
@@ -325,9 +311,9 @@ GCControllerInput::GCControllerInput()
 GCControllerInput::GCControllerInput(int id)
 {
     m_ID = id;
-    m_pControllersLeftAxis[0] = 0.0; m_pControllersLeftAxis[1] = 0.0;
-    m_pControllersRightAxis[0] = 0.0; m_pControllersRightAxis[1] = 0.0;
-    m_pControllerTrigger[0] = 0.0; m_pControllerTrigger[1] = 0.0; 
+    m_pControllersLeftAxis.x = 0.0; m_pControllersLeftAxis.y = 0.0;
+    m_pControllersRightAxis.x = 0.0; m_pControllersRightAxis.y = 0.0;
+    m_pControllerTrigger.x = 0.0; m_pControllerTrigger.y = 0.0;
     for (int j = 0; j < 16; j++)
     {
         m_pListofControllerKeys.PushBack(NONE);
@@ -396,6 +382,7 @@ bool GCControllerInput::GetControllerButtonUp(int vButton)
 // </summary>
 void GCControllerInput::UpdateControllerInput()
 {
+    m_updatedControllerKeys.Clear();
 
     XINPUT_KEYSTROKE key;
 
@@ -417,12 +404,17 @@ void GCControllerInput::UpdateControllerInput()
                 {
                 case NONE:
                     m_pListofControllerKeys[key.VirtualKey - j] = DOWN;
+                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
+                case PUSH: 
+                    AddtoControllerListUpdate(key.VirtualKey - j);
                 case UP:
                     m_pListofControllerKeys[key.VirtualKey - j] = DOWN;
+                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case DOWN:
                     m_pListofControllerKeys[key.VirtualKey - j] = PUSH;
+                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 }
             }
@@ -433,18 +425,24 @@ void GCControllerInput::UpdateControllerInput()
                 {
                 case PUSH:
                     m_pListofControllerKeys[key.VirtualKey - j] = UP;
+                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case UP:
                     m_pListofControllerKeys[key.VirtualKey - j] = NONE;
+                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case DOWN:
                     m_pListofControllerKeys[key.VirtualKey - j] = UP;
+                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
 
                 }
             }
         }
     }
+
+    UpdateJoySticksinput();
+    UpdateTriggers();
 }
 
 
@@ -487,7 +485,7 @@ void GCControllerInput::UpdateJoySticksinput()
         if (rLX != 0.0 || rLY != 0.0 ) AddtoControllerListUpdate(16);
 
 
-        m_pControllersLeftAxis[0] = rLX; m_pControllersLeftAxis[1] = rLY;
+        m_pControllersLeftAxis.x = rLX; m_pControllersLeftAxis.y = rLY;
 
 
         side[0] = 1; side[1] = 1;
@@ -514,7 +512,7 @@ void GCControllerInput::UpdateJoySticksinput()
 
         if (rRX != 0.0 || rRY != 0.0) AddtoControllerListUpdate(17);
 
-        m_pControllersRightAxis[0] = rRX; m_pControllersRightAxis[1] = rRY;
+        m_pControllersRightAxis.x = rRX; m_pControllersRightAxis.y = rRY;
     }
 }
 
@@ -538,15 +536,12 @@ void GCControllerInput::UpdateTriggers()
         if (lTriggerState != 0.0f) AddtoControllerListUpdate(18); 
         if (rTriggerState != 0.0f) AddtoControllerListUpdate(19); 
 
-        m_pControllerTrigger[0] = lTriggerState; m_pControllerTrigger[1] = rTriggerState; 
+        m_pControllerTrigger.x = lTriggerState; m_pControllerTrigger.y = rTriggerState; 
     }
 }
 
 
 void GCControllerInput::AddtoControllerListUpdate(int index)
 {
-    int keyindex; 
-    keyindex = 1000 + (100 * m_ID); 
-    keyindex += index; 
-    m_updatedControllerKeys.PushBack(keyindex); 
+    m_updatedControllerKeys.PushBack(index);
 }
