@@ -119,6 +119,11 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
             vertexData.push_back(pGeometry->uv[i].x);
             vertexData.push_back(pGeometry->uv[i].y);
         }
+        if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) {
+            vertexData.push_back(pGeometry->normals[i].x);
+            vertexData.push_back(pGeometry->normals[i].y);
+            vertexData.push_back(pGeometry->normals[i].z);
+        }
     }
 
     const UINT vbByteSize = static_cast<UINT>(vertexData.size() * sizeof(float));

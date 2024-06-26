@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{19A2544B-910B-4B5F-93D1-2B71F8F86F44}</UniqueIdentifier>
+      <UniqueIdentifier>{A785CC13-885B-4000-8E18-665C6C4250C6}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{6BFDDC8E-D744-4E11-BD8A-AE2B56A9207C}</UniqueIdentifier>
+      <UniqueIdentifier>{2895D1C5-81FE-4F96-BAD4-BAFEAC1B3CA3}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{451F4A16-3128-4523-8488-A5D77C81B251}</UniqueIdentifier>
+      <UniqueIdentifier>{35CE31BD-53A6-4287-BF7A-0E6B8DC0F511}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -70,6 +70,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\Vectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\Window.cpp">
@@ -162,16 +165,25 @@
     <ClInclude Include="..\..\..\src\Render\UploadBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\Vectors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <None Include="..\..\..\src\Render\cottage.obj">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\..\..\src\Render\cube.obj">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="..\..\..\src\Render\monkey.obj">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\monkeyUv.obj">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\Render\normals.obj">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Shaders\color.hlsl">

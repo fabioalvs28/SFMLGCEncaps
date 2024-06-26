@@ -16,6 +16,7 @@ struct VertexIn
 {
     float3 PosL : POSITION;
     float2 UV : TEXCOORD;
+    //float3 Normal : NORMAL;
 };
 
 struct VertexOut

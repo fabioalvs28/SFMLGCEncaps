@@ -70,6 +70,11 @@ void GCShader::CompileShader()
 		offset += sizeof(DirectX::XMFLOAT2); // Taille des coordonnées de texture
 	}
 
+	if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) {
+		m_InputLayout.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		offset += sizeof(DirectX::XMFLOAT3); // Taille des coordonnées de texture
+	}
+
 
 	// #TODO Need To Interpret HLSL Data to Adapt Root Signature and Input Layout 
 }

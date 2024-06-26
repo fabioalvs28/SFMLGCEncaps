@@ -19,15 +19,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	GCGraphics* graphics = new GCGraphics();
 	graphics->Initialize(window, 1920, 1080);
 
-	//int flagsTexture = 0;
-	//SET_FLAG(flagsTexture, HAS_POSITION);
-	//SET_FLAG(flagsTexture, HAS_UV);
-
-	//int flagsColor = 0;
-	//SET_FLAG(flagsColor, HAS_POSITION);
-	//SET_FLAG(flagsColor, HAS_COLOR);
-
-
 	// Geometry (Resource)
 	auto geo = graphics->CreateGeometryPrimitiveTexture("plane");
 	auto geo1 = graphics->CreateGeometryPrimitiveTexture("cube");
@@ -56,15 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	std::string texturePath = "../../../src/Render/Textures/texture.dds";
 	std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
 	auto texture = graphics->CreateTexture(texturePath);
-
-	//auto texture2 = graphics->CreateTexture(texturePath);
 	auto texture3 = graphics->CreateTexture(texturePath);
-
-	//auto texture4 = graphics->CreateTexture(texturePath);
-	//auto texture5 = graphics->CreateTexture(texturePath);
-
-	//auto texture6 = graphics->CreateTexture(texturePath);
-	//auto texture7 = graphics->CreateTexture(texturePath);
 
 
 
@@ -97,22 +80,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// PERSPECTIVE 
 	
-	//DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
-	//DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
-	//DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
+	DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
+	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 
-	//DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, window->AspectRatio(), 1.0f, 1000.0f);
-	//DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
+	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, window->AspectRatio(), 1.0f, 1000.0f);
+	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
 
-	//DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
-	//DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
+	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
+	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
 
-	//DirectX::XMFLOAT4X4 storedProjectionMatrix;
-	//DirectX::XMFLOAT4X4 storedViewMatrix;
+	DirectX::XMFLOAT4X4 storedProjectionMatrix;
+	DirectX::XMFLOAT4X4 storedViewMatrix;
 
-	//DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-	//DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
+	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 	// ***********
 
 
@@ -142,7 +125,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//	// ****************
 
 	
-	float left = -1.0f;
+	/*float left = -1.0f;
 	float right = 1.0f;
 	float bottom = -1.0f;
 	float top = 1.0f;
@@ -157,7 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	DirectX::XMFLOAT4X4 storedViewMatrix;
 
 	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);*/
 
 
 	// SET WORLD

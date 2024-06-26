@@ -144,9 +144,6 @@ ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& 
 
         // Set the corresponding flag to true
         m_vTextureActiveFlags[index] = true;
-
-        // Log creation success
-        profiler.LogInfo("Texture created and inserted at index " + std::to_string(index));
     }
     else {
         // If no inactive slot was found, push the texture to the end
@@ -154,9 +151,6 @@ ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& 
 
         m_vTextures.push_back(texture);
         m_vTextureActiveFlags.push_back(true);
-
-        // Log creation success
-        profiler.LogInfo("Texture created and appended at index " + std::to_string(index));
     }
 
     // Initialize the texture with the specified index
@@ -173,6 +167,7 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
     int flags = 0;
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_COLOR);
+    //SET_FLAG(flags, HAS_NORMAL);
 
     pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags);
     pShader->Load();
@@ -188,6 +183,7 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     int flags = 0;
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_UV);
+    //SET_FLAG(flags, HAS_NORMAL);
 
     pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags);
     pShader->Load();
@@ -253,6 +249,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveColor(con
     int flagsColor = 0;
     SET_FLAG(flagsColor, HAS_POSITION);
     SET_FLAG(flagsColor, HAS_COLOR);
+    //SET_FLAG(flagsColor, HAS_NORMAL);
 
     // Call the unified BuildGeometry function
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagsColor);
@@ -267,6 +264,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(c
     int flagsTexture = 0;
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
+    //SET_FLAG(flagsTexture, HAS_NORMAL);
 
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
@@ -291,6 +289,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserColor(c
     int flagsColor = 0;
     SET_FLAG(flagsColor, HAS_POSITION);
     SET_FLAG(flagsColor, HAS_COLOR);
+    //SET_FLAG(flagsColor, HAS_NORMAL);
 
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagsColor);
@@ -315,6 +314,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserTexture
     int flagsTexture = 0;
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
+    //SET_FLAG(flagsTexture, HAS_NORMAL);
 
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, flagsTexture);

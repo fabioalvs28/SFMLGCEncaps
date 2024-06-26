@@ -1,5 +1,9 @@
 #include "framework.h"
 
+GCRender::GCRender() {
+
+}
+
 bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight)
 {
 	CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);

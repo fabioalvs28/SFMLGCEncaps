@@ -13,6 +13,7 @@ struct VertexIn
 {
     float3 PosL : POSITION;
     float4 Color : COLOR;
+    //float3 Normal : NORMAL;
 };
 
 struct VertexOut
