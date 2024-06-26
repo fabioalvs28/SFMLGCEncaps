@@ -41,6 +41,27 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
+// Fonction pour calculer la couleur ambiante
+float4 ComputeAmbientColor(float4 ambientLightColor, float4 materialAmbient, float4 texColor)
+{
+    return ambientLightColor * texColor * materialAmbient;
+}
+
+// Fonction pour calculer la couleur diffuse
+float3 ComputeDiffuseColor(float3 lightDirection, float3 normal, float3 lightColor, float4 materialDiffuse)
+{
+    float diffuseFactor = max(0.0f, dot(normal, lightDirection));
+    return lightColor * materialDiffuse.rgb * diffuseFactor;
+}
+
+// Fonction pour calculer la couleur spéculaire
+float3 ComputeSpecularColor(float3 lightDirection, float3 viewDirection, float3 normal, float3 lightColor, float4 materialSpecular, float materialShininess)
+{
+    float3 reflectDirection = reflect(-lightDirection, normal);
+    float specularFactor = pow(max(dot(viewDirection, reflectDirection), 0.0f), materialShininess);
+    return lightColor * materialSpecular.rgb * specularFactor;
+}
+
 // Pixel Shader
 float4 PS(VertexOut pin) : SV_Target
 {
@@ -50,10 +71,9 @@ float4 PS(VertexOut pin) : SV_Target
     // Échantillonner la texture à partir des coordonnées UV du vertex
     float4 texColor = g_texture.Sample(g_sampler, pin.UV);
 
-    // Paramètres de la lumière
-    float3 lightPosition = float3(10.0f, 10.0f, -10.0f);
+    // Paramètres de la lumière directionnelle (simule le soleil)
     float3 lightColor = float3(1.0f, 1.0f, 1.0f);
-    float3 lightDirection = normalize(lightPosition - pin.PosH.xyz);
+    float3 lightDirection = normalize(float3(0.8f, -1.0f, 0.8f)); // Direction de la lumière du soleil
 
     // Paramètres du matériau
     float4 materialAmbient = float4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -62,18 +82,15 @@ float4 PS(VertexOut pin) : SV_Target
     float materialShininess = 32.0f;
 
     // Calculer la couleur ambiante
-    float4 ambientColor = ambientLightColor * texColor * materialAmbient;
+    float4 ambientColor = ComputeAmbientColor(ambientLightColor, materialAmbient, texColor);
 
     // Calculer la couleur diffuse
     float3 normal = normalize(pin.NormalW);
-    float diffuseFactor = max(0.0f, dot(normal, -lightDirection));
-    float3 diffuseColor = lightColor * materialDiffuse.rgb * diffuseFactor;
+    float3 diffuseColor = ComputeDiffuseColor(lightDirection, normal, lightColor, materialDiffuse);
     
     // Calculer la couleur spéculaire
     float3 viewDirection = normalize(-pin.PosH.xyz); // Vue direction
-    float3 reflectDirection = reflect(lightDirection, normal);
-    float specularFactor = pow(max(dot(viewDirection, reflectDirection), 0.0f), materialShininess);
-    float3 specularColor = lightColor * materialSpecular.rgb * specularFactor;
+    float3 specularColor = ComputeSpecularColor(lightDirection, viewDirection, normal, lightColor, materialSpecular, materialShininess);
 
     // Combiner toutes les couleurs
     float3 finalColor = ambientColor.rgb + diffuseColor + specularColor;

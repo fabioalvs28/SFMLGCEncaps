@@ -21,6 +21,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// Geometry (Resource)
 	auto geo = graphics->CreateGeometryPrimitiveColor("sphere", DirectX::XMFLOAT4(DirectX::Colors::Gray));
+	auto geo3 = graphics->CreateGeometryPrimitiveTexture("sphere");
 	auto geo1 = graphics->CreateGeometryPrimitiveTexture("cube");
 	auto geo2 = graphics->CreateGeometryModelParserTexture("../../../src/Render/monkeyUv.obj", obj);
 
@@ -42,6 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//GCMesh* mesh1 = graphics->CreateMesh(geo1);
 
 	auto mesh2 = graphics->CreateMesh(geo2.resource);
+	auto mesh3 = graphics->CreateMesh(geo3.resource);
 
 	// Texture (Resource)
 	std::string texturePath = "../../../src/Render/Textures/texture.dds";
@@ -241,8 +243,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 		graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
 		// Mettre à jour le constant buffer pour la matrice world
-		graphics->UpdateWorldConstantBuffer(material.resource, world);
-		graphics->GetRender()->DrawObject(mesh.resource, material.resource);
+		graphics->UpdateWorldConstantBuffer(material2.resource, world);
+		graphics->GetRender()->DrawObject(mesh3.resource, material2.resource);
 
 		graphics->UpdateWorldConstantBuffer(material.resource, transposedWorld);
 		graphics->GetRender()->DrawObject(mesh.resource, material.resource);
