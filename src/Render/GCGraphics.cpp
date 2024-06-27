@@ -172,7 +172,6 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
     int flags = 0;
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_COLOR);
-    SET_FLAG(flags, HAS_NORMAL);
 
     pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags);
     pShader->Load();
@@ -188,7 +187,6 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     int flags = 0;
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_UV);
-    SET_FLAG(flags, HAS_NORMAL);
 
     pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags);
     pShader->Load();
@@ -198,10 +196,10 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
 }
 
 // Specify the path, with the name of the shader at the file creation , example : CsoCompiled/texture, texture is the name of the file in Cso Compiled Folder
-ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits)
+ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
     GCShader* pShader = new GCShader();
-    pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits);
+    pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits, cullMode);
     pShader->Load();
 
     m_vShaders.push_back(pShader);
@@ -254,7 +252,6 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveColor(con
     int flagsColor = 0;
     SET_FLAG(flagsColor, HAS_POSITION);
     SET_FLAG(flagsColor, HAS_COLOR);
-    SET_FLAG(flagsColor, HAS_NORMAL);
 
     // Call the unified BuildGeometry function
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagsColor);
@@ -269,7 +266,6 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(c
     int flagsTexture = 0;
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
-    SET_FLAG(flagsTexture, HAS_NORMAL);
 
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
@@ -279,7 +275,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(c
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int& flagEnabledBits)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int flagEnabledBits)
 {
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagEnabledBits);
@@ -294,7 +290,6 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserColor(c
     int flagsColor = 0;
     SET_FLAG(flagsColor, HAS_POSITION);
     SET_FLAG(flagsColor, HAS_COLOR);
-    //SET_FLAG(flagsColor, HAS_NORMAL);
 
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagsColor);
@@ -319,7 +314,6 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserTexture
     int flagsTexture = 0;
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
-    //SET_FLAG(flagsTexture, HAS_NORMAL);
 
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, flagsTexture);

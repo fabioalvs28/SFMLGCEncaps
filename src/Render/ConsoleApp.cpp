@@ -1,261 +1,142 @@
 #include "pch.h"
+#include <DirectXMath.h>
 
 struct GCTest : GCSHADERCB {
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMFLOAT4 color;
 };
 
+using namespace DirectX;
+
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
+    // Initialisation des ressources graphiques
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    profiler.InitializeConsole();
+
+    Window* window = new Window(hInstance);
+    window->Initialize();
+
+    GCGraphics* graphics = new GCGraphics();
+    graphics->Initialize(window, 1920, 1080);
+
+    int flagsLightColor = 0;
+    SET_FLAG(flagsLightColor, HAS_POSITION);
+    SET_FLAG(flagsLightColor, HAS_COLOR);
+    SET_FLAG(flagsLightColor, HAS_NORMAL);
+
+    int flagsLightTexture = 0;
+    SET_FLAG(flagsLightTexture, HAS_POSITION);
+    SET_FLAG(flagsLightTexture, HAS_UV);
+    SET_FLAG(flagsLightTexture, HAS_NORMAL);
+
+    // Création des géométries
+    auto geoCubeOuter = graphics->CreateGeometryPrimitiveCustom("cube", DirectX::XMFLOAT4(DirectX::Colors::Red), flagsLightColor);
+    auto geoCubeInner = graphics->CreateGeometryPrimitiveCustom("cube", DirectX::XMFLOAT4(DirectX::Colors::Green), flagsLightColor);
+    auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", DirectX::XMFLOAT4(DirectX::Colors::Yellow), flagsLightTexture);
+
+    // Chargement des shaders personnalisés
+    std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
+    std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
+    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
+
+    std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
+    std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
+    auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
+
+    auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_FRONT);
+
+    graphics->InitializeGraphicsResourcesStart();
+
+    // Création des meshes
+    auto meshCubeOuter = graphics->CreateMesh(geoCubeOuter.resource);
+    auto meshCubeInner = graphics->CreateMesh(geoCubeInner.resource);
+    auto meshSphere = graphics->CreateMesh(geoSphere.resource);
+
+    std::string texturePath = "../../../src/Render/Textures/texture.dds";
+    std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
+    auto texture = graphics->CreateTexture(texturePath);
+    auto texture2 = graphics->CreateTexture(texturePath);
+
+    graphics->InitializeGraphicsResourcesEnd();
+
+    // Création des matériaux
+    auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
+    //materialCubeOuter.resource->SetTexture(texture2.resource);
+
+    auto materialCubeInner = graphics->CreateMaterial(shaderLightColor.resource);
+    auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
+    materialSphere.resource->SetTexture(texture2.resource);
+
+    // Initialisation des matrices de vue et de projection
+    DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
+    DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
+    DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, window->AspectRatio(), 1.0f, 1000.0f);
+    DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
+    DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
+    DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
+    DirectX::XMFLOAT4X4 storedProjectionMatrix;
+    DirectX::XMFLOAT4X4 storedViewMatrix;
+    DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
+    DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+
+    // Définition des matrices de transformation pour chaque objet avec translation
+    DirectX::XMMATRIX worldMatrixCubeOuter = DirectX::XMMatrixScaling(30.0f, 30.0f, 30.0f) * DirectX::XMMatrixTranslation(-8.0f, 0.0f, 2.0f); // Cube externe (skybox)
+    DirectX::XMMATRIX worldMatrixCubeInner = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-4.0f, 0.0f, -2.0f); // Cube interne centré
+    DirectX::XMMATRIX worldMatrixCubeInner2 = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-6.0f, 3.0f, -2.0f); // Cube interne centré
+    DirectX::XMMATRIX worldMatrixSphere = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(3.0f, 0.0f, -2.0f); // Sphère déplacée dans le cube interne
+
+    DirectX::XMFLOAT4X4 worldCubeOuter;
+    DirectX::XMFLOAT4X4 worldCubeInner;
+    DirectX::XMFLOAT4X4 worldCubeInner2;
+    DirectX::XMFLOAT4X4 worldSphere;
+
+    DirectX::XMStoreFloat4x4(&worldCubeOuter, DirectX::XMMatrixTranspose(worldMatrixCubeOuter));
+    DirectX::XMStoreFloat4x4(&worldCubeInner, DirectX::XMMatrixTranspose(worldMatrixCubeInner));
+    DirectX::XMStoreFloat4x4(&worldCubeInner2, DirectX::XMMatrixTranspose(worldMatrixCubeInner2));
+    DirectX::XMStoreFloat4x4(&worldSphere, DirectX::XMMatrixTranspose(worldMatrixSphere));
+
+    auto startTime = std::chrono::steady_clock::now();
+
+    // Boucle de rendu
+    while (true) {
+        // Mesurer le temps écoulé depuis le début de l'application
+        auto currentTime = std::chrono::steady_clock::now();
+        float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
+
+        // Calculer la rotation du cube interne autour de l'axe Y
+        float rotationSpeed = 1.0f; // Vitesse de rotation en radians par seconde
+        float angle = rotationSpeed * elapsedTime;
+        DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(angle);
 
+        // Mettre à jour la matrice de transformation du cube interne
+        DirectX::XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
 
+        // Extraire les données de la matrice mise à jour dans une XMFLOAT4X4
+        DirectX::XMStoreFloat4x4(&worldCubeInner, DirectX::XMMatrixTranspose(worldMatrixCubeInnerUpdated));
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
-{
-	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-	profiler.InitializeConsole();
+        graphics->StartFrame();
+        graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-	Window* window = new Window(hInstance);
-	window->Initialize();
+        // Dessiner le cube externe
+        graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
+        graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
 
-	GCGraphics* graphics = new GCGraphics();
-	graphics->Initialize(window, 1920, 1080);
+        // Dessiner le cube interne avec la matrice mise à jour
+        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
+        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource);
 
-	// Geometry (Resource)
-	auto geo = graphics->CreateGeometryPrimitiveColor("sphere", DirectX::XMFLOAT4(DirectX::Colors::Gray));
-	auto geo3 = graphics->CreateGeometryPrimitiveTexture("sphere");
-	auto geo1 = graphics->CreateGeometryPrimitiveTexture("cube");
-	auto geo2 = graphics->CreateGeometryModelParserTexture("../../../src/Render/monkeyUv.obj", obj);
+        // Dessiner la sphère interne
+        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
+        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
-	std::string shaderFilePath = "../../../src/Render/Shaders/customTest.hlsl";
-	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
+        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
+        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
-	auto shader1 = graphics->CreateShaderColor();
-	//GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, flagsTexture);
+        graphics->EndFrame();
+        window->Run(graphics->GetRender());
+    }
 
-
-	auto shader2 = graphics->CreateShaderTexture();
-
-	graphics->InitializeGraphicsResourcesStart();
-
-	// Mesh (Resource)
-	auto mesh = graphics->CreateMesh(geo.resource);
-
-
-	//GCMesh* mesh1 = graphics->CreateMesh(geo1);
-
-	auto mesh2 = graphics->CreateMesh(geo2.resource);
-	auto mesh3 = graphics->CreateMesh(geo3.resource);
-
-	// Texture (Resource)
-	std::string texturePath = "../../../src/Render/Textures/texture.dds";
-	std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
-	auto texture = graphics->CreateTexture(texturePath);
-	auto texture3 = graphics->CreateTexture(texturePath);
-
-
-
-
-
-	graphics->InitializeGraphicsResourcesEnd();
-
-
-
-
-	//graphics->RemoveTexture(texture3.resource);
-	//graphics->RemoveMesh(mesh.resource);
-
-
-
-
-	graphics->InitializeGraphicsResourcesStart();
-	auto texture8 = graphics->CreateTexture(texturePath2);
-	graphics->InitializeGraphicsResourcesEnd();
-
-
-
-	// Material (Resource)
-	auto material = graphics->CreateMaterial(shader1.resource);
-	auto material2 = graphics->CreateMaterial(shader2.resource);
-	material2.resource->SetTexture(texture.resource);
-
-	auto material3 = graphics->CreateMaterial(shader2.resource);
-	material3.resource->SetTexture(texture8.resource);
-
-	// PERSPECTIVE 
-
-	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
-	DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
-	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-
-	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, window->AspectRatio(), 1.0f, 1000.0f);
-	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
-
-	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
-	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-
-	DirectX::XMFLOAT4X4 storedProjectionMatrix;
-	DirectX::XMFLOAT4X4 storedViewMatrix;
-
-	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
-	// ***********
-
-
-	//// SET CAMERA
-	//	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);  // Position de la caméra
-	//	DirectX::XMVECTOR targetPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // Point visé par la caméra
-	//	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);       // Vecteur "up" de la caméra
-	//
-	//	// Projection orthographique
-	//	float viewWidth = 10.0f;    // Largeur de la vue
-	//	float viewHeight = 10.0f;   // Hauteur de la vue
-	//	float nearZ = 0.1f;         // Plan proche
-	//	float farZ = 100.0f;        // Plan éloigné
-	//
-	//	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, nearZ, farZ);
-	//	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
-	//
-	//	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
-	//	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-	//
-	//	DirectX::XMFLOAT4X4 storedProjectionMatrix;
-	//	DirectX::XMFLOAT4X4 storedViewMatrix;
-	//
-	//	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-	//	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
-	//
-	//	// ****************
-
-
-	/*float left = -1.0f;
-	float right = 1.0f;
-	float bottom = -1.0f;
-	float top = 1.0f;
-
-	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixOrthographicOffCenterLH(left, right, bottom, top, 0.0f, 1.0f);
-	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity();
-
-	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
-	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-
-	DirectX::XMFLOAT4X4 storedProjectionMatrix;
-	DirectX::XMFLOAT4X4 storedViewMatrix;
-
-	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);*/
-
-
-	// SET WORLD
-
-	DirectX::XMFLOAT4X4 II(
-		3.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 3.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 3.0f, 0.0f,
-		4.0f, 0.0f, 0.0f, 1.0f);
-
-	DirectX::XMFLOAT4X4 transposedWorld;
-	DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&II)));
-
-
-	// ***********
-
-	graphics->StartFrame();
-
-	// DRAW -> ONE FRAME
-	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-
-	DirectX::XMFLOAT4X4 world = graphics->ToPixel(400, 400, storedProjectionMatrix, storedViewMatrix);
-	DirectX::XMFLOAT4X4 world2 = graphics->ToPixel(600, 600, storedProjectionMatrix, storedViewMatrix);
-
-	GCTest test;
-	test.world = world2;
-	test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
-
-
-	//DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
-	//DirectX::XMStoreFloat4x4(&test.world, identityMatrix);
-	//test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
-
-	//graphics->UpdateCustomCBObject<GCTest>(material2.resource, test);
-	//graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
-
-	//graphics->UpdateWorldConstantBuffer(material3.resource, world);
-	//graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);
-
-	//graphics->UpdateCustomCBObject<GCTest>(material2.resource, test);
-	//graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
-
-	//graphics->UpdateWorldConstantBuffer(material3.resource, transposedWorld);
-	//graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);
-
-	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
-	//graphics->GetRender()->DrawObject(mesh, material);
-
-	//profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
-	using namespace DirectX;
-
-
-	graphics->EndFrame();
-	// ********************
-
-	DirectX::XMFLOAT4X4 I(
-		3.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 3.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 3.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
-
-	// Initialisation des variables
-	float totalTime = 0.0f;
-	float rotationSpeed = 0.0005f; // Vitesse de rotation en radians par seconde
-
-	// Boucle principale de rendu
-	while (true)
-	{
-		// Calcul du temps écoulé depuis la dernière frame
-		float deltaTime = 1.0f; // À remplacer par le vrai deltaTime dans une application réelle
-
-		// Mise à jour du temps total
-		totalTime += deltaTime;
-
-		// Calcul de l'angle de rotation en fonction du temps total
-		float rotationAngle = totalTime * rotationSpeed;
-
-		// Construction de la matrice de rotation autour de l'axe Y
-		XMMATRIX rotationMatrix = XMMatrixRotationZ(rotationAngle);
-
-		// Chargement de la matrice I dans DirectXMath
-		XMMATRIX I_matrix = XMLoadFloat4x4(&I);
-
-		// Application de la rotation à la matrice I
-		XMMATRIX rotatedMatrix = XMMatrixMultiply(rotationMatrix, I_matrix);
-
-		// Transposer la matrice
-		rotatedMatrix = XMMatrixTranspose(rotatedMatrix);
-
-		// Mise à jour de la matrice world avec la matrice transformée
-		XMFLOAT4X4 world;
-		XMStoreFloat4x4(&world, rotatedMatrix);
-
-		// Exemple d'utilisation avec une bibliothèque graphique (pseudo-code)
-		graphics->StartFrame();
-
-		// Mettre à jour les constant buffers (vue et projection)
-		graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-
-		// Mettre à jour le constant buffer pour la matrice world
-		graphics->UpdateWorldConstantBuffer(material2.resource, world);
-		graphics->GetRender()->DrawObject(mesh3.resource, material2.resource);
-
-		graphics->UpdateWorldConstantBuffer(material.resource, transposedWorld);
-		graphics->GetRender()->DrawObject(mesh.resource, material.resource);
-
-
-
-		// Finaliser le frame de rendu
-		graphics->EndFrame();
-
-		window->Run(graphics->GetRender());
-	}
-
-
+    return 0;
 }

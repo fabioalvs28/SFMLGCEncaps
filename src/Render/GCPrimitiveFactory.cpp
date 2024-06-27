@@ -1,5 +1,7 @@
 #include "pch.h"
 
+using namespace DirectX;
+
 GCPrimitiveFactory::GCPrimitiveFactory() 
 {
 	m_pRender = nullptr;
@@ -111,6 +113,103 @@ void GCPrimitiveFactory::GenerateSphere(float radius, int numSegments, std::vect
     }
 }
 
+void GCPrimitiveFactory::GenerateCube(std::vector<DirectX::XMFLOAT3>& vertices,
+    std::vector<uint16_t>& indices,
+    std::vector<DirectX::XMFLOAT2>& uvs,
+    std::vector<DirectX::XMFLOAT3>& normals)
+{
+    // Define 24 vertices of the cube (each vertex is unique)
+    DirectX::XMFLOAT3 positions[24] = {
+        // Front face
+        { -0.5f, -0.5f, -0.5f }, // 0
+        {  0.5f, -0.5f, -0.5f }, // 1
+        {  0.5f,  0.5f, -0.5f }, // 2
+        { -0.5f,  0.5f, -0.5f }, // 3
+
+        // Right face
+        {  0.5f, -0.5f, -0.5f }, // 4
+        {  0.5f, -0.5f,  0.5f }, // 5
+        {  0.5f,  0.5f,  0.5f }, // 6
+        {  0.5f,  0.5f, -0.5f }, // 7
+
+        // Back face
+        {  0.5f, -0.5f,  0.5f }, // 8
+        { -0.5f, -0.5f,  0.5f }, // 9
+        { -0.5f,  0.5f,  0.5f }, // 10
+        {  0.5f,  0.5f,  0.5f }, // 11
+
+        // Left face
+        { -0.5f, -0.5f,  0.5f }, // 12
+        { -0.5f, -0.5f, -0.5f }, // 13
+        { -0.5f,  0.5f, -0.5f }, // 14
+        { -0.5f,  0.5f,  0.5f }, // 15
+
+        // Top face
+        { -0.5f,  0.5f, -0.5f }, // 16
+        {  0.5f,  0.5f, -0.5f }, // 17
+        {  0.5f,  0.5f,  0.5f }, // 18
+        { -0.5f,  0.5f,  0.5f }, // 19
+
+        // Bottom face
+        { -0.5f, -0.5f,  0.5f }, // 20
+        {  0.5f, -0.5f,  0.5f }, // 21
+        {  0.5f, -0.5f, -0.5f }, // 22
+        { -0.5f, -0.5f, -0.5f }  // 23
+    };
+
+    // Define indices (triangles) for each face with back face culling
+    uint16_t cubeIndices[36] = {
+        0,  1,  2,  0,  2,  3, // Front face
+        4,  5,  6,  4,  6,  7, // Right face
+        8,  9, 10,  8, 10, 11, // Back face
+       12, 13, 14, 12, 14, 15, // Left face
+       16, 17, 18, 16, 18, 19, // Top face
+       20, 21, 22, 20, 22, 23  // Bottom face
+    };
+
+    // Define UVs for each vertex (24 vertices)
+    DirectX::XMFLOAT2 cubeUVs[24] = {
+        // Front face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Right face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Back face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Left face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Top face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Bottom face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f }
+    };
+
+    // Define normals for each vertex (24 vertices)
+    DirectX::XMFLOAT3 cubeNormals[24] = {
+        // Front face
+        { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, -1.0f },
+        // Right face
+        { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f },
+        // Back face
+        { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f },
+        // Left face
+        { -1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f },
+        // Top face
+        { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f },
+        // Bottom face
+        { 0.0f, -1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }
+    };
+
+    // Copy vertices, indices, UVs, and normals into the provided vectors
+    vertices.assign(positions, positions + 24);
+    indices.assign(cubeIndices, cubeIndices + 36);
+    uvs.assign(cubeUVs, cubeUVs + 24); // Assign 24 UVs
+    normals.assign(cubeNormals, cubeNormals + 24); // Assign 24 normals
+
+    // Adjust face winding for back face culling (clockwise)
+    for (size_t i = 0; i < indices.size(); i += 3) {
+        std::swap(indices[i], indices[i + 2]);
+    }
+}
 
 void GCPrimitiveFactory::Initialize() 
 {
@@ -128,6 +227,13 @@ void GCPrimitiveFactory::Initialize()
     std::vector<DirectX::XMFLOAT3> sphereNormals;
 
     GenerateSphere(0.5f, 32, sphereVertices, sphereUvs, sphereIndices, sphereNormals);
+
+    std::vector<DirectX::XMFLOAT3> cubeVertices;
+    std::vector<DirectX::XMFLOAT2> cubeUvs;
+    std::vector<uint16_t> cubeIndices;
+    std::vector<DirectX::XMFLOAT3> cubeNormals;
+
+    GenerateCube(cubeVertices, cubeIndices, cubeUvs, cubeNormals);
 
     //Put all data in map
     m_primitiveInfos = {
@@ -154,134 +260,11 @@ void GCPrimitiveFactory::Initialize()
             })
             }
     }},
-
     {L"cube", {
-        { L"index", std::vector<uint16_t>{
-            0, 1, 2, 0, 2, 3,
-            4, 6, 5, 4, 7, 6,
-            4, 5, 1, 4, 1, 0,
-            3, 2, 6, 3, 6, 7,
-            1, 5, 6, 1, 6, 2,
-            4, 0, 3, 4, 3, 7,
-        }},
-        { L"pos", std::vector<DirectX::XMFLOAT3>{
-            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),
-        }},
-        { L"uvs", std::vector<DirectX::XMFLOAT2>{
-            DirectX::XMFLOAT2(0, 1),
-            DirectX::XMFLOAT2(0, 0),
-            DirectX::XMFLOAT2(1, 0),
-            DirectX::XMFLOAT2(1, 1),
-            DirectX::XMFLOAT2(0, 1),
-            DirectX::XMFLOAT2(0, 0),
-            DirectX::XMFLOAT2(1, 0),
-            DirectX::XMFLOAT2(1, 1),
-            DirectX::XMFLOAT2(0, 1),
-            DirectX::XMFLOAT2(0, 0),
-            DirectX::XMFLOAT2(1, 0),
-            DirectX::XMFLOAT2(1, 1),
-            DirectX::XMFLOAT2(0, 1),
-            DirectX::XMFLOAT2(0, 0),
-            DirectX::XMFLOAT2(1, 0),
-            DirectX::XMFLOAT2(1, 1),
-            DirectX::XMFLOAT2(0, 1),
-            DirectX::XMFLOAT2(0, 0),
-            DirectX::XMFLOAT2(1, 0),
-            DirectX::XMFLOAT2(1, 1),
-            DirectX::XMFLOAT2(0, 1),
-            DirectX::XMFLOAT2(0, 0),
-            DirectX::XMFLOAT2(1, 0),
-            DirectX::XMFLOAT2(1, 1),
-        }},
-        /*{ L"normals", GenerateNormal(std::vector<uint16_t>{
-            0, 1, 2, 0, 2, 3,
-            4, 6, 5, 4, 7, 6,
-            4, 5, 1, 4, 1, 0,
-            3, 2, 6, 3, 6, 7,
-            1, 5, 6, 1, 6, 2,
-            4, 0, 3, 4, 3, 7,
-            }, std::vector<DirectX::XMFLOAT3>{
-            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
-            DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f),
-            DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f),})
-        }*/
-        { L"normals", std::vector<DirectX::XMFLOAT3>{
-            // Face -Z
-            DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), // Normal for vertex 0
-            DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), // Normal for vertex 1
-            DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), // Normal for vertex 2
-            DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), // Normal for vertex 3
-            // Face +Z
-            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for vertex 4
-            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for vertex 5
-            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for vertex 6
-            DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for vertex 7
-            // Face -X
-            DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), // Normal for vertex 8
-            DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), // Normal for vertex 9
-            DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), // Normal for vertex 10
-            DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), // Normal for vertex 11
-            // Face +X
-            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // Normal for vertex 12
-            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // Normal for vertex 13
-            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // Normal for vertex 14
-            DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), // Normal for vertex 15
-            // Face +Y
-            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // Normal for vertex 16
-            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // Normal for vertex 17
-            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // Normal for vertex 18
-            DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // Normal for vertex 19
-            // Face -Y
-            DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), // Normal for vertex 20
-            DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), // Normal for vertex 21
-            DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), // Normal for vertex 22
-            DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), // Normal for vertex 23
-        }}
-
+        {L"index", cubeIndices},
+        {L"pos", cubeVertices},
+        {L"uvs", cubeUvs},
+        {L"normals", cubeNormals},
     }},
     // #TODO -> Doesn't work in 2d thereas, it need be 2d
     {L"circle", {
@@ -295,7 +278,6 @@ void GCPrimitiveFactory::Initialize()
         {L"pos", sphereVertices},
         {L"uvs", sphereUvs},
         {L"normals", sphereNormals},
-        //{L"normals", GenerateNormal(sphereIndices, sphereVertices)}
     }}
     };
 }

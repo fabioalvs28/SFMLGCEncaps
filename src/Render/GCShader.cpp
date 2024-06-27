@@ -31,7 +31,7 @@ void GCShader::Render()
 	m_pRender->GetCommandList()->SetGraphicsRootSignature(GetRootSign());
 }
 
-void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits)
+void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
 	
 	CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully");
@@ -41,6 +41,8 @@ void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const 
 	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());
 	m_vsCsoPath = baseCsoPath + L"VS.cso";
 	m_psCsoPath = baseCsoPath + L"PS.cso";
+
+	m_cullMode = cullMode;
 
 	m_pRender = pRender;
 	m_flagEnabledBits = flagEnabledBits;
@@ -158,7 +160,7 @@ void GCShader::Pso()
 	};
 
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	psoDesc.RasterizerState.CullMode = m_cullMode;
 
 
 

@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6E40E5E2-6D3D-472F-AC29-38088F4F4109}</ProjectGuid>
+    <ProjectGuid>{CC640D88-AA57-4906-9982-D63C180851ED}</ProjectGuid>
     <RootNamespace>Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -53,11 +53,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_PROFILER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -119,6 +119,8 @@
     <None Include="..\..\..\src\Render\normals.obj" />
     <None Include="..\..\..\src\Render\Shaders\color.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\customTest.hlsl" />
+    <None Include="..\..\..\src\Render\Shaders\LightColor.hlsl" />
+    <None Include="..\..\..\src\Render\Shaders\LightTexture.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\texture.hlsl" />
     <None Include="..\..\..\src\Render\Textures\ahah.dds" />
     <None Include="..\..\..\src\Render\Textures\cottage_diffuse.dds" />

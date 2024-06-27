@@ -421,6 +421,8 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
 
+	COMPARE_SHADER_MESH_FLAGS(pMaterial, pMesh);
+
 	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
 	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
 
@@ -430,7 +432,7 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
-	COMPARE_SHADER_MESH_FLAGS(pMaterial, pMesh);
+
 
 	//
 	pMaterial->UpdateTexture();

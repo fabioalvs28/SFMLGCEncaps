@@ -19,7 +19,7 @@ public:
 	ID3D12RootSignature* GetRootSign();
 	ID3D12PipelineState* GetPso();
 
-	void Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits);
+	void Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK);
 	void Render();
 
 	int GetFlagEnabledBits() const { return m_flagEnabledBits; }
@@ -35,6 +35,8 @@ public:
 
 	GCRender* m_pRender;
 protected:
+	// Initialize var
+	D3D12_CULL_MODE m_cullMode;
 
 	ID3D12RootSignature* m_RootSignature;
 	ID3D12PipelineState* m_PSO;
