@@ -80,8 +80,8 @@ struct GCVEC3
 
     static GCVEC3 Zero() { return GCVEC3( 0.0f, 0.0f, 0.0f ); }
     static GCVEC3 One() { return GCVEC3( 1.0f, 1.0f, 1.0f ); }
-    static GCVEC3 Up() { return GCVEC3( 0.0f, 1.0f, 0.0f ); }
-    static GCVEC3 Down() { return GCVEC3( 0.0f, -1.0f, 0.0f ); }
+    static GCVEC3 Up() { return GCVEC3( 0.0f, -1.0f, 0.0f ); }
+    static GCVEC3 Down() { return GCVEC3( 0.0f, 1.0f, 0.0f ); }
     static GCVEC3 Left() { return GCVEC3( -1.0f, 0.0f, 0.0f ); }
     static GCVEC3 Right() { return GCVEC3( 1.0f, 0.0f , 0.0f); }
     static GCVEC3 Forward() { return GCVEC3( 0.0f, 0.0f, 1.0f ); }

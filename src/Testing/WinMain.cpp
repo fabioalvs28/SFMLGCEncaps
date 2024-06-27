@@ -1,14 +1,11 @@
 #include "pch.h"
 
 #include <iostream>
-#include <Windows.h>
-#include "Window.h"
-#include "EventSystem.h"
-#include "GameManager.h"
-#include "SceneManager.h"
-#include "Scene.h"
-#include "GameObject.h"
-#include "Components.h"
+// #include <Windows.h>
+// #include "Window.h"
+// #include "EventSystem.h"
+// #include "Log.h"
+#include "Vectors.h"
 #include "GCColor.h"
 #include "Log.h"
 #include "GCEngine.h"
