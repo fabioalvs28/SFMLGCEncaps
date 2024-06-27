@@ -40,7 +40,6 @@
 #include <d3d11_1.h>
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
-#include <DirectXTex.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>

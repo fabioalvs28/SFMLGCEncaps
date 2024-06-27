@@ -211,6 +211,102 @@ void GCPrimitiveFactory::GenerateCube(std::vector<DirectX::XMFLOAT3>& vertices,
     }
 }
 
+void GCPrimitiveFactory::GenerateCubeSkybox(std::vector<DirectX::XMFLOAT3>& vertices,
+    std::vector<uint16_t>& indices,
+    std::vector<DirectX::XMFLOAT2>& uvs,
+    std::vector<DirectX::XMFLOAT3>& normals)
+{
+    DirectX::XMFLOAT3 positions[24] = {
+        // Front face
+        { -0.5f, -0.5f, -0.5f }, // 0
+        {  0.5f, -0.5f, -0.5f }, // 1
+        {  0.5f,  0.5f, -0.5f }, // 2
+        { -0.5f,  0.5f, -0.5f }, // 3
+
+        // Right face
+        {  0.5f, -0.5f, -0.5f }, // 4
+        {  0.5f, -0.5f,  0.5f }, // 5
+        {  0.5f,  0.5f,  0.5f }, // 6
+        {  0.5f,  0.5f, -0.5f }, // 7
+
+        // Back face
+        {  0.5f, -0.5f,  0.5f }, // 8
+        { -0.5f, -0.5f,  0.5f }, // 9
+        { -0.5f,  0.5f,  0.5f }, // 10
+        {  0.5f,  0.5f,  0.5f }, // 11
+
+        // Left face
+        { -0.5f, -0.5f,  0.5f }, // 12
+        { -0.5f, -0.5f, -0.5f }, // 13
+        { -0.5f,  0.5f, -0.5f }, // 14
+        { -0.5f,  0.5f,  0.5f }, // 15
+
+        // Top face
+        { -0.5f,  0.5f, -0.5f }, // 16
+        {  0.5f,  0.5f, -0.5f }, // 17
+        {  0.5f,  0.5f,  0.5f }, // 18
+        { -0.5f,  0.5f,  0.5f }, // 19
+
+        // Bottom face
+        { -0.5f, -0.5f,  0.5f }, // 20
+        {  0.5f, -0.5f,  0.5f }, // 21
+        {  0.5f, -0.5f, -0.5f }, // 22
+        { -0.5f, -0.5f, -0.5f }  // 23
+    };
+
+    // Define indices (triangles) for each face with back face culling (clockwise)
+    uint16_t cubeIndices[36] = {
+        0,  2,  1,  0,  3,  2, // Front face
+        4,  6,  5,  4,  7,  6, // Right face
+        8, 10,  9,  8, 11, 10, // Back face
+       12, 14, 13, 12, 15, 14, // Left face
+       16, 18, 17, 16, 19, 18, // Top face
+       20, 22, 21, 20, 23, 22  // Bottom face
+    };
+
+    // Define UVs for each vertex (24 vertices)
+    DirectX::XMFLOAT2 cubeUVs[24] = {
+        // Front face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Right face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Back face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Left face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Top face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f },
+        // Bottom face
+        { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f }
+    };
+
+    // Define normals for each vertex (24 vertices)
+    DirectX::XMFLOAT3 cubeNormals[24] = {
+        // Front face
+        { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, -1.0f },
+        // Right face
+        { -1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f },
+        // Back face
+        { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f },
+        // Left face
+        { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f },
+        // Top face
+        { 0.0f, -1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f },
+        // Bottom face
+        { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }
+    };
+
+    // Copy vertices, indices, UVs, and normals into the provided vectors
+    vertices.assign(positions, positions + 24);
+    indices.assign(cubeIndices, cubeIndices + 36);
+    uvs.assign(cubeUVs, cubeUVs + 24); // Assign 24 UVs
+    normals.assign(cubeNormals, cubeNormals + 24); // Assign 24 normals
+
+
+}
+
+
+
 void GCPrimitiveFactory::Initialize() 
 {
     // Create circle vertices, uvs and indices
@@ -234,6 +330,13 @@ void GCPrimitiveFactory::Initialize()
     std::vector<DirectX::XMFLOAT3> cubeNormals;
 
     GenerateCube(cubeVertices, cubeIndices, cubeUvs, cubeNormals);
+
+    std::vector<DirectX::XMFLOAT3> cubeSkyboxVertices;
+    std::vector<DirectX::XMFLOAT2> cubeSkyboxUvs;
+    std::vector<uint16_t> cubeSkyboxIndices;
+    std::vector<DirectX::XMFLOAT3> cubeSkyboxNormals;
+
+    GenerateCubeSkybox(cubeSkyboxVertices, cubeSkyboxIndices, cubeSkyboxUvs, cubeSkyboxNormals);
 
     //Put all data in map
     m_primitiveInfos = {
@@ -265,6 +368,12 @@ void GCPrimitiveFactory::Initialize()
         {L"pos", cubeVertices},
         {L"uvs", cubeUvs},
         {L"normals", cubeNormals},
+    }},
+    {L"cubeSkybox", {
+        {L"index", cubeSkyboxIndices},
+        {L"pos", cubeSkyboxVertices},
+        {L"uvs", cubeSkyboxUvs},
+        {L"normals", cubeSkyboxNormals},
     }},
     // #TODO -> Doesn't work in 2d thereas, it need be 2d
     {L"circle", {

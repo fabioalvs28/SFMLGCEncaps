@@ -33,7 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     // Création des géométries
     auto geoCubeOuter = graphics->CreateGeometryPrimitiveCustom("cube", DirectX::XMFLOAT4(DirectX::Colors::Red), flagsLightColor);
     auto geoCubeInner = graphics->CreateGeometryPrimitiveCustom("cube", DirectX::XMFLOAT4(DirectX::Colors::Green), flagsLightColor);
-    auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", DirectX::XMFLOAT4(DirectX::Colors::Yellow), flagsLightTexture);
+    auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", DirectX::XMFLOAT4(DirectX::Colors::Yellow), flagsLightColor);
 
     // Chargement des shaders personnalisés
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
@@ -65,8 +65,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //materialCubeOuter.resource->SetTexture(texture2.resource);
 
     auto materialCubeInner = graphics->CreateMaterial(shaderLightColor.resource);
-    auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
-    materialSphere.resource->SetTexture(texture2.resource);
+    auto materialSphere = graphics->CreateMaterial(shaderLightColor.resource);
+    //materialSphere.resource->SetTexture(texture2.resource);
 
     // Initialisation des matrices de vue et de projection
     DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
@@ -82,10 +82,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 
     // Définition des matrices de transformation pour chaque objet avec translation
-    DirectX::XMMATRIX worldMatrixCubeOuter = DirectX::XMMatrixScaling(30.0f, 30.0f, 30.0f) * DirectX::XMMatrixTranslation(-8.0f, 0.0f, 2.0f); // Cube externe (skybox)
-    DirectX::XMMATRIX worldMatrixCubeInner = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-4.0f, 0.0f, -2.0f); // Cube interne centré
-    DirectX::XMMATRIX worldMatrixCubeInner2 = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-6.0f, 3.0f, -2.0f); // Cube interne centré
-    DirectX::XMMATRIX worldMatrixSphere = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(3.0f, 0.0f, -2.0f); // Sphère déplacée dans le cube interne
+    DirectX::XMMATRIX worldMatrixCubeOuter = DirectX::XMMatrixScaling(20.0f, 20.0f, 20.0f) * DirectX::XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
+    DirectX::XMMATRIX worldMatrixCubeInner = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centré
+    DirectX::XMMATRIX worldMatrixCubeInner2 = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-6.0f, 5.0f, -2.0f); // Cube interne centré
+    DirectX::XMMATRIX worldMatrixSphere = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
 
     DirectX::XMFLOAT4X4 worldCubeOuter;
     DirectX::XMFLOAT4X4 worldCubeInner;
