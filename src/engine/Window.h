@@ -13,10 +13,6 @@ struct GCWindowProperties
     }
 };
 
-//macro to bind the event function
-//Reminders: if use in a class, use GC_BIND_EVENT_FN(ClassName::FunctionName)
-#define GC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
-
 using GCEventCallback = std::function<void(GCEvent& ev)>;
 
 class GCWindowBase
