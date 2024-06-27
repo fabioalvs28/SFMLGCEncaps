@@ -1,4 +1,4 @@
-#include "Core/pch.h"
+#include "pch.h"
 #include "GCImage.h"
 #include <cstdint>
 #include <iostream>
@@ -30,19 +30,19 @@ int main()
 
         img.DrawCircle(1300, 300, i / 2, 255, 0, 255, 255);
     }
-    if (img.SaveBMP("images/test.bmp"))
+    if (img.SaveBMP("test.bmp"))
     {
         std::cout << "IMG Success" << std::endl;
     }
-    img.InverseBMP("images/test.bmp");
-    img.SaveBMP("images/copy.bmp");
+    img.InverseBMP("test.bmp");
+    img.SaveBMP("copy.bmp");
 
-    img.LoadBMP("images/copy.bmp");
+    img.LoadBMP("copy.bmp");
     if (img.Premultiply())
     {
         std::cout << "Premultiplied image successfully" << std::endl;
 
-        if (img.SaveBMP("images/premultiplied.bmp"))
+        if (img.SaveBMP("premultiplied.bmp"))
         {
             std::cout << "Saved as premultiplied.bmp" << std::endl;
         }
@@ -57,12 +57,10 @@ int main()
     }
 
 
-
-
-    if (img.LoadBMP("images/test.bmp") && img2.LoadBMP("images/copy.bmp"))
+    if (img.LoadBMP("test.bmp") && img2.LoadBMP("copy.bmp"))
     {
         if (img.BlendSTD(img2, 255)) {
-            if (img.SaveBMP("images/blended_std.bmp")) {
+            if (img.SaveBMP("blended_std.bmp")) {
                 std::cout << "Blended (STD) image successfully saved as blended_std.bmp" << std::endl;
             }
             else {
@@ -73,9 +71,9 @@ int main()
             std::cerr << "Blend (STD) operation failed." << std::endl;
         }
 
-        if (img.LoadBMP("images/test.bmp") && img2.LoadBMP("images/copy.bmp")) {
+        if (img.LoadBMP("test.bmp") && img2.LoadBMP("copy.bmp")) {
             if (img.BlendPRE(img, 255)) {
-                if (img.SaveBMP("images/blended_pre.bmp")) {
+                if (img.SaveBMP("blended_pre.bmp")) {
                     std::cout << "Blended (PRE) image successfully saved as blended_pre.bmp" << std::endl;
                 }
                 else {

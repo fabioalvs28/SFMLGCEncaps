@@ -1,7 +1,7 @@
-#include "Core/pch.h"
+#include "pch.h"
 #include "GCImage.h"
 #include "BMPHeader.h"
-#include "Core/GCFile.h"
+#include "GCFile.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -231,37 +231,6 @@ void GCImage::DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t
 
 }
 
-void GCImage::FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-{
-	int f = 1 - radius;
-	int ddF_x = 1;
-	int ddF_y = -2 * radius;
-	int x1 = 0;
-	int y1 = radius;
-
-	for (int i = y - radius; i <= y + radius; i++) {
-		SetPixel(x, i, r, g, b, a);
-	}
-
-	while (x1 < y1) {
-		if (f >= 0) {
-			y1--;
-			ddF_y += 2;
-			f += ddF_y;
-		}
-		x1++;
-		ddF_x += 2;
-		f += ddF_x;
-
-		for (int i = y - y1; i <= y + y1; i++) {
-			SetPixel(x + x1, i, r, g, b, a);
-			SetPixel(x - x1, i, r, g, b, a);
-			SetPixel(x + y1, i, r, g, b, a);
-			SetPixel(x - y1, i, r, g, b, a);
-		}
-	}
-}
-
 void GCImage::Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	for (int y = 0; y < height; ++y) {
 		for (int x = 0; x < width; ++x) {
@@ -270,6 +239,7 @@ void GCImage::Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	}
 }
 
+// Inverse the colors of the image
 void GCImage::InverseBMP(const std::string& filename)
 {
 	LoadBMP(filename);
@@ -283,6 +253,7 @@ void GCImage::InverseBMP(const std::string& filename)
 	}
 }
 
+// Copy the image to a new file
 bool GCImage::CopyBMP(const std::string& filename, const std::string& newFilename)
 {
 	LoadBMP(filename);
@@ -290,6 +261,7 @@ bool GCImage::CopyBMP(const std::string& filename, const std::string& newFilenam
 	return true;
 }
 
+// Premultiply the image alpha channel
 bool GCImage::Premultiply()
 {
 	int channels = bitCount / 8;
@@ -317,6 +289,7 @@ bool GCImage::Premultiply()
 	return true;
 }
 
+// Blend the image with another image in Post-Multiplied Alpha
 bool GCImage::BlendSTD(const GCImage& overlay, float alpha)
 {
 	if (bitCount != overlay.bitCount) {
@@ -365,6 +338,7 @@ bool GCImage::BlendSTD(const GCImage& overlay, float alpha)
 	return true;
 }
 
+// Blend the image with another image in Pre-Multiplied Alpha
 bool GCImage::BlendPRE(const GCImage& overlay, float alpha)
 {
 	if (bitCount != overlay.bitCount) {
