@@ -7,12 +7,12 @@
 #include "../core/Vector.h"
 #include "../core/Queue.h"
 
+using GCEventCallback = std::function<void(GCEvent& ev)>;
 
-
-class GCEventSystem
+class GCEventManager
 {
 public:
-	GCEventSystem() = default;
+	GCEventManager() = default;
 	/// <summary>
 	/// Polls events from the operating system or framework 
 	/// and dispatches them to the appropriate handlers.
@@ -31,7 +31,17 @@ public:
 	/// <param name="type">The type of event to listen for</param>
 	/// <param name="listener">The callback function to be called when the event occurs</param>
 	/// <returns>A unique ListenerID that can be used to reference and manage the listener</returns>
-	void AddEventListener(const GCEvent& ev ,std::function<void()> func);
+	template<typename T>
+	void Subscribe(GCEventType eventType, T* instance, GCEventCallback callback)
+	{
+		const GCEventCallback& func = callback;
+		auto listener = m_eventListeners[eventType];
+		if (listener.empty())
+		{
+			listener = std::vector<std::function<void(GCEvent&)>>();
+		}
+		listener.emplace_back(func);
+	}
 
 	/// <summary>
 	/// Removes an event listener based on its type and unique ListenerID.
@@ -49,7 +59,7 @@ private:
 	void OnEvent(GCEvent& e);
 
 private:
-	GCMap<GCEventType, std::vector<std::function<void()>>> m_eventListeners;
+	GCMap<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventListeners;
     GCQueue<GCEvent*> m_eventQueue;
 };
 
@@ -58,8 +68,5 @@ public:
 	/// <summary>
 	/// Create a virtual
 	/// </summary>
-	virtual void OnEvent() = 0;
-
-protected:
-	GCEventSystem& eventSystem;
+	virtual void OnEvent(GCEvent& ev) = 0;
 };

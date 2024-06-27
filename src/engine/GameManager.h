@@ -22,5 +22,5 @@ protected:
 protected:
     GCSceneManager m_pSceneManager;
     GCInputManager m_pInputManager;
-
+    GCEventManager m_pEventManager;
 };

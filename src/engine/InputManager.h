@@ -1,5 +1,6 @@
 #pragma once
 #include <windows.h>
+#include "EventSystem.h"
 #include "../core/framework.h"
 
 /// ControllerKeys
@@ -140,19 +141,21 @@ private:
 };
 
 
-class GCInputManager
+class GCInputManager : public GCIEventListener
 {
 
     friend class GCGameManager;
-
+    GCEventManager* m_eventManager;
 public:
-
     GCInputManager();
+    GCInputManager(GCEventManager& eventManager);
     ~GCInputManager() {};
 
     void GetConnectedController();
 
     void UpdateInputs();
+
+    void OnEvent(GCEvent& ev) override;
 
     bool IsKeyPressed();
     bool IsKeyPressed(int keyID);
@@ -198,7 +201,6 @@ public:
 
 private:
     GCVEC2 m_mousePos;
-    WinTest* m_pWindow; // Remplacer avec winndow finale
 
     GCVector<GCControllerInput*> m_controllerList;
     GCVector<int> m_updatedKeys;

@@ -2,43 +2,27 @@
 #include "EventSystem.h"
 
 //Call in main loop
-void GCEventSystem::PollEvents()
+void GCEventManager::PollEvents()
 {
     for (int i = 0; i < m_eventQueue.GetSize(); i++)
     {
-        
+        //OnEvent(m_eventQueue.);
     }
 }
 
-void GCEventSystem::PushEvent(GCEvent* ev)
+void GCEventManager::PushEvent(GCEvent* ev)
 {
     m_eventQueue.Push(ev);
 }
 
 
-void GCEventSystem::AddEventListener(const GCEvent& ev, std::function<void()> func)
-{
-    m_eventListeners[ev.GetEventType()].push_back(func);
-}
-
-void GCEventSystem::RemoveEventListener()
+void GCEventManager::RemoveEventListener()
 {
 }
 
 
-void GCEventSystem::OnEvent(GCEvent& e)
+void GCEventManager::OnEvent(GCEvent& e)
 {
-    GCEventDispatcher dispatcher(e);
+    auto listeners = m_eventListeners[e.GetEventType()];
 
-    dispatcher.Dispatch<GCKeyPressedEvent>([](GCKeyPressedEvent& ev)
-        {
-            //OnKeyPressed();
-            return true;
-        });
-
-    dispatcher.Dispatch<GCKeyReleased>([](GCKeyReleased& ev)
-        {
-            //OnKeyReleased();
-            return true;
-        });
 }

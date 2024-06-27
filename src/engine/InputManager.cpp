@@ -10,11 +10,18 @@
 #define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 
-
 GCInputManager::GCInputManager()
 {
+    for (int i = 0; i < XUSER_MAX_COUNT; i++)
+    {
+        m_controllerList.PushBack(nullptr);
+    }
+}
 
-    //m_pWindow->winPos = { 10 ,10 }; m_pWindow->winSize = { 800, 500 }; m_pWindow->center = { m_pWindow->winSize.x / 2 , m_pWindow->winSize.y / 2 }; // !! valeur random de la fenêtre à changer quand on aura la bonne window !!
+GCInputManager::GCInputManager(GCEventManager& eventManager)
+    : m_eventManager(&eventManager)
+{
+    m_eventManager->Subscribe<GCInputManager>(GCEventType::KeyPressed, this, GC_BIND_EVENT_FN(GCInputManager::OnEvent));
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
         m_controllerList.PushBack( nullptr );
@@ -105,11 +112,26 @@ void GCInputManager::UpdateInputs()
     }   
 }
 
+void GCInputManager::OnEvent(GCEvent& ev)
+{
+
+}
+
 void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
     m_keyState[index] = state;
     m_updatedKeys.PushBack(index);
 
+    if (state == GCKeyState::PUSH || state == GCKeyState::DOWN)
+    {
+        GCKeyPressedEvent kev(index);
+        m_eventManager->PushEvent(&kev);
+    }
+    else if (state == GCKeyState::UP) 
+    {
+        GCKeyReleased rev(index);
+        m_eventManager->PushEvent(&rev);
+    }
 }
 
 bool GCInputManager::IsKeyPressed()
