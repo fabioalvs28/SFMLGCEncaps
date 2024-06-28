@@ -11,6 +11,7 @@ enum class GCEventType
 	WindowClose, WindowResize,
 	KeyPressed, KeyReleased,
 	MouseButtonPressed, MouseButtonReleased, MouseMove, MouseScrolled,
+    Count //Keep this at the end
 };
 
 enum class GCMouseButton
@@ -150,6 +151,8 @@ public:
     static GCEventType GetStaticType() { return GCEventType::KeyPressed; }
     GCEventType GetEventType() const override { return GetStaticType(); }
     const char* GetName() const override { return "KeyPressedEvent"; }
+
+    int GetKeyID() const { return keyID; }
 };
 
 class GCKeyReleased : public GCKeyEvent
@@ -160,4 +163,6 @@ public:
     static GCEventType GetStaticType() { return GCEventType::KeyReleased; }
     GCEventType GetEventType() const override { return GetStaticType(); }
     const char* GetName() const override { return "KeyReleased"; }
+
+    int GetKeyID() const { return keyID; }
 };
