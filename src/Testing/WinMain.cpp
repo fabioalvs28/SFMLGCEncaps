@@ -36,6 +36,7 @@ void CreateDebugConsole()
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+    EnableMemoryLeakDetection();
     CreateDebugConsole();
 
     GCEngine::Get().Run();
