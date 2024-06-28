@@ -15,8 +15,8 @@ void GCEventManager::PollEvents()
     {
         GCEvent* ev = m_eventQueue.Front();
         OnEvent(*ev);
-        m_eventQueue.Pop();
         delete ev;
+        m_eventQueue.Pop();
     }
 }
 
