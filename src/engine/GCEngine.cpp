@@ -12,7 +12,6 @@ GCEngine::GCEngine()
 
 GCEngine::~GCEngine()
 {
-    delete m_gameManager;
     delete m_window;
 }
 

@@ -36,7 +36,6 @@ private:
 
 private:
     GCWindow* m_window = nullptr;
-    GCGameManager* m_gameManager = nullptr;
 
     bool m_isRunning = false;
 };
