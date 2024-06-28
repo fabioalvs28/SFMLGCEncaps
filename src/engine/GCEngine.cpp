@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GCEngine.h"
 #include "../core/Log.h"
+#include "GC.h"
 
 GCEngine::GCEngine()
 {
@@ -11,6 +12,7 @@ GCEngine::GCEngine()
 
 GCEngine::~GCEngine()
 {
+    delete m_gameManager;
     delete m_window;
 }
 
@@ -22,7 +24,15 @@ void GCEngine::Shutdown()
 
 void GCEngine::Run()
 {
+    GCEventManager eventmanager = GCEventManager();
+    GCInputManager inputmanger(eventmanager);
+
     if (!InitWindow())
+    {
+        return;
+    }
+
+    if (!InitEngine())
     {
         return;
     }
@@ -31,6 +41,8 @@ void GCEngine::Run()
 
     while (m_isRunning)
     {
+        inputmanger.UpdateInputs();
+        eventmanager.PollEvents();
         m_window->PollEvents();
         m_window->OnUpdate();
     }
@@ -82,6 +94,13 @@ bool GCEngine::InitWindow()
     {
         return false;
     }
+    return true;
+}
+
+bool GCEngine::InitEngine()
+{
+    //TODO: Initialize the engine components
+
     return true;
 }
 
