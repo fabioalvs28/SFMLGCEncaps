@@ -85,11 +85,13 @@ void GCShader::CompileShader()
 void GCShader::RootSign()
 {
 	// Déclaration des paramètres racine
-	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[5];
 
 	slotRootParameter[CBV_SLOT_CB0].InitAsConstantBufferView(0);
 	slotRootParameter[CBV_SLOT_CB1].InitAsConstantBufferView(1);
-	UINT numParameters = 2;
+	slotRootParameter[CBV_SLOT_CB2].InitAsConstantBufferView(2);
+	slotRootParameter[CBV_SLOT_CB3].InitAsConstantBufferView(3);
+	UINT numParameters = 4;
 
 
 	// Configuration de l'échantillonneur statique

@@ -131,6 +131,30 @@ cbuffer cbPerCamera : register(b1)
     float4x4 gProj;
 };
 
+cbuffer cbPerMaterial : register(b2)
+{
+    float4 cbPerMaterial_ambientLightColor;
+    float4 cbPerMaterial_ambient;
+    float4 cbPerMaterial_diffuse;
+    float4 cbPerMaterial_specular;
+    float cbPerMaterial_shininess;
+    float cbPerMaterial_padding3[3]; 
+};
+
+struct Light
+{
+    float3 cbPerLight_position;
+    float3 cbPerLight_direction;
+    float3 cbPerLight_color;
+    float cbPerLight_spotAngle; 
+    int cbPerLight_lightType; 
+};
+
+cbuffer cbPerLights : register(b3)
+{
+    Light lights[10];
+};
+
 struct VertexIn
 {
     float3 PosL : POSITION;
@@ -212,44 +236,50 @@ float ComputeSpotIntensity(float3 lightPosition, float3 lightDirection, float3 s
 // Pixel shader
 float4 PS(VertexOut pin) : SV_Target
 {
-    // Ambient color (adjustable)
-    float4 ambientLightColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float3x3 invViewMatrix = (float3x3) transpose(gView); // Transpose of view matrix
+    float3 cameraPosition = -mul(invViewMatrix, gView[3].xyz); // Camera position in world space
 
-    // Spotlight parameters
-    float3 lightColorSpot = float3(1.0f, 1.0f, 1.0f); // Spotlight color
-    float3 lightPositionSpot = float3(0.0f, 12.0f, 0.0f); // Spotlight position (slightly above origin)
-    float3 lightDirectionSpot = normalize(float3(-0.0f, -1.0f, -0.5f)); // Spotlight direction (pointing forward)
-    float spotAngle = radians(30.0f); // Spotlight cone angle (in radians)
+    float3 viewDirection = normalize(cameraPosition - pin.WorldPos); // View direction
 
-    // Material parameters
-    float4 materialAmbient = float4(0.2f, 0.2f, 0.2f, 1.0f);
-    float4 materialDiffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    float4 materialSpecular = float4(0.8f, 0.8f, 0.8f, 1.0f); // Material specular color
-    float materialShininess = 1.0f;
+    float4 finalColor = ComputeAmbient(cbPerMaterial_ambientLightColor, cbPerMaterial_ambient, pin.Color);
 
-    // Calculate ambient color component
-    float4 ambientColor = ComputeAmbient(ambientLightColor, materialAmbient, pin.Color);
+    float3 diffuseColor = float3(0.0f, 0.0f, 0.0f);
+    float3 specularColor = float3(0.0f, 0.0f, 0.0f);
 
-    // Invert view matrix to get camera position
-    float3x3 invViewMatrix = (float3x3) transpose(gView); // Take transpose of view matrix
-    float3 cameraPosition = -mul(invViewMatrix, gView[3].xyz); // Multiply by camera position
+    for (int i = 0; i < 10; ++i)
+    {
+        Light currentLight = lights[i];
 
-    // Calculate correct view direction
-    float3 viewDirection = normalize(cameraPosition - pin.WorldPos); // Use camera position
+        if (currentLight.cbPerLight_lightType == 0)
+        {
+            // Directional light calculations
+            float3 lightColorDirectional = currentLight.cbPerLight_color;
+            float3 lightDirectionDirectional = -normalize(currentLight.cbPerLight_direction); // Invert direction for directional light
 
-    // Calculate spotlight intensity based on angle
-    float spotIntensity = ComputeSpotIntensity(lightPositionSpot, lightDirectionSpot, pin.WorldPos, spotAngle);
+            float diffuseIntensity = dot(pin.NormalW, lightDirectionDirectional);
+            diffuseIntensity = saturate(diffuseIntensity);
 
-    // Calculate diffuse and specular components using Phong model
-    float3 diffuseColor = ComputeDiffuse(lightDirectionSpot, pin.NormalW, lightColorSpot, materialDiffuse);
-    float3 specularColorPhong = ComputePhongSpecular(lightDirectionSpot, pin.NormalW, viewDirection, lightColorSpot, materialSpecular, materialShininess);
+            diffuseColor += ComputeDiffuse(lightDirectionDirectional, pin.NormalW, lightColorDirectional, cbPerMaterial_diffuse) * diffuseIntensity;
+            specularColor += ComputePhongSpecular(lightDirectionDirectional, pin.NormalW, viewDirection, lightColorDirectional, cbPerMaterial_specular, cbPerMaterial_shininess);
+        }
+        else if (currentLight.cbPerLight_lightType == 1)
+        {
+            // Spot light calculations
+            float3 lightColorSpot = currentLight.cbPerLight_color;
+            float3 lightPositionSpot = currentLight.cbPerLight_position;
+            float3 lightDirectionSpot = normalize(currentLight.cbPerLight_direction);
+            float spotAngle = radians(currentLight.cbPerLight_spotAngle);
 
-    // Combine all colors
-    float3 finalColor = ambientColor.rgb + diffuseColor * spotIntensity + specularColorPhong * spotIntensity;
-    finalColor *= pin.Color.rgb; // Apply vertex color
+            float spotIntensity = ComputeSpotIntensity(lightPositionSpot, lightDirectionSpot, pin.WorldPos, spotAngle);
 
-    // Apply alpha for transparency
-    float alpha = pin.Color.a;
+            diffuseColor += ComputeDiffuse(lightDirectionSpot, pin.NormalW, lightColorSpot, cbPerMaterial_diffuse) * spotIntensity;
+            specularColor += ComputePhongSpecular(lightDirectionSpot, pin.NormalW, viewDirection, lightColorSpot, cbPerMaterial_specular, cbPerMaterial_shininess) * spotIntensity;
+        }
+    }
 
-    return float4(finalColor, alpha);
+    finalColor.rgb += diffuseColor * pin.Color.rgb;
+    finalColor.rgb += specularColor * pin.Color.rgb;
+    finalColor.a = pin.Color.a;
+
+    return finalColor;
 }

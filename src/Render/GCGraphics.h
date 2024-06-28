@@ -51,7 +51,7 @@ public:
 	void UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
 	// Update world with custom struct
 	template<typename ShaderTypeConstantBuffer>
-	void UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
+	void UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
 
 	// Remove Resources
 	bool RemoveShader(GCShader* pShader);
@@ -71,14 +71,13 @@ public:
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
 	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
 
+	GCShaderUploadBufferBase* GetCbLightPropertiesInstance() const { return m_pCbLightPropertiesInstance; }
+
 	// Manage inactive slot to push resource
 	std::vector<bool> m_vTextureActiveFlags;
 	std::vector<bool> m_vMeshActiveFlags;
 
 private:
-	template<typename ShaderTypeConstantBuffer>
-	void CreateCBCamera();
-
 	// Render instance contain Window
 	int m_renderWidth;
 	int	m_renderHeight;
@@ -90,31 +89,24 @@ private:
 	std::vector<GCMaterial*> m_vMaterials;
 	std::vector<GCMesh*> m_vMeshes;
 
-	std::vector<GCShaderUploadBufferBase*> m_vpCameraCB;
+	std::vector<GCShaderUploadBufferBase*> m_pCbCameraInstances;
+	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	GCPrimitiveFactory* m_pPrimitiveFactory;
 	GCModelParser* m_pModelParserFactory;
 };
 
 
+// Update per object constant buffer by custom struct derived from gcshadercb
 template<typename ShaderTypeConstantBuffer>
-void GCGraphics::CreateCBCamera()
-{
-	// Create a new shader upload buffer for the camera constant buffer
-	GCShaderUploadBufferBase* pCameraCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->Getmd3dDevice(), 1, true);
-	// Store the buffer in a vector
-	m_vpCameraCB.push_back(pCameraCB);
-}
-
-template<typename ShaderTypeConstantBuffer>
-void GCGraphics::UpdateCustomCBObject(GCMaterial* pMaterial, const GCSHADERCB& objectData)
+void GCGraphics::UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData)
 {
 	// Don't create UploadBuffer if the number of object draw in the same material don't increase
-	if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size()) {
-		pMaterial->CreateCBObject<ShaderTypeConstantBuffer>();
+	if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
+		pMaterial->AddCbPerObject<ShaderTypeConstantBuffer>();
 	}
 		
 	// Update 
-	pMaterial->UpdateConstantBuffer(objectData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
+	pMaterial->UpdateConstantBuffer(objectData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 }
 

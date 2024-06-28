@@ -62,7 +62,8 @@ public:
 	inline UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
 	inline UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
-	GCShaderUploadBufferBase* m_pCurrentViewProj;
+	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
+	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	Window* GetCurrentWindow() { return m_pWindow; }
 private:

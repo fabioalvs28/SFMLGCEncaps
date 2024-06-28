@@ -10,7 +10,7 @@ GCGraphics::GCGraphics()
     m_vShaders.clear();
     m_vMaterials.clear();
     m_vMeshes.clear();
-    m_vpCameraCB.clear();
+    m_pCbCameraInstances.clear();
 }
 
 GCGraphics::~GCGraphics()
@@ -39,11 +39,11 @@ GCGraphics::~GCGraphics()
     }
     m_vTextures.clear();
 
-    for (auto buffer : m_vpCameraCB)
+    for (auto buffer : m_pCbCameraInstances)
     {
         SAFE_DELETE(buffer);
     }
-    m_vpCameraCB.clear();
+    m_pCbCameraInstances.clear();
 
     SAFE_DELETE(m_pRender);
     SAFE_DELETE(m_pPrimitiveFactory);
@@ -67,15 +67,52 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 
     m_pPrimitiveFactory->Initialize();
 
-    // Create One camera
-    CreateCBCamera<GCVIEWPROJCB>();
+	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->Getmd3dDevice(), 1, true);
+    m_pCbCameraInstances.push_back(pCbInstance);
+
+    pCbInstance = new GCShaderUploadBuffer<GCLIGHTPROPERTIES>(m_pRender->Getmd3dDevice(), 1, true);
+    m_pCbLightPropertiesInstance = pCbInstance;
+
+    GCLIGHTPROPERTIES lightData = {};
+
+    GCLIGHT directionalLight;
+    directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Pas de position pour une lumière directionnelle
+    directionalLight.direction = DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f); // Direction du soleil (exemple)
+    directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+    directionalLight.spotAngle = 0.0f; // Pas d'angle pour une lumière directionnelle
+    directionalLight.lightType = 0; // Type de lumière directionnelle
+
+    GCLIGHT light1;
+    light1.position = DirectX::XMFLOAT3(-5.0f, 20.0f, -2.0f);
+    light1.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
+    light1.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+    light1.spotAngle = 10.0f;
+    light1.lightType = 1;
+
+    GCLIGHT light2;
+    light2.position = DirectX::XMFLOAT3(2.0f, 20.0f, -2.0f);
+    light2.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
+    light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+    light2.spotAngle = 10.0f;
+    light2.lightType = 1;
+
+    // Ajout des lumières au tableau de lumières
+    lightData.lights[0] = directionalLight;
+    lightData.lights[1] = light2;
+    lightData.lights[2] = light1;
+
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+
+    UpdateConstantBuffer(lightData, m_pCbLightPropertiesInstance);
+
+    m_pRender->m_pCbLightPropertiesInstance = m_pCbLightPropertiesInstance;
 }
 
 void GCGraphics::StartFrame()
 {
     for (auto& material : m_vMaterials)
     {
-        for (auto& cbObject : material->GetObjectCBData())
+        for (auto& cbObject : material->GetCbObjectInstance())
         {
             cbObject->m_isUsed = false;
         }
@@ -97,7 +134,7 @@ void GCGraphics::EndFrame()
     // Vérification des CB inutilisés dans les matériaux / CHECK FOR REMOVE CB BUFFER IN MATERIALS 
     for (auto& material : m_vMaterials)
     {
-        for (auto& cbObject : material->GetObjectCBData())
+        for (auto& cbObject : material->GetCbObjectInstance())
         {
             if (cbObject->m_isUsed)
                 cbObject->m_framesSinceLastUse = 0;
@@ -436,29 +473,27 @@ bool GCGraphics::RemoveTexture(GCTexture* pTexture)
     return false;
 }
 
+// Update per camera constant buffer
 void GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
     GCVIEWPROJCB cameraData;
     cameraData.view = viewMatrix;
     cameraData.proj = projectionMatrix;
 
-    UpdateConstantBuffer(cameraData, m_vpCameraCB[0]);
+    UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
 
-    m_pRender->m_pCurrentViewProj = m_vpCameraCB[0];
+    m_pRender->m_pCbCurrentViewProjInstance = m_pCbCameraInstances[0];
 }
 
-//Updates a cb data of a given material using the three matrices world/view/proj
-//using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
+// Update per object constant buffer
 void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix) {
 
-    if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size()) {
-        pMaterial->CreateCBObject<GCWORLDCB>();
+    if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
+        pMaterial->AddCbPerObject<GCWORLDCB>();
     }
-        
-
     GCWORLDCB worldData;
     worldData.world = worldMatrix;
     // Update 
-    pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
+    pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 
 }
 

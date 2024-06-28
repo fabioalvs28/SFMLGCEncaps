@@ -172,7 +172,9 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 // Emplacement Root Parameter Index
 #define CBV_SLOT_CB0 0
 #define CBV_SLOT_CB1 1
-#define DESCRIPTOR_TABLE_SLOT_TEXTURE 2
+#define CBV_SLOT_CB2 2
+#define CBV_SLOT_CB3 3
+#define DESCRIPTOR_TABLE_SLOT_TEXTURE 4
 
 
 

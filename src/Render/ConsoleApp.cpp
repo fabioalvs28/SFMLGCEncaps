@@ -1,13 +1,19 @@
 #include "pch.h"
 #include <DirectXMath.h>
+#include <chrono> // Pour la gestion du temps
 
-struct GCTest : GCSHADERCB {
-	DirectX::XMFLOAT4X4 world;
-	DirectX::XMFLOAT4 color;
-};
+// Assurez-vous d'inclure vos fichiers nécessaires pour la gestion de la fenêtre et des graphiques
+#include "Window.h" // Supposons que vous avez une classe Window pour la gestion de la fenêtre
+#include "GCGraphics.h" // Supposons que vous avez une classe GCGraphics pour la gestion des graphiques
 
 using namespace DirectX;
 
+// Définition des variables globales pour la caméra
+XMVECTOR cameraPosition = XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
+XMVECTOR cameraTarget = XMVectorZero();
+XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
     // Initialisation des ressources graphiques
@@ -31,9 +37,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
     // Création des géométries
-    auto geoCubeOuter = graphics->CreateGeometryPrimitiveCustom("cube", DirectX::XMFLOAT4(DirectX::Colors::Red), flagsLightColor);
-    auto geoCubeInner = graphics->CreateGeometryPrimitiveCustom("cube", DirectX::XMFLOAT4(DirectX::Colors::Green), flagsLightColor);
-    auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", DirectX::XMFLOAT4(DirectX::Colors::Yellow), flagsLightColor);
+    auto geoCubeOuter = graphics->CreateGeometryPrimitiveCustom("cubeSkybox", XMFLOAT4(Colors::Red), flagsLightColor);
+    auto geoCubeInner = graphics->CreateGeometryPrimitiveCustom("cube", XMFLOAT4(Colors::Green), flagsLightColor);
+    auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", XMFLOAT4(Colors::Yellow), flagsLightColor);
 
     // Chargement des shaders personnalisés
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
@@ -44,7 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
     auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
 
-    auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_FRONT);
+    auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
 
     graphics->InitializeGraphicsResourcesStart();
 
@@ -69,33 +75,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //materialSphere.resource->SetTexture(texture2.resource);
 
     // Initialisation des matrices de vue et de projection
-    DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
-    DirectX::XMVECTOR targetPosition = DirectX::XMVectorZero();
-    DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, window->AspectRatio(), 1.0f, 1000.0f);
-    DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
-    DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
-    DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-    DirectX::XMFLOAT4X4 storedProjectionMatrix;
-    DirectX::XMFLOAT4X4 storedViewMatrix;
-    DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-    DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+    XMMATRIX projectionMatrix = XMMatrixPerspectiveFovLH(0.25f * XM_PI, window->AspectRatio(), 1.0f, 1000.0f);
+    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
+    XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
+    XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
+    XMFLOAT4X4 storedProjectionMatrix;
+    XMFLOAT4X4 storedViewMatrix;
+    XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
+    XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 
     // Définition des matrices de transformation pour chaque objet avec translation
-    DirectX::XMMATRIX worldMatrixCubeOuter = DirectX::XMMatrixScaling(20.0f, 20.0f, 20.0f) * DirectX::XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
-    DirectX::XMMATRIX worldMatrixCubeInner = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centré
-    DirectX::XMMATRIX worldMatrixCubeInner2 = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-6.0f, 5.0f, -2.0f); // Cube interne centré
-    DirectX::XMMATRIX worldMatrixSphere = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
+    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
+    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centré
+    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-6.0f, 5.0f, -2.0f); // Cube interne centré
+    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
 
-    DirectX::XMFLOAT4X4 worldCubeOuter;
-    DirectX::XMFLOAT4X4 worldCubeInner;
-    DirectX::XMFLOAT4X4 worldCubeInner2;
-    DirectX::XMFLOAT4X4 worldSphere;
+    XMFLOAT4X4 worldCubeOuter;
+    XMFLOAT4X4 worldCubeInner;
+    XMFLOAT4X4 worldCubeInner2;
+    XMFLOAT4X4 worldSphere;
 
-    DirectX::XMStoreFloat4x4(&worldCubeOuter, DirectX::XMMatrixTranspose(worldMatrixCubeOuter));
-    DirectX::XMStoreFloat4x4(&worldCubeInner, DirectX::XMMatrixTranspose(worldMatrixCubeInner));
-    DirectX::XMStoreFloat4x4(&worldCubeInner2, DirectX::XMMatrixTranspose(worldMatrixCubeInner2));
-    DirectX::XMStoreFloat4x4(&worldSphere, DirectX::XMMatrixTranspose(worldMatrixSphere));
+    XMStoreFloat4x4(&worldCubeOuter, XMMatrixTranspose(worldMatrixCubeOuter));
+    XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInner));
+    XMStoreFloat4x4(&worldCubeInner2, XMMatrixTranspose(worldMatrixCubeInner2));
+    XMStoreFloat4x4(&worldSphere, XMMatrixTranspose(worldMatrixSphere));
 
     auto startTime = std::chrono::steady_clock::now();
 
@@ -108,14 +111,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         // Calculer la rotation du cube interne autour de l'axe Y
         float rotationSpeed = 1.0f; // Vitesse de rotation en radians par seconde
         float angle = rotationSpeed * elapsedTime;
-        DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(angle);
+        XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
 
         // Mettre à jour la matrice de transformation du cube interne
-        DirectX::XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
+        XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
 
         // Extraire les données de la matrice mise à jour dans une XMFLOAT4X4
-        DirectX::XMStoreFloat4x4(&worldCubeInner, DirectX::XMMatrixTranspose(worldMatrixCubeInnerUpdated));
+        XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
 
+        // Gestion des entrées utilisateur pour le déplacement de la caméra
+        if (window->IsKeyDown('Z')) {
+            cameraPosition += cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
+        }
+        if (window->IsKeyDown('S')) {
+            cameraPosition -= cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
+        }
+
+
+
+        // Mettre à jour la matrice de vue avec la nouvelle position de la caméra
+        viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
+        transposedViewMatrix = XMMatrixTranspose(viewMatrix);
+        XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+
+        // Rendu des obj
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
@@ -131,6 +150,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
+        // Dessiner le deuxième cube interne (worldCubeInner2) avec la matrice mise à jour
         graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
