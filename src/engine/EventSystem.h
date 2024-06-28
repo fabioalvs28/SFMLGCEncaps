@@ -12,7 +12,7 @@ using GCEventCallback = std::function<void(GCEvent& ev)>;
 class GCEventManager
 {
 public:
-	GCEventManager() = default;
+	GCEventManager();
 	/// <summary>
 	/// Polls events from the operating system or framework 
 	/// and dispatches them to the appropriate handlers.
@@ -32,15 +32,10 @@ public:
 	/// <param name="listener">The callback function to be called when the event occurs</param>
 	/// <returns>A unique ListenerID that can be used to reference and manage the listener</returns>
 	template<typename T>
-	void Subscribe(GCEventType eventType, T* instance, GCEventCallback callback)
+	void Subscribe(GCEventType eventType, T* instance, const GCEventCallback& callback)
 	{
 		const GCEventCallback& func = callback;
-		auto listener = m_eventListeners[eventType];
-		if (listener.empty())
-		{
-			listener = std::vector<std::function<void(GCEvent&)>>();
-		}
-		listener.emplace_back(func);
+        m_eventListeners[eventType].push_back([=](GCEvent& ev) { func(ev); });
 	}
 
 	/// <summary>
@@ -48,7 +43,7 @@ public:
 	/// </summary>
 	/// <param name="type">The event type</param>
 	/// <param name="id">The unique identifier ID to the callback</param>
-	void RemoveEventListener();
+    void Unsubscribe(GCEventType type /*pass string as second parameter to identify the listener*/);
 
 private:
 	/// <summary>
@@ -59,7 +54,7 @@ private:
 	void OnEvent(GCEvent& e);
 
 private:
-	GCMap<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventListeners;
+	std::map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventListeners;
     GCQueue<GCEvent*> m_eventQueue;
 };
 

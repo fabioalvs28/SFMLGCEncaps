@@ -1,12 +1,22 @@
 #include "pch.h"
 #include "EventSystem.h"
 
-//Call in main loop
+GCEventManager::GCEventManager()
+{
+    for (int i = 0; i < (int)GCEventType::Count; i++)
+    {
+        m_eventListeners[(GCEventType)i] = std::vector<std::function<void(GCEvent&)>>();
+    }
+}
+
 void GCEventManager::PollEvents()
 {
     for (int i = 0; i < m_eventQueue.GetSize(); i++)
     {
-        //OnEvent(m_eventQueue.);
+        GCEvent* ev = m_eventQueue.Front();
+        OnEvent(*ev);
+        m_eventQueue.Pop();
+        delete ev;
     }
 }
 
@@ -16,13 +26,16 @@ void GCEventManager::PushEvent(GCEvent* ev)
 }
 
 
-void GCEventManager::RemoveEventListener()
+void GCEventManager::Unsubscribe(GCEventType type)
 {
 }
-
 
 void GCEventManager::OnEvent(GCEvent& e)
 {
     auto listeners = m_eventListeners[e.GetEventType()];
+    for (auto& listener : listeners)
+    {
+        listener(e);
+    }
 
 }
