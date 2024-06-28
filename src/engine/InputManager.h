@@ -145,7 +145,7 @@ class GCInputManager : public GCIEventListener
 {
 
     friend class GCGameManager;
-    GCEventManager* m_eventManager;
+    GCEventManager* m_eventManager = nullptr;
 public:
     GCInputManager();
     GCInputManager(GCEventManager& eventManager);

@@ -21,7 +21,7 @@ GCInputManager::GCInputManager()
 GCInputManager::GCInputManager(GCEventManager& eventManager)
     : m_eventManager(&eventManager)
 {
-    m_eventManager->Subscribe<GCInputManager>(GCEventType::KeyPressed, this, GC_BIND_EVENT_FN(GCInputManager::OnEvent));
+    m_eventManager->Subscribe<GCInputManager>(GCEventType::KeyReleased, this, GC_BIND_EVENT_FN(GCInputManager::OnEvent));
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
         m_controllerList.PushBack( nullptr );
@@ -60,7 +60,7 @@ void GCInputManager::GetConnectedController()
 // </summary>
 void GCInputManager::UpdateInputs()
 {
-    m_updatedKeys.Clear();
+    //m_updatedKeys.Clear();
 
     for (int i = 0; i < 255; i++)
     {
@@ -114,24 +114,27 @@ void GCInputManager::UpdateInputs()
 
 void GCInputManager::OnEvent(GCEvent& ev)
 {
+    GCEventDispatcher dispatcher(ev);
+    dispatcher.Dispatch<GCKeyPressedEvent>([](GCKeyPressedEvent& e) {
+        std::cout << "Key:" << e.GetKeyID() << " is pressed" << std::endl;
 
+        return true;
+        });
 }
 
 void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
-    m_keyState[index] = state;
-    m_updatedKeys.PushBack(index);
-
     if (state == GCKeyState::PUSH || state == GCKeyState::DOWN)
     {
-        GCKeyPressedEvent kev(index);
-        m_eventManager->PushEvent(&kev);
+        m_eventManager->PushEvent(new GCKeyPressedEvent(index));
     }
-    else if (state == GCKeyState::UP) 
+    else if (state == GCKeyState::UP)
     {
-        GCKeyReleased rev(index);
-        m_eventManager->PushEvent(&rev);
+        m_eventManager->PushEvent(new GCKeyReleased(index));
     }
+
+    m_keyState[index] = state;
+    m_updatedKeys.PushBack(index);
 }
 
 bool GCInputManager::IsKeyPressed()
@@ -420,6 +423,7 @@ void GCControllerInput::UpdateControllerInput()
                     break;
                 case PUSH: 
                     AddtoControllerListUpdate(key.VirtualKey - j);
+                    break;
                 case UP:
                     m_pListofControllerKeys[key.VirtualKey - j] = DOWN;
                     AddtoControllerListUpdate(key.VirtualKey - j);
