@@ -146,8 +146,9 @@ struct Light
     float3 cbPerLight_position;
     float3 cbPerLight_direction;
     float3 cbPerLight_color;
-    float cbPerLight_spotAngle; 
-    int cbPerLight_lightType; 
+    float cbPerLight_spotAngle;
+    int cbPerLight_lightType;
+    float cbPerLight_lightIntensity;
 };
 
 cbuffer cbPerLights : register(b3)
@@ -253,7 +254,7 @@ float4 PS(VertexOut pin) : SV_Target
         if (currentLight.cbPerLight_lightType == 0)
         {
             // Directional light calculations
-            float3 lightColorDirectional = currentLight.cbPerLight_color;
+            float3 lightColorDirectional = currentLight.cbPerLight_color * currentLight.cbPerLight_lightIntensity;
             float3 lightDirectionDirectional = -normalize(currentLight.cbPerLight_direction); // Invert direction for directional light
 
             float diffuseIntensity = dot(pin.NormalW, lightDirectionDirectional);
@@ -265,7 +266,7 @@ float4 PS(VertexOut pin) : SV_Target
         else if (currentLight.cbPerLight_lightType == 1)
         {
             // Spot light calculations
-            float3 lightColorSpot = currentLight.cbPerLight_color;
+            float3 lightColorSpot = currentLight.cbPerLight_color * currentLight.cbPerLight_lightIntensity;
             float3 lightPositionSpot = currentLight.cbPerLight_position;
             float3 lightDirectionSpot = normalize(currentLight.cbPerLight_direction);
             float spotAngle = radians(currentLight.cbPerLight_spotAngle);

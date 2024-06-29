@@ -25,13 +25,14 @@ struct GCMATERIALPROPERTIES : GCSHADERCB
 struct GCLIGHT
 {
     DirectX::XMFLOAT3 position;
-    float padding1; 
+    float padding1;
     DirectX::XMFLOAT3 direction;
-    float padding2; 
+    float padding2;
     DirectX::XMFLOAT3 color;
-    float spotAngle; 
-    int lightType;   
-    float padding3[3]; 
+    float spotAngle;
+    int lightType;
+    float lightIntensity; 
+    float padding3[2];    
 };
 
 struct GCLIGHTPROPERTIES : GCSHADERCB

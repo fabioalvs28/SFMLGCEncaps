@@ -77,9 +77,10 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 
     GCLIGHT directionalLight;
     directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Pas de position pour une lumière directionnelle
-    directionalLight.direction = DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f); // Direction du soleil (exemple)
+    directionalLight.direction = DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f); // Direction du soleil (exemple)
     directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
     directionalLight.spotAngle = 0.0f; // Pas d'angle pour une lumière directionnelle
+    directionalLight.lightIntensity = 1.3f;
     directionalLight.lightType = 0; // Type de lumière directionnelle
 
     GCLIGHT light1;
@@ -87,6 +88,7 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     light1.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
     light1.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
     light1.spotAngle = 10.0f;
+    light1.lightIntensity = 1.2f;
     light1.lightType = 1;
 
     GCLIGHT light2;
@@ -94,6 +96,7 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     light2.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
     light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
     light2.spotAngle = 10.0f;
+    light2.lightIntensity = 1.2f;
     light2.lightType = 1;
 
     // Ajout des lumières au tableau de lumières

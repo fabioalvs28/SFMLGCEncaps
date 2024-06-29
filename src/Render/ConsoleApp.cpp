@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     // Création des géométries
     auto geoCubeOuter = graphics->CreateGeometryPrimitiveCustom("cubeSkybox", XMFLOAT4(Colors::Red), flagsLightColor);
     auto geoCubeInner = graphics->CreateGeometryPrimitiveCustom("cube", XMFLOAT4(Colors::Green), flagsLightColor);
-    auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", XMFLOAT4(Colors::Yellow), flagsLightColor);
+    auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", XMFLOAT4(Colors::Yellow), flagsLightTexture);
 
     // Chargement des shaders personnalisés
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
@@ -62,7 +62,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
     auto texture = graphics->CreateTexture(texturePath);
-    auto texture2 = graphics->CreateTexture(texturePath);
+    auto texture2 = graphics->CreateTexture(texturePath2);
 
     graphics->InitializeGraphicsResourcesEnd();
 
@@ -71,8 +71,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //materialCubeOuter.resource->SetTexture(texture2.resource);
 
     auto materialCubeInner = graphics->CreateMaterial(shaderLightColor.resource);
-    auto materialSphere = graphics->CreateMaterial(shaderLightColor.resource);
-    //materialSphere.resource->SetTexture(texture2.resource);
+    auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
+    materialSphere.resource->SetTexture(texture.resource);
 
     // Initialisation des matrices de vue et de projection
     XMMATRIX projectionMatrix = XMMatrixPerspectiveFovLH(0.25f * XM_PI, window->AspectRatio(), 1.0f, 1000.0f);
