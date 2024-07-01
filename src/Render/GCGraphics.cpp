@@ -256,7 +256,7 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& fi
     return ResourceCreationResult<GCShader*>(true, pShader);
 }
 
-ResourceCreationResult<GCMesh*> GCGraphics::CreateMesh(GCGeometry* pGeometry)
+ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits)
 {
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
@@ -275,7 +275,7 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMesh(GCGeometry* pGeometry)
         size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
 
         GCMesh* pMesh = new GCMesh();
-        pMesh->Initialize(m_pRender, pGeometry);
+        pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits);
 
         m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
 
@@ -287,7 +287,7 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMesh(GCGeometry* pGeometry)
     else
     {
         GCMesh* pMesh = new GCMesh();
-        pMesh->Initialize(m_pRender, pGeometry);
+        pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits);
 
         m_vMeshes.push_back(pMesh);
         m_vMeshActiveFlags.push_back(true);
@@ -296,76 +296,166 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMesh(GCGeometry* pGeometry)
     }
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveColor(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)
+ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometry)
 {
-    int flagsColor = 0;
-    SET_FLAG(flagsColor, HAS_POSITION);
-    SET_FLAG(flagsColor, HAS_COLOR);
+    int flagsLightColor = 0;
+    SET_FLAG(flagsLightColor, HAS_POSITION);
+    SET_FLAG(flagsLightColor, HAS_COLOR);
+    SET_FLAG(flagsLightColor, HAS_NORMAL);
 
-    // Call the unified BuildGeometry function
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, flagsColor);
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
-    CHECK_POINTERSNULL("Primitive Geometry with Color created successfully", "Failed to create Primitive Geometry with Color", pGeometry);
+    // Check if Geometry is valid
+    if (!CheckPointersNull("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry))
+    {
+        return ResourceCreationResult<GCMesh*>(false, nullptr);
+    }
 
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
+    // Find the first inactive slot in m_vMeshActiveFlags
+    auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+
+    // Inactive slot found
+    if (it != m_vMeshActiveFlags.end())
+    {
+        size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
+
+        GCMesh* pMesh = new GCMesh();
+        pMesh->Initialize(m_pRender, pGeometry, flagsLightColor);
+
+        m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
+
+        m_vMeshActiveFlags[index] = true;
+
+        return ResourceCreationResult<GCMesh*>(true, pMesh);
+    }
+    // Not inactive slot 
+    else
+    {
+        GCMesh* pMesh = new GCMesh();
+        pMesh->Initialize(m_pRender, pGeometry, flagsLightColor);
+
+        m_vMeshes.push_back(pMesh);
+        m_vMeshActiveFlags.push_back(true);
+
+        return ResourceCreationResult<GCMesh*>(true, pMesh);
+    }
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(const GC_PRIMITIVE_ID primitiveIndex)
+ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeometry)
 {
-    int flagsTexture = 0;
-    SET_FLAG(flagsTexture, HAS_POSITION);
-    SET_FLAG(flagsTexture, HAS_UV);
+    int flagsLightTexture = 0;
+    SET_FLAG(flagsLightTexture, HAS_POSITION);
+    SET_FLAG(flagsLightTexture, HAS_UV);
+    SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
-    // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
+    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
-    CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+    // Check if Geometry is valid
+    if (!CheckPointersNull("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry))
+    {
+        return ResourceCreationResult<GCMesh*>(false, nullptr);
+    }
 
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
+    // Find the first inactive slot in m_vMeshActiveFlags
+    auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+
+    // Inactive slot found
+    if (it != m_vMeshActiveFlags.end())
+    {
+        size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
+
+        GCMesh* pMesh = new GCMesh();
+        pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
+
+        m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
+
+        m_vMeshActiveFlags[index] = true;
+
+        return ResourceCreationResult<GCMesh*>(true, pMesh);
+    }
+    // Not inactive slot 
+    else
+    {
+        GCMesh* pMesh = new GCMesh();
+        pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
+
+        m_vMeshes.push_back(pMesh);
+        m_vMeshActiveFlags.push_back(true);
+
+        return ResourceCreationResult<GCMesh*>(true, pMesh);
+    }
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveCustom(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color, int flagEnabledBits)
+//ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveColor(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)
+//{
+//    int flagsColor = 0;
+//    SET_FLAG(flagsColor, HAS_POSITION);
+//    SET_FLAG(flagsColor, HAS_COLOR);
+//
+//    // Call the unified BuildGeometry function
+//    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, flagsColor);
+//
+//    CHECK_POINTERSNULL("Primitive Geometry with Color created successfully", "Failed to create Primitive Geometry with Color", pGeometry);
+//
+//    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
+//}
+//
+//ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(const GC_PRIMITIVE_ID primitiveIndex)
+//{
+//    int flagsTexture = 0;
+//    SET_FLAG(flagsTexture, HAS_POSITION);
+//    SET_FLAG(flagsTexture, HAS_UV);
+//
+//    // Call the unified BuildGeometry function without color (nullptr)
+//    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
+//
+//    CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
+//
+//    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
+//}
+
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)
 {
     // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, flagEnabledBits);
+    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color);
 
     CHECK_POINTERSNULL("Primitive Geometry with Custom parameters created successfully", "Failed to create Primitive Geometry with Custom parameters", pGeometry);
 
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
-{
-    int flagsColor = 0;
-    SET_FLAG(flagsColor, HAS_POSITION);
-    SET_FLAG(flagsColor, HAS_COLOR);
+//ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
+//{
+//    int flagsColor = 0;
+//    SET_FLAG(flagsColor, HAS_POSITION);
+//    SET_FLAG(flagsColor, HAS_COLOR);
+//
+//    // Call the unified BuildGeometry function without color (nullptr)
+//    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagsColor);
+//
+//    CHECK_POINTERSNULL("Geometry from Model Parser with Color created successfully", "Failed to create Geometry from Model Parser with Color", pGeometry);
+//
+//    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
+//}
+//
+//ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserCustom(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType, int& flagEnabledBits)
+//{
+//    // Call the unified BuildGeometry function without color (nullptr)
+//    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagEnabledBits);
+//
+//    CHECK_POINTERSNULL("Geometry from Model Parser with Custom parameters created successfully", "Failed to create Geometry from Model Parser with Custom parameters", pGeometry);
+//
+//    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
+//}
 
-    // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagsColor);
-
-    CHECK_POINTERSNULL("Geometry from Model Parser with Color created successfully", "Failed to create Geometry from Model Parser with Color", pGeometry);
-
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
-}
-
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserCustom(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType, int& flagEnabledBits)
-{
-    // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagEnabledBits);
-
-    CHECK_POINTERSNULL("Geometry from Model Parser with Custom parameters created successfully", "Failed to create Geometry from Model Parser with Custom parameters", pGeometry);
-
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
-}
-
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
 {
     int flagsTexture = 0;
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
 
     // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, flagsTexture);
+    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType);
 
     CHECK_POINTERSNULL("Geometry from Model Parser with Texture created successfully", "Failed to create Geometry from Model Parser with Texture", pGeometry);
 

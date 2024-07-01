@@ -84,13 +84,13 @@ GCMesh::~GCMesh()
     }
 }
 
-void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
+void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits) {
     m_pRender = pRender;
-    UploadGeometryData(pGeometry);
+    UploadGeometryData(pGeometry, flagEnabledBits);
 }
 
-void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
-    m_flagEnabledBits = pGeometry->m_flagEnabledBits;
+void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {
+    m_flagEnabledBits = flagEnabledBits;
 
     std::vector<float> vertexData;
     size_t vertexSize = 0;
