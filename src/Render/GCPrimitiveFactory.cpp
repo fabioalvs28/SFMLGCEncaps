@@ -11,18 +11,18 @@ GCPrimitiveFactory::~GCPrimitiveFactory()
 {
 }
 
-std::vector<DirectX::XMFLOAT3> GCPrimitiveFactory::GenerateNormal(const std::vector<uint16_t>& index, const std::vector<DirectX::XMFLOAT3>& pos)
-{
-    std::vector <DirectX::XMFLOAT3> normals;
-    for (int i = 0; i < index.size(); i+=2)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            normals.push_back(GCUtils::GetNormal(GCUtils::Xmfloat3ToGcvec3(pos[index[i]]), GCUtils::Xmfloat3ToGcvec3(pos[index[i + 1]]), GCUtils::Xmfloat3ToGcvec3(pos[index[i + 2]]), false));
-        }
-    }
-    return normals;
-}
+//std::vector<DirectX::XMFLOAT3> GCPrimitiveFactory::GenerateNormal(const std::vector<uint16_t>& index, const std::vector<DirectX::XMFLOAT3>& pos)
+//{
+//    std::vector <DirectX::XMFLOAT3> normals;
+//    for (int i = 0; i < index.size(); i+=2)
+//    {
+//        for (int i = 0; i < 3; i++)
+//        {
+//            normals.push_back(GCUtils::GetNormal(GCUtils::Xmfloat3ToGcvec3(pos[index[i]]), GCUtils::Xmfloat3ToGcvec3(pos[index[i + 1]]), GCUtils::Xmfloat3ToGcvec3(pos[index[i + 2]]), false));
+//        }
+//    }
+//    return normals;
+//}
 
 void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices)
 {
