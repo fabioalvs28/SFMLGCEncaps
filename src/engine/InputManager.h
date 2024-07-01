@@ -86,7 +86,7 @@ typedef struct WinTest
 
 
 
-class GCMouseInput
+class GCMouseInput 
 {
 
     friend class GCInputManager;
@@ -137,6 +137,7 @@ private:
 
     GCVector<int> m_updatedControllerKeys;
 
+
 };
 
 
@@ -154,15 +155,15 @@ public:
 
     void UpdateInputs();
 
-    bool IsKeyPressed();
+    //bool IsKeyPressed();
     bool IsKeyPressed(int keyID);
 
-    bool IsControllerPressed(int controllerID); 
+    //bool IsControllerPressed(int controllerID); 
     bool IsControllerKeyPressed(int controllerID, int button);
 
-    GCVector<int>* GetControllereUpdatekeys(int controllerID);
+    //GCVector<int>* GetControllereUpdatekeys(int controllerID);
 
-    GCVector<int>* GetUpdatedKeys() { return &m_updatedKeys; }
+    //GCVector<int>* GetUpdatedKeys() { return &m_updatedKeys; }
 
     void AddToUpdateList(int index, BYTE state);
 
@@ -197,8 +198,9 @@ public:
 
 
 private:
+
     GCVEC2 m_mousePos;
-    WinTest* m_pWindow; // Remplacer avec winndow finale
+    WinTest* m_pWindow; // Remplacer avec window finale
 
     GCVector<GCControllerInput*> m_controllerList;
     GCVector<int> m_updatedKeys;
