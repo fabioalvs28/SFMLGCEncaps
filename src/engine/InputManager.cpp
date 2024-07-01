@@ -21,7 +21,7 @@ GCInputManager::GCInputManager()
 GCInputManager::GCInputManager(GCEventManager& eventManager)
     : m_eventManager(&eventManager)
 {
-    m_eventManager->Subscribe<GCInputManager>(GCEventType::KeyReleased, this, GC_BIND_EVENT_FN(GCInputManager::OnEvent));
+    m_eventManager->Subscribe<GCInputManager>(GCEventType::KeyInput, this, GC_BIND_EVENT_FN(GCInputManager::OnEvent));
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
         m_controllerList.PushBack( nullptr );
@@ -117,6 +117,11 @@ void GCInputManager::OnEvent(GCEvent& ev)
     GCEventDispatcher dispatcher(ev);
     dispatcher.Dispatch<GCKeyPressedEvent>([](GCKeyPressedEvent& e) {
         std::cout << "Key:" << e.GetKeyID() << " is pressed" << std::endl;
+
+        return true;
+        });
+    dispatcher.Dispatch<GCKeyReleased>([](GCKeyReleased& e) {
+        std::cout << "Key:" << e.GetKeyID() << " is released" << std::endl;
 
         return true;
         });
