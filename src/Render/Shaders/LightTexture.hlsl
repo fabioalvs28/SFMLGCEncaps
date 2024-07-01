@@ -1,5 +1,6 @@
 #define LIGHT_TYPE_DIRECTIONAL 0
 #define LIGHT_TYPE_SPOT 1
+#define LIGHT_TYPE_POINT 2
 
 Texture2D g_texture : register(t0); // Texture bound to t0, register space 0
 SamplerState g_sampler : register(s0); // Sampler bound to s0
@@ -118,6 +119,14 @@ float ComputeSpotIntensity(float3 lightPosition, float3 lightDirection, float3 s
     return saturate((cosAngle - minCos) / (maxCos - minCos));
 }
 
+float ComputePointLightIntensity(float3 lightPosition, float3 surfacePosition, float lightIntensity)
+{
+    float distance = length(lightPosition - surfacePosition);
+    float attenuation = 1.0f / (distance * distance); // Simple inverse square law for attenuation
+    return lightIntensity * attenuation;
+}
+
+
 // Pixel shader
 float4 PS(VertexOut pin) : SV_Target
 {
@@ -160,6 +169,19 @@ float4 PS(VertexOut pin) : SV_Target
 
             diffuseColor += ComputeDiffuse(lightDirectionSpot, pin.NormalW, lightColorSpot, cbPerMaterial_diffuse) * spotIntensity;
             specularColor += ComputeBlinnPhongSpecular(lightDirectionSpot, pin.NormalW, viewDirection, lightColorSpot, cbPerMaterial_specular, cbPerMaterial_shininess) * spotIntensity;
+        }
+        else if (currentLight.cbPerLight_lightType == LIGHT_TYPE_POINT)
+        {
+            // Point light calculations
+            float3 lightColorPoint = currentLight.cbPerLight_color;
+            float3 lightPositionPoint = currentLight.cbPerLight_position;
+
+            float pointLightIntensity = ComputePointLightIntensity(lightPositionPoint, pin.WorldPos, currentLight.cbPerLight_lightIntensity);
+
+            float3 lightDirectionPoint = normalize(lightPositionPoint - pin.WorldPos);
+
+            diffuseColor += ComputeDiffuse(lightDirectionPoint, pin.NormalW, lightColorPoint, cbPerMaterial_diffuse) * pointLightIntensity;
+            specularColor += ComputePhongSpecular(lightDirectionPoint, pin.NormalW, viewDirection, lightColorPoint, cbPerMaterial_specular, cbPerMaterial_shininess) * pointLightIntensity;
         }
     }
     
