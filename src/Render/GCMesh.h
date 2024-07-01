@@ -9,7 +9,7 @@ public:
 
     void UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits);
 
-    void Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits);
+    bool Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits);
 
     inline GCMESHBUFFERDATA* GetBufferGeometryData() { return  m_pBufferGeometryData; }
 

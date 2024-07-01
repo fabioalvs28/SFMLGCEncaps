@@ -50,9 +50,10 @@ GCGraphics::~GCGraphics()
     SAFE_DELETE(m_pModelParserFactory);
 }
 
-void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
+bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 {
-    CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
+    if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
+        return false;
 
     //Initializes Graphics for a window
     m_pRender = new GCRender();
@@ -118,6 +119,8 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     UpdateConstantBuffer(lightData, m_pCbLightPropertiesInstance);
 
     m_pRender->m_pCbLightPropertiesInstance = m_pCbLightPropertiesInstance;
+
+    return true;
 }
 
 void GCGraphics::StartFrame()
@@ -457,16 +460,19 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const 
     // Call the unified BuildGeometry function without color (nullptr)
     GCGeometry* pGeometry = new GCGeometry;
 
-    m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, pGeometry);
+    if(!m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, pGeometry))
+        return ResourceCreationResult<GCGeometry*>(false, nullptr);
 
-    CHECK_POINTERSNULL("Geometry from Model Parser with Texture created successfully", "Failed to create Geometry from Model Parser with Texture", pGeometry);
+    if(!CHECK_POINTERSNULL("Geometry from Model Parser with Texture created successfully", "Failed to create Geometry from Model Parser with Texture", pGeometry))
+        return ResourceCreationResult<GCGeometry*>(false, nullptr);
 
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
 
 ResourceCreationResult<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pShader)
 {
-    CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader);
+    if (!CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader))
+        return ResourceCreationResult<GCMaterial*>(false, nullptr);
 
     GCMaterial* material = new GCMaterial();
     material->Initialize(pShader);
@@ -497,7 +503,8 @@ std::vector<GCTexture*> GCGraphics::GetTextures()
 
 bool GCGraphics::RemoveShader(GCShader* pShader)
 {
-    CHECK_POINTERSNULL("Ptr for RemoveShader is not null", "Can't remove shader, pShader is null", pShader);
+    if (!CHECK_POINTERSNULL("Ptr for RemoveShader is not null", "Can't remove shader, pShader is null", pShader))
+        return false;
 
     // Removes Shader both from vector and the shader itself
     auto it = std::find(m_vShaders.begin(), m_vShaders.end(), pShader);
@@ -513,7 +520,8 @@ bool GCGraphics::RemoveShader(GCShader* pShader)
 
 bool GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 {
-    CHECK_POINTERSNULL("Ptr for RemoveMaterial is not null", "Can't remove material, pMaterial is null", pMaterial);
+    if (!CHECK_POINTERSNULL("Ptr for RemoveMaterial is not null", "Can't remove material, pMaterial is null", pMaterial))
+        return false;
 
     auto it = std::find(m_vMaterials.begin(), m_vMaterials.end(), pMaterial);
 
@@ -528,7 +536,8 @@ bool GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 
 bool GCGraphics::RemoveMesh(GCMesh* pMesh)
 {
-    CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh);
+    if(!CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh))
+        return false;
 
     // Removes Mesh
     auto it = std::find(m_vMeshes.begin(), m_vMeshes.end(), pMesh);
@@ -555,7 +564,8 @@ bool GCGraphics::RemoveMesh(GCMesh* pMesh)
 
 bool GCGraphics::RemoveTexture(GCTexture* pTexture)
 {
-    CHECK_POINTERSNULL("Ptr for RemoveTexture is not null", "Can't remove texture, pTexture is null", pTexture);
+    if(!CHECK_POINTERSNULL("Ptr for RemoveTexture is not null", "Can't remove texture, pTexture is null", pTexture))
+        return false;
 
     // Removes Texture
     auto it = std::find(m_vTextures.begin(), m_vTextures.end(), pTexture);

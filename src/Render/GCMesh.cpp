@@ -84,9 +84,13 @@ GCMesh::~GCMesh()
     }
 }
 
-void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits) {
+bool GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits) 
+{
+    CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pRender);
     m_pRender = pRender;
     UploadGeometryData(pGeometry, flagEnabledBits);
+
+    return true;
 }
 
 void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {

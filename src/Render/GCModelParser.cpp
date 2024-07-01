@@ -14,7 +14,9 @@ bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 	switch (fileExtension)
 	{
 	case 0:
-		CHECK_EXTENSION(fileName, "obj");
+		if (!CHECK_EXTENSION(fileName, "obj"))
+			return false;
+
 		m_ParsedModel = dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
 		return true;
 	}
@@ -59,7 +61,8 @@ bool GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Ex
 		);
 	}
 
-	CHECK_POINTERSNULL("Model geometry loaded successfully","Model Geometry is empty", pGeometry);
+	if (!CHECK_POINTERSNULL("Model geometry loaded successfully","Model Geometry is empty", pGeometry))
+		return false;
 
 	return true;
 }

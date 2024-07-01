@@ -12,7 +12,7 @@ public:
 	GCGraphics();
 	~GCGraphics();
 
-	void Initialize(Window* pWindow, int renderWidth, int renderHeight);
+	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
 
 	// Each Frame
 	void StartFrame();
