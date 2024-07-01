@@ -306,12 +306,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
 
         // Gestion des entr�es utilisateur pour le d�placement de la cam�ra
-        if (window->IsKeyDown('Z')) {
-            cameraPosition += cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
-        }
-        if (window->IsKeyDown('S')) {
-            cameraPosition -= cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
-        }
+        //if (window->IsKeyDown('Z')) {
+        //    cameraPosition += cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
+        //}
+        //if (window->IsKeyDown('S')) {
+        //    cameraPosition -= cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
+        //}
 
 
 
@@ -339,25 +339,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         directionalLight.lightIntensity = 1.3f;
         directionalLight.lightType = 0; 
 
-        GCLIGHT light1;
-        light1.position = DirectX::XMFLOAT3(-5.0f, 20.0f, -2.0f);
-        light1.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
-        light1.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-        light1.spotAngle = 10.0f;
-        light1.lightIntensity = 1.2f;
-        light1.lightType = 1;
+        //GCLIGHT light1;
+        //light1.position = DirectX::XMFLOAT3(-5.0f, 20.0f, -2.0f);
+        //light1.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
+        //light1.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+        //light1.spotAngle = 10.0f;
+        //light1.lightIntensity = 1.2f;
+        //light1.lightType = 1;
 
-        GCLIGHT light2;
-        light2.position = DirectX::XMFLOAT3(2.0f, 20.0f, -2.0f);
-        light2.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
-        light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-        light2.spotAngle = 10.0f;
-        light2.lightIntensity = 1.2f;
-        light2.lightType = 1;
+        //GCLIGHT light2;
+        //light2.position = DirectX::XMFLOAT3(2.0f, 20.0f, -2.0f);
+        //light2.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
+        //light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+        //light2.spotAngle = 10.0f;
+        //light2.lightIntensity = 1.2f;
+        //light2.lightType = 1;
 
-        lightData.lights[0] = directionalLight;
-        lightData.lights[1] = light2;
-        lightData.lights[2] = light1;
+        GCLIGHT pointLight;
+        pointLight.position = DirectX::XMFLOAT3(0.0f, 4.0f, 0.0f); // Position en 2D (x, y, 0)
+        pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+        pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+        pointLight.spotAngle = 0.0f; // Angle du spot si applicable
+        pointLight.lightIntensity = 20.4f;
+        pointLight.lightType = 2; // Type de lumière ponctuelle
+
+        //lightData.lights[0] = directionalLight;
+        //lightData.lights[1] = light2;
+        //lightData.lights[2] = light1;
+        lightData.lights[1] = pointLight;
 
         graphics->UpdateLights(lightData);
 
