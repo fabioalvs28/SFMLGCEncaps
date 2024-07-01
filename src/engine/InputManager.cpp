@@ -15,10 +15,11 @@ GCInputManager::GCInputManager()
 {
 
     //m_pWindow->winPos = { 10 ,10 }; m_pWindow->winSize = { 800, 500 }; m_pWindow->center = { m_pWindow->winSize.x / 2 , m_pWindow->winSize.y / 2 }; // !! valeur random de la fenêtre à changer quand on aura la bonne window !!
-    for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
+    for (int i = 0; i < XUSER_MAX_COUNT; i++)
     {
-        m_controllerList.PushBack( nullptr );
+        m_controllerList.PushBack(nullptr);
     }
+    
 }
 
 
@@ -53,7 +54,6 @@ void GCInputManager::GetConnectedController()
 // </summary>
 void GCInputManager::UpdateInputs()
 {
-    m_updatedKeys.Clear();
 
     for (int i = 0; i < 255; i++)
     {
@@ -64,33 +64,30 @@ void GCInputManager::UpdateInputs()
             switch (m_keyState[i])
             {
             case NONE:
-                AddToUpdateList(i, DOWN);
-                break;
-            case PUSH:
-                AddToUpdateList(i, PUSH);
+                m_keyState[i] = DOWN;
                 break;
             case UP:
-                AddToUpdateList(i, DOWN);
+                m_keyState[i] = DOWN;
                 break;
             case DOWN:
-                AddToUpdateList(i, PUSH);
+                m_keyState[i] = PUSH;
                 break;
 
             }
         }
-        else
+        else if (m_keyState[i] != NONE)
         {
 
             switch (m_keyState[i])
             {
             case PUSH:
-                AddToUpdateList(i, UP);
+                m_keyState[i] = UP;
                 break;
             case UP:
                 m_keyState[i] = NONE;
                 break;
             case DOWN:
-                AddToUpdateList(i, UP);
+                m_keyState[i] = UP;
                 break;
 
             }
@@ -107,9 +104,7 @@ void GCInputManager::UpdateInputs()
 
 void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
-    m_keyState[index] = state;
-    m_updatedKeys.PushBack(index);
-
+//
 }
 
 bool GCInputManager::IsKeyPressed()
@@ -207,12 +202,6 @@ bool GCInputManager::GetKeyUp(int key)
 GCMouseInput::GCMouseInput()
 {
     m_canLeaveWin = true;
-
-    for (int i = 0; i < 6; i++)
-    {
-        m_pMouseButtons.PushBack(NONE);
-    }
-
     m_mousePos = { 0,0 };
 }
 
@@ -372,8 +361,6 @@ bool GCControllerInput::GetControllerButtonUp(int vButton)
 // </summary>
 void GCControllerInput::UpdateControllerInput()
 {
-    m_updatedControllerKeys.Clear();
-
     XINPUT_KEYSTROKE key;
 
     int j = 0;
@@ -394,17 +381,12 @@ void GCControllerInput::UpdateControllerInput()
                 {
                 case NONE:
                     m_pListofControllerKeys[key.VirtualKey - j] = DOWN;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
-                case PUSH: 
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                 case UP:
                     m_pListofControllerKeys[key.VirtualKey - j] = DOWN;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case DOWN:
                     m_pListofControllerKeys[key.VirtualKey - j] = PUSH;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 }
             }
@@ -415,15 +397,12 @@ void GCControllerInput::UpdateControllerInput()
                 {
                 case PUSH:
                     m_pListofControllerKeys[key.VirtualKey - j] = UP;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case UP:
                     m_pListofControllerKeys[key.VirtualKey - j] = NONE;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case DOWN:
                     m_pListofControllerKeys[key.VirtualKey - j] = UP;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
 
                 }
@@ -472,7 +451,6 @@ void GCControllerInput::UpdateJoySticksinput()
         }
 
 
-        if (rLX != 0.0 || rLY != 0.0 ) AddtoControllerListUpdate(16);
 
 
         m_pControllersLeftAxis.x = rLX; m_pControllersLeftAxis.y = rLY;
@@ -500,7 +478,6 @@ void GCControllerInput::UpdateJoySticksinput()
             rRX = 0.0, rRY = 0.0;
         }
 
-        if (rRX != 0.0 || rRY != 0.0) AddtoControllerListUpdate(17);
 
         m_pControllersRightAxis.x = rRX; m_pControllersRightAxis.y = rRY;
     }
@@ -522,9 +499,7 @@ void GCControllerInput::UpdateTriggers()
         float rTriggerState = state.Gamepad.bRightTrigger;
 
         lTriggerState /= 255;  rTriggerState /= 255;
-        
-        if (lTriggerState != 0.0f) AddtoControllerListUpdate(18); 
-        if (rTriggerState != 0.0f) AddtoControllerListUpdate(19); 
+         
 
         m_pControllerTrigger.x = lTriggerState; m_pControllerTrigger.y = rTriggerState; 
     }
@@ -533,5 +508,5 @@ void GCControllerInput::UpdateTriggers()
 
 void GCControllerInput::AddtoControllerListUpdate(int index)
 {
-    m_updatedControllerKeys.PushBack(index);
+    //
 }
