@@ -402,25 +402,15 @@ bool GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 
 	pGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]);
 	pGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]).size();
 
-    //if (HAS_FLAG(flagEnabledBits, HAS_POSITION)) {
     pGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]);
     pGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]).size();
-    //}
 
-    //if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) {
     for (int i = 0; i < pGeometry->vertexNumber; i++)
     pGeometry->color.push_back(color);
-    //}
 
-    //if (HAS_FLAG(flagEnabledBits, HAS_UV)) {
     pGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[index][L"uvs"]);
-    //}
 
-    //if (HAS_FLAG(flagEnabledBits, HAS_NORMAL)) {
     pGeometry->normals = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"normals"]);
-    //}
-
-    //pGeometry->m_flagEnabledBits = flagEnabledBits;
 
     CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", pGeometry);
 

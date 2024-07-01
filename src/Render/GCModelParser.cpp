@@ -24,7 +24,8 @@ bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 bool GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Extensions fileExtension, GCGeometry* pGeometry)
 {
 
-	CHECK_FILE(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully"));
+	if (!CHECK_FILE(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully")))
+		return false;
 
 	Parse(fileName, fileExtension);
 
@@ -39,31 +40,24 @@ bool GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Ex
 		pGeometry->indices.push_back(i);
 	}
 
-	/*if (HAS_FLAG(flagEnabledBits, HAS_UV)) 
-	{*/
 	for (int i = 0; i < m_ParsedModel->facesInfos.size(); i++)
 	{
 		pGeometry->uv.push_back(
 			DirectX::XMFLOAT2(m_ParsedModel->uvs[m_ParsedModel->facesInfos[i][1]][0], m_ParsedModel->uvs[m_ParsedModel->facesInfos[i][1]][1]));
 	}
-	//}
-	//if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) 
-	//{
+
 	for (int i = 0; i < m_ParsedModel->facesInfos.size(); i++) 
 	{
 		pGeometry->color.push_back(
 			DirectX::XMFLOAT4(color));
 	}
-	//}
-	//if (HAS_FLAG(flagEnabledBits, HAS_NORMAL)) 
-	//{
+
 	for (int i = 0; i < m_ParsedModel->facesInfos.size(); i++)
 	{
 		pGeometry->normals.push_back(
 			DirectX::XMFLOAT3(m_ParsedModel->normals[m_ParsedModel->facesInfos[i][2]][0], m_ParsedModel->normals[m_ParsedModel->facesInfos[i][2]][1], m_ParsedModel->normals[m_ParsedModel->facesInfos[i][2]][2])
 		);
 	}
-	//}
 
 	CHECK_POINTERSNULL("Model geometry loaded successfully","Model Geometry is empty", pGeometry);
 

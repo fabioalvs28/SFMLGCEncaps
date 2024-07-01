@@ -301,7 +301,6 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometr
     int flagsLightColor = 0;
     SET_FLAG(flagsLightColor, HAS_POSITION);
     SET_FLAG(flagsLightColor, HAS_COLOR);
-    SET_FLAG(flagsLightColor, HAS_NORMAL);
 
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
@@ -346,7 +345,6 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeome
     int flagsLightTexture = 0;
     SET_FLAG(flagsLightTexture, HAS_POSITION);
     SET_FLAG(flagsLightTexture, HAS_UV);
-    SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
