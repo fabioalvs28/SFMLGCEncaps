@@ -296,38 +296,38 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMesh(GCGeometry* pGeometry)
     }
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveColor(const std::string& primitiveName, const DirectX::XMFLOAT4& color)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveColor(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)
 {
     int flagsColor = 0;
     SET_FLAG(flagsColor, HAS_POSITION);
     SET_FLAG(flagsColor, HAS_COLOR);
 
     // Call the unified BuildGeometry function
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagsColor);
+    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, flagsColor);
 
     CHECK_POINTERSNULL("Primitive Geometry with Color created successfully", "Failed to create Primitive Geometry with Color", pGeometry);
 
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(const std::string& primitiveName)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(const GC_PRIMITIVE_ID primitiveIndex)
 {
     int flagsTexture = 0;
     SET_FLAG(flagsTexture, HAS_POSITION);
     SET_FLAG(flagsTexture, HAS_UV);
 
     // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
+    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
 
     CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
 
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int flagEnabledBits)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveCustom(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color, int flagEnabledBits)
 {
     // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagEnabledBits);
+    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, flagEnabledBits);
 
     CHECK_POINTERSNULL("Primitive Geometry with Custom parameters created successfully", "Failed to create Primitive Geometry with Custom parameters", pGeometry);
 

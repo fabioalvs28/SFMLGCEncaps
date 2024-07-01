@@ -32,9 +32,9 @@ public:
 
 	ResourceCreationResult<GCMesh*> CreateMesh(GCGeometry* pGeometry);
 
-	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveTexture(const std::string& primitiveName);
-	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveColor(const std::string& primitiveName, const DirectX::XMFLOAT4& color);
-	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int flagEnabledBits);
+	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveTexture(const GC_PRIMITIVE_ID primitiveIndex);
+	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveColor(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color);
+	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveCustom(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color, int flagEnabledBits);
 
 	ResourceCreationResult<GCGeometry*> CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType);
 	ResourceCreationResult<GCGeometry*> CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType);
