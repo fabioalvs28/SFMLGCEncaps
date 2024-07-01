@@ -45,8 +45,6 @@ int main()
 
 	GCScene* pTest1Scene = GCScene::Create();
 
-	GC::
-
 	GCGameObject* pMario = nullptr;
 	GCGameObject* pLuigi = nullptr;
 	GCGameObject* pGoomba = nullptr;
@@ -54,6 +52,7 @@ int main()
 	GCGameObject* pSelected = nullptr;
 
 	
+	// They should be registered to the physic manager to work
 	pMario->AddComponent<BoxCollider>();
 	pLuigi->AddComponent<BoxCollider>();
 
