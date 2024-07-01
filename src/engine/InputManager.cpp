@@ -64,13 +64,16 @@ void GCInputManager::UpdateInputs()
             switch (m_keyState[i])
             {
             case NONE:
-                m_keyState[i] = DOWN;
+                AddToUpdateList(i, DOWN);
+                break;
+            case PUSH : 
+                AddToUpdateList(i, PUSH);
                 break;
             case UP:
-                m_keyState[i] = DOWN;
+                AddToUpdateList(i, DOWN);
                 break;
             case DOWN:
-                m_keyState[i] = PUSH;
+                AddToUpdateList(i, PUSH);
                 break;
 
             }
@@ -81,13 +84,13 @@ void GCInputManager::UpdateInputs()
             switch (m_keyState[i])
             {
             case PUSH:
-                m_keyState[i] = UP;
+                AddToUpdateList(i, UP);
                 break;
             case UP:
-                m_keyState[i] = NONE;
+                AddToUpdateList(i, NONE);
                 break;
             case DOWN:
-                m_keyState[i] = UP;
+                AddToUpdateList(i, UP);
                 break;
 
             }
@@ -102,11 +105,11 @@ void GCInputManager::UpdateInputs()
     }   
 }
 
-//void GCInputManager::AddToUpdateList(int index, BYTE state)
-//{
-////
-//}
-//
+void GCInputManager::AddToUpdateList(int index, BYTE state)
+{
+    m_keyState[index] = state;
+}
+
 //bool GCInputManager::IsKeyPressed()
 //{
 //    if (m_updatedKeys.GetSize() != 0)
