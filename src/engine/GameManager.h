@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneManager.h"
 #include "InputManager.h"
+#include "PhysicManager.h"
 
 class GCGameObject;
 class GCScene;
@@ -22,5 +23,6 @@ protected:
 protected:
     GCSceneManager m_pSceneManager;
     GCInputManager m_pInputManager;
-
+    GCPhysicManager m_pPhysicManager;
 };
+
