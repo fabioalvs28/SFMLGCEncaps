@@ -394,37 +394,35 @@ void GCPrimitiveFactory::Initialize()
 }
 
 
-GCGeometry* GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color)
+bool GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color, GCGeometry* pGeometry)
 {
     //Builds a texture based geometry using pre-created ones
     //Needs a geometry name
 
-	GCGeometry* primitiveGeometry = new GCGeometry();
-
-	primitiveGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]);
-	primitiveGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]).size();
+	pGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]);
+	pGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]).size();
 
     //if (HAS_FLAG(flagEnabledBits, HAS_POSITION)) {
-    primitiveGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]);
-    primitiveGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]).size();
+    pGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]);
+    pGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]).size();
     //}
 
     //if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) {
-    for (int i = 0; i < primitiveGeometry->vertexNumber; i++)
-    primitiveGeometry->color.push_back(color);
+    for (int i = 0; i < pGeometry->vertexNumber; i++)
+    pGeometry->color.push_back(color);
     //}
 
     //if (HAS_FLAG(flagEnabledBits, HAS_UV)) {
-    primitiveGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[index][L"uvs"]);
+    pGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[index][L"uvs"]);
     //}
 
     //if (HAS_FLAG(flagEnabledBits, HAS_NORMAL)) {
-    primitiveGeometry->normals = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"normals"]);
+    pGeometry->normals = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"normals"]);
     //}
 
-    //primitiveGeometry->m_flagEnabledBits = flagEnabledBits;
+    //pGeometry->m_flagEnabledBits = flagEnabledBits;
 
-    CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", primitiveGeometry);
+    CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", pGeometry);
 
-	return primitiveGeometry;
+	return true;
 }

@@ -417,7 +417,9 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeome
 ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)
 {
     // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color);
+    GCGeometry* pGeometry = new GCGeometry();
+
+    m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, pGeometry);
 
     CHECK_POINTERSNULL("Primitive Geometry with Custom parameters created successfully", "Failed to create Primitive Geometry with Custom parameters", pGeometry);
 
@@ -455,7 +457,9 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const 
     SET_FLAG(flagsTexture, HAS_UV);
 
     // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType);
+    GCGeometry* pGeometry = new GCGeometry;
+
+    m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, pGeometry);
 
     CHECK_POINTERSNULL("Geometry from Model Parser with Texture created successfully", "Failed to create Geometry from Model Parser with Texture", pGeometry);
 

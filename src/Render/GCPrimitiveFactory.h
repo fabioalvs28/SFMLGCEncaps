@@ -36,7 +36,7 @@ public:
 		std::vector<DirectX::XMFLOAT3>& normals);
 
 	//std::vector<DirectX::XMFLOAT3> GenerateNormal(const std::vector<uint16_t>& index, const std::vector<DirectX::XMFLOAT3>& pos);
-	GCGeometry* BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color);
+	bool BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color, GCGeometry* pGeometry);
 
 private:
 	GCRender* m_pRender;
