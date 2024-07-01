@@ -75,34 +75,43 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 
     GCLIGHTPROPERTIES lightData = {};
 
-    GCLIGHT directionalLight;
-    directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Pas de position pour une lumière directionnelle
-    directionalLight.direction = DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f); // Direction du soleil (exemple)
-    directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
-    directionalLight.spotAngle = 0.0f; // Pas d'angle pour une lumière directionnelle
-    directionalLight.lightIntensity = 1.3f;
-    directionalLight.lightType = 0; // Type de lumière directionnelle
+    //GCLIGHT directionalLight;
+    //directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Pas de position pour une lumière directionnelle
+    //directionalLight.direction = DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f); // Direction du soleil (exemple)
+    //directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+    //directionalLight.spotAngle = 0.0f; // Pas d'angle pour une lumière directionnelle
+    //directionalLight.lightIntensity = 1.3f;
+    //directionalLight.lightType = 0; // Type de lumière directionnelle
 
-    GCLIGHT light1;
-    light1.position = DirectX::XMFLOAT3(-5.0f, 20.0f, -2.0f);
-    light1.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
-    light1.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-    light1.spotAngle = 10.0f;
-    light1.lightIntensity = 1.2f;
-    light1.lightType = 1;
+    //GCLIGHT light1;
+    //light1.position = DirectX::XMFLOAT3(-5.0f, 20.0f, -2.0f);
+    //light1.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
+    //light1.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+    //light1.spotAngle = 10.0f;
+    //light1.lightIntensity = 1.2f;
+    //light1.lightType = 1;
 
+    //GCLIGHT light2;
+    //light2.position = DirectX::XMFLOAT3(2.0f, 20.0f, -2.0f);
+    //light2.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
+    //light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+    //light2.spotAngle = 10.0f;
+    //light2.lightIntensity = 1.2f;
+    //light2.lightType = 1;
+
+    // Lumière ponctuelle 2
     GCLIGHT light2;
-    light2.position = DirectX::XMFLOAT3(2.0f, 20.0f, -2.0f);
-    light2.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
-    light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-    light2.spotAngle = 10.0f;
+    light2.position = DirectX::XMFLOAT3(0.0f, 3.0f, 0.0f); // Position en 2D (x, y, 0)
+    light2.direction = DirectX::XMFLOAT3(0.0f, -0.5f, 0.0f); // Direction vers le bas en 2D
+    light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+    light2.spotAngle = 3.0f; // Angle du spot si applicable
     light2.lightIntensity = 1.2f;
-    light2.lightType = 1;
+    light2.lightType = 1; // Type de lumière ponctuelle
 
-    // Ajout des lumières au tableau de lumières
-    lightData.lights[0] = directionalLight;
+
+    //lightData.lights[0] = directionalLight;
     lightData.lights[1] = light2;
-    lightData.lights[2] = light1;
+    //lightData.lights[2] = light1;
 
     GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 

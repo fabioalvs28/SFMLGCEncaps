@@ -355,13 +355,12 @@ void GCPrimitiveFactory::Initialize()
                 DirectX::XMFLOAT2(1.0f, 0.0f),
                 DirectX::XMFLOAT2(1.0f, 1.0f)
             }},
-            { L"normals", GenerateNormal(std::vector<uint16_t>{0, 1, 2, 0, 2, 3}, std::vector<DirectX::XMFLOAT3>{
-                DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f),
-                DirectX::XMFLOAT3(-0.5f, 0.5f, 0.0f),
-                DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f),
-                DirectX::XMFLOAT3(0.5f, -0.5f, 0.0f) 
-            })
-            }
+            { L"normals", std::vector<DirectX::XMFLOAT3>{
+                DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Bottom-left
+                DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Bottom-right
+                DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Top-right
+                DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Top-left
+            }},
     }},
     {L"cube", {
         {L"index", cubeIndices},

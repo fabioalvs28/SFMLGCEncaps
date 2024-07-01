@@ -9,8 +9,8 @@
 using namespace DirectX;
 
 // Définition des variables globales pour la caméra
-XMVECTOR cameraPosition = XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
-XMVECTOR cameraTarget = XMVectorZero();
+XMVECTOR cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
+XMVECTOR cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
@@ -38,7 +38,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     // Création des géométries
     auto geoCubeOuter = graphics->CreateGeometryPrimitiveCustom("cubeSkybox", XMFLOAT4(Colors::Red), flagsLightColor);
-    auto geoCubeInner = graphics->CreateGeometryPrimitiveCustom("cube", XMFLOAT4(Colors::Green), flagsLightColor);
+    auto geoCubeInner = graphics->CreateGeometryPrimitiveCustom("plane", XMFLOAT4(Colors::Green), flagsLightColor);
     auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", XMFLOAT4(Colors::Yellow), flagsLightTexture);
 
     // Chargement des shaders personnalisés
@@ -75,7 +75,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     materialSphere.resource->SetTexture(texture.resource);
 
     // Initialisation des matrices de vue et de projection
-    XMMATRIX projectionMatrix = XMMatrixPerspectiveFovLH(0.25f * XM_PI, window->AspectRatio(), 1.0f, 1000.0f);
+    float viewWidth = 20.0f;
+    float viewHeight = 20.0f;
+    XMMATRIX projectionMatrix = XMMatrixOrthographicLH(viewWidth, viewHeight, 1.0f, 1000.0f);
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
     XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
     XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
@@ -86,7 +88,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     // Définition des matrices de transformation pour chaque objet avec translation
     XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
-    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centré
+    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(-0.0f, 0.0f, -0.0f); // Cube interne centré
     XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-6.0f, 5.0f, -2.0f); // Cube interne centré
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
 
@@ -114,10 +116,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
 
         // Mettre à jour la matrice de transformation du cube interne
-        XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
+        //XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
 
-        // Extraire les données de la matrice mise à jour dans une XMFLOAT4X4
-        XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
+        //// Extraire les données de la matrice mise à jour dans une XMFLOAT4X4
+        //XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
 
         // Gestion des entrées utilisateur pour le déplacement de la caméra
         if (window->IsKeyDown('Z')) {
@@ -127,32 +129,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
             cameraPosition -= cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
         }
 
-
-
         // Mettre à jour la matrice de vue avec la nouvelle position de la caméra
         viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
         transposedViewMatrix = XMMatrixTranspose(viewMatrix);
         XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 
-        // Rendu des obj
+        // Rendu des objets
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-        // Dessiner le cube externe
-        graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
-        graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
+        //// Dessiner le cube externe
+        //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
+        //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
 
         // Dessiner le cube interne avec la matrice mise à jour
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource);
 
-        // Dessiner la sphère interne
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
+        //// Dessiner la sphère interne
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
-        // Dessiner le deuxième cube interne (worldCubeInner2) avec la matrice mise à jour
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
+        //// Dessiner le deuxième cube interne (worldCubeInner2) avec la matrice mise à jour
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());
