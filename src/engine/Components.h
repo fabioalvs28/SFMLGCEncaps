@@ -29,6 +29,8 @@ public:
     
     bool IsActive() { return m_active; }
 
+    inline GCGameObject* GetGameObject() { return m_pGameObject; }
+
 protected:
     void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
 
@@ -90,6 +92,10 @@ class BoxCollider : public Collider
 {
 public: enum { TYPE = 2 };
 
+private:
+    GCVEC2 m_size;
+
+
 public:
     ~BoxCollider() override {}
     
@@ -100,6 +106,8 @@ public:
     void Render() override {}
     void Destroy() override {}
 
+    inline GCVEC2 GetSize() { return m_size; }
+
 };
 
 
@@ -107,6 +115,9 @@ public:
 class CircleCollider : public Collider
 {
 public: enum { TYPE = 3 };
+
+private:
+    float m_radius;
 
 public:
     ~CircleCollider() override {}
@@ -117,6 +128,8 @@ public:
     void Update() override {}
     void Render() override {}
     void Destroy() override {}
+
+    inline float GetRadius() { return m_radius; }
 
 };
 
