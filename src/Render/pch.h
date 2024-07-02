@@ -121,7 +121,6 @@ class Window;
 #include "GCTextureFactory.h"
 #include "ShaderTypeEnum.h"
 #include "Timer.h"
-#include "PrimitiveTypeEnum.h"
 #include "GCUtils.h"
 
 #include "HLSLReader.h"

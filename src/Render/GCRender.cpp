@@ -6,7 +6,8 @@ GCRender::GCRender() {
 
 bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight)
 {
-	CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
+	if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
+		return false;
 
 	m_renderWidth = renderWidth;
 	m_renderHeight = renderHeight;

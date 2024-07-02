@@ -12,7 +12,7 @@ public:
 	GCGraphics();
 	~GCGraphics();
 
-	void Initialize(Window* pWindow, int renderWidth, int renderHeight);
+	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
 
 	// Each Frame
 	void StartFrame();
@@ -30,15 +30,12 @@ public:
 
 	ResourceCreationResult<GCMaterial*> CreateMaterial(GCShader* pShader);
 
-	ResourceCreationResult<GCMesh*> CreateMesh(GCGeometry* pGeometry);
+	ResourceCreationResult<GCMesh*> CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits);
+	ResourceCreationResult<GCMesh*> CreateMeshColor(GCGeometry* pGeometry);
+	ResourceCreationResult<GCMesh*> CreateMeshTexture(GCGeometry* pGeometry);
 
-	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveTexture(const std::string& primitiveName);
-	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveColor(const std::string& primitiveName, const DirectX::XMFLOAT4& color);
-	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int flagEnabledBits);
-
-	ResourceCreationResult<GCGeometry*> CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType);
-	ResourceCreationResult<GCGeometry*> CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType);
-	ResourceCreationResult<GCGeometry*> CreateGeometryModelParserCustom(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType, int& flagEnabledBits);
+	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color);
+	ResourceCreationResult<GCGeometry*> CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType);
 
 	ResourceCreationResult<GCTexture*> CreateTexture(const std::string& filePath);
 

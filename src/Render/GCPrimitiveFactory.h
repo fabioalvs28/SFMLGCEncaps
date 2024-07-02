@@ -6,6 +6,14 @@
 #include <vector>
 #include <DirectXMath.h> // Assurez-vous que DirectXMath.h est inclus si vous utilisez des types DirectX
 
+enum GC_PRIMITIVE_ID
+{
+	Plane,
+	Cube,
+	CubeSkybox,
+	Circle,
+	Sphere,
+};
 
 class GCPrimitiveFactory
 {
@@ -27,13 +35,12 @@ public:
 		std::vector<DirectX::XMFLOAT2>& uvs,
 		std::vector<DirectX::XMFLOAT3>& normals);
 
-	std::vector<DirectX::XMFLOAT3> GenerateNormal(const std::vector<uint16_t>& index, const std::vector<DirectX::XMFLOAT3>& pos);
-	GCGeometry* BuildGeometry(std::string name, DirectX::XMFLOAT4 color, int& flagEnabledBits);
+	//std::vector<DirectX::XMFLOAT3> GenerateNormal(const std::vector<uint16_t>& index, const std::vector<DirectX::XMFLOAT3>& pos);
+	bool BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color, GCGeometry* pGeometry);
 
-  
 private:
 	GCRender* m_pRender;
-	std::map<std::wstring, std::map<std::wstring, std::variant<
+	std::vector<std::map<std::wstring, std::variant<
 		std::vector<uint16_t>,
 		std::vector<DirectX::XMFLOAT2>,
 		std::vector<DirectX::XMFLOAT3>,

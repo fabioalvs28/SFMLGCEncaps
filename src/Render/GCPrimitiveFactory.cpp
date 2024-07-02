@@ -339,9 +339,10 @@ void GCPrimitiveFactory::Initialize()
     GenerateCubeSkybox(cubeSkyboxVertices, cubeSkyboxIndices, cubeSkyboxUvs, cubeSkyboxNormals);
 
     //Put all data in map
-    m_primitiveInfos = {
-    // Only in 2d
-    {L"plane", {
+    m_primitiveInfos = 
+    {
+        // Only in 2d
+        { //plane
             { L"index", std::vector<uint16_t>{0, 1, 2, 0, 2, 3} },
             { L"pos", std::vector<DirectX::XMFLOAT3>{
                 DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f),
@@ -361,83 +362,57 @@ void GCPrimitiveFactory::Initialize()
                 DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Top-right
                 DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Top-left
             }},
-    }},
-    {L"cube", {
-        {L"index", cubeIndices},
-        {L"pos", cubeVertices},
-        {L"uvs", cubeUvs},
-        {L"normals", cubeNormals},
-    }},
-    {L"cubeSkybox", {
-        {L"index", cubeSkyboxIndices},
-        {L"pos", cubeSkyboxVertices},
-        {L"uvs", cubeSkyboxUvs},
-        {L"normals", cubeSkyboxNormals},
-    }},
-    // #TODO -> Doesn't work in 2d thereas, it need be 2d
-    {L"circle", {
-        {L"index", circleIndices},
-        {L"pos", circleVertices},
-        {L"uvs", circleUvs},
-        //{L"normals", GenerateNormal(circleIndices, circleVertices)}
-    }},
-    {L"sphere", {
-        {L"index", sphereIndices},
-        {L"pos", sphereVertices},
-        {L"uvs", sphereUvs},
-        {L"normals", sphereNormals},
-    }}
+        },
+
+        { //cube
+            {L"index", cubeIndices},
+            {L"pos", cubeVertices},
+            {L"uvs", cubeUvs},
+            {L"normals", cubeNormals},
+        },
+
+        { //cube skybox
+            {L"index", cubeSkyboxIndices},
+            {L"pos", cubeSkyboxVertices},
+            {L"uvs", cubeSkyboxUvs},
+            {L"normals", cubeSkyboxNormals},
+        },
+        // #TODO -> Doesn't work in 2d thereas, it need be 2d
+        { //circle
+            {L"index", circleIndices},
+            {L"pos", circleVertices},
+            {L"uvs", circleUvs},
+            //{L"normals", GenerateNormal(circleIndices, circleVertices)}
+        },
+        { //Sphere
+            {L"index", sphereIndices},
+            {L"pos", sphereVertices},
+            {L"uvs", sphereUvs},
+            {L"normals", sphereNormals},
+        }
     };
 }
 
 
-GCGeometry* GCPrimitiveFactory::BuildGeometry(std::string name, DirectX::XMFLOAT4 color, int& flagEnabledBits)
+bool GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color, GCGeometry* pGeometry)
 {
     //Builds a texture based geometry using pre-created ones
     //Needs a geometry name
-    std::wstring wName(name.begin(), name.end());
 
-    auto it = m_primitiveInfos.find(wName);
-    /*if (it == m_primitiveInfos.end())
-    {
-        std::wstring warningMsg = L"Primitive not found: " + wName + L"\n";
-        OutputDebugString(warningMsg.c_str());
-        profiler.LogWarning("Primitive not found: " + std::string(name.begin(), name.end()));
-    }
-    else
-    {
-        std::wstring successMsg = L"Primitive: " + wName + L" loaded successfully\n";
-        OutputDebugString(successMsg.c_str());
-        profiler.LogInfo("Primitive: " + std::string(name.begin(), name.end()) + " loaded successfully");
-    }*/
+	pGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]);
+	pGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]).size();
 
-	GCGeometry* primitiveGeometry = new GCGeometry();
+    pGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]);
+    pGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]).size();
 
-	primitiveGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[wName][L"index"]);
-	primitiveGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[wName][L"index"]).size();
+    for (int i = 0; i < pGeometry->vertexNumber; i++)
+    pGeometry->color.push_back(color);
 
-    if (HAS_FLAG(flagEnabledBits, HAS_POSITION)) {
-        primitiveGeometry->pos = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[wName][L"pos"]);
-        primitiveGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[wName][L"pos"]).size();
-    }
+    pGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[index][L"uvs"]);
 
-    if (HAS_FLAG(flagEnabledBits, HAS_COLOR)) {
-        for (int i = 0; i < primitiveGeometry->vertexNumber; i++)
-            primitiveGeometry->color.push_back(color);
-    }
+    pGeometry->normals = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"normals"]);
 
-    if (HAS_FLAG(flagEnabledBits, HAS_UV)) {
-        primitiveGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[wName][L"uvs"]);
-    }
+    CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", pGeometry);
 
-    if (HAS_FLAG(flagEnabledBits, HAS_NORMAL)) {
-        primitiveGeometry->normals = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[wName][L"normals"]);
-    }
-
-    primitiveGeometry->m_flagEnabledBits = flagEnabledBits;
-
-
-    CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", primitiveGeometry);
-
-	return primitiveGeometry;
+	return true;
 }
