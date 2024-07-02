@@ -7,7 +7,7 @@ public:
 
 	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
 	bool InitDirect3D();
-	//void BuildConstantBuffers();
+
 	void LogAdapters();
 	void LogAdapterOutputs(IDXGIAdapter* adapter);
 	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
@@ -18,6 +18,8 @@ public:
 	void CreateRtvAndDsvDescriptorHeaps();
 	void CreateCbvSrvUavDescriptorHeaps();
 	void CreateSwapChain();
+
+	void CreatePostProcessingResources();
 
 	// Resize 
 	void ReleasePreviousResources();
@@ -32,6 +34,8 @@ public:
 	void CloseCommandList();
 
 	bool FlushCommandQueue();
+
+	void PerformPostProcessing();
 
 	bool PrepareDraw();
 	bool PostDraw();
@@ -113,8 +117,12 @@ private:
 	D3D12_VIEWPORT m_ScreenViewport;
 	D3D12_RECT m_ScissorRect;
 
-	// Camera (Temporary)
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
+
+	// Texture For Post Processing 
+	ID3D12Resource* m_copyTexture = nullptr;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE m_copyTextureAddress;
+	GCShader* m_postProcessingShader;
 };
 
 #ifndef ReleaseCom

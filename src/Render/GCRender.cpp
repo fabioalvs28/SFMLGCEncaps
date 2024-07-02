@@ -93,6 +93,8 @@ bool GCRender::InitDirect3D()
 	CreateRtvAndDsvDescriptorHeaps();
 	CreateCbvSrvUavDescriptorHeaps();
 
+	CreatePostProcessingResources();
+
 	m_canResize = true;
 
 	return true;
@@ -227,6 +229,65 @@ void GCRender::CreateRtvAndDsvDescriptorHeaps()
 	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	dsvHeapDesc.NodeMask = 0;
 	m_d3dDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap));
+}
+
+void GCRender::CreatePostProcessingResources() {
+	// Définition de la description de la texture de copie
+	D3D12_RESOURCE_DESC textureDesc = {};
+	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	textureDesc.Width = m_pWindow->GetClientWidth();
+	textureDesc.Height = m_pWindow->GetClientHeight();
+	textureDesc.DepthOrArraySize = 1;
+	textureDesc.MipLevels = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // Format approprié pour vos besoins
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	// Créer la texture de copie
+	CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	HRESULT hr = m_d3dDevice->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&m_copyTexture));
+
+	if (FAILED(hr)) {
+		// Gestion des erreurs
+		return;
+	}
+
+	// Définir une SRV pour la texture de copie
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	// Créer la SRV pour la texture de copie
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(m_cbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	srvHandle.Offset(90, m_cbvSrvUavDescriptorSize); // Assurez-vous d'ajuster m_nextDescriptorIndex
+	m_d3dDevice->CreateShaderResourceView(m_copyTexture, &srvDesc, srvHandle);
+
+	// Convertir le descripteur CPU en descripteur GPU
+	m_copyTextureAddress = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	m_copyTextureAddress.Offset(90, m_cbvSrvUavDescriptorSize); // Assurez-vous d'ajuster m_nextDescriptorIndex
+
+	m_postProcessingShader = new GCShader();
+
+	std::string shaderFilePath = "../../../src/Render/Shaders/PostProcessing.hlsl";
+	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
+
+	int flags = 0;
+	SET_FLAG(flags, HAS_POSITION);
+	SET_FLAG(flags, HAS_UV);
+
+	m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags);
+	m_postProcessingShader->Load();
 }
 
 void GCRender::OnResize() 
@@ -415,7 +476,6 @@ bool GCRender::PrepareDraw()
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvSrvUavDescriptorHeap };
 	m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return true;
 }
@@ -464,35 +524,84 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	return true;
 }
 
+void GCRender::PerformPostProcessing() {
+	// Transition de la texture de copie vers l'état shader resource
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_copyTexture,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	m_CommandList->ResourceBarrier(1, &barrier);
+
+	// Définir le pipeline de rendu pour le post-processing
+	m_CommandList->SetPipelineState(m_postProcessingShader->GetPso());
+	m_CommandList->SetGraphicsRootSignature(m_postProcessingShader->GetRootSign());
+
+	// Définir la SRV pour la texture de copie
+	m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, m_copyTextureAddress);
+
+	// Définir les viewport et scissor rect pour le post-processing
+	D3D12_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(m_pWindow->GetClientWidth()), static_cast<float>(m_pWindow->GetClientHeight()), 0.0f, 1.0f };
+	D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(m_pWindow->GetClientWidth()), static_cast<LONG>(m_pWindow->GetClientHeight()) };
+	m_CommandList->RSSetViewports(1, &viewport);
+	m_CommandList->RSSetScissorRects(1, &scissorRect);
+
+	// Dessiner un quad plein écran pour appliquer l'effet de post-processing
+	m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_CommandList->DrawInstanced(6, 1, 0, 0); // 6 vertices pour dessiner un quad plein écran
+
+	// Transition de la texture de copie vers l'état de ressource de copie destination pour la prochaine frame
+	barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_copyTexture,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_COPY_DEST);
+	m_CommandList->ResourceBarrier(1, &barrier);
+}
 //Always needs to be called right after drawing!!!
 bool GCRender::PostDraw()
 {
-	// Transition to present state
-	CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-	m_CommandList->ResourceBarrier(1, &ResBar2);
+	// Transition vers l'état de rendu cible pour copier le contenu
+	CD3DX12_RESOURCE_BARRIER barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(
+		CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_COPY_SOURCE);
+	m_CommandList->ResourceBarrier(1, &barrierToRT);
 
-	// Close the command list
+	// Copie de la back buffer vers la texture de copie
+	m_CommandList->CopyResource(m_copyTexture, CurrentBackBuffer());
+
+	// Transition de la back buffer vers l'état de présentation
+	CD3DX12_RESOURCE_BARRIER barrierToPresent = CD3DX12_RESOURCE_BARRIER::Transition(
+		CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATE_PRESENT);
+	m_CommandList->ResourceBarrier(1, &barrierToPresent);
+
+	PerformPostProcessing();
+
+	// Fermer la liste de commandes
 	HRESULT hr = m_CommandList->Close();
-	if (!CHECK_HRESULT(hr, "Failed to close command list")) 
+	if (!CHECK_HRESULT(hr, "Failed to close command list")) {
 		return false;
+	}
 
-	// Execute the command list
+	// Exécuter la liste de commandes
 	ID3D12CommandList* cmdsLists[] = { m_CommandList };
 	m_CommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-	// Present the swap chain
+	// Présenter le swap chain
 	hr = m_SwapChain->Present(0, 0);
-	if (!CHECK_HRESULT(hr, "Failed to present swap chain"))
+	if (!CHECK_HRESULT(hr, "Failed to present swap chain")) {
 		return false;
+	}
 
-
-	// Move to the next back buffer
+	// Passer au back buffer suivant
 	m_CurrBackBuffer = (m_CurrBackBuffer + 1) % SwapChainBufferCount;
 
 	// Flush the command queue
-	bool success = FlushCommandQueue();
+	if (!FlushCommandQueue())
+		return false;
 
-	return success;
+	return true;
 }
 
 void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)

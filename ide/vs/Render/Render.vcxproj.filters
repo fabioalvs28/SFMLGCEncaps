@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{1454CCBF-D6C2-460F-A356-634CAA42DE3A}</UniqueIdentifier>
+      <UniqueIdentifier>{80803B90-48AF-499D-81AA-DBD03D979393}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{8D6C801A-A773-4015-970D-E342FCB8549C}</UniqueIdentifier>
+      <UniqueIdentifier>{C7962F04-A329-494E-80BE-3D90CE055CDE}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{DCCEE3C4-BB68-4C4A-8C56-5DD0EF8503EB}</UniqueIdentifier>
+      <UniqueIdentifier>{0AC0210D-AD3F-41D7-B97B-89331F80680F}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -174,13 +174,16 @@
     <None Include="..\..\..\src\Render\Shaders\color.hlsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\..\src\Render\Shaders\customTest.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\..\..\src\Render\Shaders\LightColor.hlsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Shaders\LightTexture.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\Render\Shaders\LightTextureBloom.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\Render\Shaders\PostProcessing.hlsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Shaders\texture.hlsl">
