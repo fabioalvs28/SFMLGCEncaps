@@ -31,7 +31,7 @@ public:
 	void ExecuteCommandList();
 	void CloseCommandList();
 
-	void FlushCommandQueue();
+	bool FlushCommandQueue();
 
 	bool PrepareDraw();
 	bool PostDraw();

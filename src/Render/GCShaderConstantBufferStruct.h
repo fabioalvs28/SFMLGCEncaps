@@ -1,4 +1,6 @@
-struct GCSHADERCB {
+struct GCSHADERCB 
+{
+
 };
 
 struct GCWORLDCB : GCSHADERCB

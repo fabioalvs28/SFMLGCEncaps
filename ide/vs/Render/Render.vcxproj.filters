@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{8E37FCFF-69C3-4BDD-8123-26B9E4E571A5}</UniqueIdentifier>
+      <UniqueIdentifier>{1454CCBF-D6C2-460F-A356-634CAA42DE3A}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{054F3B75-130C-4185-8F5D-C3C0DF62E1EA}</UniqueIdentifier>
+      <UniqueIdentifier>{8D6C801A-A773-4015-970D-E342FCB8549C}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{013715F0-A79A-4EE4-865A-D8F60A134F7C}</UniqueIdentifier>
+      <UniqueIdentifier>{DCCEE3C4-BB68-4C4A-8C56-5DD0EF8503EB}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -27,7 +27,7 @@
     <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Render\GCGraphicsProfiler.cpp">
+    <ClCompile Include="..\..\..\src\Render\GCGraphicsLogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCMaterial.cpp">
@@ -90,7 +90,7 @@
     <ClInclude Include="..\..\..\src\Render\GCGraphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCGraphicsProfiler.h">
+    <ClInclude Include="..\..\..\src\Render\GCGraphicsLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCMaterial.h">
@@ -111,16 +111,16 @@
     <ClInclude Include="..\..\..\src\Render\GCPrimitiveFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCPrimitiveIdEnum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCShaderCBStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCShaderVertexStruct.h">
+    <ClInclude Include="..\..\..\src\Render\GCShaderConstantBufferStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCTexture.h">
@@ -129,13 +129,10 @@
     <ClInclude Include="..\..\..\src\Render\GCTextureFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCUploadBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\header.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\HLSLReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\Macros.h">
@@ -147,22 +144,10 @@
     <ClInclude Include="..\..\..\src\Render\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\PrimitiveTypeEnum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\ShaderTypeEnum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Render\Timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\UploadBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\Vectors.h">

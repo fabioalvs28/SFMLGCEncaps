@@ -301,13 +301,9 @@ void GCPrimitiveFactory::GenerateCubeSkybox(std::vector<DirectX::XMFLOAT3>& vert
     indices.assign(cubeIndices, cubeIndices + 36);
     uvs.assign(cubeUVs, cubeUVs + 24); // Assign 24 UVs
     normals.assign(cubeNormals, cubeNormals + 24); // Assign 24 normals
-
-
 }
 
-
-
-void GCPrimitiveFactory::Initialize() 
+bool GCPrimitiveFactory::Initialize() 
 {
     // Create circle vertices, uvs and indices
     std::vector<DirectX::XMFLOAT3> circleVertices;
@@ -382,7 +378,6 @@ void GCPrimitiveFactory::Initialize()
             {L"index", circleIndices},
             {L"pos", circleVertices},
             {L"uvs", circleUvs},
-            //{L"normals", GenerateNormal(circleIndices, circleVertices)}
         },
         { //Sphere
             {L"index", sphereIndices},
@@ -391,6 +386,8 @@ void GCPrimitiveFactory::Initialize()
             {L"normals", sphereNormals},
         }
     };
+
+    return true;
 }
 
 
@@ -398,6 +395,8 @@ bool GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 
 {
     //Builds a texture based geometry using pre-created ones
     //Needs a geometry name
+    if (!CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", pGeometry))
+        return false;
 
 	pGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]);
 	pGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]).size();
@@ -411,8 +410,6 @@ bool GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 
     pGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[index][L"uvs"]);
 
     pGeometry->normals = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"normals"]);
-
-    CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", pGeometry);
 
 	return true;
 }

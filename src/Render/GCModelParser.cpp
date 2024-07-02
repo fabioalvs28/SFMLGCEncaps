@@ -25,9 +25,12 @@ bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
 
 bool GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Extensions fileExtension, GCGeometry* pGeometry)
 {
-
+	if (!CHECK_POINTERSNULL("Model geometry loaded successfully", "Model Geometry is empty", pGeometry))
+		return false;
 	if (!CHECK_FILE(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully")))
 		return false;
+
+
 
 	Parse(fileName, fileExtension);
 
@@ -60,9 +63,6 @@ bool GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Ex
 			DirectX::XMFLOAT3(m_ParsedModel->normals[m_ParsedModel->facesInfos[i][2]][0], m_ParsedModel->normals[m_ParsedModel->facesInfos[i][2]][1], m_ParsedModel->normals[m_ParsedModel->facesInfos[i][2]][2])
 		);
 	}
-
-	if (!CHECK_POINTERSNULL("Model geometry loaded successfully","Model Geometry is empty", pGeometry))
-		return false;
 
 	return true;
 }

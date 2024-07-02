@@ -86,9 +86,26 @@ GCMesh::~GCMesh()
 
 bool GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits) 
 {
-    CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pRender);
+
+    if (!CHECK_POINTERSNULL("Pointers pRender & pGeometry Valid", "Pointers pRender & pGeometry Not valid", pRender, pGeometry)) {
+        return false;
+    }
+
     m_pRender = pRender;
+
     UploadGeometryData(pGeometry, flagEnabledBits);
+
+    if (!CHECK_POINTERSNULL(
+        "All mesh buffer data pointers are valid",
+        "One or more mesh buffer data pointers are null",
+        m_pBufferGeometryData->VertexBufferCPU,
+        m_pBufferGeometryData->IndexBufferCPU,
+        m_pBufferGeometryData->VertexBufferGPU,
+        m_pBufferGeometryData->IndexBufferGPU
+    )) 
+    {
+        return false;
+    };
 
     return true;
 }

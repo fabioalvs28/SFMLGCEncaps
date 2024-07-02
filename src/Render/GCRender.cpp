@@ -353,14 +353,18 @@ void GCRender::UpdateViewport()
 	};
 }
 
-void GCRender::FlushCommandQueue()
+bool GCRender::FlushCommandQueue()
 {
+	HRESULT hr;
 	// Advance the fence value to mark commands up to this fence point.
 	m_CurrentFence++;
 	// Add an instruction to the command queue to set a new fence point.  Because we 
 	// are on the GPU timeline, the new fence point won't be set until the GPU finishes
 	// processing all the commands prior to this Signal().
-	m_CommandQueue->Signal(m_Fence, m_CurrentFence);
+	hr = m_CommandQueue->Signal(m_Fence, m_CurrentFence);
+	if (!CHECK_HRESULT(hr, "m_CommandQueue->Signal")) {
+		return false;
+	};
 
 	// Wait until the GPU has completed commands up to this fence point.
 	if (m_Fence->GetCompletedValue() < m_CurrentFence)
@@ -368,12 +372,16 @@ void GCRender::FlushCommandQueue()
 		HANDLE eventHandle = CreateEventEx(nullptr, NULL, false, EVENT_ALL_ACCESS);
 
 		// Fire event when GPU hits current fence.  
-		m_Fence->SetEventOnCompletion(m_CurrentFence, eventHandle);
+		hr = m_Fence->SetEventOnCompletion(m_CurrentFence, eventHandle);
+		if (!CHECK_HRESULT(hr, "Fence->SetEventOnCompletion")) {
+			return false;
+		};
 
 		// Wait until the GPU hits current fence event is fired.
 		WaitForSingleObject(eventHandle, INFINITE);
 		CloseHandle(eventHandle);
 	}
+	return true;
 }
 
 //Always needs to be called right before drawing!!!
@@ -421,8 +429,8 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 {
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
-
-	COMPARE_SHADER_MESH_FLAGS(pMaterial, pMesh);
+	if (!COMPARE_SHADER_MESH_FLAGS(pMaterial, pMesh)) 
+		return false;
 
 	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
 	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
@@ -433,26 +441,22 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
-
-
-	//
+	// Update texture if material has texture
 	pMaterial->UpdateTexture();
-	// Object
-	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB0, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
 
+	// Update cb0, cb of object
+	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB0, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
 	// Set cb object buffer on used
 	pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->m_isUsed = true;
 	pMaterial->IncrementCBCount();
 
-	// Camera
+	// cb1, Camera
 	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB1, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
-	// Material Properties
+	// cb2, Material Properties
 	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB2, pMaterial->GetCbMaterialPropertiesInstance()->Resource()->GetGPUVirtualAddress());
-	// Light Properties
+	// cb3, Light Properties
 	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB3, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
 
-	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
-	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
@@ -478,7 +482,6 @@ bool GCRender::PostDraw()
 
 	// Present the swap chain
 	hr = m_SwapChain->Present(0, 0);
-
 	if (!CHECK_HRESULT(hr, "Failed to present swap chain"))
 		return false;
 
@@ -487,9 +490,9 @@ bool GCRender::PostDraw()
 	m_CurrBackBuffer = (m_CurrBackBuffer + 1) % SwapChainBufferCount;
 
 	// Flush the command queue
-	FlushCommandQueue();
+	bool success = FlushCommandQueue();
 
-	return true;
+	return success;
 }
 
 void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)

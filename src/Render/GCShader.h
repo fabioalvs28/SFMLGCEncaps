@@ -19,7 +19,7 @@ public:
 	ID3D12RootSignature* GetRootSign();
 	ID3D12PipelineState* GetPso();
 
-	void Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK);
+	bool Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK);
 	void Render();
 
 	int GetFlagEnabledBits() const { return m_flagEnabledBits; }
@@ -31,7 +31,7 @@ public:
 	ID3DBlob* LoadShaderFromFile(const std::wstring& filename);
 	void PreCompile(const std::string& filePath, const std::string& csoDestinationPath);
 
-	void Load();
+	bool Load();
 
 	GCRender* m_pRender;
 protected:

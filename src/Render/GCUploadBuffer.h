@@ -61,10 +61,6 @@ public:
             IID_PPV_ARGS(&m_pUpload));
 
         m_pUpload->Map(0, nullptr, reinterpret_cast<void**>(&m_data));
-
-        GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-        std::string logMessage = "Allocated upload buffer size: " + std::to_string(m_elementByteSize * elementCount) + " bytes";
-        profiler.LogInfo(logMessage);
     }
 
     void CopyData(int elementIndex, const GCSHADERCB& data) override {

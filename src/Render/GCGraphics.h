@@ -15,11 +15,11 @@ public:
 	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
 
 	// Each Frame
-	void StartFrame();
-	void EndFrame();
+	bool StartFrame();
+	bool EndFrame();
 
-	void InitializeGraphicsResourcesStart();
-	void InitializeGraphicsResourcesEnd();
+	bool InitializeGraphicsResourcesStart();
+	bool InitializeGraphicsResourcesEnd();
 
 	// Shader
 	ResourceCreationResult<GCShader*> CreateShaderColor();
@@ -43,17 +43,17 @@ public:
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 
 	// Update ViewProj, use for Camera
-	void UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	bool UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 	// Update world cb buffer with GCWORLDCB Struct
-	void UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
+	bool UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
 	// Update world with custom struct
 	template<typename ShaderTypeConstantBuffer>
-	void UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
+	bool UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
 
 	bool UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData);
 	bool UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4 ambientLightColor, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, float shininess);
 
-	void UpdateLights(GCLIGHTSPROPERTIES objectData);
+	bool UpdateLights(GCLIGHTSPROPERTIES objectData);
 
 	// Remove Resources
 	bool RemoveShader(GCShader* pShader);
@@ -101,8 +101,9 @@ private:
 
 // Update per object constant buffer by custom struct derived from gcshadercb
 template<typename ShaderTypeConstantBuffer>
-void GCGraphics::UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData)
+bool GCGraphics::UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData)
 {
+
 	// Don't create UploadBuffer if the number of object draw in the same material don't increase
 	if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
 		pMaterial->AddCbPerObject<ShaderTypeConstantBuffer>();

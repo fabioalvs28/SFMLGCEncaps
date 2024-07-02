@@ -12,6 +12,7 @@ GCShader::GCShader()
 	ZeroMemory(&psoDesc, sizeof(psoDesc));
 	m_pRender = nullptr;
 	m_flagEnabledBits = 0;
+	m_cullMode = D3D12_CULL_MODE_NONE;
 }
 
 
@@ -31,22 +32,24 @@ void GCShader::Render()
 	m_pRender->GetCommandList()->SetGraphicsRootSignature(GetRootSign());
 }
 
-void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
+bool GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
-	
-	CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully");
-
-	// #TODO Check the other path
+	if (!CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
+		return false;
+	if (!CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully"))
+		return false;
 
 	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());
 	m_vsCsoPath = baseCsoPath + L"VS.cso";
 	m_psCsoPath = baseCsoPath + L"PS.cso";
 
 	m_cullMode = cullMode;
-
 	m_pRender = pRender;
 	m_flagEnabledBits = flagEnabledBits;
+
 	PreCompile(filePath, csoDestinationPath);
+
+	return true;
 }
  
 void GCShader::CompileShader()
@@ -76,9 +79,6 @@ void GCShader::CompileShader()
 		m_InputLayout.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT3); // Taille des coordonnées de texture
 	}
-
-
-	// #TODO Need To Interpret HLSL Data to Adapt Root Signature and Input Layout 
 }
 
 
@@ -296,8 +296,13 @@ void GCShader::PreCompile(const std::string& filePath, const std::string& csoDes
 	SaveShaderToFile(psByteCode, wideCsoDestinationPath + L"PS.cso");
 }
 
-void GCShader::Load() {
+bool GCShader::Load() {
 	CompileShader();
 	RootSign();
 	Pso();
+
+	if (!CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_PSO, m_vsByteCode, m_psByteCode))
+		return false;
+
+	return true;
 }
