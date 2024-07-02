@@ -37,9 +37,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
     // Création des géométries
-    auto geoCubeOuter = graphics->CreateGeometryPrimitiveCustom("cubeSkybox", XMFLOAT4(Colors::Red), flagsLightColor);
-    auto geoCubeInner = graphics->CreateGeometryPrimitiveCustom("plane", XMFLOAT4(Colors::Green), flagsLightColor);
-    auto geoSphere = graphics->CreateGeometryPrimitiveCustom("sphere", XMFLOAT4(Colors::Yellow), flagsLightTexture);
+    auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
+    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
+    auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
 
     // Chargement des shaders personnalisés
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
@@ -55,9 +55,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->InitializeGraphicsResourcesStart();
 
     // Création des meshes
-    auto meshCubeOuter = graphics->CreateMesh(geoCubeOuter.resource);
-    auto meshCubeInner = graphics->CreateMesh(geoCubeInner.resource);
-    auto meshSphere = graphics->CreateMesh(geoSphere.resource);
+    auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
+    auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
+    auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
