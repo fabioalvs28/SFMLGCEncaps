@@ -8,7 +8,7 @@ struct GCQUATERNION
 {
 	float x, y, z, w;
 
-	GCQUATERNION() = default;
+	GCQUATERNION();
 	GCQUATERNION(float x, float y, float z, float w);
 	~GCQUATERNION() = default;
 
@@ -23,6 +23,8 @@ struct GCQUATERNION
 	void SLerp(const GCQUATERNION& other, float t);
 	void FromEuler(float yaw, float pitch, float roll);
 	void FromAxisAngle(const GCVEC3& axis, float angle);
+	
 	GCMATRIX ToMatrix();
+	GCVEC3 ToEuler() const; 
 
 };

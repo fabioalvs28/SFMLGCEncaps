@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-#include "EventSystem.h"
 #include "../core/framework.h"
 
 /// ControllerKeys
@@ -87,7 +86,7 @@ typedef struct WinTest
 
 
 
-class GCMouseInput
+class GCMouseInput 
 {
 
     friend class GCInputManager;
@@ -138,6 +137,7 @@ private:
 
     GCVector<int> m_updatedControllerKeys;
 
+
 };
 
 
@@ -145,27 +145,25 @@ class GCInputManager
 {
 
     friend class GCGameManager;
-    GCEventManager* m_eventManager = nullptr;
+
 public:
+
     GCInputManager();
-    GCInputManager(GCEventManager& eventManager);
     ~GCInputManager() {};
 
     void GetConnectedController();
 
     void UpdateInputs();
 
-    void OnEvent(GCEvent& ev);
-
-    bool IsKeyPressed();
+    //bool IsKeyPressed();
     bool IsKeyPressed(int keyID);
 
-    bool IsControllerPressed(int controllerID); 
+    //bool IsControllerPressed(int controllerID); 
     bool IsControllerKeyPressed(int controllerID, int button);
 
-    GCVector<int>* GetControllereUpdatekeys(int controllerID);
+    //GCVector<int>* GetControllereUpdatekeys(int controllerID);
 
-    GCVector<int>* GetUpdatedKeys() { return &m_updatedKeys; }
+    //GCVector<int>* GetUpdatedKeys() { return &m_updatedKeys; }
 
     void AddToUpdateList(int index, BYTE state);
 
@@ -200,7 +198,9 @@ public:
 
 
 private:
+
     GCVEC2 m_mousePos;
+    WinTest* m_pWindow; // Remplacer avec window finale
 
     GCVector<GCControllerInput*> m_controllerList;
     GCVector<int> m_updatedKeys;
