@@ -107,6 +107,7 @@ public:
     void Destroy() override {}
 
     inline GCVEC2 GetSize() { return m_size; }
+    inline void SetSize( GCVEC2 size ) { m_size = size; }
 
 };
 
@@ -130,6 +131,7 @@ public:
     void Destroy() override {}
 
     inline float GetRadius() { return m_radius; }
+    inline void SetRadius( float radius ) { m_radius = radius; }
 
 };
 
