@@ -26,16 +26,28 @@ public:
 	void PushEvent(GCEvent* ev);
 
 	/// <summary>
-	/// Registers a new event listener for a specific event type.
+	/// Registers a callback to event manager
 	/// </summary>
-	/// <param name="type">The type of event to listen for</param>
-	/// <param name="listener">The callback function to be called when the event occurs</param>
-	/// <returns>A unique ListenerID that can be used to reference and manage the listener</returns>
+	/// <param name="type">The type of event</param>
+	/// <param name="callback">The callback function to be called when the event occurs</param>
 	template<typename T>
 	void Subscribe(GCEventType eventType, T* instance, const GCEventCallback& callback)
 	{
 		const GCEventCallback& func = callback;
-        m_eventListeners[eventType].push_back([=](GCEvent& ev) { func(ev); });
+		m_eventCallback[eventType].push_back([=](GCEvent& ev) { func(ev); });
+	}
+
+	/// <summary>
+	/// Subscribe a function without any event type 
+	/// but the function should have a GCEvent as parameter 
+	/// </summary>
+	/// <param name="instance">the pointer to class itself</param>
+	/// <param name="memberFunction">function to be bind</param>
+	template<typename T>
+	void Subscribe(T* instance, void(T::*memberFunction)(GCEvent&))
+	{
+		auto func = std::bind(memberFunction, instance, std::placeholders::_1);
+		m_systemCallback.push_back(func);
 	}
 
 	/// <summary>
@@ -47,21 +59,14 @@ public:
 
 private:
 	/// <summary>
-	/// Dispatches the event to all registered listeners for the event's type.
-	/// The method is called internally to process events and call the appropriate listeners.
+	/// Dispatches the event to all registered callback for the event's type.
+	/// The method is called internally to process events and call the appropriate callback.
 	/// </summary>
 	/// <param name="e">Reference to the GCEvent object to be dispatched</param>
 	void OnEvent(GCEvent& e);
 
 private:
-	std::map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventListeners;
+	std::map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventCallback;
+	std::vector<std::function<void(GCEvent&)>> m_systemCallback;
     GCQueue<GCEvent*> m_eventQueue;
-};
-
-class GCIEventListener {
-public:
-	/// <summary>
-	/// Create a virtual
-	/// </summary>
-	virtual void OnEvent(GCEvent& ev) = 0;
 };

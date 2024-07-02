@@ -21,7 +21,8 @@ GCInputManager::GCInputManager()
 GCInputManager::GCInputManager(GCEventManager& eventManager)
     : m_eventManager(&eventManager)
 {
-    m_eventManager->Subscribe<GCInputManager>(GCEventType::KeyInput, this, GC_BIND_EVENT_FN(GCInputManager::OnEvent));
+    //m_eventManager->Subscribe<GCInputManager>(GCEventType::KeyInput, this, GC_BIND_EVENT_FN(GCInputManager::OnEvent));
+    m_eventManager->Subscribe(this, &GCInputManager::OnEvent);
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
         m_controllerList.PushBack( nullptr );
@@ -129,7 +130,7 @@ void GCInputManager::OnEvent(GCEvent& ev)
 
 void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
-    if (state == GCKeyState::PUSH || state == GCKeyState::DOWN)
+    if (state == GCKeyState::DOWN)
     {
         m_eventManager->PushEvent(new GCKeyPressedEvent(index));
     }

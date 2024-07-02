@@ -5,7 +5,7 @@ GCEventManager::GCEventManager()
 {
     for (int i = 0; i < (int)GCEventType::Count; i++)
     {
-        m_eventListeners[(GCEventType)i] = std::vector<std::function<void(GCEvent&)>>();
+        m_eventCallback[(GCEventType)i] = std::vector<std::function<void(GCEvent&)>>();
     }
 }
 
@@ -32,10 +32,16 @@ void GCEventManager::Unsubscribe(GCEventType type)
 
 void GCEventManager::OnEvent(GCEvent& e)
 {
-    auto listeners = m_eventListeners[e.GetEventType()];
+    auto listeners = m_eventCallback[e.GetEventType()];
     for (auto& listener : listeners)
     {
         listener(e);
+    }
+
+    //TODO: Refactor later, it needs to be handle seperately
+    for (auto& callback : m_systemCallback)
+    {
+        callback(e);
     }
 
 }

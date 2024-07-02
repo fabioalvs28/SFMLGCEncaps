@@ -141,7 +141,7 @@ private:
 };
 
 
-class GCInputManager : public GCIEventListener
+class GCInputManager
 {
 
     friend class GCGameManager;
@@ -155,7 +155,7 @@ public:
 
     void UpdateInputs();
 
-    void OnEvent(GCEvent& ev) override;
+    void OnEvent(GCEvent& ev);
 
     bool IsKeyPressed();
     bool IsKeyPressed(int keyID);
