@@ -23,12 +23,13 @@ bool GCMaterial::Initialize(GCShader* pShader)
     m_pRender = m_pShader->m_pRender;
 
     m_pCbMaterialPropertiesInstance = new GCShaderUploadBuffer<GCMATERIALPROPERTIES>(m_pRender->Getmd3dDevice(), 1, true);
+
     GCMATERIALPROPERTIES materialProperties;
     materialProperties.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
     materialProperties.ambient = DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
     materialProperties.diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
     materialProperties.specular = DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-    materialProperties.shininess = 1.0f;                                    
+    materialProperties.shininess = 5.0f;                                    
 
     UpdateConstantBuffer(materialProperties, m_pCbMaterialPropertiesInstance);
 

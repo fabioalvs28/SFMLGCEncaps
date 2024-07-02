@@ -50,6 +50,11 @@ public:
 	template<typename ShaderTypeConstantBuffer>
 	void UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
 
+	bool UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData);
+	bool UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4 ambientLightColor, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, float shininess);
+
+	void UpdateLights(GCLIGHTSPROPERTIES objectData);
+
 	// Remove Resources
 	bool RemoveShader(GCShader* pShader);
 	bool RemoveMaterial(GCMaterial* pMaterial);

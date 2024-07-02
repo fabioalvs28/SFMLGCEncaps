@@ -35,7 +35,7 @@ struct GCLIGHT
     float padding3[2];    
 };
 
-struct GCLIGHTPROPERTIES : GCSHADERCB
+struct GCLIGHTSPROPERTIES : GCSHADERCB
 {
     GCLIGHT lights[10]; 
 };

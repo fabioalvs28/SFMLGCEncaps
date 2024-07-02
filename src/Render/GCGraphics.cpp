@@ -71,10 +71,10 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->Getmd3dDevice(), 1, true);
     m_pCbCameraInstances.push_back(pCbInstance);
 
-    pCbInstance = new GCShaderUploadBuffer<GCLIGHTPROPERTIES>(m_pRender->Getmd3dDevice(), 1, true);
+    pCbInstance = new GCShaderUploadBuffer<GCLIGHTSPROPERTIES>(m_pRender->Getmd3dDevice(), 1, true);
     m_pCbLightPropertiesInstance = pCbInstance;
 
-    GCLIGHTPROPERTIES lightData = {};
+    GCLIGHTSPROPERTIES lightData = {};
 
     //GCLIGHT directionalLight;
     //directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Pas de position pour une lumière directionnelle
@@ -100,21 +100,30 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     //light2.lightIntensity = 1.2f;
     //light2.lightType = 1;
 
-    // Lumière ponctuelle 2
-    GCLIGHT light2;
-    light2.position = DirectX::XMFLOAT3(0.0f, 3.0f, 0.0f); // Position en 2D (x, y, 0)
-    light2.direction = DirectX::XMFLOAT3(0.0f, -0.5f, 0.0f); // Direction vers le bas en 2D
-    light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
-    light2.spotAngle = 3.0f; // Angle du spot si applicable
-    light2.lightIntensity = 1.2f;
-    light2.lightType = 1; // Type de lumière ponctuelle
+    //// Lumière ponctuelle 2
+    ////GCLIGHT light2;
+    ////light2.position = DirectX::XMFLOAT3(-5.0f, 0.0f, 0.0f); // Position en 2D (x, y, 0)
+    ////light2.direction = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f); // Direction vers le bas en 2D
+    ////light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+    ////light2.spotAngle = 10.0f; // Angle du spot si applicable
+    ////light2.lightIntensity = 5.2f;
+    ////light2.lightType = 1; // Type de lumière ponctuelle
+
+    ////GCLIGHT pointLight;
+    ////pointLight.position = DirectX::XMFLOAT3(6.0f, 1.0f, 0.0f); // Position en 2D (x, y, 0)
+    ////pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Direction vers le bas en 2D
+    ////pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+    ////pointLight.spotAngle = 0.0f; // Angle du spot si applicable
+    ////pointLight.lightIntensity = 2.4f;
+    ////pointLight.lightType = 2; // Type de lumière ponctuelle
 
 
     //lightData.lights[0] = directionalLight;
-    lightData.lights[1] = light2;
+    //lightData.lights[1] = light2;
     //lightData.lights[2] = light1;
+    ////lightData.lights[0] = pointLight;
 
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    //GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 
     UpdateConstantBuffer(lightData, m_pCbLightPropertiesInstance);
 
@@ -626,4 +635,29 @@ DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT
     DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(translationMatrix));
 
     return worldMatrix;
+}
+
+
+bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData)
+{
+    UpdateConstantBuffer(objectData, pMaterial->GetCbMaterialPropertiesInstance());
+    return true;
+}
+
+bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4 ambientLightColor, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, float shininess)
+{
+    GCMATERIALPROPERTIES materialData;
+    materialData.ambientLightColor = ambientLightColor;
+    materialData.ambient = ambient;
+    materialData.diffuse = diffuse;
+    materialData.specular = specular;
+    materialData.shininess = shininess;
+
+    UpdateConstantBuffer(materialData, pMaterial->GetCbMaterialPropertiesInstance());
+    return true;
+}
+
+
+void GCGraphics::UpdateLights(GCLIGHTSPROPERTIES objectData) {
+    UpdateConstantBuffer(objectData, m_pCbLightPropertiesInstance);
 }
