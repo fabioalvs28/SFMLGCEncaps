@@ -16,5 +16,9 @@ typedef unsigned __int64       UI64;
 
 #define BYTE                   UI8
 
+#define DELPTRS(ptr) do { \
+    delete[] ptr;        \
+    ptr = nullptr;       \
+} while (0)
 
 #endif // !GCUtilites.h

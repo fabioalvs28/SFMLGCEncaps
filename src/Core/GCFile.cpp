@@ -4,10 +4,9 @@
 #include <iostream>
 #include <fstream>
 
-GCFile::GCFile(const std::string& filename, const char* mode)
+GCFile::GCFile(const std::string& filename)
 {
 	file = nullptr;
-
 	if (fopen_s(&file, filename.c_str(), mode) != 0) {
 		file = nullptr;
 	}
@@ -73,6 +72,15 @@ bool GCFile::Write(const std::vector<uint8_t>& buffer)
 	size_t bytesWritten = fwrite(buffer.data(), 1, buffer.size(), file);
 	return bytesWritten == buffer.size();
 
+}
+
+bool GCFile::Write(const BYTE* buffer, size_t size)
+{
+	if (!file)
+		return false;
+
+	size_t bytesWritten = fwrite(buffer, 1, size, file);
+	return bytesWritten == size;
 }
 
 bool GCFile::WriteByte(uint8_t byte)

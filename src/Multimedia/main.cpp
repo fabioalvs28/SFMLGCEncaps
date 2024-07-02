@@ -1,5 +1,6 @@
-#include "Core/pch.h"
+#include "pch.h"
 #include "GCImage.h"
+#include "GCFile.h"
 #include <cstdint>
 #include <iostream>
 
@@ -7,6 +8,7 @@ int main()
 {
     GCImage img;
     GCImage img2;
+
     img.CreateEmptyImage(1600, 1200, 32);
     img.Fill(255, 10, 75, 255);
     for (int i = 0; i < 600; i++)
@@ -30,69 +32,29 @@ int main()
 
         img.DrawCircle(1300, 300, i / 2, 255, 0, 255, 255);
     }
-    if (img.SaveBMP("images/test.bmp"))
-    {
-        std::cout << "IMG Success" << std::endl;
-    }
+    img.SaveBMP("images/test.bmp");
     img.InverseBMP("images/test.bmp");
     img.SaveBMP("images/copy.bmp");
 
     img.LoadBMP("images/copy.bmp");
-    if (img.Premultiply())
-    {
-        std::cout << "Premultiplied image successfully" << std::endl;
+    img.Premultiply();
+    img.SaveBMP("images/premultiplied.bmp");
+    img.LoadBMP("images/test.bmp");
 
-        if (img.SaveBMP("images/premultiplied.bmp"))
-        {
-            std::cout << "Saved as premultiplied.bmp" << std::endl;
-        }
-        else
-        {
-            std::cerr << "Failed to save the premultiplied image." << std::endl;
-        }
-    }
-    else
-    {
-        std::cerr << "Failed to create the premultiplied image." << std::endl;
-    }
+    img2.LoadBMP("images/copy.bmp");
+    img.BlendSTD(img2, 255);
+    img.SaveBMP("images/blended_std.bmp");
+    img.LoadBMP("images/test.bmp");
 
+    img.BlendPRE(img, 255);
+    img.SaveBMP("images/blended_pre.bmp");
 
+    img.Load(&img2);
+    img.SaveBMP("images/loaded.bmp");
 
+    GCFile file2("images/test.png");
+    img.SavePNG(&file2);
+    file2.Close();
 
-    if (img.LoadBMP("images/test.bmp") && img2.LoadBMP("images/copy.bmp"))
-    {
-        if (img.BlendSTD(img2, 255)) {
-            if (img.SaveBMP("images/blended_std.bmp")) {
-                std::cout << "Blended (STD) image successfully saved as blended_std.bmp" << std::endl;
-            }
-            else {
-                std::cerr << "Failed to save the blended (STD) image." << std::endl;
-            }
-        }
-        else {
-            std::cerr << "Blend (STD) operation failed." << std::endl;
-        }
-
-        if (img.LoadBMP("images/test.bmp") && img2.LoadBMP("images/copy.bmp")) {
-            if (img.BlendPRE(img, 255)) {
-                if (img.SaveBMP("images/blended_pre.bmp")) {
-                    std::cout << "Blended (PRE) image successfully saved as blended_pre.bmp" << std::endl;
-                }
-                else {
-                    std::cerr << "Failed to save the blended (PRE) image." << std::endl;
-                }
-            }
-            else {
-                std::cerr << "Blend (PRE) operation failed." << std::endl;
-            }
-        }
-        else {
-            std::cerr << "Failed to reload one or both images for PRE blend." << std::endl;
-        }
-    }
-    else {
-        std::cerr << "Failed to load one or both images." << std::endl;
-
-    }
     return 0;
 }

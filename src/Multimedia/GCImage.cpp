@@ -1,16 +1,58 @@
-#include "Core/pch.h"
+#include "pch.h"
 #include "GCImage.h"
 #include "BMPHeader.h"
-#include "Core/GCFile.h"
+#include "GCFile.h"
+#include "lib_lodepng.h"
+
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <cstdint>
 #include <cstring>
 
+
+GCImage::GCImage(const GCImage& img)
+{
+	rgba = img.rgba;
+	m_width = img.m_width;
+	height = img.height;
+	bitCount = img.bitCount;
+	channels = img.channels;
+	rowPadded = img.rowPadded;
+	size = img.size;
+	data = img.data;
+}
+
+GCImage::~GCImage()
+{
+	Close();
+}
+
+GCImage& GCImage::operator=(const GCImage& img)
+{
+	if (this != &img) {
+		m_width = img.m_width;
+		height = img.height;
+		bitCount = img.bitCount;
+		channels = img.channels;
+		data = img.data;
+	}
+	return *this;
+}
+
+bool GCImage::Load(GCImage* img)
+{
+	m_width = img->m_width;
+	height = img->height;
+	bitCount = img->bitCount;
+	channels = img->channels;
+	data = img->data;
+	return true;
+}
+
 bool GCImage::LoadBMP(const std::string& filename)
 {
-	GCFile file(filename, "rb");
+	GCFile file(filename);
 	if (!file.IsOpen()) {
 		std::cerr << "Error opening file: " << filename << std::endl;
 		return false;
@@ -24,18 +66,18 @@ bool GCImage::LoadBMP(const std::string& filename)
 	}
 	std::memcpy(&header, headerBuffer.data(), sizeof(header));
 
-	width = header.biWidth;
+	m_width = header.biWidth;
 	height = header.biHeight;
 	bitCount = header.biBitCount;
 	channels = bitCount / 8;
-	data.resize(width * height * channels);
+	data.resize(m_width * height * channels);
 
 	if (fseek(file.file, header.bfOffBits, SEEK_SET) != 0) {
 		std::cerr << "Error seeking to pixel data in file: " << filename << std::endl;
 		return false;
 	}
 
-	uint32_t padding = rowStride() - width * channels;
+	uint32_t padding = rowStride() - m_width * channels;
 	std::vector<uint8_t> rowData(rowStride());
 
 	for (int y = 0; y < height; ++y) {
@@ -43,15 +85,56 @@ bool GCImage::LoadBMP(const std::string& filename)
 			std::cerr << "Error reading pixel data from file: " << filename << std::endl;
 			return false;
 		}
-		std::memcpy(&data[(height - 1 - y) * width * channels], rowData.data(), width * channels);
+		std::memcpy(&data[(height - 1 - y) * m_width * channels], rowData.data(), m_width * channels);
 	}
 
 	return true;
 }
 
+bool GCImage::LoadPNG(BYTE* buffer, int size)
+{
+	if (buffer == nullptr || size <= 0)
+		return false;
+
+	Close();
+	
+	lodepng::State state;
+	UI32 pngWidth, pngHeight;
+	if (lodepng_inspect(&pngWidth, &pngHeight, &state, buffer, size))
+		return false;
+	switch (state.info_png.color.colortype)
+	{
+	case LCT_RGBA:
+	case LCT_GREY_ALPHA:
+	case LCT_PALETTE:
+		bitCount = 32;
+		break;
+	case LCT_RGB:
+	case LCT_GREY:
+		bitCount = 24;
+		break;
+	default:
+		return false;
+		break;
+	}
+
+	UI32 error = lodepng_decode32(&rgba, (UI32*)&m_width, (UI32*)&height, buffer, size);
+	if (error)
+	{
+		Close();
+		return false;
+	}
+
+	rowPadded = m_width * 4;
+	size = rowPadded * height;
+	bitCount = m_width * height;
+	return true;
+
+}
+
 bool GCImage::SaveBMP(const std::string& filename)
 {
-	GCFile file(filename, "wb");
+	GCFile file(filename);
 	if (!file.IsOpen()) {
 		std::cerr << "Error opening file: " << filename << std::endl;
 		return false;
@@ -65,7 +148,7 @@ bool GCImage::SaveBMP(const std::string& filename)
 	fileHeader.bfReserved2 = 0;
 	fileHeader.bfOffBits = sizeof(BMPHeader);
 	fileHeader.biSize = 40;
-	fileHeader.biWidth = width;
+	fileHeader.biWidth = m_width;
 	fileHeader.biHeight = height;
 	fileHeader.biPlanes = 1;
 	fileHeader.biBitCount = bitCount;
@@ -83,9 +166,9 @@ bool GCImage::SaveBMP(const std::string& filename)
 	}
 
 	int channels = bitCount / 8;
-	uint32_t padding = rowStride() - width * channels;
+	uint32_t padding = rowStride() - m_width * channels;
 	for (int y = 0; y < height; ++y) {
-		if (!file.Write(std::vector<uint8_t>(data.begin() + y * width * channels, data.begin() + (y + 1) * width * channels))) {
+		if (!file.Write(std::vector<uint8_t>(data.begin() + y * m_width * channels, data.begin() + (y + 1) * m_width * channels))) {
 			std::cerr << "Error writing pixel data to file: " << filename << std::endl;
 			return false;
 		}
@@ -102,21 +185,53 @@ bool GCImage::SaveBMP(const std::string& filename)
 	return true;
 }
 
+void GCImage::Close()
+{
+	data.clear();
+	m_width = 0;
+	height = 0;
+	bitCount = 0;
+	channels = 0;
+	rowPadded = 0;
+
+}
+
 void GCImage::CreateEmptyImage(int w, int h, int bpp)
 {
-	width = w;
+	m_width = w;
 	height = h;
 	bitCount = bpp;
 	channels = bitCount / 8;
-	data.resize(width * height * channels, 0);
+	data.resize(m_width * height * channels, 0);
 }
 
 void GCImage::SetPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	if (x < 0 || x >= width || y < 0 || y >= height) return;
-	int index = (x + y * width) * channels;
+	if (x < 0 || x >= m_width || y < 0 || y >= height) return;
+	int index = (x + y * m_width) * channels;
 	data[index] = r;
 	data[index + 1] = g;
 	data[index + 2] = b;
+
+}
+
+
+bool GCImage::SavePNG(GCFile* file, int* pOutSize, bool gray)
+{
+	if (file == nullptr || rgba == nullptr)
+		return false;
+
+	BYTE* png = nullptr;
+	size_t size = 0;
+	UI32 error = lodepng_encodeEx(&png, &size, rgba, m_width, height, bitCount, gray);
+	if (error)
+		return false;
+
+	file->Write(png, (int)size);
+	DELPTRS(png);
+
+	if (pOutSize)
+		*pOutSize = (int)size;
+	return true;
 
 }
 
@@ -264,7 +379,7 @@ void GCImage::FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t
 
 void GCImage::Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	for (int y = 0; y < height; ++y) {
-		for (int x = 0; x < width; ++x) {
+		for (int x = 0; x < m_width; ++x) {
 			SetPixel(x, y, r, g, b, a);
 		}
 	}
@@ -274,8 +389,8 @@ void GCImage::InverseBMP(const std::string& filename)
 {
 	LoadBMP(filename);
 	for (int y = 0; y < height; ++y) {
-		for (int x = 0; x < width; ++x) {
-			int index = (x + y * width) * channels;
+		for (int x = 0; x < m_width; ++x) {
+			int index = (x + y * m_width) * channels;
 			data[index] = data[index];
 			data[index + 1] = data[index + 1];
 			data[index + 2] = data[index + 2];
@@ -299,8 +414,8 @@ bool GCImage::Premultiply()
 	}
 
 	for (int y = 0; y < height; ++y) {
-		for (int x = 0; x < width; ++x) {
-			int index = (x + y * width) * channels;
+		for (int x = 0; x < m_width; ++x) {
+			int index = (x + y * m_width) * channels;
 
 			uint8_t r = data[index];
 			uint8_t g = data[index + 1];
@@ -331,16 +446,16 @@ bool GCImage::BlendSTD(const GCImage& overlay, float alpha)
 	}
 
 	for (int y = 0; y < overlay.height; ++y) {
-		for (int x = 0; x < overlay.width; ++x) {
+		for (int x = 0; x < overlay.m_width; ++x) {
 			int targetX = x;
 			int targetY = y;
 
-			if (targetX < 0 || targetX >= width || targetY < 0 || targetY >= height) {
+			if (targetX < 0 || targetX >= m_width || targetY < 0 || targetY >= height) {
 				continue;
 			}
 
-			int overlayIndex = (x + y * overlay.width) * channels;
-			int baseIndex = (targetX + targetY * width) * channels;
+			int overlayIndex = (x + y * overlay.m_width) * channels;
+			int baseIndex = (targetX + targetY * m_width) * channels;
 
 			float sourceR = overlay.data[overlayIndex] / 255.0f;
 			float sourceG = overlay.data[overlayIndex + 1] / 255.0f;
@@ -379,16 +494,16 @@ bool GCImage::BlendPRE(const GCImage& overlay, float alpha)
 	}
 
 	for (int y = 0; y < overlay.height; ++y) {
-		for (int x = 0; x < overlay.width; ++x) {
+		for (int x = 0; x < overlay.m_width; ++x) {
 			int targetX = x;
 			int targetY = y;
 
-			if (targetX < 0 || targetX >= width || targetY < 0 || targetY >= height) {
+			if (targetX < 0 || targetX >= m_width || targetY < 0 || targetY >= height) {
 				continue;
 			}
 
-			int overlayIndex = (x + y * overlay.width) * channels;
-			int baseIndex = (targetX + targetY * width) * channels;
+			int overlayIndex = (x + y * overlay.m_width) * channels;
+			int baseIndex = (targetX + targetY * m_width) * channels;
 
 			float sourceR = overlay.data[overlayIndex] / 255.0f;
 			float sourceG = overlay.data[overlayIndex + 1] / 255.0f;
