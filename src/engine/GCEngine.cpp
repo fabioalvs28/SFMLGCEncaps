@@ -24,7 +24,7 @@ void GCEngine::Shutdown()
 void GCEngine::Run()
 {
     GCEventManager eventmanager = GCEventManager();
-    GCInputManager inputmanger(eventmanager);
+    GCInputManager inputmanger(&eventmanager);
 
     if (!InitWindow())
     {

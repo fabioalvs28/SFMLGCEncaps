@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include "../core/framework.h"
+#include "EventSystem.h"
 
 /// ControllerKeys
 #define GC_CONTROLLER_A                        0x5800
@@ -65,7 +66,7 @@
 #define GC_LALT 0xA4
 #define GC_RALT 0xA5
 
-
+class GCEventManager;
 
 enum GCKeyState
 {
@@ -90,7 +91,7 @@ class GCMouseInput
 {
 
     friend class GCInputManager;
-
+    
 private:
 
     GCMouseInput();
@@ -145,10 +146,11 @@ class GCInputManager
 {
 
     friend class GCGameManager;
-
+    GCEventManager* m_eventManager = nullptr;
 public:
 
     GCInputManager();
+    GCInputManager(GCEventManager*);
     ~GCInputManager() {};
 
     void GetConnectedController();
@@ -167,7 +169,7 @@ public:
 
     void AddToUpdateList(int index, BYTE state);
 
-
+    void OnEvent(GCEvent& ev);
 
     BYTE GetKeyState(int keyID) { return m_keyState[keyID];}
 

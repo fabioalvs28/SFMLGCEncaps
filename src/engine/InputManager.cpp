@@ -28,6 +28,21 @@ GCInputManager::GCInputManager()
     
 }
 
+GCInputManager::GCInputManager(GCEventManager* eventManager) :
+    m_eventManager(eventManager)
+{
+    m_eventManager->Subscribe(this, &GCInputManager::OnEvent);
+    for (int i = 0; i < XUSER_MAX_COUNT; i++)
+    {
+        m_controllerList.PushBack(nullptr);
+    }
+
+    for (int i = 0; i < 255; i++)
+    {
+        m_keyState.PushBack(NONE);
+    }
+}
+
 ////////////////////////////////////////////////////
 /// @brief Function to get connected controllers.
 ////////////////////////////////////////////////////
@@ -107,7 +122,33 @@ void GCInputManager::UpdateInputs()
 
 void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
+    if (state == GCKeyState::DOWN)
+    {
+        m_eventManager->PushEvent(new GCKeyPressedEvent(index));
+    }
+    else if (state == GCKeyState::UP)
+    {
+        m_eventManager->PushEvent(new GCKeyReleased(index));
+    }
+
     m_keyState[index] = state;
+}
+
+void GCInputManager::OnEvent(GCEvent& ev)
+{
+    GCEventDispatcher dispatcher(ev);
+
+    dispatcher.Dispatch<GCKeyPressedEvent>([](GCKeyPressedEvent& ev)
+        {
+            std::cout << "Key: " << ev.GetKeyID() << " is pressed" << std::endl;
+            return true;
+        });
+
+    dispatcher.Dispatch<GCKeyReleased>([](GCKeyReleased& ev)
+        {
+            std::cout << "Key: " << ev.GetKeyID() << " is released" << std::endl;
+            return true;
+        });
 }
 
 //bool GCInputManager::IsKeyPressed()
