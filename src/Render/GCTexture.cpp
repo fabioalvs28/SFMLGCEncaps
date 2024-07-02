@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "DDSTextureLoader.cpp"
 
 GCTexture::GCTexture()
 {
@@ -33,7 +34,6 @@ bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics, s
     {
         return false;
     }
-
     //Heap
     CD3DX12_CPU_DESCRIPTOR_HANDLE handleDescriptor(pGraphics->GetRender()->GetCbvSrvUavSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
     handleDescriptor.Offset(textureOffset, m_cbvSrvUavDescriptorSize);
@@ -55,3 +55,9 @@ bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics, s
     m_textureAddress.Offset(textureOffset, m_cbvSrvUavDescriptorSize);
     return true;
 }
+
+
+
+
+
+

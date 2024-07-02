@@ -6,6 +6,14 @@ public:
 	~GCMaterial();
 
 	bool Initialize(GCShader* pShader);
+	/**
+	*  Applies a texture to the material
+	 * @brief
+	 *
+	 *
+	 * @param Texture
+	 * @return True if the texture was set successfullyfalse otherwise.
+	 */
 	bool SetTexture(GCTexture* pTexture);
 
 	GCTexture* GetTexture() const { return m_pTexture; }

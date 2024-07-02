@@ -213,7 +213,7 @@ void GCRender::CreateCbvSrvUavDescriptorHeaps()
 void GCRender::CreateRtvAndDsvDescriptorHeaps()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
-	rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
+	rtvHeapDesc.NumDescriptors = SwapChainBufferCount + 1;
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	rtvHeapDesc.NodeMask = 0;
@@ -399,9 +399,9 @@ bool GCRender::PrepareDraw()
 	m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightBlue, 1, &m_ScissorRect);
 	m_CommandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
-	D3D12_CPU_DESCRIPTOR_HANDLE cbbv = CurrentBackBufferView();
-	m_CommandList->OMSetRenderTargets(1, &cbbv, true, &dsv);
+	//D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
+	//D3D12_CPU_DESCRIPTOR_HANDLE cbbv = CurrentBackBufferView();
+	//m_CommandList->OMSetRenderTargets(1, &cbbv, true, &dsv);
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvSrvUavDescriptorHeap };
 	m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -415,12 +415,23 @@ bool GCRender::PrepareDraw()
 
 
 
-bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
+bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
 {
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
 
-	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso());
+	if(pMaterial->GetShader()->rtvHandle == nullptr)
+	{
+		D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
+		D3D12_CPU_DESCRIPTOR_HANDLE cbbv = CurrentBackBufferView();
+		m_CommandList->OMSetRenderTargets(1, &cbbv, true, &dsv);
+	}
+	else {
+		D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
+		//m_CommandList->ClearRenderTargetView(*pMaterial->GetShader()->rtvHandle, DirectX::Colors::LightBlue, 1, &m_ScissorRect);
+		m_CommandList->OMSetRenderTargets(1, pMaterial->GetShader()->rtvHandle, true, &dsv);
+	}
+	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso(alpha));
 	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
 
 	m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -504,4 +515,62 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 			L"\n";
 		::OutputDebugString(text.c_str());
 	}
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE GCRender::CreateRTT()
+{
+	ID3D12Resource* renderTargetTexture = nullptr;
+
+	// Define the texture description
+	D3D12_RESOURCE_DESC textureDesc = {};
+	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	textureDesc.Width = 1024; // Example width
+	textureDesc.Height = 1024; // Example height
+	textureDesc.DepthOrArraySize = 1;
+	textureDesc.MipLevels = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	// Define the clear value
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	clearValue.Color[0] = 0.0f;
+	clearValue.Color[1] = 0.0f;
+	clearValue.Color[2] = 0.0f;
+	clearValue.Color[3] = 1.0f;
+
+	// Create the render target texture
+	CD3DX12_HEAP_PROPERTIES test = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	HRESULT hr = m_d3dDevice->CreateCommittedResource(
+		&test,
+		D3D12_HEAP_FLAG_NONE,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		&clearValue,
+		IID_PPV_ARGS(&renderTargetTexture)
+	);
+	if (FAILED(hr)) {
+		// Handle error
+		MessageBoxA(nullptr, "Failed to create render target texture", "Error", MB_OK);
+		return {};
+	}
+
+	// Get the increment size for RTV descriptors
+	UINT rtvDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+	// Get the first handle in the heap and then increment past the swap chain buffers
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+	rtvHandle.ptr += SwapChainBufferCount * rtvDescriptorSize;
+
+	// Create the RTV
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+	rtvDesc.Format = textureDesc.Format;
+	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	rtvDesc.Texture2D.MipSlice = 0;
+
+	m_d3dDevice->CreateRenderTargetView(renderTargetTexture, &rtvDesc, rtvHandle);
+	rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 0, m_rtvDescriptorSize);
+
+	return rtvHandle;
 }

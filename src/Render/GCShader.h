@@ -17,7 +17,7 @@ public:
 	void Pso();
 
 	ID3D12RootSignature* GetRootSign();
-	ID3D12PipelineState* GetPso();
+	ID3D12PipelineState* GetPso(bool alpha);
 
 	void Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits);
 	void Render();
@@ -32,12 +32,14 @@ public:
 	void PreCompile(const std::string& filePath, const std::string& csoDestinationPath);
 
 	void Load();
-
+	void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtt);
 	GCRender* m_pRender;
+	D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandle = nullptr;
 protected:
 
 	ID3D12RootSignature* m_RootSignature;
-	ID3D12PipelineState* m_PSO;
+	ID3D12PipelineState* m_PSO1;
+	ID3D12PipelineState* m_PSO2;
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
 
@@ -49,7 +51,7 @@ protected:
 	std::wstring m_psCsoPath;
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
-
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc2;
 	//int m_type;
 	int m_flagEnabledBits;
 };

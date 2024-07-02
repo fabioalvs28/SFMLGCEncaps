@@ -45,10 +45,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// Texture (Resource)
 	std::string texturePath = "../../../src/Render/Textures/texture.dds";
-	std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
+	std::string texturePath2 = "../../../src/Render/Textures/ahah.dds";
+	auto texture8 = graphics->CreateTexture(texturePath2);
 	auto texture = graphics->CreateTexture(texturePath);
 	auto texture3 = graphics->CreateTexture(texturePath);
-
 
 
 
@@ -65,7 +65,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 	graphics->InitializeGraphicsResourcesStart();
-	auto texture8 = graphics->CreateTexture(texturePath2);
 	graphics->InitializeGraphicsResourcesEnd();
 
 
@@ -77,7 +76,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	auto material3 = graphics->CreateMaterial(shader2.resource);
 	material3.resource->SetTexture(texture8.resource);
-
+	D3D12_CPU_DESCRIPTOR_HANDLE renderTargetTexture = graphics->GetRender()->CreateRTT();
+	//shader2.resource->SetRenderTarget(renderTargetTexture);
 	// PERSPECTIVE 
 
 	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
@@ -168,8 +168,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	GCTest test;
 	test.world = world2;
 	test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
-
-
 	//DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
 	//DirectX::XMStoreFloat4x4(&test.world, identityMatrix);
 	//test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
@@ -178,10 +176,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	//graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
 
 	graphics->UpdateWorldConstantBuffer(material3.resource, world);
-	graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);
+	graphics->GetRender()->DrawObject(mesh2.resource, material3.resource,false);
 
 	graphics->UpdateCustomCBObject<GCTest>(material2.resource, test);
-	graphics->GetRender()->DrawObject(mesh2.resource, material2.resource);
+	graphics->GetRender()->DrawObject(mesh2.resource, material2.resource,false);
 
 	//graphics->UpdateWorldConstantBuffer(material3.resource, transposedWorld);
 	//graphics->GetRender()->DrawObject(mesh2.resource, material3.resource);

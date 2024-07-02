@@ -61,7 +61,7 @@ public:
 	 * @param Material.
 	 * @return True if the drawing was a success/false otherwise.
 	 */
-	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
+	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial,bool alpha);
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
@@ -90,6 +90,7 @@ public:
 	GCShaderUploadBufferBase* m_pCurrentViewProj;
 
 	Window* GetCurrentWindow() { return m_pWindow; }
+	D3D12_CPU_DESCRIPTOR_HANDLE CreateRTT();
 private:
 	Window* m_pWindow;
 	// Swap chain size
