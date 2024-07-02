@@ -40,11 +40,11 @@ void GCPhysicManager::Update()
 			if (&collider == &checkCollider)
 				continue;
 
-			if (CheckCollision(*collider, *checkCollider))
-			{
-				// Resolve collision
-				LogEngineDebug("Collision detected");
-			}
+			if (!CheckCollision(*collider, *checkCollider))
+				continue;
+
+			// Resolve collision
+			LogEngineDebug("Collision detected");
 		}
 	}
 }
@@ -106,7 +106,7 @@ namespace GCPhysic
 
 		GCVEC2 center = { position2.x + radius, position2.y + radius };
 
-		GCVEC2 aabbHalfExtents = { size1.x / 2, size1.y / 2 };
+		GCVEC2 aabbHalfExtents = { size1.x * 0.5f, size1.y * 0.5f };
 		GCVEC2 aabbCenter = { position1.x + aabbHalfExtents.x, position1.y + aabbHalfExtents.y };
 
 		GCVEC2 difference = center - aabbCenter;
@@ -115,7 +115,7 @@ namespace GCPhysic
 		GCVEC2 closest = aabbCenter + clamped;
 		difference = closest - center;
 
-		return difference.GetNormSquared() < radius;
+		return difference.GetNormSquared() < radius * radius;
 	}
 
 	bool CheckCirclevsCircle(Collider& collider1, Collider& collider2)
