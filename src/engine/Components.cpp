@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Components.h"
 
+#include "GC.h"
+
 
 Component::Component()
 {
@@ -12,5 +14,11 @@ Collider::Collider()
 {
     m_trigger = false;
 	m_visible = false;
+	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
+}
+
+Collider::~Collider()
+{
+	GC::m_pActiveGameManager.m_pPhysicManager.UnregisterCollider(this);
 }
 

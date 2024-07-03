@@ -3,12 +3,7 @@
 
 GCTransform::GCTransform()
 {
-	m_position.SetZero();
-	m_scale.SetOne();
-	m_rotation.SetZero();
-	UpdateVectorsFromQuaternion();
-	UpdateMatrixFromVectors();
-	UpdateMatrix();
+	Identity();
 }
 
 void GCTransform::Identity()
@@ -20,6 +15,16 @@ void GCTransform::Identity()
 	m_rotationMatrix = GCMATRIX::Identity();
 	m_position = GCVEC3(0, 0, 0);
 	m_matrix = GCMATRIX::Identity();
+	m_scale = GCVEC3(1, 1, 1);	
+}
+
+void GCTransform::IdentityRotation()
+{
+	m_direction = GCVEC3(0, 0, 1);
+	m_right = GCVEC3(1, 0, 0);
+	m_up = GCVEC3(0, 1, 0);
+	m_rotation = GCQUATERNION(0, 0, 0, 1);
+	m_rotationMatrix = GCMATRIX::Identity();
 }
 
 void GCTransform::FromMatrix(const GCMATRIX& matrix)
@@ -54,13 +59,6 @@ void GCTransform::UpdateVectorsFromQuaternion()
 	m_direction = GCVEC3(m_rotationMatrix._31, m_rotationMatrix._32, m_rotationMatrix._33);
 }
 
-void GCTransform::UpdateVectorsFromMatrix()
-{
-	m_rotationMatrix.Transpose();
-	m_right = GCVEC3(m_rotationMatrix._11, m_rotationMatrix._12, m_rotationMatrix._13);
-	m_up = GCVEC3(m_rotationMatrix._21, m_rotationMatrix._22, m_rotationMatrix._23);
-	m_direction = GCVEC3(m_rotationMatrix._31, m_rotationMatrix._32, m_rotationMatrix._33);
-}
 
 void GCTransform::UpdateMatrix()
 {
@@ -81,10 +79,22 @@ void GCTransform::UpdateMatrix()
 
 void GCTransform::Rotate(float yaw, float pitch, float roll)
 {
-	GCQUATERNION q;
-	q.FromEuler(yaw, pitch, roll);
-	m_rotation *= q;
-	m_rotation.Normalize();
+	GCQUATERNION qYaw;
+	qYaw.FromAxisAngle(m_up, yaw);
+
+	GCQUATERNION qPitch;
+	qPitch.FromAxisAngle(m_right, pitch);
+
+	GCQUATERNION qRoll;
+	qRoll.FromAxisAngle(m_direction, roll);
+
+	GCQUATERNION qResult = qRoll;
+
+	qResult *= qPitch;
+	qResult *= qYaw;
+
+	m_rotation *= qResult;
+
 	UpdateVectorsFromQuaternion();
 	UpdateMatrixFromVectors();
 	UpdateMatrix();
@@ -92,56 +102,38 @@ void GCTransform::Rotate(float yaw, float pitch, float roll)
 
 void GCTransform::RotateYaw(float angle)
 {
-	GCQUATERNION q;
-	q.FromAxisAngle(m_up, angle);
-	m_rotation *= q;
-	m_rotation.Normalize();
-	UpdateVectorsFromQuaternion();
+	Rotate(angle, 0, 0);
 }
 
 void GCTransform::RotatePitch(float angle)
 {
-	GCQUATERNION q;
-	q.FromAxisAngle(m_right, angle);
-	m_rotation *= q;
-	m_rotation.Normalize();
-	UpdateVectorsFromQuaternion();
+	Rotate(0, angle, 0);
 }
 
 void GCTransform::RotateRoll(float angle)
 {
-	GCQUATERNION q;
-	q.FromAxisAngle(m_direction, angle);
-	m_rotation *= q;
-	m_rotation.Normalize();
-	UpdateVectorsFromQuaternion();
+	Rotate(0, 0, angle);
 }
 
-void GCTransform::RotateWorld(const GCMATRIX& matrix)
+void GCTransform::RotateWorld(float x, float y, float z)
 {
-	m_rotationMatrix *= matrix;
-	UpdateVectorsFromMatrix();
+	IdentityRotation();
+	Rotate(y, x, z);
 }
 
 void GCTransform::RotateWorldX(float angle)
 {
-	GCMATRIX m;
-	m.Rotation(GCVEC3(1, 0, 0), angle);
-	RotateWorld(m);
+	RotateWorld(angle, 0, 0);
 }
 
 void GCTransform::RotateWorldY(float angle)
 {
-	GCMATRIX m;
-	m.Rotation(GCVEC3(0, 1, 0), angle);
-	RotateWorld(m);
+	RotateWorld(0, angle, 0);
 }
 
 void GCTransform::RotateWorldZ(float angle)
 {
-	GCMATRIX m;
-	m.Rotation(GCVEC3(0, 0, 1), angle);
-	RotateWorld(m);
+	RotateWorld(0, 0, angle);
 }
 
 void GCTransform::Scale(const GCVEC3& scale)

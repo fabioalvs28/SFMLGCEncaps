@@ -1,5 +1,6 @@
 #pragma once
 #include <assert.h>
+#include <utility>
 
 
 template <typename T>
@@ -72,7 +73,6 @@ void GCVector<T>::Set(size_t index, const T& element)
 
 /// <summary>
 ///  Insert element at index
-///  WARNING : This function can't call the overload construtor of T 
 /// </summary>
 /// <param name="index">Index of the list where you want to insert a value</param>
 /// <param name="element">Element you want to add in the list</param>
@@ -87,14 +87,45 @@ bool GCVector<T>::Insert(size_t index, const T& element)
 	}
 	if (m_size == m_capacity)
 	{
-		m_capacity *= 2;
-		T* temp = new T[m_capacity];
-		memcpy(temp, m_data, m_size * sizeof(T));
-		free(m_data);
-		m_data = temp;
+		//if the capacity is 0, we set it to 1 then we double it
+		size_t newCapacity = (m_capacity == 0) ? 1 : m_capacity * 2;
+		T* newData = new T[newCapacity];
+
+
+		//Copy elements before insertion point
+		for (size_t i = 0; i < index; i++)
+		{
+			new (&newData[i]) T(std::move(m_data[i]));
+			m_data[i].~T(); //Destruct old object
+		}
+
+		//Insert new element
+		new (&newData[index]) T(element);
+
+		//Copy remaining elements
+		for (size_t i = index; i < m_size; i++)
+		{
+			new (&newData[i + 1]) T(std::move(m_data[i]));
+			m_data[i].~T(); //Destruct old object
+		}
+
+		delete[] m_data;
+		m_data = newData;
+		m_capacity = newCapacity;
 	}
-	memcpy(m_data + 1, m_data, (m_size - index) * sizeof(T));
-	m_data[index] = element;
+
+	else
+	{
+		//Shift elements to the right
+		for (size_t i = m_size; i > index; i--)
+		{
+			new (&m_data[i]) T(std::move(m_data[i - 1]));
+			m_data[i - 1].~T();
+		}
+		//Insert new element
+		new (&m_data[index]) T(element);
+	}
+
 	m_size++;
 	return true;
 }
