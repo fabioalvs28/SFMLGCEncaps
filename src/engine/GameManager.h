@@ -3,12 +3,14 @@
 #include "InputManager.h"
 #include "PhysicManager.h"
 
+class Collider;
 class GCGameObject;
 class GCScene;
 class GC;
 
 class GCGameManager 
 {
+friend class Collider;
 friend class GCGameObject;
 friend class GCScene;
 friend class GC;

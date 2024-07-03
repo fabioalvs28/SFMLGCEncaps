@@ -75,7 +75,7 @@ class Collider : public Component
 
 public:
     Collider();
-    ~Collider() override {}
+    ~Collider();
     
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     

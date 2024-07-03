@@ -17,6 +17,10 @@ GCPhysicManager::~GCPhysicManager()
 void GCPhysicManager::RegisterCollider(Collider* collider)
 {
 	m_colliders.PushBack(collider);
+
+	std::string temp = "Amount of colliders: " + m_colliders.GetSize();
+
+	LogEngineDebug(temp.c_str());
 }
 
 void GCPhysicManager::UnregisterCollider(Collider* collider)
@@ -30,6 +34,10 @@ void GCPhysicManager::Update()
 	for (RigidBody* rigidbody : m_rigidbodies)
 		rigidbody->Update();
 
+	std::string temp = "[UPDATE] Amount of colliders: " + m_colliders.GetSize();
+
+	LogEngineDebug(temp.c_str());
+
 	// Update colliders and check for collisions then resolve them
 	// TYPE = 2 -> Box2D
 	// TYPE = 3 -> Circle
@@ -38,10 +46,16 @@ void GCPhysicManager::Update()
 		for (Collider* checkCollider : m_colliders)
 		{
 			if (&collider == &checkCollider)
+			{
+				LogEngineDebug("Same collider, skipping");
 				continue;
+			}
 
 			if (!CheckCollision(*collider, *checkCollider))
+			{
+				LogEngineDebug("No collision detected");
 				continue;
+			}
 
 			// Resolve collision
 			LogEngineDebug("Collision detected");
