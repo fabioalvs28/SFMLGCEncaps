@@ -25,7 +25,7 @@
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML window");
+	sf::RenderWindow window(sf::VideoMode(960, 540), "SFML window");
 
 
 	sf::Texture marioTexture;
