@@ -1,28 +1,13 @@
 #pragma once
 #include <windows.h>
+#include <functional>
 #include "../core/framework.h"
+#include "EventSystem.h"
 
 /// ControllerKeys
-#define GC_CONTROLLER_A                        0x5800
-#define GC_CONTROLLER_B                        0x5801
-#define GC_CONTROLLER_X                        0x5802
-#define GC_CONTROLLER_Y                        0x5803
-#define GC_CONTROLLER_RSHOULDER                0x5804
-#define GC_CONTROLLER_LSHOULDER                0x5805
-#define GC_CONTROLLER_LTRIGGER                 0x5806
-#define GC_CONTROLLER_RTRIGGER                 0x5807
 
-#define GC_CONTROLLER_CROSS_UP                 0x5810
-#define GC_CONTROLLER_CROSS_DOWN               0x5811
-#define GC_CONTROLLER_CROSS_LEFT               0x5812
-#define GC_CONTROLLER_CROSS_RIGHT              0x5813
-#define GC_CONTROLLER_START                    0x5814
-#define GC_CONTROLLER_BACK                     0x5815
-#define GC_CONTROLLER_LJOYSTICK_PRESS          0x5816
-#define GC_CONTROLLER_RJOYSTICK_PRESS          0x5817
 
 //////////////////////////////////////////////
-
 /// Mouse + KeyBoard.  
 // Mouse.
 #define GC_LEFT_CLICK 0x01
@@ -31,7 +16,7 @@
 #define GC_THUMB1_CLICK 0x05
 #define GC_THUMB2_CLICK 006
 // Keyboard. Letter and Num : 'A' , '0'.
-#define GC_BAKCSPACE 0x08
+#define GC_BACKSPACE 0x08
 #define GC_TAB 0x09
 #define GC_ENTER 0x0D 
 #define GC_SHIFT 0x10
@@ -66,71 +51,249 @@
 #define GC_RALT 0xA5
 
 
+class GCControllerInputManager;
+class GCKeyboardInputManager;
+class GCMouseInputManager;
 
-enum GCKeyState
+
+class GCInputManager
 {
-    NONE, // NOT PRESSED
-    PUSH, // STAY PRESSED
-    UP,   // RELEASED
-    DOWN, // PRESSED ONCE
-};
+    GCVector<GCVector<std::function<void(GCEvent&)>>> callbacks;
 
+    friend class GCGameManager;
 
-typedef struct WinTest
-{
-    GCVEC2 winPos;
-    GCVEC2 winSize;
-    GCVEC2 center;
-
-} WinTest;
-
-
-
-class GCMouseInput 
-{
-
-    friend class GCInputManager;
-
-private:
-
-    GCMouseInput();
-    virtual ~GCMouseInput() {};
-
-    bool OnMouseHover( GCVEC2* objectPos, GCVEC2* objSize );
-    void SetLeavingWindows( bool canLeave ) { m_canLeaveWin = canLeave; }
-    GCVEC2 GetMousePos() { return m_mousePos; }
-    void UpdateMouseInput( const WinTest* pWinInfos );
-
-    bool m_canLeaveWin;
-    GCVEC2 m_mousePos;
-    GCVector<BYTE> m_pMouseButtons;
-
-};
-
-
-class GCControllerInput
-{
-        
-    friend class GCInputManager;
+public:
+    GCInputManager();
+    void Init();
+    void Update();
 
     
-private:
-    GCControllerInput();
-    GCControllerInput( int id );
-    virtual ~GCControllerInput() {};
+    GCVector<GCControllerInputManager*> m_controllerList;
+    GCKeyboardInputManager* m_pKeyboardManager;
+    GCMouseInputManager* m_pMouseManager;
 
-    bool GetControllerButtonDown( int vButton );
-    bool GetControllerButtonStay( int vButton );
-    bool GetControllerButtonUp( int vButton );
+private:
+
+
+
+
+    virtual int GetStateSize() = 0;
+    virtual int GetIDSize() = 0;
+    void GetConnectedControllers();
+};
+
+
+
+class GCKeyboardInputManager : public GCInputManager
+{
+    friend class GCInputManager;
+
+public :
+
+    GCKeyboardInputManager();
+
+    bool IsKeyPressed(int keyID);
+
+    BYTE GetKeyState(int keyID) { return m_keyState[keyID]; }
+
+    bool GetKeyDown(int key);
+    bool GetKeyStay(int key);
+    bool GetKeyUp(int key);
+    
+    enum KeyboardID
+    {
+        TAB = 9,
+        ENTER = 13,
+        SHIFT = 16,
+        CTRL,
+        ALT,
+        CAPS = 20,
+        ESCAPE = 27,
+        SPACE = 32,
+        LEFT_ARROW = 37,
+        UP_ARROW,
+        RIGHT_ARROW,
+        DOWN_ARROW,
+        KEY0 = 48,
+        KEY1,
+        KEY2,
+        KEY3,
+        KEY4,
+        KEY5,
+        KEY6,
+        KEY7,
+        KEY8,
+        KEY9,
+        A = 65,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,
+        EQUAL = 187, 
+        CLOSED_PARENTHESIS = 219,
+        SQUARED = 222,
+
+        KEYIDCOUNT
+    };
+    
+
+    enum KeyboardState
+    {
+        NONE, // NOT PRESSED
+        STAY, // STAY PRESSED
+        UP,   // RELEASED
+        DOWN, // PRESSED ONCE
+        KEYSTATECOUNT
+    };
+
+private:
+
+
+    void Update();
+
+    int GetIDSize() override
+    {
+        return KeyboardID::KEYIDCOUNT;
+    };
+
+    int GetStateSize() override
+    {
+        return KeyboardState::KEYSTATECOUNT;
+    };
+
+    GCVector<BYTE> m_keyState;
+
+    void SendEvent(int index, BYTE state);
+
+};
+
+
+class GCMouseInputManager : public GCInputManager
+{
+    friend class GCInputManager;
+
+public: 
+    GCMouseInputManager();
+
+    bool IsKeyPressed(int keyID);
+
+    BYTE GetKeyState(int keyID) { return m_buttonState[keyID]; }
+
+    bool GetKeyDown(int key);
+    bool GetKeyStay(int key);
+    bool GetKeyUp(int key);
+
+
+    enum MouseID
+    {
+        LEFT = 1,
+        RIGHT,
+        MIDDLE = 4,
+        THUMB_1,
+        THUMB_2,
+        MOUSEIDCOUNT
+    };
+
+    enum MouseState
+    {
+        NONE, // NOT PRESSED
+        STAY, // STAY PRESSED
+        UP,   // RELEASED
+        DOWN, // PRESSED ONCE
+        MOUSESTATECOUNT
+    };
+
+
+
+private:
+
+    void Update();
+
+    int GetIDSize() override
+    {
+        return MouseID::MOUSEIDCOUNT;
+    };
+
+    int GetStateSize() override
+    {
+        return MouseState::MOUSESTATECOUNT;
+    };
+
+    GCVector<BYTE> m_buttonState;
+
+    void SendEvent(int index, BYTE state);
+    
+};
+
+class GCControllerInputManager : public GCInputManager
+{
+
+public: 
+
+    GCControllerInputManager();
+    GCControllerInputManager(int id);
+
+
+    enum ControllerID
+    {
+        A,B,X,Y,
+        RSHOULDER, LSHOULDER, 
+        LTRIGGER, RTRIGGER, 
+        CROSS_UP,CROSSDOWN,CROSSLEFT,CROSSRIGHT,
+        START, BACK,
+        LJOYSTICK, RJOYSTICK,
+        CONTROLLERIDCOUNT
+    };
+
+    enum ControllerState
+    {
+        NONE, // NOT PRESSED
+        STAY, // STAY PRESSED
+        UP,   // RELEASED
+        DOWN, // PRESSED ONCE
+        CONTROLLERSTATECOUNT
+    };
+
+public:
+
+    int GetIDSize() override
+    {
+        return ControllerID::CONTROLLERIDCOUNT;
+    };
+
+    int GetStateSize() override
+    {
+        return ControllerState::CONTROLLERSTATECOUNT;
+    };
+
+
+
+    void Update();
+
+    GCVEC2* GetControllerLeftJoyStick(int controllerID) { return &m_pControllersLeftAxis; }
+    GCVEC2* GetControllerRightJoyStick(int controllerID) { return &m_pControllersRightAxis; }
+    float GetControllerLeftAxisX(int controllerID) { return m_pControllersLeftAxis.x; }
+    float GetControllerLeftAxisY(int controllerID) { return m_pControllersLeftAxis.y; }
+
+
+    float GetControllerRightAxisX(int controllerID) { return m_pControllersRightAxis.x; }
+    float GetControllerRightAxisY(int controllerID) { return m_pControllersRightAxis.y; }
+
+    float GetControllerLeftTriggerState(int controllerID) { return m_pControllerTrigger.x; }
+    float GetControllerRightTriggerState(int controllerID) { return m_pControllerTrigger.y; }
+
+    bool GetControllerButtonDown(int vButton);
+    bool GetControllerButtonStay(int vButton);
+    bool GetControllerButtonUp(int vButton);
+
+private:
+
+
 
     void UpdateJoySticksinput();
     void UpdateControllerInput();
     void UpdateTriggers();
 
-    void AddtoControllerListUpdate(int index); 
-    
+    void SendEvent(int index, BYTE state);
+
     int m_ID;
-    GCVector<BYTE> m_pListofControllerKeys;
+    GCVector<BYTE> m_buttonState;
     GCVEC2 m_pControllersLeftAxis;
     GCVEC2 m_pControllersRightAxis;
     GCVEC2 m_pControllerTrigger; // 0 - left, 1 - Right ;
@@ -138,71 +301,4 @@ private:
     GCVector<int> m_updatedControllerKeys;
 
 
-};
-
-
-class GCInputManager
-{
-
-    friend class GCGameManager;
-
-public:
-
-    GCInputManager();
-    ~GCInputManager() {};
-
-    void GetConnectedController();
-
-    void UpdateInputs();
-
-    //bool IsKeyPressed();
-    bool IsKeyPressed(int keyID);
-
-    //bool IsControllerPressed(int controllerID); 
-    bool IsControllerKeyPressed(int controllerID, int button);
-
-    //GCVector<int>* GetControllereUpdatekeys(int controllerID);
-
-    //GCVector<int>* GetUpdatedKeys() { return &m_updatedKeys; }
-
-    void AddToUpdateList(int index, BYTE state);
-
-
-
-    BYTE GetKeyState(int keyID) { return m_keyState[keyID];}
-
-    bool GetKeyDown(int key);
-    bool GetKeyStay(int key);
-    bool GetKeyUp(int key);
-    
-    bool GetControllerButtonDown(int key);
-    bool GetControllerButtonStay(int key);
-    bool GetControllerButtonUp(int key);
-
-
-    bool GetControllerButtonDown( int controllerID, int vButton ) { return m_controllerList[controllerID]->GetControllerButtonDown(vButton); }
-    bool GetControllerButtonStay( int controllerID, int vButton ) { return m_controllerList[controllerID]->GetControllerButtonStay(vButton); }
-    bool GetControllerButtonUp( int controllerID, int vButton ) { return m_controllerList[controllerID]->GetControllerButtonUp(vButton); }
-
-    GCVEC2* GetControllerLeftJoyStick(int controllerID) { return &m_controllerList[controllerID]->m_pControllersLeftAxis; }
-    GCVEC2* GetControllerRightJoyStick(int controllerID) { return &m_controllerList[controllerID]->m_pControllersRightAxis; }
-    float GetControllerLeftAxisX( int controllerID ) { return m_controllerList[controllerID]->m_pControllersLeftAxis.x; }
-    float GetControllerLeftAxisY( int controllerID ) { return m_controllerList[controllerID]->m_pControllersLeftAxis.y; }
-    
-    
-    float GetControllerRightAxisX( int controllerID ) { return m_controllerList[controllerID]->m_pControllersRightAxis.x; }
-    float GetControllerRightAxisY( int controllerID ) { return m_controllerList[controllerID]->m_pControllersRightAxis.y; }
-
-    float GetControllerLeftTriggerState( int controllerID ) { return m_controllerList[controllerID]->m_pControllerTrigger.x; }
-    float GetControllerRightTriggerState( int controllerID ) { return m_controllerList[controllerID]->m_pControllerTrigger.y; }
-
-
-private:
-
-    GCVEC2 m_mousePos;
-    WinTest* m_pWindow; // Remplacer avec window finale
-
-    GCVector<GCControllerInput*> m_controllerList;
-    GCVector<int> m_updatedKeys;
-    GCVector<BYTE> m_keyState;
 };
