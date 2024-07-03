@@ -291,6 +291,46 @@ void GCRender::CreateRenderTargetViews()
 		m_d3dDevice->CreateRenderTargetView(m_SwapChainBuffer[i], nullptr, rtvHeapHandle);
 		rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
 	}
+
+	//ID3D12Resource* renderTargetTexture = nullptr;
+
+	//// Define the texture description
+	//D3D12_RESOURCE_DESC textureDesc = {};
+	//textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	//textureDesc.Width = 1024; // Example width
+	//textureDesc.Height = 1024; // Example height
+	//textureDesc.DepthOrArraySize = 1;
+	//textureDesc.MipLevels = 1;
+	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//textureDesc.SampleDesc.Count = 1;
+	//textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	//// Define the clear value
+	//D3D12_CLEAR_VALUE clearValue = {};
+	//clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//clearValue.Color[0] = 0.0f;
+	//clearValue.Color[1] = 0.0f;
+	//clearValue.Color[2] = 0.0f;
+	//clearValue.Color[3] = 1.0f;
+
+	//// Create the render target texture
+	//CD3DX12_HEAP_PROPERTIES test = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	//HRESULT hr = m_d3dDevice->CreateCommittedResource(
+	//	&test,
+	//	D3D12_HEAP_FLAG_NONE,
+	//	&textureDesc,
+	//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+	//	&clearValue,
+	//	IID_PPV_ARGS(&renderTargetTexture)
+	//);
+	//if (FAILED(hr)) {
+	//	// Handle error
+	//	MessageBoxA(nullptr, "Failed to create render target texture", "Error", MB_OK);
+	//	return ;
+	//}
+
+	//m_d3dDevice->CreateRenderTargetView(renderTargetTexture, nullptr, rtvHeapHandle);
+	//rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
 }
 
 void GCRender::CreateDepthStencilBufferAndView()
@@ -429,7 +469,12 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
 	else {
 		D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
 		//m_CommandList->ClearRenderTargetView(*pMaterial->GetShader()->rtvHandle, DirectX::Colors::LightBlue, 1, &m_ScissorRect);
-		m_CommandList->OMSetRenderTargets(1, pMaterial->GetShader()->rtvHandle, true, &dsv);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE test = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 2, m_rtvDescriptorSize);
+		//CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(pMaterial->GetShader()->rtvHandle, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		//m_CommandList->ResourceBarrier(1, &ResBar);
+		//m_CommandList->ClearRenderTargetView(test, DirectX::Colors::LightBlue, 1, &m_ScissorRect);
+		//m_CommandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+		m_CommandList->OMSetRenderTargets(1, &test, true, &dsv);
 	}
 	m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso(alpha));
 	m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
@@ -517,10 +562,10 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 	}
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE GCRender::CreateRTT()
+ID3D12Resource* GCRender::CreateRTT()
 {
 	ID3D12Resource* renderTargetTexture = nullptr;
-
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 2, m_rtvDescriptorSize);
 	// Define the texture description
 	D3D12_RESOURCE_DESC textureDesc = {};
 	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -531,7 +576,6 @@ D3D12_CPU_DESCRIPTOR_HANDLE GCRender::CreateRTT()
 	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-
 	// Define the clear value
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -539,7 +583,6 @@ D3D12_CPU_DESCRIPTOR_HANDLE GCRender::CreateRTT()
 	clearValue.Color[1] = 0.0f;
 	clearValue.Color[2] = 0.0f;
 	clearValue.Color[3] = 1.0f;
-
 	// Create the render target texture
 	CD3DX12_HEAP_PROPERTIES test = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	HRESULT hr = m_d3dDevice->CreateCommittedResource(
@@ -553,24 +596,9 @@ D3D12_CPU_DESCRIPTOR_HANDLE GCRender::CreateRTT()
 	if (FAILED(hr)) {
 		// Handle error
 		MessageBoxA(nullptr, "Failed to create render target texture", "Error", MB_OK);
-		return {};
 	}
+	m_d3dDevice->CreateRenderTargetView(renderTargetTexture, nullptr, rtvHeapHandle);
+	rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
 
-	// Get the increment size for RTV descriptors
-	UINT rtvDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-	// Get the first handle in the heap and then increment past the swap chain buffers
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
-	rtvHandle.ptr += SwapChainBufferCount * rtvDescriptorSize;
-
-	// Create the RTV
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-	rtvDesc.Format = textureDesc.Format;
-	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-	rtvDesc.Texture2D.MipSlice = 0;
-
-	m_d3dDevice->CreateRenderTargetView(renderTargetTexture, &rtvDesc, rtvHandle);
-	rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 0, m_rtvDescriptorSize);
-
-	return rtvHandle;
+	return renderTargetTexture;
 }

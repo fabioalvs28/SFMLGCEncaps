@@ -90,7 +90,7 @@ public:
 	GCShaderUploadBufferBase* m_pCurrentViewProj;
 
 	Window* GetCurrentWindow() { return m_pWindow; }
-	D3D12_CPU_DESCRIPTOR_HANDLE CreateRTT();
+	ID3D12Resource* CreateRTT();
 private:
 	Window* m_pWindow;
 	// Swap chain size

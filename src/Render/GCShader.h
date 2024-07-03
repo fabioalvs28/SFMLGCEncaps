@@ -32,9 +32,9 @@ public:
 	void PreCompile(const std::string& filePath, const std::string& csoDestinationPath);
 
 	void Load();
-	void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtt);
+	void SetRenderTarget(ID3D12Resource* rtt);
 	GCRender* m_pRender;
-	D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandle = nullptr;
+	ID3D12Resource* rtvHandle = nullptr;
 protected:
 
 	ID3D12RootSignature* m_RootSignature;

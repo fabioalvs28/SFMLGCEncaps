@@ -349,6 +349,6 @@ void GCShader::Load() {
 	Pso();
 }
 
-void GCShader::SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtt) {
-	rtvHandle = &rtt;
+void GCShader::SetRenderTarget(ID3D12Resource* rtt) {
+	rtvHandle = rtt;
 }

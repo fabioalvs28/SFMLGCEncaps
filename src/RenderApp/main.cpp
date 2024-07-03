@@ -76,7 +76,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	auto material3 = graphics->CreateMaterial(shader2.resource);
 	material3.resource->SetTexture(texture8.resource);
-	D3D12_CPU_DESCRIPTOR_HANDLE renderTargetTexture = graphics->GetRender()->CreateRTT();
+	ID3D12Resource* renderTargetTexture = graphics->GetRender()->CreateRTT();
 	//shader2.resource->SetRenderTarget(renderTargetTexture);
 	// PERSPECTIVE 
 
