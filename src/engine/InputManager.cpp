@@ -4,6 +4,7 @@
 #include <math.h>
 #pragma comment(lib,"xinput.lib")
 #include "../core/framework.h"
+#include <vector>
 
 
 
@@ -13,61 +14,54 @@
 
 GCInputManager::GCInputManager()
 {
+
     callbacks = GCVector<GCVector<std::function<void(GCEvent&)>>>(GetStateSize());
-    for (int i = 0; i < callbacks.GetSize(); ++i)
+    for (int i = 0; i < callbacks.GetCapacity(); i++)
     {
         callbacks[i] = GCVector<std::function<void(GCEvent&)>>(GetIDSize());
     }
 
 }
 
-void GCInputManager::Init()
+
+GCControllerManager::GCControllerManager()
 {
-    m_pKeyboardManager = new GCKeyboardInputManager();
-    m_pMouseManager = new GCMouseInputManager();
+
+    m_pControllerList = GCVector<GCControllerInputManager*>(4);
     for (int i = 0; i < XUSER_MAX_COUNT; i++)
     {
-        m_controllerList.PushBack(nullptr);
+        m_pControllerList[i] = nullptr;
     }
+
+
+    GetConnectedControllers();
+
 }
 
 ////////////////////////////////////////////////////
 /// @brief Function to get connected controllers.
 ////////////////////////////////////////////////////
-void GCInputManager::GetConnectedControllers()
+void GCControllerManager::GetConnectedControllers()
 {
-
     XINPUT_STATE state;
 
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
-
-        if ( XInputGetState( i, &state ) == ERROR_SUCCESS && m_controllerList.Get( i ) == nullptr )
+        if ( XInputGetState( i, &state ) == ERROR_SUCCESS )
         {
             GCControllerInputManager* pController = new GCControllerInputManager( i );
-            m_controllerList.Insert( i, pController );
+            m_pControllerList.Insert( i, pController );
         }
     }
 }
 
-/////////////////////////////////////////////////////////
-/// @brief Updates all input devices and their states.
-/// 
-/// @note Must be called every gameloop.
-/////////////////////////////////////////////////////////
-void GCInputManager::Update()
+void GCControllerManager::Update()
 {
-    GetConnectedControllers();
-    m_pKeyboardManager->Update();
-    m_pMouseManager->Update();
 
-    for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
+    for (int i = 0; i < XUSER_MAX_COUNT; i++)
     {
-        if ( m_controllerList[i] != nullptr )
-        {
-            m_controllerList[i]->Update();
-        }
-    }   
+        if (m_pControllerList[i] != nullptr) m_pControllerList[i]->UpdateController();
+    }
 }
 
 void GCKeyboardInputManager::SendEvent(int index, BYTE state)
@@ -78,9 +72,11 @@ void GCKeyboardInputManager::SendEvent(int index, BYTE state)
 
 GCKeyboardInputManager::GCKeyboardInputManager()
 {
-    for (int i = 0; i < 255; i++)
+
+    m_keyState = std::vector<BYTE>(GCKeyboardInputManager::KEYIDCOUNT);
+    for (int i = 0; i < GCKeyboardInputManager::KEYIDCOUNT; i++)
     {
-        m_keyState.PushBack(GCKeyboardInputManager::NONE);
+        m_keyState.push_back(GCKeyboardInputManager::NONE);
     }
 }
 
@@ -300,9 +296,11 @@ GCControllerInputManager::GCControllerInputManager()
     m_pControllersRightAxis.x = 0.0; m_pControllersRightAxis.y = 0.0;
     m_pControllerTrigger.x = 0.0; m_pControllerTrigger.y = 0.0;
 
+    m_buttonState = GCVector<BYTE>(16);
+
     for (int j = 0; j < ControllerID::CONTROLLERIDCOUNT; j++)
     {
-        m_buttonState.PushBack(GCControllerInputManager::NONE);
+        m_buttonState[j] = GCControllerInputManager::NONE;
     }
 }
 
@@ -313,9 +311,11 @@ GCControllerInputManager::GCControllerInputManager(int id)
     m_pControllersLeftAxis.x = 0.0; m_pControllersLeftAxis.y = 0.0;
     m_pControllersRightAxis.x = 0.0; m_pControllersRightAxis.y = 0.0;
     m_pControllerTrigger.x = 0.0; m_pControllerTrigger.y = 0.0;
+    m_buttonState = GCVector<BYTE>(16);
+
     for (int j = 0; j < ControllerID::CONTROLLERIDCOUNT; j++)
     {
-        m_buttonState.PushBack(GCControllerInputManager::NONE);
+        m_buttonState[j] = GCControllerInputManager::NONE;
     }
 }
 
@@ -367,7 +367,7 @@ bool GCControllerInputManager::GetControllerButtonUp(int vButton)
     return false;
 }
 
-void GCControllerInputManager::Update()
+void GCControllerInputManager::UpdateController()
 {
     UpdateControllerInput();
     UpdateJoySticksinput();

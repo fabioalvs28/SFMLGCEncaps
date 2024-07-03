@@ -4,57 +4,8 @@
 #include "../core/framework.h"
 #include "EventSystem.h"
 
-/// ControllerKeys
-
-
-//////////////////////////////////////////////
-/// Mouse + KeyBoard.  
-// Mouse.
-#define GC_LEFT_CLICK 0x01
-#define GC_RIGHT_CLICK 0x02
-#define GC_MIDDLE_CLICK 0x04
-#define GC_THUMB1_CLICK 0x05
-#define GC_THUMB2_CLICK 006
-// Keyboard. Letter and Num : 'A' , '0'.
-#define GC_BACKSPACE 0x08
-#define GC_TAB 0x09
-#define GC_ENTER 0x0D 
-#define GC_SHIFT 0x10
-#define GC_CTRL 0x11
-#define GC_ALT 0x12
-#define GC_CAPS 0x14
-#define GC_ESCAPE 0x1B
-#define GC_SPACE 0x20
-#define GC_PAGE_UP 0x21;
-#define GC_PAGE_DOWN 0x22
-#define GC_LEFT 0x25
-#define GC_UP 0x26
-#define GC_RIGHT 0x27
-#define GC_DOWN 0x28
-#define GC_INSERT 0x2D
-#define GC_DEL 0x2F
-#define GC_NUMPAD_0 0x60
-#define GC_NUMPAD_1 0x61
-#define GC_NUMPAD_2 0x62
-#define GC_NUMPAD_3 0x63
-#define GC_NUMPAD_4 0x64
-#define GC_NUMPAD_5 0x65
-#define GC_NUMPAD_6 0x66
-#define GC_NUMPAD_7 0x67
-#define GC_NUMPAD_8 0x68
-#define GC_NUMPAD_9 0x69
-#define GC_LSHIFT 0xA0
-#define GC_RSHIFT 0xA1
-#define GC_LCTRL 0xA2
-#define GC_RCTRL 0xA3
-#define GC_LALT 0xA4
-#define GC_RALT 0xA5
-
 
 class GCControllerInputManager;
-class GCKeyboardInputManager;
-class GCMouseInputManager;
-
 
 class GCInputManager
 {
@@ -63,23 +14,13 @@ class GCInputManager
     friend class GCGameManager;
 
 public:
+
     GCInputManager();
-    void Init();
-    void Update();
 
-    
-    GCVector<GCControllerInputManager*> m_controllerList;
-    GCKeyboardInputManager* m_pKeyboardManager;
-    GCMouseInputManager* m_pMouseManager;
+    virtual void Update() {} ;
 
-private:
-
-
-
-
-    virtual int GetStateSize() = 0;
-    virtual int GetIDSize() = 0;
-    void GetConnectedControllers();
+    virtual int GetStateSize() { return 0; }
+    virtual int GetIDSize() { return 0; }
 };
 
 
@@ -88,7 +29,7 @@ class GCKeyboardInputManager : public GCInputManager
 {
     friend class GCInputManager;
 
-public :
+public:
 
     GCKeyboardInputManager();
 
@@ -142,11 +83,6 @@ public :
         KEYSTATECOUNT
     };
 
-private:
-
-
-    void Update();
-
     int GetIDSize() override
     {
         return KeyboardID::KEYIDCOUNT;
@@ -157,7 +93,11 @@ private:
         return KeyboardState::KEYSTATECOUNT;
     };
 
-    GCVector<BYTE> m_keyState;
+private:
+
+    void Update();
+
+    std::vector<BYTE> m_keyState;
 
     void SendEvent(int index, BYTE state);
 
@@ -221,7 +161,21 @@ private:
     
 };
 
-class GCControllerInputManager : public GCInputManager
+
+class GCControllerManager : public GCInputManager
+{
+
+public: 
+
+    GCControllerManager();
+    void GetConnectedControllers();
+    void Update();
+
+    GCVector<GCControllerInputManager*> m_pControllerList;
+};
+
+
+class GCControllerInputManager : public GCControllerManager
 {
 
 public: 
@@ -250,8 +204,6 @@ public:
         CONTROLLERSTATECOUNT
     };
 
-public:
-
     int GetIDSize() override
     {
         return ControllerID::CONTROLLERIDCOUNT;
@@ -264,7 +216,7 @@ public:
 
 
 
-    void Update();
+    void UpdateController();
 
     GCVEC2* GetControllerLeftJoyStick(int controllerID) { return &m_pControllersLeftAxis; }
     GCVEC2* GetControllerRightJoyStick(int controllerID) { return &m_pControllersRightAxis; }
@@ -282,6 +234,7 @@ public:
     bool GetControllerButtonStay(int vButton);
     bool GetControllerButtonUp(int vButton);
 
+    GCVector<BYTE> m_buttonState;
 private:
 
 
@@ -293,7 +246,6 @@ private:
     void SendEvent(int index, BYTE state);
 
     int m_ID;
-    GCVector<BYTE> m_buttonState;
     GCVEC2 m_pControllersLeftAxis;
     GCVEC2 m_pControllersRightAxis;
     GCVEC2 m_pControllerTrigger; // 0 - left, 1 - Right ;
