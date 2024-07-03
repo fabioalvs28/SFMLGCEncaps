@@ -4,11 +4,16 @@
 #include <iostream>
 #include <fstream>
 
-GCFile::GCFile(const std::string& filename)
+GCFile::GCFile(const char* filename, const char* mode)
 {
-	file = nullptr;
-	if (fopen_s(&file, filename.c_str(), mode) != 0) {
-		file = nullptr;
+	fopen_s(&file, filename, mode);
+	if (file)
+	{
+		this->filename = filename;
+	}
+	else
+	{
+		std::cerr << "Error opening file: " << filename << std::endl;
 	}
 }
 
@@ -17,14 +22,14 @@ GCFile::~GCFile()
 	Close();
 }
 
-void GCFile::Open(GCFile* file)
+
+bool GCFile::IsOpen() const
 {
-	if (file)
-	{
-		Close();
-		this->file = file->file;
-		file->file = nullptr;
+	if (!file) {
+		std::cerr << "Error saving file: " << filename << std::endl;
+		return false;
 	}
+	return file != nullptr;
 }
 
 void GCFile::Close()
@@ -39,11 +44,6 @@ void GCFile::Close()
 void GCFile::Leak()
 {
 	file = nullptr;
-}
-
-bool GCFile::IsOpen() const
-{
-	return file != nullptr;
 }
 
 bool GCFile::Read(std::vector<uint8_t>& buffer, size_t size)
@@ -86,7 +86,7 @@ bool GCFile::Write(const BYTE* buffer, size_t size)
 bool GCFile::WriteByte(uint8_t byte)
 {
 	if (file == nullptr)
-		return -1;
+		return false;
 
 	return fputc(byte, file) != EOF;
 }

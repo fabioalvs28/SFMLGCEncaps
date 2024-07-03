@@ -9,16 +9,16 @@ class GCImage
 {
 private:
 
-	BYTE* rgba;
-	int m_width;
-	int height;
-	int bitCount;
-	int channels = bitCount / 8;
-	int rowPadded = (m_width * channels + 3) & (~3);
+	BYTE* m_rgba;
+	UI32 m_width;
+	UI32 m_height;
+	int m_bitCount;
+	int m_channels = m_bitCount / 8;
+	int m_rowStride = (m_width * m_channels + 3) & (~3);
 	int size;
 
 	std::vector<uint8_t> data;
-	uint32_t rowStride() const { return ((m_width * bitCount / 8) + 3) & ~3; }
+	uint32_t rowStride() const { return ((m_width * m_bitCount / 8) + 3) & ~3; }
 
 	void DrawLineLow(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	void DrawLineHigh(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
@@ -27,13 +27,13 @@ private:
 public:
 
 
-	GCImage(int w = 1600, int h = 1200, int bpp = 32) : m_width(w), height(h), bitCount(bpp)
+	GCImage(int w = 1600, int h = 1200, int bpp = 32) : m_width(w), m_height(h), m_bitCount(bpp)
 	{
-		channels = bitCount / 8;
-		rowPadded = (m_width * channels + 3) & (~3);
-		data.resize(m_width * height * channels, 0);
-		size = m_width * height * channels;
-		rgba = data.data();
+		m_channels = m_bitCount / 8;
+		m_rowStride = (m_width * m_channels + 3) & (~3);
+		data.resize(m_width * m_height * m_channels, 0);
+		size = m_width * m_height * m_channels;
+		m_rgba = data.data();
 	}
 
 	virtual ~GCImage();
@@ -49,7 +49,8 @@ public:
 	void Close();
 
 	void CreateEmptyImage(int w, int h, int bpp);
-	void SetPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void SetPixel(int x, int y, int r, int g, int b, int a);
+	void WritePixel(int x, int y, COLORREF color, int d = 0, int id = -1);
 	void DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	void DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	void FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);

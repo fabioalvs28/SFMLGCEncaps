@@ -16,8 +16,6 @@
             "sdl_check": "true",
             "preprocessor_definitions": "_DEBUG;_CONSOLE;%(PreprocessorDefinitions)",
             "conformance_mode": "true",
-            "precompiled_header": "Use",
-            "precompiled_header_file": "pch.h",
             "subsystem": "Console",
             "language_standard": "stdcpp20",
             "generate_debug_information": "true",

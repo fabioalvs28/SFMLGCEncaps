@@ -4,15 +4,18 @@
 #include "GCUtilities.h"
 
 
-
-
 class GCFile
 {
+private:
+
 public:
-	GCFile(const std::string& filename);
+	std::string filename;
+	const char* mode;
+
+
+	GCFile(const char* filename, const char* mode);
 	~GCFile();
 
-	FILE* file;
 	bool IsOpen() const;
 
 	bool Read(std::vector<uint8_t>& buffer, size_t size);
@@ -24,11 +27,9 @@ public:
 	int ReadByte();
 	bool WriteByte(uint8_t byte);
 
-	void Open(GCFile* file);
 	void Close();
 	void Leak();
 
-private:
-	const char* mode = "rw";
+	FILE* file;
 };
 
