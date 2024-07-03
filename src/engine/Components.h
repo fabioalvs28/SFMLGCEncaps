@@ -5,6 +5,7 @@
 class GCGameObject;
 
 // TODO Adding lots of stuff to the components
+// todo 2 transforms for colliders (self & wold)
 
 
 
@@ -78,11 +79,14 @@ public:
     ~Collider();
     
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
+    void SetVisible( bool showCollider ) { m_visible = showCollider; }
     
     bool IsTrigger() { return m_trigger; }
+    bool IsVisible() { return m_visible; }
 
 protected:
     bool m_trigger;
+    bool m_visible;
 
 };
 

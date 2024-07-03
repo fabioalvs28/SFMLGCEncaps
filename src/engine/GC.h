@@ -18,6 +18,6 @@ private:
     ~GC() = delete;
 
 private:
-    static inline GCGameManager m_pActiveGameManager = GCGameManager();
+public: static inline GCGameManager m_pActiveGameManager = GCGameManager();
 
 };

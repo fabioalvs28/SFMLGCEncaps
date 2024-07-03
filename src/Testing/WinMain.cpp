@@ -12,9 +12,10 @@
 #include "Transform.h"
 #include "Components.h"
 #include "GameObject.h"
-#include "SceneManager.h"
-// #include "GameManager.h"
 #include "Scene.h"
+#include "SceneManager.h"
+#include "GameManager.h"
+#include "GC.h"
 #include "SFML/Graphics.hpp"
 
 #include "PhysicManager.h"
@@ -197,7 +198,7 @@ int main()
 
 		if (pLuigi != nullptr)
 		{
-			luigiSprite.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, pLuigi->m_transform.m_position.y));
+			luigiSprite.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, -pLuigi->m_transform.m_position.y));
 			luigiSprite.setScale(sf::Vector2f(pLuigi->m_transform.m_scale.x, pLuigi->m_transform.m_scale.y));
 			window.draw(luigiSprite);
 			//window.draw(luigiBox);
@@ -206,7 +207,7 @@ int main()
 
 		if (pGoomba != nullptr)
 		{
-			goombaSprite.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, pGoomba->m_transform.m_position.y));
+			goombaSprite.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, -pGoomba->m_transform.m_position.y));
 			goombaSprite.setScale(sf::Vector2f(pGoomba->m_transform.m_scale.x, pGoomba->m_transform.m_scale.y));
 			window.draw(goombaSprite);
 			window.draw(goombaBox);
@@ -215,6 +216,7 @@ int main()
 
 
 
+		GC::m_pActiveGameManager.Update();
 		window.display();
 	}
 

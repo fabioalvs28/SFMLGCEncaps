@@ -6,7 +6,6 @@
 #include "GameObject.h"
 
 // todo RenderQueue
-// todo CreationQueue
 
 
 
@@ -46,7 +45,15 @@ GCScene* GCSceneManager::CreateScene()
 	GCScene* pScene = new GCScene();
     m_scenesList.PushBack( pScene );
 	pScene->m_pNode = m_scenesList.GetLastNode();
+	if ( m_pActiveScene == nullptr ) SetActiveScene( pScene );
 	return pScene;
+}
+
+void GCSceneManager::SetActiveScene( GCScene* pScene )
+{
+	if ( m_pActiveScene != nullptr ) m_pActiveScene->m_active = false;
+    m_pActiveScene = pScene;
+    m_pActiveScene->m_active = true;
 }
 
 /////////////////////////////////////////////////////////
@@ -70,7 +77,7 @@ void GCSceneManager::UnloadScene( GCScene* pScene )
 {
 	GCListNode<GCScene*>* pLoadedNode = pScene->m_pLoadedNode;
 	if ( pLoadedNode == nullptr ) return;
-	m_loadedScenesList.DeleteNode( pLoadedNode );
+	pLoadedNode->Delete();
 	pScene->m_pLoadedNode = nullptr;
 }
 
@@ -84,7 +91,7 @@ void GCSceneManager::UnloadScene( GCScene* pScene )
 void GCSceneManager::DestroyScene( GCScene* pScene )
 {
 	UnloadScene( pScene );
-	m_scenesList.DeleteNode( pScene->m_pNode );
+	pScene->m_pNode->Delete();
 	pScene->RemoveParent();
     delete pScene;
 }
