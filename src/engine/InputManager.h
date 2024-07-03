@@ -1,7 +1,7 @@
 #pragma once
 #include <windows.h>
 #include "../core/framework.h"
-#include "EventSystem.h"
+#include "EventManager.h"
 
 /// ControllerKeys
 #define GC_CONTROLLER_A                        0x5800
