@@ -65,7 +65,7 @@ bool GCWindow::Initialize()
 
 void GCWindow::DestroyWindow()
 {
-    UnregisterClass(m_properties.Title, GetModuleHandle(NULL));
+
 }
 
 LRESULT GCWindow::OnEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -101,7 +101,7 @@ LRESULT GCWindow::HandleEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         GCWindowCloseEvent ev;
         m_windowCallback(ev);
         PostQuitMessage(0);
-        break;
+        return 0;
     }
     case WM_SIZE:
     {

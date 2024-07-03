@@ -6,9 +6,10 @@
 
 void GCGameManager::Init()
 {
+    m_pEventManager = GCEventManager();
     m_pSceneManager = GCSceneManager();
-    m_pInputManager = GCInputManager();
-}
+    m_pInputManager = GCInputManager(&m_pEventManager);
+} 
 
 void GCGameManager::Update()
 {

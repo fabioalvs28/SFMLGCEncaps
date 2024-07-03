@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Event.h"
 
 typedef std::function<void()> WindowCallback;
 
