@@ -1,12 +1,13 @@
 #pragma once
 
 #include "GCWindow.h"
+#include "GameManager.h"
 
 /// <summary>
 /// This class is different from Engine.h
 /// This class is the application class in the engine
 /// </summary>
-class GCEngine
+class GCEngine 
 {
 public:
     static GCEngine& Get()
@@ -21,10 +22,12 @@ public:
     void OnEvent(GCEvent& ev);
 
 private:
-	GCEngine();
+    GCEngine();
 	~GCEngine();
 
 	bool InitWindow();
+
+    bool InitEngine();
     
     //TODO: Initialize D3D12 here
     bool InitD3D12();

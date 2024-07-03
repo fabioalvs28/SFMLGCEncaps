@@ -11,23 +11,41 @@
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 
 
+
 GCInputManager::GCInputManager()
 {
 
     //m_pWindow->winPos = { 10 ,10 }; m_pWindow->winSize = { 800, 500 }; m_pWindow->center = { m_pWindow->winSize.x / 2 , m_pWindow->winSize.y / 2 }; // !! valeur random de la fenêtre à changer quand on aura la bonne window !!
-    for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
+    for (int i = 0; i < XUSER_MAX_COUNT; i++)
     {
-        m_controllerList.PushBack( nullptr );
+        m_controllerList.PushBack(nullptr);
+    }
+
+    for (int i = 0; i < 255; i++)
+    {
+        m_keyState.PushBack(NONE);
+    }
+    
+}
+
+GCInputManager::GCInputManager(GCEventManager* eventManager) :
+    m_eventManager(eventManager)
+{
+    m_eventManager->Subscribe(this, &GCInputManager::OnEvent);
+    for (int i = 0; i < XUSER_MAX_COUNT; i++)
+    {
+        m_controllerList.PushBack(nullptr);
+    }
+
+    for (int i = 0; i < 255; i++)
+    {
+        m_keyState.PushBack(NONE);
     }
 }
 
-
-// <summary>
-// Function to get connected controllers.
-// This function checks for connected controllers using XInputGetState.
-// If a controller is connected and not already in the controller list,
-// it creates a new ControllerInput object for that controller and adds it to the list.
-// </summary>
+////////////////////////////////////////////////////
+/// @brief Function to get connected controllers.
+////////////////////////////////////////////////////
 void GCInputManager::GetConnectedController()
 {
 
@@ -44,16 +62,13 @@ void GCInputManager::GetConnectedController()
     }
 }
 
-
-// <summary>
-// Updates all input devices and their states.
-// This function iterates through all connected controllers, updates their input states,
-// and calls the respective update functions for the keyboard and mouse.
-// It also sets the boolean flags for keyboard, mouse, and controller activity.
-// </summary>
+/////////////////////////////////////////////////////////
+/// @brief Updates all input devices and their states.
+/// 
+/// @note Must be called every gameloop.
+/////////////////////////////////////////////////////////
 void GCInputManager::UpdateInputs()
 {
-    m_updatedKeys.Clear();
 
     for (int i = 0; i < 255; i++)
     {
@@ -66,7 +81,7 @@ void GCInputManager::UpdateInputs()
             case NONE:
                 AddToUpdateList(i, DOWN);
                 break;
-            case PUSH:
+            case PUSH : 
                 AddToUpdateList(i, PUSH);
                 break;
             case UP:
@@ -78,7 +93,7 @@ void GCInputManager::UpdateInputs()
 
             }
         }
-        else
+        else if (m_keyState[i] != NONE)
         {
 
             switch (m_keyState[i])
@@ -87,7 +102,7 @@ void GCInputManager::UpdateInputs()
                 AddToUpdateList(i, UP);
                 break;
             case UP:
-                m_keyState[i] = NONE;
+                AddToUpdateList(i, NONE);
                 break;
             case DOWN:
                 AddToUpdateList(i, UP);
@@ -107,18 +122,48 @@ void GCInputManager::UpdateInputs()
 
 void GCInputManager::AddToUpdateList(int index, BYTE state)
 {
+    if (state == GCKeyState::DOWN)
+    {
+        m_eventManager->PushEvent(new GCKeyPressedEvent(index));
+    }
+    else if (state == GCKeyState::UP)
+    {
+        m_eventManager->PushEvent(new GCKeyReleased(index));
+    }
+
     m_keyState[index] = state;
-    m_updatedKeys.PushBack(index);
-
 }
 
-bool GCInputManager::IsKeyPressed()
+void GCInputManager::OnEvent(GCEvent& ev)
 {
-    if (m_updatedKeys.GetSize() != 0)
-        return true;
-    return false;
+    GCEventDispatcher dispatcher(ev);
+
+    dispatcher.Dispatch<GCKeyPressedEvent>([](GCKeyPressedEvent& ev)
+        {
+            std::cout << "Key: " << ev.GetKeyID() << " is pressed" << std::endl;
+            return true;
+        });
+
+    dispatcher.Dispatch<GCKeyReleased>([](GCKeyReleased& ev)
+        {
+            std::cout << "Key: " << ev.GetKeyID() << " is released" << std::endl;
+            return true;
+        });
 }
 
+//bool GCInputManager::IsKeyPressed()
+//{
+//    if (m_updatedKeys.GetSize() != 0)
+//        return true;
+//    return false;
+//}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Return true if the given key have been pressed or relased in the frame
+/// 
+/// @param keyID : key's index in the list. 
+////////////////////////////////////////////////////////////////////////////////////
 bool GCInputManager::IsKeyPressed(int keyID)
 {
     if (m_keyState[keyID] != NONE)
@@ -126,52 +171,42 @@ bool GCInputManager::IsKeyPressed(int keyID)
     return false;
 }
 
+//
+//bool GCInputManager::IsControllerPressed(int controllerID)
+//{
+//    if (m_controllerList[controllerID] == nullptr) return false; 
+//    if (m_controllerList[controllerID]->m_updatedControllerKeys.GetSize() != 0) return true; 
+//    return false;
+//}
 
-bool GCInputManager::IsControllerPressed(int controllerID)
-{
-    if (m_controllerList[controllerID] == nullptr) return false; 
-    if (m_controllerList[controllerID]->m_updatedControllerKeys.GetSize() != 0) return true; 
-    return false;
-}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Return true if the given controller key have been pressed or relased in the frame
+/// 
+/// @param controllerID : ID of the controller, you want to key the button state.  
+/// 
+/// @param button : button's index in the list. 
+///////////////////////////////////////////////////////////////////////////////////////////////
 bool GCInputManager::IsControllerKeyPressed(int controllerID, int button)
 {
     if (m_controllerList[controllerID] == nullptr) return false;
-    if (m_controllerList[controllerID]->m_updatedControllerKeys[button] != NONE) return true;
+    if (m_controllerList[controllerID]->m_pListofControllerKeys[button] != NONE ) return true;
     return false;
 }
+//
+//GCVector<int>* GCInputManager::GetControllereUpdatekeys(int controllerID)
+//{
+//    if (m_controllerList[controllerID] == nullptr) return nullptr;
+//    return &m_controllerList[controllerID]->m_updatedControllerKeys;
+//}
 
-GCVector<int>* GCInputManager::GetControllereUpdatekeys(int controllerID)
-{
-    if (m_controllerList[controllerID] == nullptr) return nullptr;
-    return &m_controllerList[controllerID]->m_updatedControllerKeys;
-}
 
-
-bool GCInputManager::GetControllerButtonDown(int key)
-{
-    if (m_keyState[key] == DOWN)
-    {
-        return true;
-    }
-    return false;
-}
-bool GCInputManager::GetControllerButtonStay(int key)
-{
-    if (m_keyState[key] == PUSH)
-    {
-        return true;
-    }
-    return false;
-}
-bool GCInputManager::GetControllerButtonUp(int key)
-{
-    if (m_keyState[key] == UP)
-    {
-        return true;
-    }
-    return false;
-}
-
+///////////////////////////////////////////////////////
+/// @brief Return true if the given key is DOWN  
+/// 
+/// @param key key's index in the list. 
+///////////////////////////////////////////////////////
 bool GCInputManager::GetKeyDown(int key)
 {
     if (m_keyState[key] == DOWN)
@@ -181,7 +216,11 @@ bool GCInputManager::GetKeyDown(int key)
     return false;
 }
 
-
+///////////////////////////////////////////////////////
+/// @brief Return true if the given key is PUSH
+/// 
+/// @param key key's index in the list. 
+///////////////////////////////////////////////////////
 bool GCInputManager::GetKeyStay(int key)
 {
     if (m_keyState[key] == PUSH)
@@ -191,7 +230,11 @@ bool GCInputManager::GetKeyStay(int key)
     return false;
 }
 
-
+/////////////////////////////////////////////////////
+/// @brief Return true if the given key is UP
+/// 
+/// @param key key's index in the list. 
+/////////////////////////////////////////////////////
 bool GCInputManager::GetKeyUp(int key)
 {
     if (m_keyState[key] == UP)
@@ -207,12 +250,6 @@ bool GCInputManager::GetKeyUp(int key)
 GCMouseInput::GCMouseInput()
 {
     m_canLeaveWin = true;
-
-    for (int i = 0; i < 6; i++)
-    {
-        m_pMouseButtons.PushBack(NONE);
-    }
-
     m_mousePos = { 0,0 };
 }
 
@@ -298,6 +335,7 @@ GCControllerInput::GCControllerInput()
     }
 }
 
+
 GCControllerInput::GCControllerInput(int id)
 {
     m_ID = id;
@@ -310,13 +348,11 @@ GCControllerInput::GCControllerInput(int id)
     }
 }
 
-
-// <summary>
-// Function to check if a specific controller button is in the DOWN state.
-// This function checks the state of a given virtual button in the m_pListofControllerKeys array.
-// If the state is DOWN, it returns true. Otherwise, it returns false.
-// </summary>
-// <param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
+////////////////////////////////////////////////////////////////
+/// @brief Return true if the given controller button is DOWN  
+/// 
+/// @param vButton button's index in the list. 
+////////////////////////////////////////////////////////////////
 bool GCControllerInput::GetControllerButtonDown(int vButton)
 {
     int index = 0x5800;
@@ -328,13 +364,11 @@ bool GCControllerInput::GetControllerButtonDown(int vButton)
     return false;
 }
 
-
-// <summary>
-// Function to check if a specific controller button is in the PUSH state.
-// This function checks the state of a given virtual button in the m_pListofControllerKeys array.
-// If the state is PUSH, it returns true. Otherwise, it returns false.
-// </summary>
-// <param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
+/////////////////////////////////////////////////////////////////
+/// @brief Return true if the given controller button is PUSH  
+/// 
+/// @param vButton button's index in the list. 
+/////////////////////////////////////////////////////////////////
 bool GCControllerInput::GetControllerButtonStay(int vButton)
 {
     int index = 0x5800;
@@ -346,13 +380,11 @@ bool GCControllerInput::GetControllerButtonStay(int vButton)
     return false;
 }
 
-
-// <summary>
-// Function to check if a specific controller button is in the UP state.
-// This function checks the state of a given virtual button in the m_pListofControllerKeys array.
-// If the state is UP, it returns true. Otherwise, it returns false.
-// </summary>
-// <param name="vButton"> The virtual button code to check. It should be a valid virtual button code. </param>
+//////////////////////////////////////////////////////////////
+/// @brief Return true if the given controller button is UP
+/// 
+/// @param vButton button's index in the list. 
+//////////////////////////////////////////////////////////////
 bool GCControllerInput::GetControllerButtonUp(int vButton)
 {
     int index = 0x5800;
@@ -365,15 +397,13 @@ bool GCControllerInput::GetControllerButtonUp(int vButton)
 }
 
 
-// <summary>
-// Updates the state of the controller's buttons.
-// This function checks for keystrokes from the controller and updates the state of the buttons.
-// It also handles the transition between different button states (DOWN, UP, PUSH).
-// </summary>
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the state of the controller's buttons.
+/// 
+/// @note Calls the function to update joysticks and triggers' analog state
+///////////////////////////////////////////////////////////////////////////////
 void GCControllerInput::UpdateControllerInput()
 {
-    m_updatedControllerKeys.Clear();
-
     XINPUT_KEYSTROKE key;
 
     int j = 0;
@@ -394,17 +424,12 @@ void GCControllerInput::UpdateControllerInput()
                 {
                 case NONE:
                     m_pListofControllerKeys[key.VirtualKey - j] = DOWN;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
-                case PUSH: 
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                 case UP:
                     m_pListofControllerKeys[key.VirtualKey - j] = DOWN;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case DOWN:
                     m_pListofControllerKeys[key.VirtualKey - j] = PUSH;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 }
             }
@@ -415,15 +440,12 @@ void GCControllerInput::UpdateControllerInput()
                 {
                 case PUSH:
                     m_pListofControllerKeys[key.VirtualKey - j] = UP;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case UP:
                     m_pListofControllerKeys[key.VirtualKey - j] = NONE;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
                 case DOWN:
                     m_pListofControllerKeys[key.VirtualKey - j] = UP;
-                    AddtoControllerListUpdate(key.VirtualKey - j);
                     break;
 
                 }
@@ -435,13 +457,14 @@ void GCControllerInput::UpdateControllerInput()
     UpdateTriggers();
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the state of the controller's joysticks.
+/// 
+/// @note This function retrieves the state of the controller's left and right joystick axes 
+/// and normalizes the values to a range between -1.0 and 1.0.
+/// 
+///////////////////////////////////////////////////////////////////////////////////////////////
 
-// <summary>
-// Updates the state of the controller's joystick axes.
-// This function retrieves the state of the controller's left and right joystick axes
-// and normalizes the values to a range between -1.0 and 1.0.
-// The normalized values are stored in the m_pControllersLeftAxis and m_pControllersRightAxis arrays.
-// </summary>
 void GCControllerInput::UpdateJoySticksinput()
 {
     XINPUT_STATE state;
@@ -472,7 +495,6 @@ void GCControllerInput::UpdateJoySticksinput()
         }
 
 
-        if (rLX != 0.0 || rLY != 0.0 ) AddtoControllerListUpdate(16);
 
 
         m_pControllersLeftAxis.x = rLX; m_pControllersLeftAxis.y = rLY;
@@ -500,19 +522,18 @@ void GCControllerInput::UpdateJoySticksinput()
             rRX = 0.0, rRY = 0.0;
         }
 
-        if (rRX != 0.0 || rRY != 0.0) AddtoControllerListUpdate(17);
 
         m_pControllersRightAxis.x = rRX; m_pControllersRightAxis.y = rRY;
     }
 }
 
-
-// <summary>
-// Updates the state of the controller's triggers.
-// This function retrieves the state of the controller's left and right trigger
-// and normalizes the values to a range between 0.0 and 1.0.
-// The normalized values are stored in the m_pControllerTrigger arrays.
-// </summary>
+//////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the state of the controller's triggers.
+/// 
+/// @note This function retrieves the state of the controller's left and right triggers
+/// and normalizes the values to a range between 0.0 and 1.0.
+/// 
+//////////////////////////////////////////////////////////////////////////////////////////
 void GCControllerInput::UpdateTriggers()
 {
     XINPUT_STATE state; 
@@ -522,16 +543,14 @@ void GCControllerInput::UpdateTriggers()
         float rTriggerState = state.Gamepad.bRightTrigger;
 
         lTriggerState /= 255;  rTriggerState /= 255;
-        
-        if (lTriggerState != 0.0f) AddtoControllerListUpdate(18); 
-        if (rTriggerState != 0.0f) AddtoControllerListUpdate(19); 
+         
 
         m_pControllerTrigger.x = lTriggerState; m_pControllerTrigger.y = rTriggerState; 
     }
 }
 
-
-void GCControllerInput::AddtoControllerListUpdate(int index)
-{
-    m_updatedControllerKeys.PushBack(index);
-}
+//
+//void GCControllerInput::AddtoControllerListUpdate(int index)
+//{
+//    //
+//}

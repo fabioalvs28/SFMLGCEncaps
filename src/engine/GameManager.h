@@ -24,5 +24,5 @@ protected:
     GCSceneManager m_pSceneManager;
     GCInputManager m_pInputManager;
     GCPhysicManager m_pPhysicManager;
+    GCEventManager m_pEventManager;
 };
-
