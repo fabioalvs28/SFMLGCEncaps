@@ -38,20 +38,6 @@ GCControllerManager::GCControllerManager()
 
 }
 
-GCInputManager::GCInputManager(GCEventManager* eventManager) :
-    m_eventManager(eventManager)
-{
-    m_eventManager->Subscribe(this, &GCInputManager::OnEvent);
-    for (int i = 0; i < XUSER_MAX_COUNT; i++)
-    {
-        m_controllerList.PushBack(nullptr);
-    }
-
-    for (int i = 0; i < 255; i++)
-    {
-        m_keyState.PushBack(NONE);
-    }
-}
 
 ////////////////////////////////////////////////////
 /// @brief Function to get connected controllers.
