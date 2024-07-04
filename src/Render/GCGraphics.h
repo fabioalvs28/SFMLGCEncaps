@@ -172,6 +172,7 @@ public:
 	// Update Constant Buffer 
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 
+	void Resize(int width, int height);
 	// Update ViewProj, use for Camera
 	void UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 	// Update world cb buffer with GCWORLDCB Struct
@@ -208,8 +209,6 @@ private:
 	void CreateCBCamera();
 
 	// Render instance contain Window
-	int m_renderWidth;
-	int	m_renderHeight;
 
 	GCRender* m_pRender;
 

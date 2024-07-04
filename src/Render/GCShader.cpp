@@ -350,5 +350,5 @@ void GCShader::Load() {
 }
 
 void GCShader::SetRenderTarget(ID3D12Resource* rtt) {
-	rtvHandle = rtt;
+	m_pRtt = rtt;
 }

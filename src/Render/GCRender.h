@@ -59,6 +59,7 @@ public:
 	 *
 	 * @param Mesh.
 	 * @param Material.
+	 * @param Alpha(true for transparency,false for opaque).
 	 * @return True if the drawing was a success/false otherwise.
 	 */
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial,bool alpha);
@@ -87,6 +88,10 @@ public:
 	inline UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
 	inline UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
+	inline UINT GetRenderWidth() const { return m_renderWidth; }
+	inline UINT GetRenderHeight() const { return m_renderHeight; }
+
+	inline void ResizeRender(int width, int height) { m_renderWidth = width;  m_renderHeight = height;}
 	GCShaderUploadBufferBase* m_pCurrentViewProj;
 
 	Window* GetCurrentWindow() { return m_pWindow; }

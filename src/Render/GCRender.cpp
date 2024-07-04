@@ -460,7 +460,7 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
 
-	if(pMaterial->GetShader()->rtvHandle == nullptr)
+	if(pMaterial->GetShader()->m_pRtt == nullptr)
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
 		D3D12_CPU_DESCRIPTOR_HANDLE cbbv = CurrentBackBufferView();
@@ -468,9 +468,8 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
 	}
 	else {
 		D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
-		//m_CommandList->ClearRenderTargetView(*pMaterial->GetShader()->rtvHandle, DirectX::Colors::LightBlue, 1, &m_ScissorRect);
 		CD3DX12_CPU_DESCRIPTOR_HANDLE test = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 2, m_rtvDescriptorSize);
-		//CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(pMaterial->GetShader()->rtvHandle, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		//CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(pMaterial->GetShader()->m_pRtt, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 		//m_CommandList->ResourceBarrier(1, &ResBar);
 		//m_CommandList->ClearRenderTargetView(test, DirectX::Colors::LightBlue, 1, &m_ScissorRect);
 		//m_CommandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);

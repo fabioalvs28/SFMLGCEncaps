@@ -34,7 +34,7 @@ public:
 	void Load();
 	void SetRenderTarget(ID3D12Resource* rtt);
 	GCRender* m_pRender;
-	ID3D12Resource* rtvHandle = nullptr;
+	ID3D12Resource* m_pRtt = nullptr;
 protected:
 
 	ID3D12RootSignature* m_RootSignature;

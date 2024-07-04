@@ -156,7 +156,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 	// ***********
-
+	graphics->Resize(200, 200);
 	graphics->StartFrame();
 
 	// DRAW -> ONE FRAME

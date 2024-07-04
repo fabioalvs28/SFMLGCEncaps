@@ -57,9 +57,6 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     //Initializes Graphics for a window
     m_pRender = new GCRender();
     m_pRender->Initialize(pWindow, renderWidth, renderHeight);
-    
-    m_renderWidth = renderWidth;
-    m_renderHeight = renderHeight;
 
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
@@ -470,7 +467,7 @@ void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 
 
 DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view) {
-    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);
+    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pRender->GetRenderWidth(), m_pRender->GetRenderHeight(), proj, view);
 
     DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 
@@ -478,4 +475,9 @@ DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT
     DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixTranspose(translationMatrix));
 
     return worldMatrix;
+}
+
+void GCGraphics::Resize(int width, int height) {
+    m_pRender->ResizeRender(width, height);
+    m_pRender->OnResize();
 }
