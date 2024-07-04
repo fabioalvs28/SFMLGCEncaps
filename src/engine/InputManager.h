@@ -98,7 +98,14 @@ public:
         return KeyboardState::KEYSTATECOUNT;
     };
 
-    void RegisterEvent(GCEventManager* eventmanager, void (*function)());
+    void RegisterEvent(GCEventManager* eventmanager);
+
+
+    template<typename Func>
+    void SetKeyInputCallback(BYTE state, int keyId, Func&& func)
+    {
+        callbacks[state][keyId] = func;
+    }
 
 private:
 

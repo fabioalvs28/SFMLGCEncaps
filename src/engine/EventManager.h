@@ -6,11 +6,14 @@
 #include "../core/Map.h"
 #include "../core/Vector.h"
 #include "../core/Queue.h"
+#include "InputManager.h"
 
-using GCEventCallback = std::function<void(GCEvent& ev)>;
+class GCInputManager;
+class GCKeyboardInputManager;
 
 class GCEventManager
 {
+using GCEventCallback = std::function<void(GCEvent& ev)>;
 public:
 	GCEventManager();
 	/// <summary>
@@ -34,7 +37,18 @@ public:
 	void Subscribe(GCEventType eventType, T* instance, const GCEventCallback& callback)
 	{
 		const GCEventCallback& func = callback;
-		m_eventCallback[eventType].push_back([=](GCEvent& ev) { func(ev); });
+		m_eventCallbacks[eventType].push_back([=](GCEvent& ev) { func(ev); });
+	}
+
+	template<typename T, typename Event>
+	void Subscribe(GCEventType eventType, T* instance, void (T::* memberFunction)(Event&))
+	{
+		auto callback = [instance, memberFunction](GCEvent& ev)
+			{
+				Event& event = static_cast<Event&>(ev);
+				(instance->*memberFunction)(event);
+			};
+		m_eventCallbacks[eventType].push_back(callback);
 	}
 
 	/// <summary>
@@ -50,12 +64,7 @@ public:
 		m_systemCallback.push_back(func);
 	}
 
-	template<typename Func>
-	void Subscribe(int keyCode, BYTE state, Func&& func)
-	{
-		auto callback = [func](GCEvent&) { func(); };
-		//eventCallbacks[keyCode][state].push_back(callback);
-	}
+	void Subscribe(int keyCode, BYTE state, std::function<void()> func);
 
 	/// <summary>
 	/// Removes an event listener based on its type and unique ListenerID.
@@ -64,6 +73,7 @@ public:
 	/// <param name="id">The unique identifier ID to the callback</param>
     void Unsubscribe(GCEventType type /*pass string as second parameter to identify the listener*/);
 
+	void SetKeyboardInputManager(GCKeyboardInputManager* keyboardInputManager);
 private:
 	/// <summary>
 	/// Dispatches the event to all registered callback for the event's type.
@@ -73,9 +83,9 @@ private:
 	void OnEvent(GCEvent& e);
 
 private:
-	std::map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventCallback;
+	std::map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventCallbacks;
 	std::vector<std::function<void(GCEvent&)>> m_systemCallback;
     GCQueue<GCEvent*> m_eventQueue;
 
-
+	GCKeyboardInputManager* m_keyboardInputManager = nullptr;
 };
