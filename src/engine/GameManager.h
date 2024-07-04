@@ -2,29 +2,35 @@
 #include "SceneManager.h"
 #include "InputManager.h"
 #include "PhysicManager.h"
+#include "RenderManager.h"
 
 class Collider;
 class GCGameObject;
 class GCScene;
 class GC;
+class SpriteRenderer;
 
-class GCGameManager 
+class GCGameManager
 {
-friend class Collider;
-friend class GCGameObject;
-friend class GCScene;
-friend class GC;
+    friend class SpriteRenderer;
+    friend class Collider;
+    friend class GCGameObject;
+    friend class GCScene;
+    friend class GC;
 
 protected:
     GCGameManager() = default;
     virtual ~GCGameManager() = default;
-    
+
 public: void Init();
 public: void Update();
-    
+
 protected:
-    GCSceneManager m_pSceneManager;
     GCInputManager m_pInputManager;
     GCPhysicManager m_pPhysicManager;
     GCEventManager m_pEventManager;
+    GCSceneManager m_pSceneManager;
+
+public:
+    GCRenderManager m_pRenderManager;
 };

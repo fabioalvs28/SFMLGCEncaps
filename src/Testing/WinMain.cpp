@@ -20,7 +20,9 @@
 #include "SceneManager.h"
 #include "GameManager.h"
 #include "GC.h"
-#include "SFML/Graphics.hpp"
+#include "RenderManager.h"
+#include "Components.h"
+//#include "SFML/Graphics.hpp"
 
 #include "PhysicManager.h"
 #include "Log.h"
@@ -49,14 +51,23 @@ struct GCTest : GCSHADERCB {
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 
+	GC::m_pActiveGameManager.Init();
+
+
 	GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
 	profiler.InitializeConsole();
 
 	Window* window = new Window(hInstance);
 	window->Initialize();
 
-	GCGraphics* graphics = new GCGraphics();
-	graphics->Initialize(window, 1920, 1080);
+	//GCGraphics* graphics = new GCGraphics();
+	GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics->Initialize(window, 1920, 1080);
+
+
+	GC::m_pActiveGameManager.m_pRenderManager.CreateGeometry();
+
+	SpriteRenderer test1 = SpriteRenderer();
+	SpriteRenderer test2 = SpriteRenderer();
 
 	int flagsTexture = 0;
 	SET_FLAG(flagsTexture, HAS_POSITION);
@@ -66,39 +77,48 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SET_FLAG(flagsColor, HAS_POSITION);
 	SET_FLAG(flagsColor, HAS_COLOR);
 
+	test1.SetColor();
+	test2.SetSprite("../../../src/Render/Textures/texture.dds");
 
-	// Geometry (Resource)
-	GCGeometry* geo = graphics->CreateGeometryPrimitiveTexture("plane");
-	GCGeometry* geo1 = graphics->CreateGeometryPrimitiveTexture("cube");
-	GCGeometry* geo2 = graphics->CreateGeometryModelParserColor("../../../src/Render/monkeyUv.obj", DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f), obj);
-
-	std::string shaderFilePath = "../../../src/Render/Shaders/customTest.hlsl";
-	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
-
-	GCShader* shader1 = graphics->CreateShaderColor();
-	//GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, flagsTexture);
+	test1.pos = { 400,400 };
+	test2.pos = { 800,800 };
 
 
-	GCShader* shader2 = graphics->CreateShaderTexture();
+	//// Geometry (Resource)
+	//GCGeometry* geo = graphics->CreateGeometryPrimitiveTexture("plane");
+	//GCGeometry* geo1 = graphics->CreateGeometryPrimitiveTexture("cube");
+	//GCGeometry* geo2 = graphics->CreateGeometryModelParserColor("../../../src/Render/monkeyUv.obj", DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f), obj);
 
-	graphics->InitializeGraphicsResourcesStart();
+	//std::string shaderFilePath = "../../../src/Render/Shaders/customTest.hlsl";
+	//std::string csoDestinationPath = "../../../src/Render/CsoCompiled/custom";
 
-	// Mesh (Resource)
-	GCMesh* mesh = graphics->CreateMesh(geo);
-	//GCMesh* mesh1 = graphics->CreateMesh(geo1);
+	//GCShader* shader1 = graphics->CreateShaderColor();
+	////GCShader* shader2 = graphics->CreateShaderCustom(shaderFilePath, csoDestinationPath, flagsTexture);
 
-	GCMesh* mesh2 = graphics->CreateMesh(geo2);
+	//GCShader* shader2 = graphics->CreateShaderTexture();
 
-	// Texture (Resource)
-	std::string texturePath = "../../../src/Render/Textures/texture.dds";
-	GCTexture* texture = graphics->CreateTexture(texturePath);
+	//graphics->InitializeGraphicsResourcesStart();
 
-	graphics->InitializeGraphicsResourcesEnd();
+	//// Mesh (Resource)
+	//GCMesh* mesh = graphics->CreateMesh(geo);
+	////GCMesh* mesh1 = graphics->CreateMesh(geo1);
 
-	// Material (Resource)
-	GCMaterial* material = graphics->CreateMaterial(shader1);
-	GCMaterial* material2 = graphics->CreateMaterial(shader2);
-	material2->SetTexture(texture);
+	//GCMesh* mesh2 = graphics->CreateMesh(geo2);
+
+	//// Texture (Resource)
+	//std::string texturePath = "../../../src/Render/Textures/texture.dds";
+	//GCTexture* texture = graphics->CreateTexture(texturePath);
+
+	//graphics->InitializeGraphicsResourcesEnd();
+
+	//// Material (Resource)
+	//GCMaterial* material = graphics->CreateMaterial(shader1);
+	//GCMaterial* material2 = graphics->CreateMaterial(shader2);
+	//material2->SetTexture(texture);
+
+
+	//##################################
+
 
 	// PERSPECTIVE 
 
@@ -120,52 +140,52 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 	// ***********
 
-
-//// SET CAMERA
-	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);  // Position de la caméra
-	DirectX::XMVECTOR targetPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // Point visé par la caméra
-	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);       // Vecteur "up" de la caméra
-
-	// Projection orthographique
-	float viewWidth = 10.0f;    // Largeur de la vue
-	float viewHeight = 10.0f;   // Hauteur de la vue
-	float nearZ = 0.1f;         // Plan proche
-	float farZ = 100.0f;        // Plan éloigné
-
-	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, nearZ, farZ);
-	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
-
-	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
-	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-
-	DirectX::XMFLOAT4X4 storedProjectionMatrix;
-	DirectX::XMFLOAT4X4 storedViewMatrix;
-
-	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 //
-//	// ****************
+////// SET CAMERA
+//	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);  // Position de la caméra
+//	DirectX::XMVECTOR targetPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // Point visé par la caméra
+//	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);       // Vecteur "up" de la caméra
+//
+//	// Projection orthographique
+//	float viewWidth = 10.0f;    // Largeur de la vue
+//	float viewHeight = 10.0f;   // Hauteur de la vue
+//	float nearZ = 0.1f;         // Plan proche
+//	float farZ = 100.0f;        // Plan éloigné
+//
+//	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, nearZ, farZ);
+//	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
+//
+//	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
+//	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
+//
+//	DirectX::XMFLOAT4X4 storedProjectionMatrix;
+//	DirectX::XMFLOAT4X4 storedViewMatrix;
+//
+//	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
+//	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+	//
+	//	// ****************
 
-	/*
-	float left = -1.0f;
-	float right = 1.0f;
-	float bottom = -1.0f;
-	float top = 1.0f;
+		/*
+		float left = -1.0f;
+		float right = 1.0f;
+		float bottom = -1.0f;
+		float top = 1.0f;
 
-	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixOrthographicOffCenterLH(left, right, bottom, top, 0.0f, 1.0f);
-	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity();
+		DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixOrthographicOffCenterLH(left, right, bottom, top, 0.0f, 1.0f);
+		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity();
 
-	DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
-	DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
+		DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
+		DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
 
-	DirectX::XMFLOAT4X4 storedProjectionMatrix;
-	DirectX::XMFLOAT4X4 storedViewMatrix;
+		DirectX::XMFLOAT4X4 storedProjectionMatrix;
+		DirectX::XMFLOAT4X4 storedViewMatrix;
 
-	DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-	DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
-	*/
+		DirectX::XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
+		DirectX::XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+		*/
 
-	// SET WORLD
+		// SET WORLD
 
 	DirectX::XMFLOAT4X4 I(
 		0.5f, 0.0f, 0.0f, 0.0f,
@@ -178,35 +198,36 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 
+	GC::m_pActiveGameManager.m_pRenderManager.Update();
+
+	//// ***********
+
+	//graphics->StartFrame();
+
+	//// DRAW -> ONE FRAME
+	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+
+	//GCTest test = graphics->ToPixel<GCTest>(800, 800, storedProjectionMatrix, storedViewMatrix);
+
+	////GCTest test;
+
+	////DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
+	////DirectX::XMStoreFloat4x4(&test.world, identityMatrix);
+	////test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
+
+	//graphics->UpdateCustomCBObject<GCTest>(material2, test);
+	//graphics->GetRender()->DrawObject(mesh, material2);
+
+	////graphics->UpdateCustomCBObject<GCTest>(material, worldData);
+	////graphics->GetRender()->DrawObject(mesh, material);
+
+	////profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
 
 
-	// ***********
+	//graphics->EndFrame();
+	//// ********************
 
-	graphics->StartFrame();
-
-	// DRAW -> ONE FRAME
-	graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-
-	GCTest test = graphics->ToPixel<GCTest>(400, 400, storedProjectionMatrix, storedViewMatrix);
-	//GCTest test;
-
-	//DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
-	//DirectX::XMStoreFloat4x4(&test.world, identityMatrix);
-	//test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
-
-	graphics->UpdateCustomCBObject<GCTest>(material2, test);
-	graphics->GetRender()->DrawObject(mesh, material2);
-
-	//graphics->UpdateCustomCBObject<GCTest>(material, worldData);
-	//graphics->GetRender()->DrawObject(mesh, material);
-
-	//profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
-
-
-	graphics->EndFrame();
-	// ********************
-
-	window->Run(graphics->GetRender());
+	window->Run(GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics->GetRender());
 	//// Loop Again < |||| >
 
 	//graphics->GetRender()->PrepareDraw();
@@ -218,251 +239,253 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//window->Run(graphics->GetRender());
 
-    CreateConsole();
-    ECSTesting::GetInstance().RunTests();
-    std::cout << "Logging to console..." << std::endl;
-    
-    GCEventSystem* ev = new GCEventSystem();
-    GCWindow *w = new GCWindow(hInstance, nCmdShow, *ev);
-    w->Create(L"Testing", 800, 600);
-    w->Show(nCmdShow);
+	//CreateConsole();
+	//ECSTesting::GetInstance().RunTests();
+	//std::cout << "Logging to console..." << std::endl;
 
-	GCGameManager *GameManager = new GCGameManager();
-    GameManager->Init();
+	//GCEventSystem* ev = new GCEventSystem();
+	//GCWindow* w = new GCWindow(hInstance, nCmdShow, *ev);
+	//w->Create(L"Testing", 800, 600);
+	//w->Show(nCmdShow);
 
-	GCScene *myScene = GCSceneManager::CreateScene();
-	myScene->SetActive(true);
+	//GCGameManager* GameManager = new GCGameManager();
+	//GameManager->Init();
 
-    GCGameObject *myGoOne = myScene->CreateGameObject("go", true);
-	GCGameObject *myGoTwo = myScene->CreateGameObject("go2", true);
+	//GCScene* myScene = GCSceneManager::CreateScene();
+	//myScene->SetActive(true);
 
-	myGoOne->AddComponent<SpriteRenderer>();
-	myGoTwo->AddComponent<SpriteRenderer>();
+	//GCGameObject* myGoOne = myScene->CreateGameObject("go", true);
+	//GCGameObject* myGoTwo = myScene->CreateGameObject("go2", true);
 
-	GCColor color = GCColor(1.0f, 1.0f, 1.0f, 1.0f);
-	myGoOne->GetComponent<SpriteRenderer>()->SetColor(color);
-	myGoTwo->RemoveComponent<SpriteRenderer>();
-	myGoOne->AddComponent<BoxCollider>();
-    myGoOne->Destroy();
+	//myGoOne->AddComponent<SpriteRenderer>();
+	//myGoTwo->AddComponent<SpriteRenderer>();
 
-    while (w->IsRunning())
-    {
-        
-		myGoTwo->m_transform.m_position.x += 0.01f;
+	//GCColor color = GCColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//myGoOne->GetComponent<SpriteRenderer>()->SetColor(color);
+	//myGoTwo->RemoveComponent<SpriteRenderer>();
+	//myGoOne->AddComponent<BoxCollider>();
+	//myGoOne->Destroy();
 
-		std::cout << "Position  " << myGoTwo->m_transform.m_position.x << std::endl;
+	//while (w->IsRunning())
+	//{
 
+	//	myGoTwo->m_transform.m_position.x += 0.01f;
 
-	    GameManager->Update();
-        w->PollEvents();
-    }
-
-    
-    FreeConsole();
+	//	std::cout << "Position  " << myGoTwo->m_transform.m_position.x << std::endl;
 
 
-int main()
-{
-	sf::RenderWindow window(sf::VideoMode(960, 540), "SFML window");
+	//	GameManager->Update();
+	//	w->PollEvents();
+	//}
 
 
-	sf::Texture marioTexture;
-	if (!marioTexture.loadFromFile("Circle.png")) return EXIT_FAILURE;
-	sf::Sprite marioSprite(marioTexture);
-	//marioSprite.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
-	
-	//sf::CircleShape marioCircle(marioTexture.getSize().x / 2);
-	////marioCircle.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
-	//marioCircle.setFillColor(sf::Color::Transparent);
-	//marioCircle.setOutlineColor(sf::Color::Red);
-	//marioCircle.setOutlineThickness(1.f);
-	
-	sf::RectangleShape marioBox(sf::Vector2f(marioTexture.getSize().x, marioTexture.getSize().y));
-	//marioBox.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
-	marioBox.setFillColor(sf::Color::Transparent);
-	marioBox.setOutlineColor(sf::Color::Red);
-	marioBox.setOutlineThickness(1.f);
+	//FreeConsole();
 
-	sf::Texture luigiTexture;
-	if (!luigiTexture.loadFromFile("Circle.png")) return EXIT_FAILURE;
-	sf::Sprite luigiSprite(luigiTexture);
-	//luigiSprite.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
-	sf::CircleShape luigiCircle(luigiTexture.getSize().x / 2);
-	//luigiCircle.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
-	luigiCircle.setFillColor(sf::Color::Transparent);
-	luigiCircle.setOutlineColor(sf::Color::Green);
-	luigiCircle.setOutlineThickness(1.f);
-	//sf::RectangleShape luigiBox(sf::Vector2f(luigiTexture.getSize().x, luigiTexture.getSize().y));
-	////luigiBox.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
-	//luigiBox.setFillColor(sf::Color::Transparent);
-	//luigiBox.setOutlineColor(sf::Color::Green);
-	//luigiBox.setOutlineThickness(1.f);
-
-	sf::Texture goombaTexture;
-	if (!goombaTexture.loadFromFile("Goomba.png")) return EXIT_FAILURE;
-	sf::Sprite goombaSprite(goombaTexture);
-	//goombaSprite.setOrigin(sf::Vector2f(goombaTexture.getSize().x / 2, goombaTexture.getSize().y / 2));
-	sf::RectangleShape goombaBox(sf::Vector2f(goombaTexture.getSize().x, goombaTexture.getSize().y));
-	//goombaBox.setOrigin(sf::Vector2f(goombaTexture.getSize().x / 2, goombaTexture.getSize().y / 2));
-	goombaBox.setFillColor(sf::Color::Transparent);
-	goombaBox.setOutlineColor(sf::Color::Red);
-	goombaBox.setOutlineThickness(1.f);
-
-
-
-
-	GCScene* pTest1Scene = GCScene::Create();
-
-	GCGameObject* pMario = pTest1Scene->CreateGameObject();
-	pMario->SetName("Mario");
-	pMario->AddTag("Bros Brother");
-	pMario->AddComponent<BoxCollider>()->SetSize({ static_cast<float>(marioTexture.getSize().x), static_cast<float>(marioTexture.getSize().y) });
-	//pMario->AddComponent<CircleCollider>()->SetRadius(marioTexture.getSize().x / 2);
-
-	GCGameObject* pLuigi = pTest1Scene->CreateGameObject();
-	pLuigi->SetName("Luigi");
-	pLuigi->AddTag("Bros Brother");
-	//pLuigi->AddComponent<BoxCollider>()->SetSize({ static_cast<float>(luigiTexture.getSize().x), static_cast<float>(luigiTexture.getSize().y) });
-	pLuigi->AddComponent<CircleCollider>()->SetRadius(luigiTexture.getSize().x / 2);
-
-	GCGameObject* pGoomba = nullptr;
-
-	GCGameObject* pSelected = pLuigi;
-
-	
-	// They should be registered to the physic manager to work
-	//pMario->AddComponent<BoxCollider>();
-	//pLuigi->AddComponent<BoxCollider>();
-
-	float angle = 0;
-
-	for (int framesSinceStart = 0; window.isOpen(); framesSinceStart++)
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-			if (event.type == sf::Event::Closed)
-				window.close();
-
-		window.clear();
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::V))
-		{
-			if (pMario == nullptr || pLuigi == nullptr)
-				continue;
-
-			//LogGameDebug(GCPhysic::CheckBox2DvsBox2D(*pMario->GetComponent<BoxCollider>(), *pLuigi->GetComponent<BoxCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
-			//LogGameDebug(GCPhysic::CheckCirclevsCircle(*pMario->GetComponent<CircleCollider>(), *pLuigi->GetComponent<CircleCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
-			LogGameDebug(GCPhysic::CheckBox2DvsCircle(*pMario->GetComponent<BoxCollider>(), *pLuigi->GetComponent<CircleCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
-		{
-			if (pMario == nullptr)
-			{
-				pMario = pTest1Scene->CreateGameObject();
-				pMario->SetName("Mario");
-				pMario->AddTag("Bros Brother");
-
-				pMario->AddComponent<BoxCollider>();
-			}
-			pSelected = pMario;
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-		{
-			if (pLuigi == nullptr)
-			{
-				pLuigi = pTest1Scene->CreateGameObject();
-				pLuigi->SetName("Luigi");
-				pLuigi->AddTag("Bros Brother");
-
-				pLuigi->AddComponent<BoxCollider>();
-			}
-			pSelected = pLuigi;
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
-		{
-			if (pGoomba == nullptr)
-			{
-				pGoomba = pTest1Scene->CreateGameObject();
-				pGoomba->SetName("Goomba");
-				pGoomba->AddTag("Enemy");
-			}
-			pSelected = pGoomba;
-		}
-
-
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) pSelected->m_transform.m_position += GCVEC3::Up() * 0.03f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) pSelected->m_transform.m_position += GCVEC3::Down() * 0.03f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) pSelected->m_transform.m_position += GCVEC3::Left() * 0.03f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) pSelected->m_transform.m_position += GCVEC3::Right() * 0.03f;
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) pSelected->m_transform.Scale(GCVEC3::One() * 1.01f);
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) pSelected->m_transform.Scale(GCVEC3::One() * 0.99f);
-
-		marioBox.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, pMario->m_transform.m_position.y));
-		luigiCircle.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, pLuigi->m_transform.m_position.y));
-		//goombaBox.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, pGoomba->m_transform.m_position.y));
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-			pSelected->m_transform.Rotate(0, 0, 0.2f * (PI / 100.f));
-			angle += 0.2f;
-			std::cout << "Rotation A: {" << pSelected->m_transform.m_rotation.x << " ; " << pSelected->m_transform.m_rotation.y << " ; " << pSelected->m_transform.m_rotation.z << "}" << std::endl;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-		{
-			pSelected->m_transform.Rotate(0, 0, -0.2f * (PI / 100.f));
-			angle -= 0.2f;
-		}
-
-
-
-
-		if (pMario != nullptr)
-		{
-			//std::cout << "{" << (int)pMario->m_transform.m_rotation.x << " ; " << (int)pMario->m_transform.m_rotation.y << " ; " << (int)pMario->m_transform.m_rotation.z << "}" << std::endl;
-			marioSprite.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, pMario->m_transform.m_position.y));
-			marioSprite.setScale(sf::Vector2f(pMario->m_transform.m_scale.x, pMario->m_transform.m_scale.y));
-
-			marioSprite.setRotation(angle);
-			window.draw(marioSprite);
-			window.draw(marioBox);
-			//window.draw(marioCircle);
-		}
-
-		if (pLuigi != nullptr)
-		{
-			luigiSprite.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, -pLuigi->m_transform.m_position.y));
-			luigiSprite.setScale(sf::Vector2f(pLuigi->m_transform.m_scale.x, pLuigi->m_transform.m_scale.y));
-			window.draw(luigiSprite);
-			//window.draw(luigiBox);
-			window.draw(luigiCircle);
-		}
-
-		if (pGoomba != nullptr)
-		{
-			goombaSprite.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, -pGoomba->m_transform.m_position.y));
-			goombaSprite.setScale(sf::Vector2f(pGoomba->m_transform.m_scale.x, pGoomba->m_transform.m_scale.y));
-			window.draw(goombaSprite);
-			window.draw(goombaBox);
-		}
-
-
-
-
-		GC::m_pActiveGameManager.Update();
-		window.display();
-	}
-
-	return EXIT_SUCCESS;
-
-	/*LogEngineDebug("Engine Debug");
-	LogEngineError("Engine Error");
-	LogEngineWarn("Engine Warn");
-	LogEngineInfo("Engine Info");
-	LogEngineTrace("Engine Trace");
-	LogGameDebug("Game Debug");*/
 }
+
+//
+//int main()
+//{
+//	sf::RenderWindow window(sf::VideoMode(960, 540), "SFML window");
+//
+//
+//	sf::Texture marioTexture;
+//	if (!marioTexture.loadFromFile("Circle.png")) return EXIT_FAILURE;
+//	sf::Sprite marioSprite(marioTexture);
+//	//marioSprite.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
+//	
+//	//sf::CircleShape marioCircle(marioTexture.getSize().x / 2);
+//	////marioCircle.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
+//	//marioCircle.setFillColor(sf::Color::Transparent);
+//	//marioCircle.setOutlineColor(sf::Color::Red);
+//	//marioCircle.setOutlineThickness(1.f);
+//	
+//	sf::RectangleShape marioBox(sf::Vector2f(marioTexture.getSize().x, marioTexture.getSize().y));
+//	//marioBox.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
+//	marioBox.setFillColor(sf::Color::Transparent);
+//	marioBox.setOutlineColor(sf::Color::Red);
+//	marioBox.setOutlineThickness(1.f);
+//
+//	sf::Texture luigiTexture;
+//	if (!luigiTexture.loadFromFile("Circle.png")) return EXIT_FAILURE;
+//	sf::Sprite luigiSprite(luigiTexture);
+//	//luigiSprite.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
+//	sf::CircleShape luigiCircle(luigiTexture.getSize().x / 2);
+//	//luigiCircle.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
+//	luigiCircle.setFillColor(sf::Color::Transparent);
+//	luigiCircle.setOutlineColor(sf::Color::Green);
+//	luigiCircle.setOutlineThickness(1.f);
+//	//sf::RectangleShape luigiBox(sf::Vector2f(luigiTexture.getSize().x, luigiTexture.getSize().y));
+//	////luigiBox.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
+//	//luigiBox.setFillColor(sf::Color::Transparent);
+//	//luigiBox.setOutlineColor(sf::Color::Green);
+//	//luigiBox.setOutlineThickness(1.f);
+//
+//	sf::Texture goombaTexture;
+//	if (!goombaTexture.loadFromFile("Goomba.png")) return EXIT_FAILURE;
+//	sf::Sprite goombaSprite(goombaTexture);
+//	//goombaSprite.setOrigin(sf::Vector2f(goombaTexture.getSize().x / 2, goombaTexture.getSize().y / 2));
+//	sf::RectangleShape goombaBox(sf::Vector2f(goombaTexture.getSize().x, goombaTexture.getSize().y));
+//	//goombaBox.setOrigin(sf::Vector2f(goombaTexture.getSize().x / 2, goombaTexture.getSize().y / 2));
+//	goombaBox.setFillColor(sf::Color::Transparent);
+//	goombaBox.setOutlineColor(sf::Color::Red);
+//	goombaBox.setOutlineThickness(1.f);
+//
+//
+//
+//
+//	GCScene* pTest1Scene = GCScene::Create();
+//
+//	GCGameObject* pMario = pTest1Scene->CreateGameObject();
+//	pMario->SetName("Mario");
+//	pMario->AddTag("Bros Brother");
+//	pMario->AddComponent<BoxCollider>()->SetSize({ static_cast<float>(marioTexture.getSize().x), static_cast<float>(marioTexture.getSize().y) });
+//	//pMario->AddComponent<CircleCollider>()->SetRadius(marioTexture.getSize().x / 2);
+//
+//	GCGameObject* pLuigi = pTest1Scene->CreateGameObject();
+//	pLuigi->SetName("Luigi");
+//	pLuigi->AddTag("Bros Brother");
+//	//pLuigi->AddComponent<BoxCollider>()->SetSize({ static_cast<float>(luigiTexture.getSize().x), static_cast<float>(luigiTexture.getSize().y) });
+//	pLuigi->AddComponent<CircleCollider>()->SetRadius(luigiTexture.getSize().x / 2);
+//
+//	GCGameObject* pGoomba = nullptr;
+//
+//	GCGameObject* pSelected = pLuigi;
+//
+//	
+//	// They should be registered to the physic manager to work
+//	//pMario->AddComponent<BoxCollider>();
+//	//pLuigi->AddComponent<BoxCollider>();
+//
+//	float angle = 0;
+//
+//	for (int framesSinceStart = 0; window.isOpen(); framesSinceStart++)
+//	{
+//		sf::Event event;
+//		while (window.pollEvent(event))
+//			if (event.type == sf::Event::Closed)
+//				window.close();
+//
+//		window.clear();
+//
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::V))
+//		{
+//			if (pMario == nullptr || pLuigi == nullptr)
+//				continue;
+//
+//			//LogGameDebug(GCPhysic::CheckBox2DvsBox2D(*pMario->GetComponent<BoxCollider>(), *pLuigi->GetComponent<BoxCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
+//			//LogGameDebug(GCPhysic::CheckCirclevsCircle(*pMario->GetComponent<CircleCollider>(), *pLuigi->GetComponent<CircleCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
+//			LogGameDebug(GCPhysic::CheckBox2DvsCircle(*pMario->GetComponent<BoxCollider>(), *pLuigi->GetComponent<CircleCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
+//		}
+//
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+//		{
+//			if (pMario == nullptr)
+//			{
+//				pMario = pTest1Scene->CreateGameObject();
+//				pMario->SetName("Mario");
+//				pMario->AddTag("Bros Brother");
+//
+//				pMario->AddComponent<BoxCollider>();
+//			}
+//			pSelected = pMario;
+//		}
+//
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+//		{
+//			if (pLuigi == nullptr)
+//			{
+//				pLuigi = pTest1Scene->CreateGameObject();
+//				pLuigi->SetName("Luigi");
+//				pLuigi->AddTag("Bros Brother");
+//
+//				pLuigi->AddComponent<BoxCollider>();
+//			}
+//			pSelected = pLuigi;
+//		}
+//
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+//		{
+//			if (pGoomba == nullptr)
+//			{
+//				pGoomba = pTest1Scene->CreateGameObject();
+//				pGoomba->SetName("Goomba");
+//				pGoomba->AddTag("Enemy");
+//			}
+//			pSelected = pGoomba;
+//		}
+//
+//
+//
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) pSelected->m_transform.m_position += GCVEC3::Up() * 0.03f;
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) pSelected->m_transform.m_position += GCVEC3::Down() * 0.03f;
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) pSelected->m_transform.m_position += GCVEC3::Left() * 0.03f;
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) pSelected->m_transform.m_position += GCVEC3::Right() * 0.03f;
+//
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) pSelected->m_transform.Scale(GCVEC3::One() * 1.01f);
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) pSelected->m_transform.Scale(GCVEC3::One() * 0.99f);
+//
+//		marioBox.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, pMario->m_transform.m_position.y));
+//		luigiCircle.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, pLuigi->m_transform.m_position.y));
+//		//goombaBox.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, pGoomba->m_transform.m_position.y));
+//
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+//		{
+//			pSelected->m_transform.Rotate(0, 0, 0.2f * (PI / 100.f));
+//			angle += 0.2f;
+//			std::cout << "Rotation A: {" << pSelected->m_transform.m_rotation.x << " ; " << pSelected->m_transform.m_rotation.y << " ; " << pSelected->m_transform.m_rotation.z << "}" << std::endl;
+//		}
+//		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+//		{
+//			pSelected->m_transform.Rotate(0, 0, -0.2f * (PI / 100.f));
+//			angle -= 0.2f;
+//		}
+//
+//
+//
+//
+//		if (pMario != nullptr)
+//		{
+//			//std::cout << "{" << (int)pMario->m_transform.m_rotation.x << " ; " << (int)pMario->m_transform.m_rotation.y << " ; " << (int)pMario->m_transform.m_rotation.z << "}" << std::endl;
+//			marioSprite.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, pMario->m_transform.m_position.y));
+//			marioSprite.setScale(sf::Vector2f(pMario->m_transform.m_scale.x, pMario->m_transform.m_scale.y));
+//
+//			marioSprite.setRotation(angle);
+//			window.draw(marioSprite);
+//			window.draw(marioBox);
+//			//window.draw(marioCircle);
+//		}
+//
+//		if (pLuigi != nullptr)
+//		{
+//			luigiSprite.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, -pLuigi->m_transform.m_position.y));
+//			luigiSprite.setScale(sf::Vector2f(pLuigi->m_transform.m_scale.x, pLuigi->m_transform.m_scale.y));
+//			window.draw(luigiSprite);
+//			//window.draw(luigiBox);
+//			window.draw(luigiCircle);
+//		}
+//
+//		if (pGoomba != nullptr)
+//		{
+//			goombaSprite.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, -pGoomba->m_transform.m_position.y));
+//			goombaSprite.setScale(sf::Vector2f(pGoomba->m_transform.m_scale.x, pGoomba->m_transform.m_scale.y));
+//			window.draw(goombaSprite);
+//			window.draw(goombaBox);
+//		}
+//
+//
+//
+//
+//		GC::m_pActiveGameManager.Update();
+//		window.display();
+//	}
+//
+//	return EXIT_SUCCESS;
+//
+//	/*LogEngineDebug("Engine Debug");
+//	LogEngineError("Engine Error");
+//	LogEngineWarn("Engine Warn");
+//	LogEngineInfo("Engine Info");
+//	LogEngineTrace("Engine Trace");
+//	LogGameDebug("Game Debug");*/
+//}

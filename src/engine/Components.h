@@ -1,6 +1,7 @@
 #pragma once
 #include "../core/framework.h"
 #include "GCColor.h"
+#include "../../src/render/framework.h"
 
 class GCGameObject;
 
@@ -45,9 +46,11 @@ protected:
 
 class SpriteRenderer : public Component
 {
+    friend class GCRenderManager;
 public: enum { TYPE = 1 };
 
 public:
+    SpriteRenderer();
     ~SpriteRenderer() override {}
     
     int GetType() override { return TYPE; }
@@ -58,15 +61,17 @@ public:
     void Destroy() override {}
     
     
-    void SetSprite() {};
-    void SetColor( GCColor& color ) { m_color = color; }
+    void SetSprite( std::string texturePath );
+    void SetColor(); 
     
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }
 
+    GCVEC2 pos;
 protected:
     GCColor m_color;
-
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
 };
 
 
