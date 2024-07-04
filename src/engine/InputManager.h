@@ -11,7 +11,6 @@ class GCEventManager;
 
 class GCInputManager
 {
-    GCVector<GCVector<std::function<void(GCEvent&)>>> callbacks;
 
     friend class GCGameManager;
 
@@ -23,6 +22,10 @@ public:
 
     virtual int GetStateSize() { return 0; }
     virtual int GetIDSize() { return 0; }
+    
+protected:
+    GCVector<GCVector<std::function<void(GCEvent&)>>> callbacks;
+    GCEventManager* m_eventManager = nullptr;
 };
 
 
@@ -95,6 +98,8 @@ public:
         return KeyboardState::KEYSTATECOUNT;
     };
 
+    void RegisterEvent(GCEventManager* eventmanager, void (*function)());
+
 private:
 
     void Update();
@@ -103,6 +108,8 @@ private:
 
     void SendEvent(int index, BYTE state);
 
+    void OnKeyPressed(GCKeyPressedEvent& ev);
+    void OnKeyReleased(GCKeyReleasedEvent& ev);
 };
 
 
