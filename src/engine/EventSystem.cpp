@@ -1,44 +1,47 @@
 #include "pch.h"
 #include "EventSystem.h"
 
-//Call in main loop
-void GCEventSystem::PollEvents()
+GCEventManager::GCEventManager()
 {
-    for (int i = 0; i < m_eventQueue.GetSize(); i++)
+    for (int i = 0; i < (int)GCEventType::Count; i++)
     {
-        
+        m_eventCallback[(GCEventType)i] = std::vector<std::function<void(GCEvent&)>>();
     }
 }
 
-void GCEventSystem::PushEvent(GCEvent* ev)
+void GCEventManager::PollEvents()
+{
+    for (int i = 0; i < m_eventQueue.GetSize(); i++)
+    {
+        GCEvent* ev = m_eventQueue.Front();
+        OnEvent(*ev);
+        delete ev;
+        m_eventQueue.Pop();
+    }
+}
+
+void GCEventManager::PushEvent(GCEvent* ev)
 {
     m_eventQueue.Push(ev);
 }
 
 
-void GCEventSystem::AddEventListener(const GCEvent& ev, std::function<void()> func)
-{
-    m_eventListeners[ev.GetEventType()].push_back(func);
-}
-
-void GCEventSystem::RemoveEventListener()
+void GCEventManager::Unsubscribe(GCEventType type)
 {
 }
 
-
-void GCEventSystem::OnEvent(GCEvent& e)
+void GCEventManager::OnEvent(GCEvent& e)
 {
-    GCEventDispatcher dispatcher(e);
+    auto listeners = m_eventCallback[e.GetEventType()];
+    for (auto& listener : listeners)
+    {
+        listener(e);
+    }
 
-    dispatcher.Dispatch<GCKeyPressedEvent>([](GCKeyPressedEvent& ev)
-        {
-            //OnKeyPressed();
-            return true;
-        });
+    //TODO: Refactor later, it needs to be handle seperately
+    for (auto& callback : m_systemCallback)
+    {
+        callback(e);
+    }
 
-    dispatcher.Dispatch<GCKeyReleased>([](GCKeyReleased& ev)
-        {
-            //OnKeyReleased();
-            return true;
-        });
 }

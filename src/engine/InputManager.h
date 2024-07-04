@@ -6,6 +6,7 @@
 
 
 class GCControllerInputManager;
+class GCEventManager;
 
 class GCInputManager
 {
