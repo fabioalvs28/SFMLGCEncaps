@@ -5,6 +5,7 @@
 class GCGameObject;
 
 // TODO Adding lots of stuff to the components
+// todo 2 transforms for colliders (self & wold)
 
 
 
@@ -28,6 +29,8 @@ public:
     void SetActive( bool active ) { m_active = active; }
     
     bool IsActive() { return m_active; }
+
+    inline GCGameObject* GetGameObject() { return m_pGameObject; }
 
 protected:
     void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
@@ -73,14 +76,17 @@ class Collider : public Component
 
 public:
     Collider();
-    ~Collider() override {}
+    ~Collider();
     
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
+    void SetVisible( bool showCollider ) { m_visible = showCollider; }
     
     bool IsTrigger() { return m_trigger; }
+    bool IsVisible() { return m_visible; }
 
 protected:
     bool m_trigger;
+    bool m_visible;
 
 };
 
@@ -89,6 +95,10 @@ protected:
 class BoxCollider : public Collider
 {
 public: enum { TYPE = 2 };
+
+private:
+    GCVEC2 m_size;
+
 
 public:
     ~BoxCollider() override {}
@@ -100,6 +110,9 @@ public:
     void Render() override {}
     void Destroy() override {}
 
+    inline GCVEC2 GetSize() { return m_size; }
+    inline void SetSize( GCVEC2 size ) { m_size = size; }
+
 };
 
 
@@ -107,6 +120,9 @@ public:
 class CircleCollider : public Collider
 {
 public: enum { TYPE = 3 };
+
+private:
+    float m_radius;
 
 public:
     ~CircleCollider() override {}
@@ -117,6 +133,9 @@ public:
     void Update() override {}
     void Render() override {}
     void Destroy() override {}
+
+    inline float GetRadius() { return m_radius; }
+    inline void SetRadius( float radius ) { m_radius = radius; }
 
 };
 

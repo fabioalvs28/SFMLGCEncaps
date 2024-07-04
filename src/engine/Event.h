@@ -1,12 +1,22 @@
 #pragma once
 #include <string>
-#include<functional>
+#include <typeinfo>
+#include <functional>
+
+#include "../core/GCString.h"
+#include "Components.h"
+
+//macro to bind the event function
+//Reminders: if use in a class, use GC_BIND_EVENT_FN(ClassName::FunctionName)
+#define GC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
 enum class GCEventType
 {
 	WindowClose, WindowResize,
-	KeyPressed, KeyReleased,
+	KeyInput, KeyPressed, KeyReleased,
 	MouseButtonPressed, MouseButtonReleased, MouseMove, MouseScrolled,
+	ComponentAdded, ComponentRemove,
+    Count //Keep this at the end
 };
 
 enum class GCMouseButton
@@ -104,7 +114,8 @@ class GCWindowCloseEvent : public GCEvent {
 public:
 	GCWindowCloseEvent() {}
 
-	GCEventType GetEventType() const override { return GCEventType::WindowClose; }
+    static GCEventType GetStaticType() { return GCEventType::WindowClose; }
+	GCEventType GetEventType() const override { return GetStaticType(); }
 	const char* GetName() const override { return "WindowCloseEvent"; }
 };
 
@@ -127,3 +138,54 @@ private:
 	unsigned int m_width, m_height;
 };
 #pragma endregion
+
+#pragma region KeyEvent
+
+class GCKeyEvent : public GCEvent
+{
+public:
+	GCKeyEvent(int id) : keyID(id) {}
+
+protected:
+	int keyID;
+};
+
+class GCKeyPressedEvent : public GCKeyEvent
+{
+public:
+    GCKeyPressedEvent(int id) : GCKeyEvent(id) {};
+	
+    static GCEventType GetStaticType() { return GCEventType::KeyInput; }
+    GCEventType GetEventType() const override { return GetStaticType(); }
+    const char* GetName() const override { return "KeyPressedEvent"; }
+
+    int GetKeyID() const { return keyID; }
+};
+
+class GCKeyReleased : public GCKeyEvent
+{
+public:
+    GCKeyReleased(int id) : GCKeyEvent(id) {};
+
+    static GCEventType GetStaticType() { return GCEventType::KeyInput; }
+    GCEventType GetEventType() const override { return GetStaticType(); }
+    const char* GetName() const override { return "KeyReleased"; }
+
+    int GetKeyID() const { return keyID; }
+};
+#pragma endregion
+
+class ComponentAddedEvent : public GCEvent
+{
+public:
+	ComponentAddedEvent(Component *component) 
+		: m_component(component) { }
+		
+	static GCEventType GetStaticType() { return GCEventType::ComponentAdded; }
+	GCEventType GetEventType() const override { return GetStaticType(); }
+
+	Component* GetComponent() const { return m_component; }
+
+private:
+	Component* m_component;
+};

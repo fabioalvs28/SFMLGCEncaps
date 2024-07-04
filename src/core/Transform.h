@@ -6,9 +6,10 @@
 struct GCTransform
 {
 	GCVEC3 m_position;
+
 	GCVEC3 m_scale;
+
 	GCQUATERNION m_rotation;
-	
 	GCMATRIX m_rotationMatrix;
 	GCVEC3 m_direction;
 	GCVEC3 m_up;
@@ -20,16 +21,16 @@ struct GCTransform
 	~GCTransform() {};
 
 	void Identity();
+	void IdentityRotation();
 	void FromMatrix(const GCMATRIX& matrix);
 	void UpdateMatrixFromVectors();
 	void UpdateVectorsFromQuaternion();
-	void UpdateVectorsFromMatrix();
 	void UpdateMatrix();
 	void Rotate(float yaw, float pitch, float roll);
 	void RotateYaw(float angle);
 	void RotatePitch(float angle);
 	void RotateRoll(float angle);
-	void RotateWorld(const GCMATRIX& matrix);
+	void RotateWorld(float x, float y, float z);
 	void RotateWorldX(float angle);
 	void RotateWorldY(float angle);
 	void RotateWorldZ(float angle);

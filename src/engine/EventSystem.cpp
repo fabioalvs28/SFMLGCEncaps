@@ -1,41 +1,47 @@
 #include "pch.h"
 #include "EventSystem.h"
 
-void GCEventSystem::PollEvents()
+GCEventManager::GCEventManager()
 {
-    while (!m_eventQueue.IsEmpty()) 
+    for (int i = 0; i < (int)GCEventType::Count; i++)
     {
-        GCEvent* ev = m_eventQueue.Front();
-        m_eventQueue.Pop();
-
-        OnEvent(*ev);
-        delete ev;
+        m_eventCallback[(GCEventType)i] = std::vector<std::function<void(GCEvent&)>>();
     }
 }
 
-void GCEventSystem::PushEvent(GCEvent* ev)
+void GCEventManager::PollEvents()
+{
+    for (int i = 0; i < m_eventQueue.GetSize(); i++)
+    {
+        GCEvent* ev = m_eventQueue.Front();
+        OnEvent(*ev);
+        delete ev;
+        m_eventQueue.Pop();
+    }
+}
+
+void GCEventManager::PushEvent(GCEvent* ev)
 {
     m_eventQueue.Push(ev);
 }
 
 
-void GCEventSystem::AddEventListener(const GCEvent& ev, std::function<void()> func)
+void GCEventManager::Unsubscribe(GCEventType type)
 {
-    m_eventListeners[ev.GetEventType()].push_back(func);
 }
 
-void GCEventSystem::RemoveEventListener()
-{ 
-    //Check if the event is handled by the listener
-}
-
-
-void GCEventSystem::OnEvent(GCEvent& e)
+void GCEventManager::OnEvent(GCEvent& e)
 {
-    GCEventDispatcher dispatcher(e);
-    std::vector<std::function<void()>> listeners = m_eventListeners.GetValue(e.GetEventType());
-    for (int i = 0; i < listeners.size(); i++)
+    auto listeners = m_eventCallback[e.GetEventType()];
+    for (auto& listener : listeners)
     {
-        listeners[i]();
+        listener(e);
     }
+
+    //TODO: Refactor later, it needs to be handle seperately
+    for (auto& callback : m_systemCallback)
+    {
+        callback(e);
+    }
+
 }
