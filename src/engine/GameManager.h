@@ -21,6 +21,6 @@ protected:
     
 protected:
     GCSceneManager m_pSceneManager;
-    GCInputManager* m_pInputManager;
+    //GCInputManager m_pInputManager;
 
 };
