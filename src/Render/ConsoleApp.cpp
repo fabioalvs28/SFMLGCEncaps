@@ -222,11 +222,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     SET_FLAG(flagsLightTexture, HAS_UV);
     SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
+    int flagsColor = 0;
+    SET_FLAG(flagsColor, HAS_POSITION);
+    SET_FLAG(flagsColor, HAS_COLOR);
+
     // Cr�ation des g�om�tries
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
-    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
+    auto geoCubeInner = graphics->CreateGeometryPrimitive(Cube, XMFLOAT4(Colors::Green));
     auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
-
+    
     // Chargement des shaders personnalis�s
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
@@ -236,6 +240,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
     auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
 
+    std::string shaderFilePath3 = "../../../src/Render/Shaders/LightColor.hlsl";
+    std::string csoDestinationPath3 = "../../../src/Render/CsoCompiled/LightColor";
+    auto shaderParticle = graphics->CreateShaderCustom(shaderFilePath3, csoDestinationPath3, flagsColor, D3D12_CULL_MODE_NONE);
+
     auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
 
     graphics->InitializeGraphicsResourcesStart();
@@ -244,6 +252,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
     auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
     auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
+    
+    meshSphere.resource->InitializeParticleSystem(10);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
@@ -287,12 +297,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     XMStoreFloat4x4(&worldSphere, XMMatrixTranspose(worldMatrixSphere));
 
     auto startTime = std::chrono::steady_clock::now();
+    auto lastFrameTime = startTime;
 
     // Boucle de rendu
     while (true) {
         // Mesurer le temps �coul� depuis le d�but de l'application
         auto currentTime = std::chrono::steady_clock::now();
         float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
+        float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime).count();
+        lastFrameTime = currentTime;
 
         // Calculer la rotation du cube interne autour de l'axe Y
         float rotationSpeed = 1.0f; // Vitesse de rotation en radians par seconde
@@ -305,15 +318,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         // Extraire les donn�es de la matrice mise � jour dans une XMFLOAT4X4
         XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
 
-        // Gestion des entr�es utilisateur pour le d�placement de la cam�ra
-        //if (window->IsKeyDown('Z')) {
-        //    cameraPosition += cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
-        //}
-        //if (window->IsKeyDown('S')) {
-        //    cameraPosition -= cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
-        //}
-
-
+         //Gestion des entr�es utilisateur pour le d�placement de la cam�ra
+        if (window->IsKeyDown('Z')) {
+            cameraPosition += cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
+        }
+        if (window->IsKeyDown('S')) {
+            cameraPosition -= cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
+        }
 
         // Mettre � jour la matrice de vue avec la nouvelle position de la cam�ra
         viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
@@ -370,25 +381,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         graphics->UpdateLights(lightData);
 
-
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-
-        graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
-        graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
-
+        //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
+        //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
 
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource);
 
+        meshSphere.resource->UpdateParticles(deltaTime);
+        meshSphere.resource->RenderParticles(graphics, materialSphere.resource, worldMatrixSphere);
 
         graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
 
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());
