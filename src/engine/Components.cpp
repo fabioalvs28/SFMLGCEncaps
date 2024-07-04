@@ -13,6 +13,7 @@ Component::Component()
 Collider::Collider()
 {
     m_trigger = false;
+	m_visible = false;
 	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
 }
 

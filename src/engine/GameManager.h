@@ -19,8 +19,8 @@ protected:
     GCGameManager() = default;
     virtual ~GCGameManager() = default;
     
-    void Init();
-    void Update();
+public: void Init();
+public: void Update();
     
 protected:
     GCSceneManager m_pSceneManager;

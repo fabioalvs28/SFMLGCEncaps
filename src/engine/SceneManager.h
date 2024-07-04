@@ -19,6 +19,7 @@ private:
 	void NewDelete();
 	void Render();
 	
+	void SetActiveScene( GCScene* pScene );
 	void LoadScene( GCScene* pScene );
 	void UnloadScene( GCScene* pScene );
 	void DestroyScene( GCScene* pScene );

@@ -17,10 +17,6 @@ GCPhysicManager::~GCPhysicManager()
 void GCPhysicManager::RegisterCollider(Collider* collider)
 {
 	m_colliders.PushBack(collider);
-
-	std::string temp = "Amount of colliders: " + m_colliders.GetSize();
-
-	LogEngineDebug(temp.c_str());
 }
 
 void GCPhysicManager::UnregisterCollider(Collider* collider)
@@ -34,54 +30,74 @@ void GCPhysicManager::Update()
 	for (RigidBody* rigidbody : m_rigidbodies)
 		rigidbody->Update();
 
-	std::string temp = "[UPDATE] Amount of colliders: " + m_colliders.GetSize();
-
-	LogEngineDebug(temp.c_str());
-
-	// Update colliders and check for collisions then resolve them
-	// TYPE = 2 -> Box2D
-	// TYPE = 3 -> Circle
-	for (Collider* collider : m_colliders)
-	{
-		for (Collider* checkCollider : m_colliders)
-		{
-			if (&collider == &checkCollider)
-			{
-				LogEngineDebug("Same collider, skipping");
+	for (int i = 0; i < m_colliders.GetSize(); i++) {
+		for (int j = i + 1; j < m_colliders.GetSize(); j++) {
+			if (!CheckCollision(*m_colliders.Get(i), *m_colliders.Get(j)))
 				continue;
-			}
-
-			if (!CheckCollision(*collider, *checkCollider))
-			{
-				LogEngineDebug("No collision detected");
-				continue;
-			}
 
 			// Resolve collision
 			LogEngineDebug("Collision detected");
 		}
 	}
+	//for (Collider* collider : m_colliders)
+	//{
+	//	for (Collider* checkCollider : m_colliders)
+	//	{
+	//		if (&collider == &checkCollider)
+	//			continue;
+
+	//		/*std::string temp = "FIRST IS: ";
+	//		if (Animator::TYPE == BoxCollider::TYPE) {
+	//			temp += "Box";
+	//		}
+	//		else if (collider->GetType() == CircleCollider::TYPE) {
+	//			temp += "Circle";
+	//		}
+	//		else {
+	//			temp += "Invalid";
+	//		}
+	//		LogEngineDebug(temp.c_str());
+
+	//		temp = "SECOND IS: ";
+	//		if (Animator::TYPE == BoxCollider::TYPE) {
+	//			temp += "Box";
+	//		}
+	//		else if (checkCollider->GetType() == CircleCollider::TYPE) {
+	//			temp += "Circle";
+	//		}
+	//		else {
+	//			temp += "Invalid";
+	//		}
+	//		LogEngineDebug(temp.c_str());*/
+
+	//		if (!CheckCollision(*collider, *checkCollider))
+	//			continue;
+
+	//		// Resolve collision
+	//		//LogEngineDebug("Collision detected");
+	//	}
+	//}
 }
 
 bool GCPhysicManager::CheckCollision(Collider& collider1, Collider& collider2)
 {
-	switch (collider1.TYPE)
+	switch (collider1.GetType())
 	{
 	case 2:
-		if (collider2.TYPE == 2)
+		if (collider2.GetType() == 2)
 			return GCPhysic::CheckBox2DvsBox2D(collider1, collider2);
-		else if (collider2.TYPE == 3)
+		else if (collider2.GetType() == 3)
 			return GCPhysic::CheckBox2DvsCircle(collider1, collider2);
 		break;
 
 	case 3:
-		if (collider2.TYPE == 2)
+		if (collider2.GetType() == 2)
 			return GCPhysic::CheckBox2DvsCircle(collider2, collider1);
-		else if (collider2.TYPE == 3)
+		else if (collider2.GetType() == 3)
 			return GCPhysic::CheckCirclevsCircle(collider1, collider2);
 		break;
 	default:
-		LogEngineError("Invalid collider type");
+		LogEngineError("Invalid collider");
 		break;
 	}
 
