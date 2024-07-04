@@ -50,6 +50,13 @@ public:
 		m_systemCallback.push_back(func);
 	}
 
+	template<typename Func>
+	void Subscribe(int keyCode, BYTE state, Func&& func)
+	{
+		auto callback = [func](GCEvent&) { func(); };
+		//eventCallbacks[keyCode][state].push_back(callback);
+	}
+
 	/// <summary>
 	/// Removes an event listener based on its type and unique ListenerID.
 	/// </summary>
@@ -69,4 +76,6 @@ private:
 	std::map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventCallback;
 	std::vector<std::function<void(GCEvent&)>> m_systemCallback;
     GCQueue<GCEvent*> m_eventQueue;
+
+
 };

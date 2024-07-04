@@ -24,7 +24,7 @@ void GCEngine::Shutdown()
 void GCEngine::Run()
 {
     GCEventManager eventmanager = GCEventManager();
-    GCInputManager inputmanger(&eventmanager);
+    //GCInputManager inputmanger(&eventmanager);
 
     if (!InitWindow())
     {
@@ -40,7 +40,7 @@ void GCEngine::Run()
 
     while (m_isRunning)
     {
-        inputmanger.UpdateInputs();
+        //inputmanger.UpdateInputs();
         eventmanager.PollEvents();
         m_window->PollEvents();
         m_window->OnUpdate();
