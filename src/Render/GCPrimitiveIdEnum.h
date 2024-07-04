@@ -7,4 +7,5 @@ enum GC_PRIMITIVE_ID
 	CubeSkybox,
 	Circle,
 	Sphere,
+	Quad,
 };

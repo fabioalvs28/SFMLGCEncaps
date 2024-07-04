@@ -4,11 +4,12 @@ GCRender::GCRender() {
 
 }
 
-bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight)
+bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics)
 {
 	if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
 		return false;
 
+	m_pGraphics = pGraphics;
 	m_renderWidth = renderWidth;
 	m_renderHeight = renderHeight;
 	m_pWindow = pWindow;
@@ -192,7 +193,7 @@ void GCRender::CreateSwapChain()
 	sd.SampleDesc.Count = m_4xMsaaState ? 4 : 1;
 	sd.SampleDesc.Quality = m_4xMsaaState ? (m_4xMsaaQuality - 1) : 0;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.BufferCount = SwapChainBufferCount;
+	sd.BufferCount = 2;
 	sd.OutputWindow = m_pWindow->GetHMainWnd();
 	sd.Windowed = true;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -216,7 +217,7 @@ void GCRender::CreateCbvSrvUavDescriptorHeaps()
 void GCRender::CreateRtvAndDsvDescriptorHeaps()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
-	rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
+	rtvHeapDesc.NumDescriptors = 1000;
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	rtvHeapDesc.NodeMask = 0;
@@ -232,20 +233,21 @@ void GCRender::CreateRtvAndDsvDescriptorHeaps()
 }
 
 void GCRender::CreatePostProcessingResources() {
-	// Définition de la description de la texture de copie
+
+	// Create Base texture for m_copyTexture, for copy backbuffer inside
 	D3D12_RESOURCE_DESC textureDesc = {};
 	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	textureDesc.Width = m_pWindow->GetClientWidth();
 	textureDesc.Height = m_pWindow->GetClientHeight();
 	textureDesc.DepthOrArraySize = 1;
 	textureDesc.MipLevels = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // Format approprié pour vos besoins
+	textureDesc.Format = GetBackBufferFormat();
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 	textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
-	// Créer la texture de copie
+	
 	CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_DEFAULT);
 	HRESULT hr = m_d3dDevice->CreateCommittedResource(
 		&heapProperties,
@@ -253,30 +255,32 @@ void GCRender::CreatePostProcessingResources() {
 		&textureDesc,
 		D3D12_RESOURCE_STATE_COMMON,
 		nullptr,
-		IID_PPV_ARGS(&m_copyTexture));
+		IID_PPV_ARGS(&m_copyTexture)
+	);
+	// ***
 
-	if (FAILED(hr)) {
-		// Gestion des erreurs
-		return;
-	}
+	// Create RTV from Texture Resource, from it self
+	m_d3dDevice->CreateCommittedResource(&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&m_pRenderTargetTexture));
 
-	// Définir une SRV pour la texture de copie
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = textureDesc.Format;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = 1;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // Format de la texture
+	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	rtvDesc.Texture2D.MipSlice = 0;
+	rtvDesc.Texture2D.PlaneSlice = 0;
 
-	// Créer la SRV pour la texture de copie
-	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(m_cbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-	srvHandle.Offset(90, m_cbvSrvUavDescriptorSize); // Assurez-vous d'ajuster m_nextDescriptorIndex
-	m_d3dDevice->CreateShaderResourceView(m_copyTexture, &srvDesc, srvHandle);
+	m_pRenderTargetTextureAdress = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+	m_pRenderTargetTextureAdress.Offset(90, m_rtvDescriptorSize);  // Assurez-vous que m_rtvDescriptorSize est correct
+	m_d3dDevice->CreateRenderTargetView(m_pRenderTargetTexture, &rtvDesc, m_pRenderTargetTextureAdress);
+	// 90 offset cpu handle, we store it for use it in SetOMRenderTarget At post processing stage
 
-	// Convertir le descripteur CPU en descripteur GPU
-	m_copyTextureAddress = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	m_copyTextureAddress.Offset(90, m_cbvSrvUavDescriptorSize); // Assurez-vous d'ajuster m_nextDescriptorIndex
 
+
+	// Create A post Processing Shader
 	m_postProcessingShader = new GCShader();
 
 	std::string shaderFilePath = "../../../src/Render/Shaders/PostProcessing.hlsl";
@@ -480,10 +484,6 @@ bool GCRender::PrepareDraw()
 	return true;
 }
 
-
-
-
-
 //Draws an object specified in the arguments using a specified material and mesh, You can call many times this function without call again a each draw Prepare and Post function, 
 bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 {
@@ -520,63 +520,130 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
-
 	return true;
 }
 
-void GCRender::PerformPostProcessing() {
-	// Transition de la texture de copie vers l'état shader resource
-	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+void GCRender::PerformPostProcessing()
+{
+	// 1. Transitionner le back buffer vers l'état COPY_SOURCE
+	CD3DX12_RESOURCE_BARRIER barrierToCopySource = CD3DX12_RESOURCE_BARRIER::Transition(
+		CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_PRESENT,  // État actuel du back buffer lorsqu'il est présenté
+		D3D12_RESOURCE_STATE_COPY_SOURCE);
+	m_CommandList->ResourceBarrier(1, &barrierToCopySource);
+
+	// 2. Transitionner la texture vers l'état COPY_DEST
+	CD3DX12_RESOURCE_BARRIER barrierToCopyDest = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_copyTexture,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,  // État actuel de la texture après le post-processing
+		D3D12_RESOURCE_STATE_COPY_DEST);
+	m_CommandList->ResourceBarrier(1, &barrierToCopyDest);
+
+	// 3. Copier le contenu du back buffer dans la texture de rendu cible
+	m_CommandList->CopyResource(m_copyTexture, CurrentBackBuffer());
+
+	// 4. Transitionner la texture de retour vers l'état RENDER_TARGET
+	CD3DX12_RESOURCE_BARRIER barrierBackToRT = CD3DX12_RESOURCE_BARRIER::Transition(
 		m_copyTexture,
 		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	m_CommandList->ResourceBarrier(1, &barrier);
+		D3D12_RESOURCE_STATE_RENDER_TARGET);
+	m_CommandList->ResourceBarrier(1, &barrierBackToRT);
 
-	// Définir le pipeline de rendu pour le post-processing
+	// 5. Rétransitionner le back buffer vers l'état RENDER_TARGET (préparation pour la présentation)
+	CD3DX12_RESOURCE_BARRIER barrierBackToPresent = CD3DX12_RESOURCE_BARRIER::Transition(
+		CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET);
+	m_CommandList->ResourceBarrier(1, &barrierBackToPresent);
+
+	// 6. Transitionner la texture vers l'état PIXEL_SHADER_RESOURCE
+	CD3DX12_RESOURCE_BARRIER barrierToPixelShaderResource = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_copyTexture,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	m_CommandList->ResourceBarrier(1, &barrierToPixelShaderResource);
+
+	CD3DX12_RESOURCE_BARRIER barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pRenderTargetTexture,
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_RENDER_TARGET);
+	m_CommandList->ResourceBarrier(1, &barrierToRT);
+
+	// 7. Définir les cibles de rendu pour le post-processing
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+	rtvHandle.Offset(90, m_rtvDescriptorSize);  // Offset correct pour votre RTV
+	m_CommandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsv);
+
+	//// 8. Définir l'état du pipeline et la signature racine
 	m_CommandList->SetPipelineState(m_postProcessingShader->GetPso());
 	m_CommandList->SetGraphicsRootSignature(m_postProcessingShader->GetRootSign());
 
-	// Définir la SRV pour la texture de copie
-	m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, m_copyTextureAddress);
+	//// 9. Définir la table de descripteurs pour l'entrée texture
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // Format de la texture
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
-	// Définir les viewport et scissor rect pour le post-processing
-	D3D12_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(m_pWindow->GetClientWidth()), static_cast<float>(m_pWindow->GetClientHeight()), 0.0f, 1.0f };
-	D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(m_pWindow->GetClientWidth()), static_cast<LONG>(m_pWindow->GetClientHeight()) };
-	m_CommandList->RSSetViewports(1, &viewport);
-	m_CommandList->RSSetScissorRects(1, &scissorRect);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle(m_cbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	srvCpuHandle.Offset(90, m_cbvSrvUavDescriptorSize);  // Assurez-vous que m_cbvSrvUavDescriptorSize est correct
+	m_d3dDevice->CreateShaderResourceView(m_copyTexture, &srvDesc, srvCpuHandle);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_cbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	srvGpuHandle.Offset(90, m_cbvSrvUavDescriptorSize);  // Assurez-vous que m_cbvSrvUavDescriptorSize est correct
+	m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, srvGpuHandle);
 
-	// Dessiner un quad plein écran pour appliquer l'effet de post-processing
+	// 10. Définir les buffers de vertex et d'index pour le quad
+	m_CommandList->SetPipelineState(m_postProcessingShader->GetPso());
+	m_CommandList->SetGraphicsRootSignature(m_postProcessingShader->GetRootSign());
+
+	GCMesh* theMesh = m_pGraphics->GetMeshes()[0];
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = theMesh->GetBufferGeometryData()->VertexBufferView();
+	D3D12_INDEX_BUFFER_VIEW indexBufferView = theMesh->GetBufferGeometryData()->IndexBufferView();
+	m_CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	m_CommandList->IASetIndexBuffer(&indexBufferView);
 	m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_CommandList->DrawInstanced(6, 1, 0, 0); // 6 vertices pour dessiner un quad plein écran
 
-	// Transition de la texture de copie vers l'état de ressource de copie destination pour la prochaine frame
-	barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_copyTexture,
+	//// 11. Dessiner un quad plein écran pour appliquer l'effet de post-processing
+	m_CommandList->DrawIndexedInstanced(theMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
+
+	// 1. Transitionner m_pRenderTargetTexture vers l'état COPY_SOURCE
+	CD3DX12_RESOURCE_BARRIER barrierToCopySource2 = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pRenderTargetTexture,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_COPY_SOURCE);
+	m_CommandList->ResourceBarrier(1, &barrierToCopySource2);
+
+	// 2. Transitionner le back buffer vers l'état COPY_DEST
+	CD3DX12_RESOURCE_BARRIER barrierToCopyDest2 = CD3DX12_RESOURCE_BARRIER::Transition(
+		CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_COPY_DEST);
-	m_CommandList->ResourceBarrier(1, &barrier);
+	m_CommandList->ResourceBarrier(1, &barrierToCopyDest2);
+
+	// 3. Copier le contenu de m_pRenderTargetTexture dans le back buffer
+	m_CommandList->CopyResource(CurrentBackBuffer(), m_pRenderTargetTexture);
+
+
 }
+
 //Always needs to be called right after drawing!!!
 bool GCRender::PostDraw()
 {
-	// Transition vers l'état de rendu cible pour copier le contenu
-	CD3DX12_RESOURCE_BARRIER barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(
-		CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_COPY_SOURCE);
-	m_CommandList->ResourceBarrier(1, &barrierToRT);
 
-	// Copie de la back buffer vers la texture de copie
-	m_CommandList->CopyResource(m_copyTexture, CurrentBackBuffer());
 
-	// Transition de la back buffer vers l'état de présentation
-	CD3DX12_RESOURCE_BARRIER barrierToPresent = CD3DX12_RESOURCE_BARRIER::Transition(
+    PerformPostProcessing();
+
+
+
+	CD3DX12_RESOURCE_BARRIER barrierBackToPresent2 = CD3DX12_RESOURCE_BARRIER::Transition(
 		CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATE_COPY_DEST,
 		D3D12_RESOURCE_STATE_PRESENT);
-	m_CommandList->ResourceBarrier(1, &barrierToPresent);
+	m_CommandList->ResourceBarrier(1, &barrierBackToPresent2);
 
-	PerformPostProcessing();
+	
 
 	// Fermer la liste de commandes
 	HRESULT hr = m_CommandList->Close();

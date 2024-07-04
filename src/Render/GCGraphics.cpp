@@ -55,18 +55,20 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
         return false;
 
-    //Initializes Graphics for a window
-    m_pRender = new GCRender();
-    m_pRender->Initialize(pWindow, renderWidth, renderHeight);
-    
-    m_renderWidth = renderWidth;
-    m_renderHeight = renderHeight;
-
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
 
     m_pPrimitiveFactory->Initialize();
+
+    //Initializes Graphics for a window
+    m_pRender = new GCRender();
+    m_pRender->Initialize(pWindow, renderWidth, renderHeight, this);
+    
+    m_renderWidth = renderWidth;
+    m_renderHeight = renderHeight;
+
+
 
 	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->Getmd3dDevice(), 1, true);
     m_pCbCameraInstances.push_back(pCbInstance);
@@ -243,36 +245,45 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeomet
         return ResourceCreationResult<GCMesh*>(false, nullptr);
     }
 
-    // Find the first inactive slot in m_vMeshActiveFlags
-    auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+    GCMesh* pMesh = new GCMesh();
+    if (!pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits))
+        return ResourceCreationResult<GCMesh*>(false, nullptr);
 
-    // Inactive slot found
-    if (it != m_vMeshActiveFlags.end())
-    {
-        size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
+    m_vMeshes.push_back(pMesh);
+    m_vMeshActiveFlags.push_back(true);
 
-        GCMesh* pMesh = new GCMesh();
-        if (!pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits))
-            return ResourceCreationResult<GCMesh*>(false, nullptr);
+    return ResourceCreationResult<GCMesh*>(true, pMesh);
 
-        m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
+    //// Find the first inactive slot in m_vMeshActiveFlags
+    //auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
 
-        m_vMeshActiveFlags[index] = true;
+    //// Inactive slot found
+    //if (it != m_vMeshActiveFlags.end())
+    //{
+    //    size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
 
-        return ResourceCreationResult<GCMesh*>(true, pMesh);
-    }
-    // Not inactive slot 
-    else
-    {
-        GCMesh* pMesh = new GCMesh();
-        if (!pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits))
-            return ResourceCreationResult<GCMesh*>(false, nullptr);
+    //    GCMesh* pMesh = new GCMesh();
+    //    if (!pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits))
+    //        return ResourceCreationResult<GCMesh*>(false, nullptr);
 
-        m_vMeshes.push_back(pMesh);
-        m_vMeshActiveFlags.push_back(true);
+    //    m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
 
-        return ResourceCreationResult<GCMesh*>(true, pMesh);
-    }
+    //    m_vMeshActiveFlags[index] = true;
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
+    //// Not inactive slot 
+    //else
+    //{
+    //    GCMesh* pMesh = new GCMesh();
+    //    if (!pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits))
+    //        return ResourceCreationResult<GCMesh*>(false, nullptr);
+
+    //    m_vMeshes.push_back(pMesh);
+    //    m_vMeshActiveFlags.push_back(true);
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
 }
 
 ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometry)
@@ -287,36 +298,45 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometr
     if (!CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry))
         return ResourceCreationResult<GCMesh*>(false, nullptr);
 
-    // Find the first inactive slot in m_vMeshActiveFlags
-    auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+    GCMesh* pMesh = new GCMesh();
+    if (!pMesh->Initialize(m_pRender, pGeometry, flagsLightColor))
+        return ResourceCreationResult<GCMesh*>(false, nullptr);
 
-    // Inactive slot found
-    if (it != m_vMeshActiveFlags.end())
-    {
-        size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
+    m_vMeshes.push_back(pMesh);
+    m_vMeshActiveFlags.push_back(true);
 
-        GCMesh* pMesh = new GCMesh();
-        if (!pMesh->Initialize(m_pRender, pGeometry, flagsLightColor))
-            return ResourceCreationResult<GCMesh*>(false, nullptr);
+    return ResourceCreationResult<GCMesh*>(true, pMesh);
 
-        m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
+    //// Find the first inactive slot in m_vMeshActiveFlags
+    //auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
 
-        m_vMeshActiveFlags[index] = true;
+    //// Inactive slot found
+    //if (it != m_vMeshActiveFlags.end())
+    //{
+    //    size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
 
-        return ResourceCreationResult<GCMesh*>(true, pMesh);
-    }
-    // Not inactive slot 
-    else
-    {
-        GCMesh* pMesh = new GCMesh();
-        if (!pMesh->Initialize(m_pRender, pGeometry, flagsLightColor))
-            return ResourceCreationResult<GCMesh*>(false, nullptr);
+    //    GCMesh* pMesh = new GCMesh();
+    //    if (!pMesh->Initialize(m_pRender, pGeometry, flagsLightColor))
+    //        return ResourceCreationResult<GCMesh*>(false, nullptr);
 
-        m_vMeshes.push_back(pMesh);
-        m_vMeshActiveFlags.push_back(true);
+    //    m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
 
-        return ResourceCreationResult<GCMesh*>(true, pMesh);
-    }
+    //    m_vMeshActiveFlags[index] = true;
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
+    //// Not inactive slot 
+    //else
+    //{
+    //    GCMesh* pMesh = new GCMesh();
+    //    if (!pMesh->Initialize(m_pRender, pGeometry, flagsLightColor))
+    //        return ResourceCreationResult<GCMesh*>(false, nullptr);
+
+    //    m_vMeshes.push_back(pMesh);
+    //    m_vMeshActiveFlags.push_back(true);
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
 }
 
 ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeometry)
@@ -333,34 +353,42 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeome
         return ResourceCreationResult<GCMesh*>(false, nullptr);
     }
 
-    // Find the first inactive slot in m_vMeshActiveFlags
-    auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+    GCMesh* pMesh = new GCMesh();
+    pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
 
-    // Inactive slot found
-    if (it != m_vMeshActiveFlags.end())
-    {
-        size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
+    m_vMeshes.push_back(pMesh);
+    m_vMeshActiveFlags.push_back(true);
 
-        GCMesh* pMesh = new GCMesh();
-        pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
+    return ResourceCreationResult<GCMesh*>(true, pMesh);
 
-        m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
+    //// Find the first inactive slot in m_vMeshActiveFlags
+    //auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
 
-        m_vMeshActiveFlags[index] = true;
+    //// Inactive slot found
+    //if (it != m_vMeshActiveFlags.end())
+    //{
+    //    size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
 
-        return ResourceCreationResult<GCMesh*>(true, pMesh);
-    }
-    // Not inactive slot 
-    else
-    {
-        GCMesh* pMesh = new GCMesh();
-        pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
+    //    GCMesh* pMesh = new GCMesh();
+    //    pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
 
-        m_vMeshes.push_back(pMesh);
-        m_vMeshActiveFlags.push_back(true);
+    //    m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
 
-        return ResourceCreationResult<GCMesh*>(true, pMesh);
-    }
+    //    m_vMeshActiveFlags[index] = true;
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
+    //// Not inactive slot 
+    //else
+    //{
+    //    GCMesh* pMesh = new GCMesh();
+    //    pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
+
+    //    m_vMeshes.push_back(pMesh);
+    //    m_vMeshActiveFlags.push_back(true);
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
 }
 
 ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)

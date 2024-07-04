@@ -127,7 +127,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Render\ConsoleApp.cpp" />
     <ClCompile Include="..\..\..\src\Render\DDSTextureLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Render\GCGeometry.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCGraphicsLogger.cpp" />
     <ClCompile Include="..\..\..\src\Render\GCMaterial.cpp" />

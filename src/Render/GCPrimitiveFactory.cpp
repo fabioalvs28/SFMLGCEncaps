@@ -384,7 +384,28 @@ bool GCPrimitiveFactory::Initialize()
             {L"pos", sphereVertices},
             {L"uvs", sphereUvs},
             {L"normals", sphereNormals},
-        }
+        },
+        { // Quad
+            {L"index", std::vector<uint16_t>{0, 3, 1, 2, 3, 0}}, // Indices pour former deux triangles
+            {L"pos", std::vector<DirectX::XMFLOAT3>{
+                DirectX::XMFLOAT3(-1.0f,  1.0f, 0.0f),  // Top-left
+                DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f),  // Bottom-left
+                DirectX::XMFLOAT3(1.0f,  1.0f, 0.0f),   // Top-right
+                DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f)    // Bottom-right
+            }},
+            {L"uvs", std::vector<DirectX::XMFLOAT2>{
+                DirectX::XMFLOAT2(0.0f, 0.0f),  // Top-left
+                DirectX::XMFLOAT2(0.0f, 1.0f),  // Bottom-left
+                DirectX::XMFLOAT2(1.0f, 0.0f),   // Top-right
+                DirectX::XMFLOAT2(1.0f, 1.0f),  // Bottom-right
+            }},
+            {L"normals", std::vector<DirectX::XMFLOAT3>{
+                DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Top-left
+                DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Bottom-left
+                DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), // Normal for Bottom-right
+                DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f)  // Normal for Top-right
+            }},
+        },
     };
 
     return true;

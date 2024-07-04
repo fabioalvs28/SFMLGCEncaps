@@ -26,12 +26,6 @@ GCShader::~GCShader()
 	m_InputLayout.clear();
 }
 
-void GCShader::Render() 
-{
-	m_pRender->GetCommandList()->SetPipelineState(GetPso());
-	m_pRender->GetCommandList()->SetGraphicsRootSignature(GetRootSign());
-}
-
 bool GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
 	if (!CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
@@ -196,8 +190,10 @@ void GCShader::Pso()
 	//psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME; //permet de voir les bordure
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1;
+	psoDesc.NumRenderTargets = 3;
 	psoDesc.RTVFormats[0] = m_pRender->GetBackBufferFormat();
+	psoDesc.RTVFormats[1] = m_pRender->GetBackBufferFormat();
+	psoDesc.RTVFormats[2] = m_pRender->GetBackBufferFormat();
 	psoDesc.SampleDesc.Count = m_pRender->Get4xMsaaState() ? 4 : 1;
 	psoDesc.SampleDesc.Quality = m_pRender->Get4xMsaaState() ? (m_pRender->Get4xMsaaQuality() - 1) : 0;
 	psoDesc.DSVFormat = m_pRender->GetDepthStencilFormat();

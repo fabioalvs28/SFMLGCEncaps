@@ -206,6 +206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     SET_FLAG(flagsLightTexture, HAS_UV);
     SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
+    auto geometryPostProcessing = graphics->CreateGeometryPrimitive(Quad, DirectX::XMFLOAT4(DirectX::Colors::Yellow));
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
     auto geoCubeInner = graphics->CreateGeometryPrimitive(Cube, XMFLOAT4(Colors::Green));
     auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
@@ -222,6 +223,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     graphics->InitializeGraphicsResourcesStart();
 
+    int flags = 0;
+    SET_FLAG(flags, HAS_POSITION);
+    SET_FLAG(flags, HAS_UV);
+
+
+    auto meshPostProcessing = graphics->CreateMeshCustom(geometryPostProcessing.resource, flags);
     // Cr�ation des meshes
     auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
     auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);

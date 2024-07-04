@@ -5,7 +5,7 @@ class GCRender
 public:
 	GCRender();
 
-	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
+	bool Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics);
 	bool InitDirect3D();
 
 	void LogAdapters();
@@ -121,8 +121,17 @@ private:
 
 	// Texture For Post Processing 
 	ID3D12Resource* m_copyTexture = nullptr;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE m_copyTextureAddress;
+	ID3D12Resource* m_copySrv = nullptr;
+
+
 	GCShader* m_postProcessingShader;
+	ID3D12Resource* m_pRenderTargetTexture;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_pRenderTargetTextureAdress;
+
+	GCGeometry* m_postProcessingGeometry;
+	GCMesh* m_postProcessingMesh;
+
+	GCGraphics* m_pGraphics;
 };
 
 #ifndef ReleaseCom
