@@ -32,25 +32,7 @@ int main()
 
         img.DrawCircle(1300, 300, i / 2, 255, 0, 255, 200);
     }
-    img.SaveBMP("images/test.bmp");
-    img.InverseBMP("images/test.bmp");
-    img.SaveBMP("images/copy.bmp");
-
-    img.LoadBMP("images/copy.bmp");
-    img.Premultiply();
-    img.SaveBMP("images/premultiplied.bmp");
-
-    img.LoadBMP("images/test.bmp");
-    img2.LoadBMP("images/copy.bmp");
-    img.BlendSTD(img2, 175);
-    img.SaveBMP("images/blended_std.bmp");
-
-
-    img.LoadBMP("images/test.bmp");
-    img2.LoadBMP("images/copy.bmp");
-    img.BlendPRE(img2, 175);
-    img.SaveBMP("images/blended_pre.bmp");
-
+    img.SaveBMP(new GCFile("test.bmp", "wb"));
 
     return 0;
 }
