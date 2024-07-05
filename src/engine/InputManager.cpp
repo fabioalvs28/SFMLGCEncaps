@@ -12,15 +12,10 @@
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 
 
-GCInputManager::GCInputManager()
+void GCInputManager::InitializeCallbacks()
 {
-
-    callbacks = GCVector<GCVector<std::function<void(GCEvent&)>>>(GetStateSize());
-    for (int i = 0; i < callbacks.GetCapacity(); i++)
-    {
-        callbacks[i] = GCVector<std::function<void(GCEvent&)>>(GetIDSize());
-    }
-
+    callbacks = std::vector<std::vector<std::function<void(GCEvent&)>>>(GetStateSize(), 
+                            std::vector<std::function<void(GCEvent&)>>(GetIDSize()));
 }
 
 
@@ -50,7 +45,7 @@ void GCControllerManager::GetConnectedControllers()
     {
         if ( XInputGetState( i, &state ) == ERROR_SUCCESS )
         {
-            GCControllerInputManager* pController = new GCControllerInputManager( i );
+            GCControllerInputManager* pController = new GCControllerInputManager( i ); 
             m_pControllerList.Insert( i, pController );
         }
     }
@@ -67,6 +62,14 @@ void GCControllerManager::Update()
 
 void GCKeyboardInputManager::SendEvent(int index, BYTE state)
 {
+    if (state == KeyboardState::DOWN)
+    {
+        m_eventManager->PushEvent(new GCKeyPressedEvent(index, state));
+    }
+    else if (state == KeyboardState::UP)
+    {
+        m_eventManager->PushEvent(new GCKeyReleasedEvent(index, state));
+    }
     m_keyState[index] = state;
 }
 
@@ -81,9 +84,9 @@ void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
 }
 
 
-GCKeyboardInputManager::GCKeyboardInputManager()
+GCKeyboardInputManager::GCKeyboardInputManager() : GCInputManager()
 {
-
+    InitializeCallbacks();
     m_keyState = std::vector<BYTE>(GCKeyboardInputManager::KEYIDCOUNT);
     for (int i = 0; i < GCKeyboardInputManager::KEYIDCOUNT; i++)
     {
@@ -94,6 +97,7 @@ GCKeyboardInputManager::GCKeyboardInputManager()
 void GCKeyboardInputManager::RegisterEvent(GCEventManager* eventmanager)
 {
     m_eventManager = eventmanager;
+    m_eventManager->SetKeyboardInputManager(this);
     m_eventManager->Subscribe(GCEventType::KeyPressed, this, &GCKeyboardInputManager::OnKeyPressed);
     m_eventManager->Subscribe(GCEventType::KeyReleased, this, &GCKeyboardInputManager::OnKeyReleased); 
 }
@@ -307,7 +311,7 @@ void GCMouseInputManager::Update()
     }
 }
 
-GCControllerInputManager::GCControllerInputManager()
+GCControllerInputManager::GCControllerInputManager() : GCControllerManager()
 {
     m_ID = -1;
     m_pControllersLeftAxis.x = 0.0; m_pControllersLeftAxis.y = 0.0;

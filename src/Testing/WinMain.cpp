@@ -232,12 +232,28 @@
 
 //int winmain for windows application
 
+//Create an addtional console for debugging
+void CreateConsole()
+{
+    AllocConsole();
+    FILE* file;
+    freopen_s(&file, "CONOUT$", "w", stdout);
+    freopen_s(&file, "CONOUT$", "w", stderr);
+    freopen_s(&file, "CONIN$", "r", stdin);
+}
+
+void DestroyConsole()
+{
+    FreeConsole();
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+    CreateConsole();
     
     GCEngine::Get().Run();
     
-
+    DestroyConsole();
 
     return 0;
 }

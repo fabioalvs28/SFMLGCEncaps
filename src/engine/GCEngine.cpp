@@ -24,7 +24,18 @@ void GCEngine::Shutdown()
 void GCEngine::Run()
 {
     GCEventManager eventmanager = GCEventManager();
-    //GCInputManager inputmanger(&eventmanager);
+    GCKeyboardInputManager inputmanger = GCKeyboardInputManager();
+
+    inputmanger.RegisterEvent(&eventmanager);
+    eventmanager.Subscribe(GCKeyboardInputManager::A, GCKeyboardInputManager::KeyboardState::DOWN, []()
+        {
+            LogEngineInfo("A key is pressed");
+        });
+ 
+    eventmanager.Subscribe(GCKeyboardInputManager::A, GCKeyboardInputManager::KeyboardState::UP, []()
+        {
+            LogEngineInfo("A key is released");
+        });
 
     if (!InitWindow())
     {
@@ -40,7 +51,7 @@ void GCEngine::Run()
 
     while (m_isRunning)
     {
-        //inputmanger.UpdateInputs();
+        inputmanger.Update();
         eventmanager.PollEvents();
         m_window->PollEvents();
         m_window->OnUpdate();

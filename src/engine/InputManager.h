@@ -16,15 +16,16 @@ class GCInputManager
 
 public:
 
-    GCInputManager();
+    GCInputManager() = default;
 
     virtual void Update() {} ;
 
-    virtual int GetStateSize() { return 0; }
-    virtual int GetIDSize() { return 0; }
+    virtual int GetStateSize() const = 0;
+    virtual int GetIDSize() const = 0;
     
 protected:
-    GCVector<GCVector<std::function<void(GCEvent&)>>> callbacks;
+    void InitializeCallbacks();
+    std::vector<std::vector<std::function<void(GCEvent&)>>> callbacks;
     GCEventManager* m_eventManager = nullptr;
 };
 
@@ -88,15 +89,9 @@ public:
         KEYSTATECOUNT
     };
 
-    int GetIDSize() override
-    {
-        return KeyboardID::KEYIDCOUNT;
-    };
+    int GetIDSize() const override { return KeyboardID::KEYIDCOUNT; };
 
-    int GetStateSize() override
-    {
-        return KeyboardState::KEYSTATECOUNT;
-    };
+    int GetStateSize() const override { return KeyboardState::KEYSTATECOUNT; };
 
     void RegisterEvent(GCEventManager* eventmanager);
 
@@ -107,9 +102,9 @@ public:
         callbacks[state][keyId] = func;
     }
 
+    void Update();
 private:
 
-    void Update();
 
     std::vector<BYTE> m_keyState;
 
@@ -161,15 +156,10 @@ private:
 
     void Update();
 
-    int GetIDSize() override
-    {
-        return MouseID::MOUSEIDCOUNT;
-    };
+    int GetIDSize() const override { return MouseID::MOUSEIDCOUNT; };
 
-    int GetStateSize() override
-    {
-        return MouseState::MOUSESTATECOUNT;
-    };
+    int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
+    
 
     GCVector<BYTE> m_buttonState;
 
@@ -220,17 +210,9 @@ public:
         CONTROLLERSTATECOUNT
     };
 
-    int GetIDSize() override
-    {
-        return ControllerID::CONTROLLERIDCOUNT;
-    };
+    int GetIDSize() const override { return ControllerID::CONTROLLERIDCOUNT; };
 
-    int GetStateSize() override
-    {
-        return ControllerState::CONTROLLERSTATECOUNT;
-    };
-
-
+    int GetStateSize() const override { return ControllerState::CONTROLLERSTATECOUNT; };
 
     void UpdateController();
 
