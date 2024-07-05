@@ -15,11 +15,11 @@
 GCInputManager::GCInputManager()
 {
 
-    callbacks = GCVector<GCVector<std::function<void(GCEvent&)>>>(GetStateSize());
-    for (int i = 0; i < callbacks.GetCapacity(); i++)
-    {
-        callbacks[i] = GCVector<std::function<void(GCEvent&)>>(GetIDSize());
-    }
+    //callbacks = GCVector<GCVector<std::function<void(GCEvent&)>>>(GetStateSize());
+    //for (int i = 0; i < callbacks.GetCapacity(); i++)
+    //{
+    //    callbacks[i] = GCVector<std::function<void(GCEvent&)>>(GetIDSize());
+    //}
 
 }
 
@@ -38,19 +38,9 @@ GCControllerManager::GCControllerManager()
 
 }
 
-GCInputManager::GCInputManager(GCEventManager* eventManager) :
-    m_eventManager(eventManager)
+GCControllerManager::~GCControllerManager()
 {
-    m_eventManager->Subscribe(this, &GCInputManager::OnEvent);
-    for (int i = 0; i < XUSER_MAX_COUNT; i++)
-    {
-        m_controllerList.PushBack(nullptr);
-    }
-
-    for (int i = 0; i < 255; i++)
-    {
-        m_keyState.PushBack(NONE);
-    }
+    m_pControllerList.DeepClear();
 }
 
 ////////////////////////////////////////////////////
@@ -88,10 +78,10 @@ void GCKeyboardInputManager::SendEvent(int index, BYTE state)
 GCKeyboardInputManager::GCKeyboardInputManager()
 {
 
-    m_keyState = std::vector<BYTE>(GCKeyboardInputManager::KEYIDCOUNT);
+    m_keyState = GCVector<BYTE>(GCKeyboardInputManager::KEYIDCOUNT);
     for (int i = 0; i < GCKeyboardInputManager::KEYIDCOUNT; i++)
     {
-        m_keyState.push_back(GCKeyboardInputManager::NONE);
+        m_keyState.PushBack(GCKeyboardInputManager::NONE);
     }
 }
 

@@ -6,6 +6,7 @@
 
 GCRenderManager::GCRenderManager()
 {
+
     m_pGraphics = new GCGraphics();
 
     //euuh HASSOUL
@@ -40,11 +41,12 @@ void GCRenderManager::Update()
 
     m_pGraphics->UpdateViewProjConstantBuffer(m_storedProjectionMatrix, m_storedViewMatrix);
 
-    for (int i = 0; i < m_pSpriteRenderer.GetSize(); i++)
+    for ( GCListNode<SpriteRenderer*>* spriteNode = m_pSpriteRendererList.GetFirstNode(); spriteNode != nullptr ; spriteNode  = spriteNode->GetNext() )
     {
-        GCTest test = m_pGraphics->ToPixel<GCTest>(m_pSpriteRenderer[i]->pos.x , m_pSpriteRenderer[i]->pos.y , m_storedProjectionMatrix, m_storedViewMatrix);
-        m_pGraphics->UpdateCustomCBObject<GCTest>(m_pSpriteRenderer[i]->m_pMaterial, test);
-        m_pGraphics->GetRender()->DrawObject(m_pSpriteRenderer[i]->m_pMesh, m_pSpriteRenderer[i]->m_pMaterial);
+        SpriteRenderer* pSprite = spriteNode->GetData(); 
+        GCTest test = m_pGraphics->ToPixel<GCTest>(pSprite->pos.x , pSprite->pos.y , m_storedProjectionMatrix, m_storedViewMatrix);
+        m_pGraphics->UpdateCustomCBObject<GCTest>(pSprite->m_pMaterial, test);
+        m_pGraphics->GetRender()->DrawObject(pSprite->m_pMesh, pSprite->m_pMaterial);
     }
 
     m_pGraphics->EndFrame();
@@ -63,18 +65,14 @@ void GCRenderManager::CreateGeometry()
 
 void GCRenderManager::RegisterSpriteRenderer(SpriteRenderer* spriteRenderer)
 {
-    m_pSpriteRenderer.PushBack(spriteRenderer);
-
+    m_pSpriteRendererList.PushBack(spriteRenderer);
+    spriteRenderer->m_pRenderNode = m_pSpriteRendererList.GetLastNode();
     m_pGraphics->InitializeGraphicsResourcesStart();
     spriteRenderer->m_pMesh = m_pGraphics->CreateMesh(m_pPlane);
     m_pGraphics->InitializeGraphicsResourcesEnd();
 
 }
 
-void GCRenderManager::UnregisterSpriteRenderer(SpriteRenderer* spriteRenderer)
-{
-    m_pSpriteRenderer.Remove(m_pSpriteRenderer.GetIndex(spriteRenderer));
-}
 
 void GCRenderManager::SetShaderTexture(SpriteRenderer* spriteRenderer, std::string texturePath)
 {
@@ -85,8 +83,6 @@ void GCRenderManager::SetShaderTexture(SpriteRenderer* spriteRenderer, std::stri
     GCShader* shaderTexture = m_pGraphics->CreateShaderTexture();
     spriteRenderer->m_pMaterial = m_pGraphics->CreateMaterial(shaderTexture);
     spriteRenderer->m_pMaterial->SetTexture(texture);
-
-    
 }
 
 void GCRenderManager::SetShaderColor(SpriteRenderer* spriteRenderer)

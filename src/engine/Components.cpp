@@ -13,8 +13,16 @@ Component::Component()
 SpriteRenderer::SpriteRenderer()
 {
 	GC::m_pActiveGameManager.m_pRenderManager.RegisterSpriteRenderer(this);
+	pos = GCVEC2(0,0);
+	m_color = GCColor();
+	m_pRenderNode = nullptr;
 }
 
+SpriteRenderer::~SpriteRenderer()
+{
+	if (m_pRenderNode != nullptr)
+		m_pRenderNode->Remove();
+}
 void SpriteRenderer::SetSprite(std::string texturePath)
 {
 	GC::m_pActiveGameManager.m_pRenderManager.SetShaderTexture(this, texturePath);

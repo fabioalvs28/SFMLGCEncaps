@@ -14,13 +14,12 @@ class GCRenderManager
     };
 
 private:
-    GCVector<SpriteRenderer*> m_pSpriteRenderer;
+    GCList<SpriteRenderer*> m_pSpriteRendererList;
 public:
     GCRenderManager();
     ~GCRenderManager();
 
     void RegisterSpriteRenderer(SpriteRenderer* spriteRenderer);
-    void UnregisterSpriteRenderer(SpriteRenderer* spriteRenderer);
 
     void SetShaderTexture(SpriteRenderer* spriteRenderer, std::string texturePath);
     void SetShaderColor(SpriteRenderer* spriteRenderer);

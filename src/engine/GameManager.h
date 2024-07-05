@@ -26,7 +26,7 @@ public: void Init();
 public: void Update();
 
 protected:
-    GCInputManager m_pInputManager;
+    GCKeyboardInputManager m_pInputManager;
     GCPhysicManager m_pPhysicManager;
     GCEventManager m_pEventManager;
     GCSceneManager m_pSceneManager;

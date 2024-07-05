@@ -22,6 +22,7 @@
 #include "GC.h"
 #include "RenderManager.h"
 #include "Components.h"
+#include "InputManager.h"
 //#include "SFML/Graphics.hpp"
 
 #include "PhysicManager.h"
@@ -50,6 +51,8 @@ struct GCTest : GCSHADERCB {
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+
+	GCKeyboardInputManager keyinput; 
 
 	GC::m_pActiveGameManager.Init();
 
@@ -197,37 +200,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	DirectX::XMStoreFloat4x4(&transposedWorld, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&I)));
 
 
+		//// ***********
 
-	GC::m_pActiveGameManager.m_pRenderManager.Update();
+		//graphics->StartFrame();
 
-	//// ***********
+		//// DRAW -> ONE FRAME
+		//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-	//graphics->StartFrame();
+		//GCTest test = graphics->ToPixel<GCTest>(800, 800, storedProjectionMatrix, storedViewMatrix);
 
-	//// DRAW -> ONE FRAME
-	//graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+		////GCTest test;
 
-	//GCTest test = graphics->ToPixel<GCTest>(800, 800, storedProjectionMatrix, storedViewMatrix);
+		////DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
+		////DirectX::XMStoreFloat4x4(&test.world, identityMatrix);
+		////test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
 
-	////GCTest test;
+		//graphics->UpdateCustomCBObject<GCTest>(material2, test);
+		//graphics->GetRender()->DrawObject(mesh, material2);
 
-	////DirectX::XMMATRIX identityMatrix = DirectX::XMMatrixIdentity();
-	////DirectX::XMStoreFloat4x4(&test.world, identityMatrix);
-	////test.color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 5.0f);
+		////graphics->UpdateCustomCBObject<GCTest>(material, worldData);
+		////graphics->GetRender()->DrawObject(mesh, material);
 
-	//graphics->UpdateCustomCBObject<GCTest>(material2, test);
-	//graphics->GetRender()->DrawObject(mesh, material2);
-
-	////graphics->UpdateCustomCBObject<GCTest>(material, worldData);
-	////graphics->GetRender()->DrawObject(mesh, material);
-
-	////profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
+		////profiler.LogInfo(std::to_string(material2->GetObjectCBData().size()));
 
 
-	//graphics->EndFrame();
-	//// ********************
+		//graphics->EndFrame();
+		//// ********************
 
 	window->Run(GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics->GetRender());
+
 	//// Loop Again < |||| >
 
 	//graphics->GetRender()->PrepareDraw();

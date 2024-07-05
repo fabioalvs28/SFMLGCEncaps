@@ -11,7 +11,7 @@ class GCEventManager;
 
 class GCInputManager
 {
-    GCVector<GCVector<std::function<void(GCEvent&)>>> callbacks;
+    //GCVector<GCVector<std::function<void(GCEvent&)>>> callbacks;
 
     friend class GCGameManager;
 
@@ -95,11 +95,12 @@ public:
         return KeyboardState::KEYSTATECOUNT;
     };
 
-private:
-
     void Update();
 
-    std::vector<BYTE> m_keyState;
+private:
+
+
+    GCVector<BYTE> m_keyState;
 
     void SendEvent(int index, BYTE state);
 
@@ -170,6 +171,7 @@ class GCControllerManager : public GCInputManager
 public: 
 
     GCControllerManager();
+    ~GCControllerManager();
     void GetConnectedControllers();
     void Update();
 

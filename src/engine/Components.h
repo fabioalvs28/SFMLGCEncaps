@@ -51,7 +51,7 @@ public: enum { TYPE = 1 };
 
 public:
     SpriteRenderer();
-    ~SpriteRenderer() override {}
+    ~SpriteRenderer() override;
     
     int GetType() override { return TYPE; }
     
@@ -69,6 +69,7 @@ public:
 
     GCVEC2 pos;
 protected:
+    GCListNode<SpriteRenderer*>* m_pRenderNode;
     GCColor m_color;
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
