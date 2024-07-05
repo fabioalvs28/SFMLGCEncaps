@@ -560,6 +560,7 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     }
     GCWORLDCB worldData;
     worldData.world = worldMatrix;
+    worldData.objectId = 100.2f;
     // Update 
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 

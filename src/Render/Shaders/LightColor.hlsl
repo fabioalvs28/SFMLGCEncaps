@@ -53,6 +53,7 @@ struct VertexOut
     float3 WorldPos : POSITION; // Position in world space
 };
 
+
 // Vertex shader
 VertexOut VS(VertexIn vin)
 {
@@ -123,8 +124,6 @@ float ComputePointLightIntensity(float3 lightPosition, float3 surfacePosition, f
     float attenuation = 1.0f / (distance * distance); // Simple inverse square law for attenuation
     return lightIntensity * attenuation;
 }
-
-
 
 // Pixel shader
 float4 PS(VertexOut pin) : SV_Target

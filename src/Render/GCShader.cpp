@@ -113,6 +113,8 @@ void GCShader::RootSign()
 		numParameters++;
 	}
 
+
+
 	rootSigDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 
@@ -158,42 +160,31 @@ void GCShader::Pso()
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.RasterizerState.CullMode = m_cullMode;
 
-
-
 	// Customize the blend state for transparency
 	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	for (int i = 0; i < 4; ++i)
+	{
+		blendDesc.RenderTarget[i].BlendEnable = TRUE;
+		blendDesc.RenderTarget[i].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[i].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[i].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[i].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[i].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[i].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	}
 	psoDesc.BlendState = blendDesc;
 
 	// Use default depth stencil state
-	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); 
 
-
-
-	//// Configure depth stencil state
-	//D3D12_DEPTH_STENCIL_DESC depthStencilDesc = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	//depthStencilDesc.DepthEnable = TRUE;
-	//depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL; // Écrira au Z-buffer
-	//depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; // Comparaison de profondeur
-
-	//psoDesc.DepthStencilState = depthStencilDesc;
-
-
-	// Set other pipeline state settings
-	//psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME; //permet de voir les bordure
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 3;
+	psoDesc.NumRenderTargets = 4;
 	psoDesc.RTVFormats[0] = m_pRender->GetBackBufferFormat();
 	psoDesc.RTVFormats[1] = m_pRender->GetBackBufferFormat();
 	psoDesc.RTVFormats[2] = m_pRender->GetBackBufferFormat();
+	psoDesc.RTVFormats[3] = m_pRender->GetBackBufferFormat();
 	psoDesc.SampleDesc.Count = m_pRender->Get4xMsaaState() ? 4 : 1;
 	psoDesc.SampleDesc.Quality = m_pRender->Get4xMsaaState() ? (m_pRender->Get4xMsaaQuality() - 1) : 0;
 	psoDesc.DSVFormat = m_pRender->GetDepthStencilFormat();

@@ -160,6 +160,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 #define HAS_TANGENT   0x10 // 00010000
 #define HAS_BINORMAL  0x20 // 00100000
 
+
 // Check if a specific flag is set
 #define HAS_FLAG(flags, flag) (((flags) & (flag)) != 0)
 

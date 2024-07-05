@@ -258,7 +258,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 
     XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
-    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centr�
+    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, -4.0f, 3.0f); // Cube interne centr�
     XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-6.0f, 5.0f, -2.0f); // Cube interne centr�
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sph�re d�plac�e dans le cube interne
 
@@ -348,6 +348,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
+
+        graphics->GetRender()->DrawMeshesForSetObjectId();
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());

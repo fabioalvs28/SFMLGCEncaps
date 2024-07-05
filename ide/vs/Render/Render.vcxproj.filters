@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{80803B90-48AF-499D-81AA-DBD03D979393}</UniqueIdentifier>
+      <UniqueIdentifier>{A47C95DE-0E5B-407E-8EA6-51DF92FCAC6C}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{C7962F04-A329-494E-80BE-3D90CE055CDE}</UniqueIdentifier>
+      <UniqueIdentifier>{A47C2A91-CBD6-4755-B4B6-E0800E35F9A3}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{0AC0210D-AD3F-41D7-B97B-89331F80680F}</UniqueIdentifier>
+      <UniqueIdentifier>{326DDDF0-57A0-4FD1-A4D7-0F58D82C3A53}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -19,6 +19,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\DDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\GCGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCGraphics.cpp">
@@ -178,6 +181,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Shaders\LightTextureBloom.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\Render\Shaders\ObjectBufferId.hlsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Shaders\PostProcessing.hlsl">

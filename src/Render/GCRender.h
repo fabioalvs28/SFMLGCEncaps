@@ -42,6 +42,8 @@ public:
 
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 
+	bool DrawMeshesForSetObjectId();
+
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
 	// Getter
@@ -119,17 +121,25 @@ private:
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
 
-	// Texture For Post Processing 
+	// Post Processing Resources
 	ID3D12Resource* m_copyTexture = nullptr;
-	ID3D12Resource* m_copySrv = nullptr;
-
+	ID3D12Resource* m_pPostProcessingRtv;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_pPostProcessingRtvAddress;
 
 	GCShader* m_postProcessingShader;
-	ID3D12Resource* m_pRenderTargetTexture;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE m_pRenderTargetTextureAdress;
-
 	GCGeometry* m_postProcessingGeometry;
 	GCMesh* m_postProcessingMesh;
+
+
+
+	// Object Buffer Id
+	GCShader* m_objectBufferIdShader;
+	ID3D12Resource* m_ObjectIdBufferRtv;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdBufferRtvAddress;
+	// Vector for store current frame drawed mesh, to draw them again to send their id in texture pixel
+	std::vector<GCMesh*> meshesToRenderForObjectID;
+
+	// Debug
 
 	GCGraphics* m_pGraphics;
 };
