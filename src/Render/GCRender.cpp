@@ -572,13 +572,15 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB3, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
 
 	// Draw
-	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
+	//m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
 	// Object Buffer id
 	m_CommandList->SetPipelineState(m_objectBufferIdShader->GetPso());
 	m_CommandList->SetGraphicsRootSignature(m_objectBufferIdShader->GetRootSign());
 
-	m_CommandList->OMSetRenderTargets(1, &m_ObjectIdBufferRtvAddress, FALSE, nullptr);
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
+
+	m_CommandList->OMSetRenderTargets(1, &m_ObjectIdBufferRtvAddress, true, &dsv);
 
 
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
@@ -586,7 +588,7 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 
 
 	// Set Again Old Render target
-	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
+
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
 	m_CommandList->OMSetRenderTargets(1, &rtv, true, &dsv);
 
