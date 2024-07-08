@@ -1,4 +1,5 @@
 #pragma once
+#include "Define.h"
 
 template <typename T> class GCList;
 
@@ -249,6 +250,9 @@ void GCList<T>::PushFront( const T& data )
 template <typename T>
 GCListNode<T>* GCList<T>::PushBefore( const T& data, GCListNode<T>* pNode )
 {
+    ASSERT( pNode != nullptr, LOG_FATAL, "Attempting to push before a nullptr Node" );
+    ASSERT( pNode->m_pList == this, LOG_FATAL, "Attempting to push before a Node from a different List" );
+    
     GCListNode<T>* pNewNode = new GCListNode<T>( data );
     pNewNode->m_pList = this;
     
@@ -282,6 +286,9 @@ GCListNode<T>* GCList<T>::PushBefore( const T& data, GCListNode<T>* pNode )
 template <typename T>
 GCListNode<T>* GCList<T>::PushAfter( const T& data, GCListNode<T>* pNode )
 {
+    ASSERT( pNode != nullptr, LOG_FATAL, "Attempting to push after a nullptr Node" );
+    ASSERT( pNode->m_pList == this, LOG_FATAL, "Attempting to push after a Node from a different List" );
+    
     GCListNode<T>* pNewNode = new GCListNode<T>( data );
     pNewNode->m_pList = this;
     
@@ -318,6 +325,8 @@ GCListNode<T>* GCList<T>::PushAfter( const T& data, GCListNode<T>* pNode )
 template <typename T>
 void GCList<T>::RemoveNode( const GCListNode<T>* pNode )
 {
+    ASSERT( pNode != nullptr, LOG_FATAL, "Attempting to remove a nullptr Node from the List" );
+    ASSERT( pNode->m_pList == this, LOG_FATAL, "Attempting to remove a Node from a different List" );
     
     if ( pNode == m_pHead )
         m_pHead = pNode->m_pNext;
@@ -344,6 +353,9 @@ void GCList<T>::RemoveNode( const GCListNode<T>* pNode )
 template <typename T>
 void GCList<T>::DeleteNode( const GCListNode<T>* pNode )
 {
+    ASSERT( pNode != nullptr, LOG_FATAL, "Attempting to delete a nullptr Node from the List" );
+    ASSERT( pNode->m_pList == this, LOG_FATAL, "Attempting to delete a Node from a different List" );
+    
     RemoveNode( pNode );
     delete pNode;
 }
