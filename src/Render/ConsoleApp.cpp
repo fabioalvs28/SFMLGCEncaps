@@ -390,8 +390,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource);
 
-        meshSphere.resource->UpdateParticles(deltaTime);
-        meshSphere.resource->RenderParticles(graphics, materialSphere.resource, worldMatrixSphere);
+        //meshSphere.resource->UpdateParticles(deltaTime);
+        //meshSphere.resource->RenderParticles(graphics, materialSphere.resource, worldMatrixSphere);
 
         graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
