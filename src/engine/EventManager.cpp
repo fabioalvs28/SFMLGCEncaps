@@ -20,25 +20,13 @@ void GCEventManager::PollEvents()
     }
 }
 
-void GCEventManager::PushEvent(GCEvent* ev)
+void GCEventManager::QueueEvent(GCEvent* ev)
 {
     m_eventQueue.Push(ev);
 }
 
-
-void GCEventManager::Subscribe(int keyCode, BYTE state, std::function<void()> func)
-{
-    auto callback = [func](GCEvent&) { func(); };
-    m_keyboardInputManager->SetKeyInputCallback(state, keyCode, callback);
-}
-
 void GCEventManager::Unsubscribe(GCEventType type)
 {
-}
-
-void GCEventManager::SetKeyboardInputManager(GCKeyboardInputManager* keyboardInputManager)
-{
-    m_keyboardInputManager = keyboardInputManager;
 
 }
 
@@ -49,11 +37,4 @@ void GCEventManager::OnEvent(GCEvent& e)
     {
         listener(e);
     }
-
-    //TODO: Refactor later, it needs to be handle seperately
-    for (auto& callback : m_systemCallback)
-    {
-        callback(e);
-    }
-
 }

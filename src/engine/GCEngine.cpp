@@ -27,14 +27,16 @@ void GCEngine::Run()
     GCKeyboardInputManager inputmanger = GCKeyboardInputManager();
 
     inputmanger.RegisterEvent(&eventmanager);
-    eventmanager.Subscribe(GCKeyboardInputManager::A, GCKeyboardInputManager::KeyboardState::DOWN, []()
+
+    inputmanger.BindAction(GCKeyboardInputManager::A, GCKeyboardInputManager::DOWN, []() 
         {
             LogEngineInfo("A key is pressed");
         });
- 
-    eventmanager.Subscribe(GCKeyboardInputManager::A, GCKeyboardInputManager::KeyboardState::UP, []()
+
+    inputmanger.BindAction(GCKeyboardInputManager::SPACE, GCKeyboardInputManager::DOWN, [&]()
         {
-            LogEngineInfo("A key is released");
+            inputmanger.UnbindAction(GCKeyboardInputManager::A, GCKeyboardInputManager::DOWN);
+            LogEngineInfo("A key action is unbind");
         });
 
     if (!InitWindow())
