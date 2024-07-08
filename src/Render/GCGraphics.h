@@ -45,7 +45,7 @@ public:
 	// Update ViewProj, use for Camera
 	bool UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 	// Update world cb buffer with GCWORLDCB Struct
-	bool UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix);
+	bool UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, float meshId = 0.0f);
 	// Update world with custom struct
 	template<typename ShaderTypeConstantBuffer>
 	bool UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);
@@ -53,7 +53,7 @@ public:
 	bool UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData);
 	bool UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4 ambientLightColor, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, float shininess);
 
-	bool UpdateLights(GCLIGHTSPROPERTIES objectData);
+	bool UpdateLights(GCLIGHTSPROPERTIES& objectData);
 
 	// Remove Resources
 	bool RemoveShader(GCShader* pShader);

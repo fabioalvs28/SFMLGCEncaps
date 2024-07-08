@@ -153,6 +153,8 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     }
 
 // Define flags
+// #TODO Change name in vertex color, vertex ...
+
 #define HAS_POSITION  0x01 // 00000001
 #define HAS_COLOR     0x02 // 00000010
 #define HAS_UV        0x04 // 00000100
@@ -176,7 +178,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 #define CBV_SLOT_CB2 2
 #define CBV_SLOT_CB3 3
 #define DESCRIPTOR_TABLE_SLOT_TEXTURE 4
-
+#define DESCRIPTOR_TABLE_SLOT_TEXTURE2 5
 
 
 

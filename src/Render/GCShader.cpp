@@ -79,7 +79,7 @@ void GCShader::CompileShader()
 void GCShader::RootSign()
 {
 	// Déclaration des paramètres racine
-	CD3DX12_ROOT_PARAMETER slotRootParameter[5];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[6];
 
 	slotRootParameter[CBV_SLOT_CB0].InitAsConstantBufferView(0);
 	slotRootParameter[CBV_SLOT_CB1].InitAsConstantBufferView(1);
@@ -110,6 +110,11 @@ void GCShader::RootSign()
 		CD3DX12_DESCRIPTOR_RANGE srvTable;
 		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE].InitAsDescriptorTable(1, &srvTable);
+		numParameters++;
+
+		CD3DX12_DESCRIPTOR_RANGE srvTable2;
+		srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE2].InitAsDescriptorTable(1, &srvTable2);
 		numParameters++;
 	}
 
@@ -162,7 +167,7 @@ void GCShader::Pso()
 
 	// Customize the blend state for transparency
 	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		blendDesc.RenderTarget[i].BlendEnable = TRUE;
 		blendDesc.RenderTarget[i].SrcBlend = D3D12_BLEND_SRC_ALPHA;
@@ -182,9 +187,6 @@ void GCShader::Pso()
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 4;
 	psoDesc.RTVFormats[0] = m_pRender->GetBackBufferFormat();
-	psoDesc.RTVFormats[1] = m_pRender->GetBackBufferFormat();
-	psoDesc.RTVFormats[2] = m_pRender->GetBackBufferFormat();
-	psoDesc.RTVFormats[3] = m_pRender->GetBackBufferFormat();
 	psoDesc.SampleDesc.Count = m_pRender->Get4xMsaaState() ? 4 : 1;
 	psoDesc.SampleDesc.Quality = m_pRender->Get4xMsaaState() ? (m_pRender->Get4xMsaaQuality() - 1) : 0;
 	psoDesc.DSVFormat = m_pRender->GetDepthStencilFormat();

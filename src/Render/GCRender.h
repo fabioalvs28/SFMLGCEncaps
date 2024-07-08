@@ -42,17 +42,15 @@ public:
 
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
 
-	bool DrawMeshesForSetObjectId();
-
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
 	// Getter
 	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
-	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
 	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
 	inline bool Get4xMsaaState() const { return m_4xMsaaState; }
 	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
-	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewAddress() const { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 	inline DXGI_FORMAT GetDepthStencilFormat() const { return m_DepthStencilFormat; }
 	inline ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
 	inline ID3D12Device* Getmd3dDevice() const { return m_d3dDevice; }
@@ -61,19 +59,24 @@ public:
 
 	inline ID3D12Fence* GetFence() { return m_Fence; }
 
+	// Descriptor Heaps
 	inline ID3D12DescriptorHeap* GetRtvHeap() { return m_rtvHeap; }
 	inline ID3D12DescriptorHeap* GetDsvHeap() { return m_dsvHeap; }
 	inline ID3D12DescriptorHeap* GetCbvSrvUavSrvDescriptorHeap() { return m_cbvSrvUavDescriptorHeap; }
+
+	// Descriptor Size
 	inline UINT GetRtvDescriptorSize() const { return m_rtvDescriptorSize; }
 	inline UINT GetDsvDescriptorSize() const { return m_dsvDescriptorSize; }
 	inline UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
 
+	// Camera & Light -> Temporarily
 	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
 	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	Window* GetCurrentWindow() { return m_pWindow; }
 private:
 	Window* m_pWindow;
+
 	// Swap chain size
 	int m_renderWidth;
 	int	m_renderHeight;
@@ -122,22 +125,21 @@ private:
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
 
 	// Post Processing Resources
-	ID3D12Resource* m_copyTexture = nullptr;
 	ID3D12Resource* m_pPostProcessingRtv;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_pPostProcessingRtvAddress;
 
 	GCShader* m_postProcessingShader;
-	GCGeometry* m_postProcessingGeometry;
-	GCMesh* m_postProcessingMesh;
 
-
-
-	// Object Buffer Id
+	// Object Buffer Id Resources
 	GCShader* m_objectBufferIdShader;
+
+	// #TODO Change the norm for object id, layers id
 	ID3D12Resource* m_ObjectIdBufferRtv;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdBufferRtvAddress;
-	// Vector for store current frame drawed mesh, to draw them again to send their id in texture pixel
-	std::vector<GCMesh*> meshesToRenderForObjectID;
+
+	// #TODO Use the principal, in reading
+	ID3D12Resource* m_ObjectIdDepthStencilBuffer; 
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdDepthStencilBufferAddress;
 
 	// Debug
 

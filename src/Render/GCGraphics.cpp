@@ -512,7 +512,7 @@ bool GCGraphics::RemoveMesh(GCMesh* pMesh)
 
 bool GCGraphics::RemoveTexture(GCTexture* pTexture)
 {
-    if(!CHECK_POINTERSNULL("Ptr for RemoveTexture is not null", "Can't remove texture, pTexture is null", pTexture))
+    if(CHECK_POINTERSNULL("Ptr for RemoveTexture is not null", "Can't remove texture, pTexture is null", pTexture)==false)
         return false;
 
     // Removes Texture
@@ -550,7 +550,7 @@ bool GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatr
 }
 
 // Update per object constant buffer
-bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix) 
+bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, float meshId)
 {
     if (!CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial))
         return false;
@@ -560,7 +560,7 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     }
     GCWORLDCB worldData;
     worldData.world = worldMatrix;
-    worldData.objectId = 100.2f;
+    worldData.objectId = meshId;
     // Update 
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 
@@ -608,7 +608,7 @@ bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOA
     return true;
 }
 
-bool GCGraphics::UpdateLights(GCLIGHTSPROPERTIES objectData) {
+bool GCGraphics::UpdateLights(GCLIGHTSPROPERTIES& objectData) {
     UpdateConstantBuffer(objectData, m_pCbLightPropertiesInstance);
 
     return true;

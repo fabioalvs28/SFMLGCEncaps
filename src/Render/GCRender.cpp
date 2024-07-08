@@ -225,7 +225,7 @@ void GCRender::CreateRtvAndDsvDescriptorHeaps()
 
 
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
-	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.NumDescriptors = 2;
 	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	dsvHeapDesc.NodeMask = 0;
@@ -248,14 +248,14 @@ void GCRender::CreatePostProcessingResources() {
 		textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
 		CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_DEFAULT);
-		HRESULT hr = m_d3dDevice->CreateCommittedResource(
+		/*HRESULT hr = m_d3dDevice->CreateCommittedResource(
 			&heapProperties,
 			D3D12_HEAP_FLAG_NONE,
 			&textureDesc,
 			D3D12_RESOURCE_STATE_COMMON,
 			nullptr,
 			IID_PPV_ARGS(&m_copyTexture)
-		);
+		);*/
 		// ***
 
 
@@ -443,10 +443,28 @@ void GCRender::CreateDepthStencilBufferAndView()
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Format = m_DepthStencilFormat;
 	dsvDesc.Texture2D.MipSlice = 0;
-	m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, &dsvDesc, GetDepthStencilView());
+	m_d3dDevice->CreateDepthStencilView(m_DepthStencilBuffer, &dsvDesc, GetDepthStencilViewAddress());
 
-	CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(m_DepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
-	m_CommandList->ResourceBarrier(1, &ResBar);
+	CD3DX12_RESOURCE_BARRIER CommonToDepthWrite(CD3DX12_RESOURCE_BARRIER::Transition(m_DepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+	m_CommandList->ResourceBarrier(1, &CommonToDepthWrite);
+
+	// Second depth stencil for Mesh buffer id 
+	m_d3dDevice->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&depthStencilDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		&optClear,
+		IID_PPV_ARGS(&m_ObjectIdDepthStencilBuffer)
+	);
+
+
+	m_ObjectIdDepthStencilBufferAddress = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+	m_ObjectIdDepthStencilBufferAddress.Offset(1, m_dsvDescriptorSize);
+	m_d3dDevice->CreateDepthStencilView(m_ObjectIdDepthStencilBuffer, &dsvDesc, m_ObjectIdDepthStencilBufferAddress);
+
+	CD3DX12_RESOURCE_BARRIER CommonToDepthWrite2(CD3DX12_RESOURCE_BARRIER::Transition(m_ObjectIdDepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+	m_CommandList->ResourceBarrier(1, &CommonToDepthWrite2);
 }
 
 void GCRender::UpdateViewport() 
@@ -524,12 +542,15 @@ bool GCRender::PrepareDraw()
 	m_CommandList->ResourceBarrier(1, &CommonToRT);
 
 
-	m_CommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightBlue, 1, &m_ScissorRect);
-	m_CommandList->ClearDepthStencilView(GetDepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	m_CommandList->ClearRenderTargetView(CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_ScissorRect);
+	m_CommandList->ClearDepthStencilView(GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
+	m_CommandList->ClearRenderTargetView(m_ObjectIdBufferRtvAddress, DirectX::Colors::LightBlue, 1, &m_ScissorRect);
+	m_CommandList->ClearDepthStencilView(m_ObjectIdDepthStencilBufferAddress, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
+
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilViewAddress();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferViewAddress();
 	m_CommandList->OMSetRenderTargets(1, &rtv, true, &dsv);
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvSrvUavDescriptorHeap };
@@ -572,163 +593,119 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB3, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
 
 	// Draw
-	//m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
+	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
-	// Object Buffer id
+
+
+
+
+
+
+
+
+
+
+
+	// Object Buffer id ******************
 	m_CommandList->SetPipelineState(m_objectBufferIdShader->GetPso());
 	m_CommandList->SetGraphicsRootSignature(m_objectBufferIdShader->GetRootSign());
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
-
-	m_CommandList->OMSetRenderTargets(1, &m_ObjectIdBufferRtvAddress, true, &dsv);
-
+	m_CommandList->OMSetRenderTargets(1, &m_ObjectIdBufferRtvAddress, TRUE, &m_ObjectIdDepthStencilBufferAddress);
 
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 	// ***
 
 
 	// Set Again Old Render target
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilViewAddress();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferViewAddress();
+	m_CommandList->OMSetRenderTargets(1, &rtv, true, &dsv); 
 
-	D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
-	m_CommandList->OMSetRenderTargets(1, &rtv, true, &dsv);
-
-
-	//meshesToRenderForObjectID.push_back(pMesh);
-
-	return true;
-}
-
-bool GCRender::DrawMeshesForSetObjectId() {
-	//// Assurez-vous d'avoir initialisé et configuré correctement votre pipeline de rendu
-	//m_CommandList->SetPipelineState(m_objectBufferIdShader->GetPso());
-	//m_CommandList->SetGraphicsRootSignature(m_objectBufferIdShader->GetRootSign());
-
-	//D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
-	//m_CommandList->OMSetRenderTargets(1, &m_ObjectIdBufferRtvAddress, true, &dsv);
-
-	//// Pour chaque mesh à rendre
-	//for (int i = 0; i < meshesToRenderForObjectID.size(); ++i) {
-	//	GCMesh* pMesh = meshesToRenderForObjectID[i];
-
-	//	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = pMesh->GetBufferGeometryData()->VertexBufferView();
-	//	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
-	//	m_CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	//	m_CommandList->IASetIndexBuffer(&indexBufferView);
-	//	m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	//	// Appeler DrawIndexedInstanced pour dessiner le mesh
-	//	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
-	//}
+	// ******************
 
 	return true;
 }
 
 void GCRender::PerformPostProcessing()
 {
-	// 1. Transitionner le back buffer vers l'état COPY_SOURCE
-	CD3DX12_RESOURCE_BARRIER barrierToCopySource = CD3DX12_RESOURCE_BARRIER::Transition(
-		CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_PRESENT,  // État actuel du back buffer lorsqu'il est présenté
-		D3D12_RESOURCE_STATE_COPY_SOURCE);
-	m_CommandList->ResourceBarrier(1, &barrierToCopySource);
-
-	// 2. Transitionner la texture vers l'état COPY_DEST
-	CD3DX12_RESOURCE_BARRIER barrierToCopyDest = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_copyTexture,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,  // État actuel de la texture après le post-processing
-		D3D12_RESOURCE_STATE_COPY_DEST);
-	m_CommandList->ResourceBarrier(1, &barrierToCopyDest);
-
-	// 3. Copier le contenu du back buffer dans la texture de rendu cible
-	m_CommandList->CopyResource(m_copyTexture, CurrentBackBuffer());
-
-	// 4. Transitionner la texture de retour vers l'état RENDER_TARGET
-	CD3DX12_RESOURCE_BARRIER barrierBackToRT = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_copyTexture,
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	m_CommandList->ResourceBarrier(1, &barrierBackToRT);
-
-	// 5. Rétransitionner le back buffer vers l'état RENDER_TARGET (préparation pour la présentation)
-	CD3DX12_RESOURCE_BARRIER barrierBackToPresent = CD3DX12_RESOURCE_BARRIER::Transition(
-		CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_COPY_SOURCE,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	m_CommandList->ResourceBarrier(1, &barrierBackToPresent);
-
-	// 6. Transitionner la texture vers l'état PIXEL_SHADER_RESOURCE
-	CD3DX12_RESOURCE_BARRIER barrierToPixelShaderResource = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_copyTexture,
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	m_CommandList->ResourceBarrier(1, &barrierToPixelShaderResource);
-
-	CD3DX12_RESOURCE_BARRIER barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_pPostProcessingRtv,
-		D3D12_RESOURCE_STATE_COMMON,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
+	// Transition pour le rendu sur m_pPostProcessingRtv
+	CD3DX12_RESOURCE_BARRIER barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(m_pPostProcessingRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	m_CommandList->ResourceBarrier(1, &barrierToRT);
 
-	// 7. Définir les cibles de rendu pour le post-processing
-	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilView();
+	// Set Render target
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = GetDepthStencilViewAddress();
 	m_CommandList->OMSetRenderTargets(1, &m_pPostProcessingRtvAddress, FALSE, &dsv);
 
-	//// 8. Définir l'état du pipeline et la signature racine
+	// Root Sign / Pso
 	m_CommandList->SetPipelineState(m_postProcessingShader->GetPso());
 	m_CommandList->SetGraphicsRootSignature(m_postProcessingShader->GetRootSign());
 
-	//// 9. Définir la table de descripteurs pour l'entrée texture
+	// Transition pour la texture de post-processing (g_Texture)
+	CD3DX12_RESOURCE_BARRIER barrierToShaderResource = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	m_CommandList->ResourceBarrier(1, &barrierToShaderResource);
+
+	// Post process texture linking to shader
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = GetBackBufferFormat();  // Format de la texture
+	srvDesc.Format = GetBackBufferFormat();
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle(m_cbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-	srvCpuHandle.Offset(90, m_cbvSrvUavDescriptorSize);  
-	m_d3dDevice->CreateShaderResourceView(m_copyTexture, &srvDesc, srvCpuHandle);
+	srvCpuHandle.Offset(90, m_cbvSrvUavDescriptorSize);
+	m_d3dDevice->CreateShaderResourceView(CurrentBackBuffer(), &srvDesc, srvCpuHandle);
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_cbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	srvGpuHandle.Offset(90, m_cbvSrvUavDescriptorSize);  
+	srvGpuHandle.Offset(90, m_cbvSrvUavDescriptorSize);
 	m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, srvGpuHandle);
 
+	// Transition pour la texture d'Object ID (g_ObjectIdBuffer)
+	CD3DX12_RESOURCE_BARRIER barrierToShaderResource2 = CD3DX12_RESOURCE_BARRIER::Transition(m_ObjectIdBufferRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	m_CommandList->ResourceBarrier(1, &barrierToShaderResource2);
+
+	// Object / Layers buffer id Linking to shader
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2 = {};
+	srvDesc2.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc2.Texture2D.MostDetailedMip = 0;
+	srvDesc2.Texture2D.MipLevels = 1;
+	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle2(m_cbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	srvCpuHandle2.Offset(150, m_cbvSrvUavDescriptorSize);
+	m_d3dDevice->CreateShaderResourceView(m_ObjectIdBufferRtv, &srvDesc2, srvCpuHandle2);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle2(m_cbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	srvGpuHandle2.Offset(150, m_cbvSrvUavDescriptorSize);
+	m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE2, srvGpuHandle2);
+	//
+
+	// Draw quad on post process rtv
 	GCMesh* theMesh = m_pGraphics->GetMeshes()[0];
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = theMesh->GetBufferGeometryData()->VertexBufferView();
 	D3D12_INDEX_BUFFER_VIEW indexBufferView = theMesh->GetBufferGeometryData()->IndexBufferView();
 	m_CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 	m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	//// 11. Dessiner un quad plein écran pour appliquer l'effet de post-processing
 	m_CommandList->DrawIndexedInstanced(theMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
+	//
 
-	// 1. Transitionner m_pRenderTargetTexture vers l'état COPY_SOURCE
-	CD3DX12_RESOURCE_BARRIER barrierToCopySource2 = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_pPostProcessingRtv,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_COPY_SOURCE);
+	// Transitions pour la copie finale
+	CD3DX12_RESOURCE_BARRIER barrierToCopySource2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pPostProcessingRtv, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
 	m_CommandList->ResourceBarrier(1, &barrierToCopySource2);
-
-	// 2. Transitionner le back buffer vers l'état COPY_DEST
-	CD3DX12_RESOURCE_BARRIER barrierToCopyDest2 = CD3DX12_RESOURCE_BARRIER::Transition(
-		CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_COPY_DEST);
+	CD3DX12_RESOURCE_BARRIER barrierToCopyDest2 = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
 	m_CommandList->ResourceBarrier(1, &barrierToCopyDest2);
 
-	// 3. Copier le contenu de m_pRenderTargetTexture dans le back buffer
+	// Copie de m_pPostProcessingRtv sur le rendu final
 	m_CommandList->CopyResource(CurrentBackBuffer(), m_pPostProcessingRtv);
 }
+
 
 //Always needs to be called right after drawing!!!
 bool GCRender::PostDraw()
 {
-    //PerformPostProcessing();
+    PerformPostProcessing();
 
-	CD3DX12_RESOURCE_BARRIER barrierBackToPresent2 = CD3DX12_RESOURCE_BARRIER::Transition(
-		CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_PRESENT);
+	CD3DX12_RESOURCE_BARRIER barrierBackToPresent2 = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
 	m_CommandList->ResourceBarrier(1, &barrierBackToPresent2);
 
 	

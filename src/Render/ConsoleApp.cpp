@@ -331,25 +331,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         lightData.lights[1] = pointLight;
 
+        lightData.lights[0] = directionalLight;
+
         graphics->UpdateLights(lightData);
 
 
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-        graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
+        graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter, 1.0f);
         graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
 
-        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
+        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource);
 
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
+        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere, 3.0f);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
+        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
-
-        graphics->GetRender()->DrawMeshesForSetObjectId();
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());
