@@ -22,6 +22,90 @@ GCImage::GCImage(const GCImage& img)
 	m_bits = img.m_bits;
 }
 
+//** (operator=(GCSurface)) Not working **//
+GCImage& GCImage::operator=(GCSurface& surf)
+{
+	if (this != &surf)
+	{
+		m_width = surf.width;
+		m_height = surf.height;
+		m_bitCount = surf.bits;
+		m_channels = surf.count;
+		m_rowStride = (m_width * m_channels + 3) & (~3);
+		m_size = m_width * m_height * m_channels;
+		data.resize(m_size, 0);
+		m_rgba = data.data();
+		for (int y = 0; y < m_height; ++y)
+		{
+			for (int x = 0; x < m_width; ++x)
+			{
+				int index = (x + y * m_width) * m_channels;
+				int surfIndex = (x + y * surf.width) * surf.count;
+				data[index] = surf.rgba[surfIndex];
+				data[index + 1] = surf.rgba[surfIndex + 1];
+				data[index + 2] = surf.rgba[surfIndex + 2];
+				if (m_channels == 4)
+				{
+					data[index + 3] = surf.rgba[surfIndex + 3];
+				}
+			}
+		}
+	}
+	return *this;
+}
+
+GCImage& GCImage::operator+=(GCImage& img)
+{
+	if (img.m_width != m_width || img.m_height != m_height || img.m_channels != m_channels)
+	{
+		std::cerr << "Images must have the same dimensions and channels." << std::endl;
+		return *this;
+	}
+
+	for (int y = 0; y < m_height; ++y)
+	{
+		for (int x = 0; x < m_width; ++x)
+		{
+			int index = (x + y * m_width) * m_channels;
+			int imgIndex = (x + y * img.m_width) * img.m_channels;
+			data[index] += img.data[imgIndex];
+			data[index + 1] += img.data[imgIndex + 1];
+			data[index + 2] += img.data[imgIndex + 2];
+			if (m_channels == 4)
+			{
+				data[index + 3] += img.data[imgIndex + 3];
+			}
+		}
+	}
+	return *this;
+}
+
+GCImage& GCImage::operator-=(GCImage& img)
+{
+	if (img.m_width != m_width || img.m_height != m_height || img.m_channels != m_channels)
+	{
+		std::cerr << "Images must have the same dimensions and channels." << std::endl;
+		return *this;
+	}
+
+	for (int y = 0; y < m_height; ++y)
+	{
+		for (int x = 0; x < m_width; ++x)
+		{
+			int index = (x + y * m_width) * m_channels;
+			int imgIndex = (x + y * img.m_width) * img.m_channels;
+			data[index] -= img.data[imgIndex];
+			data[index + 1] -= img.data[imgIndex + 1];
+			data[index + 2] -= img.data[imgIndex + 2];
+			if (m_channels == 4)
+			{
+				data[index + 3] -= img.data[imgIndex + 3];
+			}
+		}
+	}
+	return *this;
+}
+
 GCImage::~GCImage()
 {
 	Close();
@@ -385,9 +469,9 @@ bool GCImage::Save(GCFile* path, int type, int* OutSize, int width, int height)
 	case PNG:
 		return SavePNG(path, OutSize);
 		break;
-	case JPG:
-		return SaveJPG(path, OutSize);
-		break;
+	//case JPG:
+	//	return SaveJPG(path, OutSize);
+	//	break;
 	default:
 		return false;
 		break;
@@ -400,9 +484,9 @@ bool GCImage::Save(cstr path, int type, int* OutSize)
 	return Save(&file, type, OutSize);
 }
 
-bool GCImage::SaveBMP(GCFile* file, int* pOutSize)
+bool GCImage::SaveBMP(GCFile* pFile, int* pOutSize)
 {
-	if (file == nullptr)
+	if (pFile == nullptr)
 		return false;
 
 	BMPHeader header;
@@ -427,7 +511,7 @@ bool GCImage::SaveBMP(GCFile* file, int* pOutSize)
 	std::vector<uint8_t> headerBuffer(sizeof(header));
 	std::memcpy(headerBuffer.data(), &header, sizeof(header));
 
-	if (!file->Write(headerBuffer)) 
+	if (!pFile->Write(headerBuffer))
 	{
 		std::cerr << "Error writing header to file." << std::endl;
 		return false;
@@ -439,7 +523,7 @@ bool GCImage::SaveBMP(GCFile* file, int* pOutSize)
 	for (int y = 0; y < m_height; ++y) 
 	{
 		std::memcpy(rowData.data(), &data[(m_height - 1 - y) * m_width * m_channels], m_width * m_channels);
-		if (!file->Write(rowData)) {
+		if (!pFile->Write(rowData)) {
 			std::cerr << "Error writing pixel data to file." << std::endl;
 			return false;
 		}
@@ -450,9 +534,30 @@ bool GCImage::SaveBMP(GCFile* file, int* pOutSize)
 	return true;
 }
 
-bool GCImage::SaveJPG(GCFile* file, int* pOutSize, int quality)
+//** (SavePNG) Not implemented **//
+
+//bool GCImage::SaveJPG(GCFile* pFile, int* pOutSize, int quality)
+//{
+//	return false;
+//}
+
+bool GCImage::SavePNG(GCFile* pFile, int* pOutSize, bool gray)
 {
-	return false;
+	if (pFile == nullptr || m_rgba == nullptr)
+		return false;
+
+	BYTE* png = nullptr;
+	size_t size = 0;
+	UI32 error = lodepng_encodeEx(&png, &size, m_rgba, m_width, m_height, m_bits, gray);
+	if (error)
+		return false;
+
+	pFile->Write(png, (int)size);
+	DELPTRS(png);
+
+	if (pOutSize)
+		*pOutSize = (int)size;
+	return true;
 }
 
 void GCImage::Close()
@@ -467,6 +572,32 @@ void GCImage::Close()
 	m_rowStride = 0;
 	m_size = 0;
 	m_channels = 0;
+}
+
+bool GCImage::Clear(const REC2* pRect)
+{
+	if (pRect == nullptr)
+	{
+		std::memset(data.data(), 0, m_size);
+	}
+	else
+	{
+		for (int y = pRect->y; y < pRect->y + pRect->height; ++y)
+		{
+			for (int x = pRect->x; x < pRect->x + pRect->width; ++x)
+			{
+				int index = (x + y * m_width) * m_channels;
+				data[index] = 0;
+				data[index + 1] = 0;
+				data[index + 2] = 0;
+				if (m_channels == 4)
+				{
+					data[index + 3] = 0;
+				}
+			}
+		}
+	}
+	return true;
 }
 
 void GCImage::SetBits(int bits)
@@ -521,6 +652,13 @@ void GCImage::SetPixel(int x, int y, int r, int g, int b, int a)
 	{
 		data[index + 3] = a;
 	}
+}
+
+COLORREF GCImage::GetPixel(int x, int y)
+{
+	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return 0;
+	int index = (x + y * m_width) * m_channels;
+	return RGB(data[index], data[index + 1], data[index + 2]);
 }
 
 void GCImage::WritePixel(int x, int y, int r, int g, int b, int a, int d, int id)
@@ -585,219 +723,435 @@ int GCImage::GetPixelCount(int r, int g, int b, int a)
 	return count;
 }
 
-void GCImage::WritePixel(int x, int y, COLORREF color, int d, int id)
+//** All drawing Functions **//
+
+//void GCImage::WritePixel(int x, int y, COLORREF color, int d, int id)
+//{
+//	if (x < 0 || x >= m_width || y < 0 || y >= m_height) 
+//	{
+//		return;
+//	}
+//	int index = (x + y * m_width) * m_channels;
+//	data[index] = GetRValue(color);
+//	data[index + 1] = GetGValue(color);
+//	data[index + 2] = GetBValue(color);
+//}
+//
+//bool GCImage::SavePNG(GCFile* file, int* pOutSize, bool gray)
+//{
+//	if (file == nullptr || m_rgba == nullptr)
+//		return false;
+//
+//	BYTE* png = nullptr;
+//	size_t size = 0;
+//	UI32 error = lodepng_encodeEx(&png, &size, m_rgba, m_width, m_height, m_bitCount, gray);
+//	if (error)
+//		return false;
+//
+//	file->Write(png, (int)size);
+//	DELPTRS(png);
+//
+//	if (pOutSize)
+//		*pOutSize = (int)size;
+//	return true;
+//
+//}
+//
+//void GCImage::DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+//	if (abs(y2 - y1) < abs(x2 - x1)) 
+//	{
+//		if (x1 > x2) 
+//		{
+//			DrawLineLow(x2, y2, x1, y1, r, g, b, a);
+//		}
+//		else 
+//		{
+//			DrawLineLow(x1, y1, x2, y2, r, g, b, a);
+//		}
+//	}
+//	else 
+//	{
+//		if (y1 > y2) 
+//		{
+//			DrawLineHigh(x2, y2, x1, y1, r, g, b, a);
+//		}
+//		else 
+//		{
+//			DrawLineHigh(x1, y1, x2, y2, r, g, b, a);
+//		}
+//	}
+//}
+//
+//void GCImage::DrawLineLow(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+//	int dx = x2 - x1;
+//	int dy = y2 - y1;
+//	int yi = 1;
+//	if (dy < 0) 
+//	{
+//		yi = -1;
+//		dy = -dy;
+//	}
+//	int D = 2 * dy - dx;
+//	int y = y1;
+//
+//	for (int x = x1; x <= x2; ++x) 
+//	{
+//		SetPixel(x, y, r, g, b, a);
+//		if (D > 0) {
+//			y += yi;
+//			D -= 2 * dx;
+//		}
+//		D += 2 * dy;
+//	}
+//}
+//
+//void GCImage::DrawLineHigh(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+//	int dx = x2 - x1;
+//	int dy = y2 - y1;
+//	int xi = 1;
+//	if (dx < 0) 
+//	{
+//		xi = -1;
+//		dx = -dx;
+//	}
+//	int D = 2 * dx - dy;
+//	int x = x1;
+//
+//	for (int y = y1; y <= y2; ++y) 
+//	{
+//		SetPixel(x, y, r, g, b, a);
+//		if (D > 0 )
+//		{
+//			x += xi;
+//			D -= 2 * dy;
+//		}
+//		D += 2 * dx;
+//	}
+//}
+//
+//void GCImage::DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+//	DrawLine(x, y, x + w - 1, y, r, g, b, a);
+//	DrawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a);
+//	DrawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a);
+//	DrawLine(x, y + h - 1, x, y, r, g, b, a);
+//}
+//
+//void GCImage::FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+//	for (int i = y; i < y + h; ++i)
+//	{
+//		for (int j = x; j < x + w; ++j) 
+//		{
+//			SetPixel(j, i, r, g, b, a);
+//		}
+//	}
+//}
+//
+//void GCImage::DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+//{
+//	int f = 1 - radius;
+//	int ddF_x = 1;
+//	int ddF_y = -2 * radius;
+//	int x1 = 0;
+//	int y1 = radius;
+//
+//	SetPixel(x, y + radius, r, g, b, a);
+//	SetPixel(x, y - radius, r, g, b, a);
+//	SetPixel(x + radius, y, r, g, b, a);
+//	SetPixel(x - radius, y, r, g, b, a);
+//
+//	while (x1 < y1)
+//	{
+//		if (f >= 0)
+//		{
+//			y1--;
+//			ddF_y += 2;
+//			f += ddF_y;
+//		}
+//		x1++;
+//		ddF_x += 2;
+//		f += ddF_x;
+//
+//		SetPixel(x + x1, y + y1, r, g, b, a);
+//		SetPixel(x - x1, y + y1, r, g, b, a);
+//		SetPixel(x + x1, y - y1, r, g, b, a);
+//		SetPixel(x - x1, y - y1, r, g, b, a);
+//		SetPixel(x + y1, y + x1, r, g, b, a);
+//		SetPixel(x - y1, y + x1, r, g, b, a);
+//		SetPixel(x + y1, y - x1, r, g, b, a);
+//		SetPixel(x - y1, y - x1, r, g, b, a);
+//	}
+//
+//}
+//
+//void GCImage::FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+//{
+//	int f = 1 - radius;
+//	int ddF_x = 1;
+//	int ddF_y = -2 * radius;
+//	int x1 = 0;
+//	int y1 = radius;
+//
+//	for (int i = y - radius; i <= y + radius; i++) 
+//	{
+//		SetPixel(x, i, r, g, b, a);
+//	}
+//
+//	while (x1 < y1)
+//	{
+//		if (f >= 0) 
+//		{
+//			y1--;
+//			ddF_y += 2;
+//			f += ddF_y;
+//		}
+//		x1++;
+//		ddF_x += 2;
+//		f += ddF_x;
+//
+//		for (int i = y - y1; i <= y + y1; i++) 
+//		{
+//			SetPixel(x + x1, i, r, g, b, a);
+//			SetPixel(x - x1, i, r, g, b, a);
+//			SetPixel(x + y1, i, r, g, b, a);
+//			SetPixel(x - y1, i, r, g, b, a);
+//		}
+//	}
+//}
+//
+//void GCImage::Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) 
+//{
+//	for (int y = 0; y < m_height; ++y) {
+//		for (int x = 0; x < m_width; ++x) {
+//			SetPixel(x, y, r, g, b, a);
+//		}
+//	}
+//}
+
+bool GCImage::Flip(bool horz, bool vert)
 {
-	if (x < 0 || x >= m_width || y < 0 || y >= m_height) 
+	if (!horz && !vert)
 	{
-		return;
+		return false;
 	}
-	int index = (x + y * m_width) * m_channels;
-	data[index] = GetRValue(color);
-	data[index + 1] = GetGValue(color);
-	data[index + 2] = GetBValue(color);
+
+	int channels = m_bitCount / 8;
+	if (channels != 4)
+	{
+		std::cerr << "Flip function requires images with 4 channels (RGBA)." << std::endl;
+		return false;
+	}
+
+	std::vector<uint8_t> tempData(m_size);
+	for (int y = 0; y < m_height; ++y)
+	{
+		for (int x = 0; x < m_width; ++x)
+		{
+			int index = (x + y * m_width) * channels;
+			int targetIndex = (x + (m_height - 1 - y) * m_width) * channels;
+			std::memcpy(&tempData[targetIndex], &data[index], channels);
+		}
+	}
+
+	std::memcpy(data.data(), tempData.data(), m_size);
+	return true;
 }
 
-bool GCImage::SavePNG(GCFile* file, int* pOutSize, bool gray)
+bool GCImage::AddHorizontalImage(GCImage* pImg)
 {
-	if (file == nullptr || m_rgba == nullptr)
+	if (pImg == nullptr)
+	{
+		std::cerr << "Image is null." << std::endl;
 		return false;
+	}
 
-	BYTE* png = nullptr;
-	size_t size = 0;
-	UI32 error = lodepng_encodeEx(&png, &size, m_rgba, m_width, m_height, m_bitCount, gray);
-	if (error)
+	if (m_height != pImg->m_height)
+	{
+		std::cerr << "Both images must have the same height." << std::endl;
 		return false;
+	}
 
-	file->Write(png, (int)size);
-	DELPTRS(png);
+	int channels = m_bitCount / 8;
+	if (channels != 4)
+	{
+		std::cerr << "AddHorizontalImage function requires images with 4 channels (RGBA)." << std::endl;
+		return false;
+	}
 
-	if (pOutSize)
-		*pOutSize = (int)size;
+	std::vector<uint8_t> tempData(m_size + pImg->m_size);
+	for (int y = 0; y < m_height; ++y)
+	{
+		for (int x = 0; x < m_width; ++x)
+		{
+			int index = (x + y * m_width) * channels;
+			int targetIndex = (x + y * m_width) * channels;
+			std::memcpy(&tempData[targetIndex], &data[index], channels);
+		}
+		for (int x = 0; x < pImg->m_width; ++x)
+		{
+			int index = (x + y * pImg->m_width) * channels;
+			int targetIndex = (x + (m_width + y) * m_width) * channels;
+			std::memcpy(&tempData[targetIndex], &pImg->data[index], channels);
+		}
+	}
+
+	m_width += pImg->m_width;
+	m_size = m_width * m_height * channels;
+	data.resize(m_size);
+	std::memcpy(data.data(), tempData.data(), m_size);
 	return true;
 
 }
 
-void GCImage::DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	if (abs(y2 - y1) < abs(x2 - x1)) 
-	{
-		if (x1 > x2) 
-		{
-			DrawLineLow(x2, y2, x1, y1, r, g, b, a);
-		}
-		else 
-		{
-			DrawLineLow(x1, y1, x2, y2, r, g, b, a);
-		}
-	}
-	else 
-	{
-		if (y1 > y2) 
-		{
-			DrawLineHigh(x2, y2, x1, y1, r, g, b, a);
-		}
-		else 
-		{
-			DrawLineHigh(x1, y1, x2, y2, r, g, b, a);
-		}
-	}
-}
-
-void GCImage::DrawLineLow(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	int dx = x2 - x1;
-	int dy = y2 - y1;
-	int yi = 1;
-	if (dy < 0) 
-	{
-		yi = -1;
-		dy = -dy;
-	}
-	int D = 2 * dy - dx;
-	int y = y1;
-
-	for (int x = x1; x <= x2; ++x) 
-	{
-		SetPixel(x, y, r, g, b, a);
-		if (D > 0) {
-			y += yi;
-			D -= 2 * dx;
-		}
-		D += 2 * dy;
-	}
-}
-
-void GCImage::DrawLineHigh(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	int dx = x2 - x1;
-	int dy = y2 - y1;
-	int xi = 1;
-	if (dx < 0) 
-	{
-		xi = -1;
-		dx = -dx;
-	}
-	int D = 2 * dx - dy;
-	int x = x1;
-
-	for (int y = y1; y <= y2; ++y) 
-	{
-		SetPixel(x, y, r, g, b, a);
-		if (D > 0 )
-		{
-			x += xi;
-			D -= 2 * dy;
-		}
-		D += 2 * dx;
-	}
-}
-
-void GCImage::DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	DrawLine(x, y, x + w - 1, y, r, g, b, a);
-	DrawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a);
-	DrawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a);
-	DrawLine(x, y + h - 1, x, y, r, g, b, a);
-}
-
-void GCImage::FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	for (int i = y; i < y + h; ++i)
-	{
-		for (int j = x; j < x + w; ++j) 
-		{
-			SetPixel(j, i, r, g, b, a);
-		}
-	}
-}
-
-void GCImage::DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+bool GCImage::AddVerticalImage(GCImage* pImg)
 {
-	int f = 1 - radius;
-	int ddF_x = 1;
-	int ddF_y = -2 * radius;
-	int x1 = 0;
-	int y1 = radius;
-
-	SetPixel(x, y + radius, r, g, b, a);
-	SetPixel(x, y - radius, r, g, b, a);
-	SetPixel(x + radius, y, r, g, b, a);
-	SetPixel(x - radius, y, r, g, b, a);
-
-	while (x1 < y1)
+	if (pImg == nullptr)
 	{
-		if (f >= 0)
-		{
-			y1--;
-			ddF_y += 2;
-			f += ddF_y;
-		}
-		x1++;
-		ddF_x += 2;
-		f += ddF_x;
-
-		SetPixel(x + x1, y + y1, r, g, b, a);
-		SetPixel(x - x1, y + y1, r, g, b, a);
-		SetPixel(x + x1, y - y1, r, g, b, a);
-		SetPixel(x - x1, y - y1, r, g, b, a);
-		SetPixel(x + y1, y + x1, r, g, b, a);
-		SetPixel(x - y1, y + x1, r, g, b, a);
-		SetPixel(x + y1, y - x1, r, g, b, a);
-		SetPixel(x - y1, y - x1, r, g, b, a);
+		std::cerr << "Image is null." << std::endl;
+		return false;
 	}
 
+	if (m_width != pImg->m_width)
+	{
+		std::cerr << "Both images must have the same width." << std::endl;
+		return false;
+	}
+
+	int channels = m_bitCount / 8;
+	if (channels != 4)
+	{
+		std::cerr << "AddVerticalImage function requires images with 4 channels (RGBA)." << std::endl;
+		return false;
+	}
+
+	std::vector<uint8_t> tempData(m_size + pImg->m_size);
+	for (int y = 0; y < m_height; ++y)
+	{
+		for (int x = 0; x < m_width; ++x)
+		{
+			int index = (x + y * m_width) * channels;
+			int targetIndex = (x + y * m_width) * channels;
+			std::memcpy(&tempData[targetIndex], &data[index], channels);
+		}
+	}
+	for (int y = 0; y < pImg->m_height; ++y)
+	{
+		for (int x = 0; x < pImg->m_width; ++x)
+		{
+			int index = (x + y * pImg->m_width) * channels;
+			int targetIndex = (x + (y + m_height) * m_width) * channels;
+			std::memcpy(&tempData[targetIndex], &pImg->data[index], channels);
+		}
+	}
+
+	m_height += pImg->m_height;
+	m_size = m_width * m_height * channels;
+	data.resize(m_size);
+	std::memcpy(data.data(), tempData.data(), m_size);
+	return true;
 }
 
-void GCImage::FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+bool GCImage::SetAlpha(BYTE alpha)
 {
-	int f = 1 - radius;
-	int ddF_x = 1;
-	int ddF_y = -2 * radius;
-	int x1 = 0;
-	int y1 = radius;
-
-	for (int i = y - radius; i <= y + radius; i++) 
+	int channels = m_bitCount / 8;
+	if (channels != 4)
 	{
-		SetPixel(x, i, r, g, b, a);
+		std::cerr << "SetAlpha function requires images with 4 channels (RGBA)." << std::endl;
+		return false;
 	}
 
-	while (x1 < y1)
+	for (int y = 0; y < m_height; ++y)
 	{
-		if (f >= 0) 
+		for (int x = 0; x < m_width; ++x)
 		{
-			y1--;
-			ddF_y += 2;
-			f += ddF_y;
-		}
-		x1++;
-		ddF_x += 2;
-		f += ddF_x;
-
-		for (int i = y - y1; i <= y + y1; i++) 
-		{
-			SetPixel(x + x1, i, r, g, b, a);
-			SetPixel(x - x1, i, r, g, b, a);
-			SetPixel(x + y1, i, r, g, b, a);
-			SetPixel(x - y1, i, r, g, b, a);
+			int index = (x + y * m_width) * channels;
+			data[index + 3] = alpha;
 		}
 	}
+	return true;
 }
 
-void GCImage::Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) 
+bool GCImage::SetAlphaForColor(BYTE alpha, COLORREF colorToFind)
 {
-	for (int y = 0; y < m_height; ++y) {
-		for (int x = 0; x < m_width; ++x) {
-			SetPixel(x, y, r, g, b, a);
+	int channels = m_bitCount / 8;
+	if (channels != 4)
+	{
+		std::cerr << "SetAlphaForColor function requires images with 4 channels (RGBA)." << std::endl;
+		return false;
+	}
+
+	for (int y = 0; y < m_height; ++y)
+	{
+		for (int x = 0; x < m_width; ++x)
+		{
+			int index = (x + y * m_width) * channels;
+			if (GetPixel(x, y) == colorToFind)
+			{
+				data[index + 3] = alpha;
+			}
 		}
 	}
+	return true;
 }
 
-void GCImage::InverseBMP(const std::string& filename)
+bool GCImage::Rotate(int angle)
 {
-	LoadBMP(filename);
-	for (int y = 0; y < m_height; ++y) {
-		for (int x = 0; x < m_width; ++x) {
-			int index = (x + y * m_width) * m_channels;
-			data[index] = data[index];
-			data[index + 1] = data[index + 1];
-			data[index + 2] = data[index + 2];
+	if (angle % 90 != 0)
+	{
+		std::cerr << "Angle must be a multiple of 90." << std::endl;
+		return false;
+	}
+
+	int channels = m_bitCount / 8;
+	if (channels != 4)
+	{
+		std::cerr << "Rotate function requires images with 4 channels (RGBA)." << std::endl;
+		return false;
+	}
+
+	std::vector<uint8_t> tempData(m_size);
+	if (angle == 90)
+	{
+		for (int y = 0; y < m_height; ++y)
+		{
+			for (int x = 0; x < m_width; ++x)
+			{
+				int index = (x + y * m_width) * channels;
+				int targetIndex = ((m_height - 1 - y) + x * m_height) * channels;
+				std::memcpy(&tempData[targetIndex], &data[index], channels);
+			}
+		}
+		m_width = m_height;
+		m_height = m_width;
+	}
+	else if (angle == 180)
+	{
+		for (int y = 0; y < m_height; ++y)
+		{
+			for (int x = 0; x < m_width; ++x)
+			{
+				int index = (x + y * m_width) * channels;
+				int targetIndex = ((m_width - 1 - x) + (m_height - 1 - y) * m_width) * channels;
+				std::memcpy(&tempData[targetIndex], &data[index], channels);
+			}
 		}
 	}
+	else if (angle == 270)
+	{
+		for (int y = 0; y < m_height; ++y)
+		{
+			for (int x = 0; x < m_width; ++x)
+			{
+				int index = (x + y * m_width) * channels;
+				int targetIndex = (y + (m_width - 1 - x) * m_height) * channels;
+				std::memcpy(&tempData[targetIndex], &data[index], channels);
+			}
+		}
+		m_width = m_height;
+		m_height = m_width;
+	}
+
+	std::memcpy(data.data(), tempData.data(), m_size);
+	return true;
 }
 
 bool GCImage::Premultiply()
@@ -822,6 +1176,79 @@ bool GCImage::Premultiply()
 			data[index] = static_cast<uint8_t>(r * alpha);
 			data[index + 1] = static_cast<uint8_t>(g * alpha);
 			data[index + 2] = static_cast<uint8_t>(b * alpha);
+		}
+	}
+	return true;
+}
+
+//** It's not a Solidify function -> Need Refacto **//
+bool GCImage::Solidify(GCImage* pOpaque)
+{
+	int channels = m_bitCount / 8;
+	if (channels != 4) {
+		std::cerr << "Solidify function requires images with 4 channels (RGBA)." << std::endl;
+		return false;
+	}
+
+	if (pOpaque == nullptr) {
+		std::cerr << "Opaque image is null." << std::endl;
+		return false;
+	}
+
+	if (pOpaque->m_width != m_width || pOpaque->m_height != m_height) {
+		std::cerr << "Both images must have the same dimensions." << std::endl;
+		return false;
+	}
+
+	if (pOpaque->m_bitCount != 24) {
+		std::cerr << "Opaque image must have 24 bits." << std::endl;
+		return false;
+	}
+
+	for (int y = 0; y < m_height; ++y) {
+		for (int x = 0; x < m_width; ++x) {
+			int index = (x + y * m_width) * channels;
+
+			uint8_t r = data[index];
+			uint8_t g = data[index + 1];
+			uint8_t b = data[index + 2];
+			uint8_t a = data[index + 3];
+
+			if (a == 0) {
+				int opaqueIndex = (x + y * m_width) * 3;
+				data[index] = pOpaque->data[opaqueIndex];
+				data[index + 1] = pOpaque->data[opaqueIndex + 1];
+				data[index + 2] = pOpaque->data[opaqueIndex + 2];
+				data[index + 3] = 255;
+			}
+		}
+	}
+	return true;
+}
+
+//** It's not a Solidify function -> Need Refacto **//
+bool GCImage::Solidify()
+{
+	int channels = m_bitCount / 8;
+	if (channels != 4) {
+		std::cerr << "Solidify function requires images with 4 channels (RGBA)." << std::endl;
+		return false;
+	}
+
+	for (int y = 0; y < m_height; ++y) {
+		for (int x = 0; x < m_width; ++x) {
+			int index = (x + y * m_width) * channels;
+
+			uint8_t r = data[index];
+			uint8_t g = data[index + 1];
+			uint8_t b = data[index + 2];
+			uint8_t a = data[index + 3];
+
+			float alpha = a / 255.0f;
+
+			data[index] = static_cast<uint8_t>(r / alpha);
+			data[index + 1] = static_cast<uint8_t>(g / alpha);
+			data[index + 2] = static_cast<uint8_t>(b / alpha);
 		}
 	}
 	return true;
@@ -970,6 +1397,65 @@ bool GCImage::Blend(int x, int y, GCImage* pImg, int xsrc, int ysrc, int w, int 
 			float sourceA = pImg->data[sourceIndex + 3] / 255.0f;
 		}
 	}
+}
+
+bool GCImage::Blend(int x, int y, GCImage* pSrc, const REC2* pRect)
+{
+	if (pRect == nullptr)
+	{
+		std::cerr << "Source rectangle is null." << std::endl;
+		return false;
+	}
+	if (pSrc == nullptr)
+	{
+		std::cerr << "Source image is null." << std::endl;
+		return false;
+	}
+	return Blend(x, y, pSrc, pRect->x, pRect->y, pRect->width, pRect->height);
+}
+
+bool GCImage::Blend(REC2* pRect, GCImage* pSrc, int quality)
+{
+	if (!pRect || !pSrc)
+		return false;
+
+	switch (quality) {
+	case DRAWQUALITY_NEAREST:
+		break;
+	case DRAWQUALITY_BILINEAR:
+		break;
+	case DRAWQUALITY_BICUBIC:
+		break;
+	default:
+		std::cerr << "Unknown quality type: " << quality << std::endl;
+		return false;
+	}
+
+	//** Implement Blend function here **//
+
+	return true;
+}
+
+bool GCImage::Blend(int x, int y, int w, int h, GCImage* pSrc, int quality)
+{
+	if (!pSrc)
+		return false;
+
+	switch (quality) {
+	case DRAWQUALITY_NEAREST:
+		break;
+	case DRAWQUALITY_BILINEAR:
+		break;
+	case DRAWQUALITY_BICUBIC:
+		break;
+	default:
+		std::cerr << "Unknown quality type: " << quality << std::endl;
+		return false;
+	}
+
+	//** Implement Blend function here **//
+
+	return true;
 }
 
 bool GCImage::BlendSTD(const GCImage& overlay, float alpha)
