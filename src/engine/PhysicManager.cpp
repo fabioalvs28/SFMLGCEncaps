@@ -14,6 +14,16 @@ GCPhysicManager::~GCPhysicManager()
 {
 }
 
+void GCPhysicManager::RegisterComponent(Component* component)
+{
+	m_components.PushBack(component);
+}
+
+void GCPhysicManager::UnregisterComponent(Component* component)
+{
+	m_components.Remove(m_components.GetIndex(component));
+}
+
 void GCPhysicManager::RegisterCollider(Collider* collider)
 {
 	m_colliders.PushBack(collider);
@@ -26,12 +36,18 @@ void GCPhysicManager::UnregisterCollider(Collider* collider)
 
 void GCPhysicManager::Update()
 {
-	// Update rigidbodies
+	// Update components
+	for (Component* component : m_components)
+		component->FixedUpdate();
+
+	// Update rigidbodies					TODO: remove this
 	for (RigidBody* rigidbody : m_rigidbodies)
 		rigidbody->FixedUpdate();
 
-	for (int i = 0; i < m_colliders.GetSize(); i++) {
-		for (int j = i + 1; j < m_colliders.GetSize(); j++) {
+	for (int i = 0; i < m_colliders.GetSize(); i++)
+	{
+		for (int j = i + 1; j < m_colliders.GetSize(); j++)
+		{
 			if (!CheckCollision(*m_colliders.Get(i), *m_colliders.Get(j)))
 				continue;
 

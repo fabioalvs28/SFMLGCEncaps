@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "PhysicManager.h"
 
+class Component;
 class Collider;
 class GCGameObject;
 class GCScene;
@@ -10,6 +11,7 @@ class GC;
 
 class GCGameManager 
 {
+friend class Component;
 friend class Collider;
 friend class GCGameObject;
 friend class GCScene;

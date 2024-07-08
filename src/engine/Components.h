@@ -2,6 +2,18 @@
 #include "../core/framework.h"
 #include "GCColor.h"
 
+
+enum FLAGS
+{
+	FIXED_UPDATE    = 1 << 0,
+    RENDER          = 1 << 1,
+};
+inline FLAGS operator|(FLAGS a, FLAGS b)
+{
+	return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+
 class GCGameObject;
 
 // TODO Adding lots of stuff to the components
@@ -15,13 +27,16 @@ friend class GCGameObject;
 
 public: enum { TYPE = 0 };
 
+protected:
+	int m_flags;
+
 public:
     Component();
     virtual ~Component() {};
     
     virtual int GetType() = 0;
     
-    virtual void Init() = 0;
+    virtual void Init() {}          // Should be pure virtual to properly work      TODO: Fix this
     virtual void Update() = 0;
     virtual void FixedUpdate() = 0;
     virtual void Render() = 0;
@@ -32,6 +47,8 @@ public:
     bool IsActive() { return m_active; }
 
     inline GCGameObject* GetGameObject() { return m_pGameObject; }
+
+    inline bool IsFlagSet(FLAGS flag) { return (m_flags & flag) != 0; }
 
 protected:
     void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
@@ -53,7 +70,7 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
+    void Init() override { m_flags = RENDER; }
     void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
@@ -80,6 +97,8 @@ public:
     Collider();
     ~Collider();
     
+    void Init() override { m_flags = FIXED_UPDATE | RENDER; }
+
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
     
@@ -107,7 +126,6 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
     void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
@@ -132,7 +150,6 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
     void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
@@ -149,14 +166,18 @@ class RigidBody : public Component
 {
 public: enum { TYPE = 4 };
 
+private:
+    GCVEC3 m_velocity;
+
 public:
+    RigidBody() : m_velocity(0, 0, 0) {}
     ~RigidBody() override {}
     
     int GetType() override { return TYPE; }
     
     void Init() override {}
     void Update() override {}
-    void FixedUpdate() override {}
+    void FixedUpdate() override;
     void Render() override {}
     void Destroy() override {}
     
@@ -213,7 +234,7 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
+    void Init() override { m_flags = FIXED_UPDATE | RENDER; }
     void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
