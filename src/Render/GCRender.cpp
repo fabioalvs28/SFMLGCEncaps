@@ -626,6 +626,8 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	return true;
 }
 
+// #TODO RESTRUCTURE RENDER -> GCRenderContext GCRenderResources -> Compute Shader
+
 void GCRender::PerformPostProcessing()
 {
 	// Transition pour le rendu sur m_pPostProcessingRtv
