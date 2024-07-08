@@ -28,7 +28,7 @@ void GCPhysicManager::Update()
 {
 	// Update rigidbodies
 	for (RigidBody* rigidbody : m_rigidbodies)
-		rigidbody->Update();
+		rigidbody->FixedUpdate();
 
 	for (int i = 0; i < m_colliders.GetSize(); i++) {
 		for (int j = i + 1; j < m_colliders.GetSize(); j++) {

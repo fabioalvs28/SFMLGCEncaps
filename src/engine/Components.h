@@ -23,6 +23,7 @@ public:
     
     virtual void Init() = 0;
     virtual void Update() = 0;
+    virtual void FixedUpdate() = 0;
     virtual void Render() = 0;
     virtual void Destroy() = 0;
     
@@ -54,6 +55,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
     
@@ -107,6 +109,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
@@ -131,6 +134,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
@@ -152,6 +156,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
     
@@ -172,6 +177,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
@@ -190,6 +196,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
@@ -208,6 +215,7 @@ public:
     
     void Init() override {}
     void Update() override {}
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
