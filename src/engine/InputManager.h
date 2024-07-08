@@ -39,6 +39,8 @@ public:
 
     GCKeyboardInputManager();
 
+    void Update();
+
     bool IsKeyPressed(int keyID);
 
     BYTE GetKeyState(int keyID) { return m_keyState[keyID]; }
@@ -95,23 +97,60 @@ public:
 
     void RegisterEvent(GCEventManager* eventmanager);
 
-
+    /// <summary>
+    /// Bind a function to a specific key and key state
+    /// </summary>
+    /// <param name="keyId">Key ID</param>
+    /// <param name="state">Key State</param>
+    /// <param name="func">The function can be generic</param>
     template<typename Func>
-    void SetKeyInputCallback(BYTE state, int keyId, Func&& func)
+    void BindAction(int keyId, BYTE state, Func&& func)
     {
-        callbacks[state][keyId] = func;
+        auto callback = [func](GCEvent&) { func(); };
+        callbacks[state][keyId] = callback;
     }
 
-    void Update();
+    /// <summary>
+    /// Unbind a function based on key ID and key state
+    /// the function should be a member function
+    /// </summary>
+    /// <param name="keyId">Key ID</param>
+    /// <param name="state">Key State</param>
+    /// <param name="func">member function</param>
+    template<typename Func>
+    void UnbindAction(int keyId, BYTE state, Func&& func)
+    {
+        auto callback = [func](GCEvent&) { func(); };
+        auto& stateCallbacks = callbacks[state];
+
+        auto it = std::find_if(stateCallbacks.begin(), stateCallbacks.end(),
+            [&](const std::function<void(GCEvent&)>& storedCallback) 
+            {
+                return storedCallback.target_type() == callback.target_type();
+            });
+
+        if (it != stateCallbacks.end()) {
+            stateCallbacks.erase(it);
+        }
+    }
+
+    /// <summary>
+    /// Unbind a function based on key ID and key state
+    /// Unbind for lambda function
+    /// KeyID and KeyState can access by the class name
+    /// </summary>
+    /// <param name="keyID">Key ID</param>
+    /// <param name="keyState">Key State</param>
+    void UnbindAction(int keyID, BYTE keyState);
+
 private:
-
-
-    std::vector<BYTE> m_keyState;
-
     void SendEvent(int index, BYTE state);
 
     void OnKeyPressed(GCKeyPressedEvent& ev);
     void OnKeyReleased(GCKeyReleasedEvent& ev);
+
+private:
+    std::vector<BYTE> m_keyState;
 };
 
 

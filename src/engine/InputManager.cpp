@@ -11,13 +11,13 @@
 #define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 
-
 void GCInputManager::InitializeCallbacks()
 {
-    callbacks = std::vector<std::vector<std::function<void(GCEvent&)>>>(GetStateSize(), 
-                            std::vector<std::function<void(GCEvent&)>>(GetIDSize()));
+    callbacks = std::vector<std::vector<std::function<void(GCEvent&)>>>(GetStateSize(),
+        std::vector<std::function<void(GCEvent&)>>(GetIDSize()));
 }
 
+#pragma region Controller Manager
 
 GCControllerManager::GCControllerManager()
 {
@@ -28,11 +28,8 @@ GCControllerManager::GCControllerManager()
         m_pControllerList[i] = nullptr;
     }
 
-
     GetConnectedControllers();
-
 }
-
 
 ////////////////////////////////////////////////////
 /// @brief Function to get connected controllers.
@@ -59,16 +56,40 @@ void GCControllerManager::Update()
         if (m_pControllerList[i] != nullptr) m_pControllerList[i]->UpdateController();
     }
 }
+#pragma endregion
+
+#pragma region Keyboard Manager
+
+GCKeyboardInputManager::GCKeyboardInputManager() : GCInputManager()
+{
+    InitializeCallbacks();
+    m_keyState = std::vector<BYTE>(GetIDSize(), GCKeyboardInputManager::NONE);
+}
+
+void GCKeyboardInputManager::UnbindAction(int keyID, BYTE keyState)
+{
+    if (keyState >= callbacks.size()) {
+        return;
+    }
+
+    auto& stateCallbacks = callbacks[keyState];
+
+    if (keyID >= stateCallbacks.size()) {
+        return;
+    }
+
+    stateCallbacks[keyID] = nullptr;
+}
 
 void GCKeyboardInputManager::SendEvent(int index, BYTE state)
 {
     if (state == KeyboardState::DOWN)
     {
-        m_eventManager->PushEvent(new GCKeyPressedEvent(index, state));
+        m_eventManager->QueueEvent(new GCKeyPressedEvent(index, state));
     }
     else if (state == KeyboardState::UP)
     {
-        m_eventManager->PushEvent(new GCKeyReleasedEvent(index, state));
+        m_eventManager->QueueEvent(new GCKeyReleasedEvent(index, state));
     }
     m_keyState[index] = state;
 }
@@ -85,21 +106,9 @@ void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
     callbacks[ev.GetKeyState()][ev.GetKeyID()](ev);
 }
 
-
-GCKeyboardInputManager::GCKeyboardInputManager() : GCInputManager()
-{
-    InitializeCallbacks();
-    m_keyState = std::vector<BYTE>(GCKeyboardInputManager::KEYIDCOUNT);
-    for (int i = 0; i < GCKeyboardInputManager::KEYIDCOUNT; i++)
-    {
-        m_keyState.push_back(GCKeyboardInputManager::NONE);
-    }
-}
-
 void GCKeyboardInputManager::RegisterEvent(GCEventManager* eventmanager)
 {
     m_eventManager = eventmanager;
-    m_eventManager->SetKeyboardInputManager(this);
     m_eventManager->Subscribe(GCEventType::KeyPressed, this, &GCKeyboardInputManager::OnKeyPressed);
     m_eventManager->Subscribe(GCEventType::KeyReleased, this, &GCKeyboardInputManager::OnKeyReleased); 
 }
@@ -205,9 +214,9 @@ bool GCKeyboardInputManager::GetKeyUp(int key)
     }
     return false;
 }
+#pragma endregion
 
-
-
+#pragma region MouseInput Manager
 
 GCMouseInputManager::GCMouseInputManager()
 {
@@ -312,6 +321,9 @@ void GCMouseInputManager::Update()
         }
     }
 }
+#pragma endregion
+
+#pragma region ControllerInput Manager
 
 GCControllerInputManager::GCControllerInputManager() : GCControllerManager()
 {
@@ -327,7 +339,6 @@ GCControllerInputManager::GCControllerInputManager() : GCControllerManager()
         m_buttonState[j] = GCControllerInputManager::NONE;
     }
 }
-
 
 GCControllerInputManager::GCControllerInputManager(int id)
 {
@@ -551,3 +562,4 @@ void GCControllerInputManager::UpdateTriggers()
         m_pControllerTrigger.x = lTriggerState; m_pControllerTrigger.y = rTriggerState; 
     }
 }
+#pragma endregion
