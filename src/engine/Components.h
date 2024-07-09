@@ -38,10 +38,9 @@ public:
     
     virtual int GetType() = 0;
     
-    virtual void Init() = 0;
-    virtual void Update() = 0;
-    virtual void FixedUpdate() = 0;
-    virtual void Render() = 0;
+    virtual void Update() {}
+    virtual void FixedUpdate() {}
+    virtual void Render() {}
     virtual void Destroy() = 0;
     
     void SetActive( bool active ) { m_active = active; }
@@ -73,9 +72,6 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
-    void Update() override {}
-    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
     
@@ -127,8 +123,6 @@ public:
     
     int GetType() override { return TYPE; }
     
-	void Init() override {}
-    void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
@@ -152,8 +146,6 @@ public:
     
     int GetType() override { return TYPE; }
 
-    void Init() override {}
-    void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
@@ -178,10 +170,7 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
-    void Update() override {}
     void FixedUpdate() override;
-    void Render() override {}
     void Destroy() override {}
     
     void AddForce( GCVEC2 force ) {}
@@ -200,10 +189,7 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
     void Update() override {}
-    void FixedUpdate() override {}
-    void Render() override {}
     void Destroy() override {}
 
 };
@@ -220,10 +206,7 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
     void Update() override {}
-    void FixedUpdate() override {}
-    void Render() override {}
     void Destroy() override {}
 
 };
@@ -240,10 +223,8 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
     void Update() override {}
     void FixedUpdate() override {}
-    void Render() override {}
     void Destroy() override {}
 
 };
