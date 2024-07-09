@@ -96,6 +96,7 @@ public:
 
 	Window* GetCurrentWindow() { return m_pWindow; }
 	ID3D12Resource* CreateRTT();
+	void DeleteRenderTarget(ID3D12Resource* pRenderTarget);
 private:
 	Window* m_pWindow;
 	// Swap chain size
@@ -145,6 +146,9 @@ private:
 
 	// Camera (Temporary)
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
+
+	std::vector<ID3D12Resource*> m_renderTargets;
+
 };
 
 #ifndef ReleaseCom

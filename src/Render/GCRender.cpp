@@ -598,6 +598,18 @@ ID3D12Resource* GCRender::CreateRTT()
 	}
 	m_d3dDevice->CreateRenderTargetView(renderTargetTexture, nullptr, rtvHeapHandle);
 	rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
+	m_renderTargets.push_back(renderTargetTexture);
 
 	return renderTargetTexture;
+}
+
+void GCRender::DeleteRenderTarget(ID3D12Resource* pRenderTarget) {
+	auto it = std::find(m_renderTargets.begin(), m_renderTargets.end(), pRenderTarget);
+	if (it != m_renderTargets.end()) {
+		if (pRenderTarget) {
+			pRenderTarget->Release();
+			pRenderTarget = nullptr;
+		}
+		m_renderTargets.erase(it);
+	}
 }

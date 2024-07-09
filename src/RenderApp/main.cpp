@@ -77,7 +77,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	auto material3 = graphics->CreateMaterial(shader2.resource);
 	material3.resource->SetTexture(texture8.resource);
 	ID3D12Resource* renderTargetTexture = graphics->GetRender()->CreateRTT();
-	//shader2.resource->SetRenderTarget(renderTargetTexture);
+	shader2.resource->SetRenderTarget(renderTargetTexture);
+	graphics->GetRender()->DeleteRenderTarget(renderTargetTexture);
+	shader2.resource->SetRenderTarget(nullptr);
 	// PERSPECTIVE 
 
 	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
@@ -157,6 +159,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	// ***********
 	graphics->Resize(200, 200);
+	graphics->Resize(1500, 800);
 	graphics->StartFrame();
 
 	// DRAW -> ONE FRAME
