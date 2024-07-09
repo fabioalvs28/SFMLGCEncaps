@@ -703,7 +703,7 @@ void GCRender::PerformPostProcessing()
 //Always needs to be called right after drawing!!!
 bool GCRender::CompleteDraw()
 {
-    PerformPostProcessing();
+    //PerformPostProcessing();
 
 	CD3DX12_RESOURCE_BARRIER barrierBackToPresent2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierBackToPresent2);
