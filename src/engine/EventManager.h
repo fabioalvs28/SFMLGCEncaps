@@ -6,11 +6,14 @@
 #include "../core/Map.h"
 #include "../core/Vector.h"
 #include "../core/Queue.h"
+#include "InputManager.h"
 
-using GCEventCallback = std::function<void(GCEvent& ev)>;
+class GCInputManager;
+class GCKeyboardInputManager;
 
 class GCEventManager
 {
+using GCEventCallback = std::function<void(GCEvent& ev)>;
 public:
 	GCEventManager();
 	/// <summary>
@@ -23,31 +26,37 @@ public:
     /// Push the created event to the event queue.
 	/// </summary>
 	/// <param name="ev">The pointer to the created event</param>
-	void PushEvent(GCEvent* ev);
+	void QueueEvent(GCEvent* ev);
 
 	/// <summary>
 	/// Registers a callback to event manager
 	/// </summary>
 	/// <param name="type">The type of event</param>
 	/// <param name="callback">The callback function to be called when the event occurs</param>
-	template<typename T>
-	void Subscribe(GCEventType eventType, T* instance, const GCEventCallback& callback)
+	void Subscribe(GCEventType eventType, const GCEventCallback& callback)
 	{
 		const GCEventCallback& func = callback;
-		m_eventCallback[eventType].push_back([=](GCEvent& ev) { func(ev); });
+		m_eventCallbacks[eventType].push_back([=](GCEvent& ev) { func(ev); });
 	}
 
 	/// <summary>
-	/// Subscribe a function without any event type 
-	/// but the function should have a GCEvent as parameter 
+	/// Registers a callback based on event type,
+	/// Callback does not need any ar
 	/// </summary>
-	/// <param name="instance">the pointer to class itself</param>
-	/// <param name="memberFunction">function to be bind</param>
-	template<typename T>
-	void Subscribe(T* instance, void(T::*memberFunction)(GCEvent&))
+	/// <typeparam name="T"></typeparam>
+	/// <typeparam name="Event"></typeparam>
+	/// <param name="eventType"></param>
+	/// <param name="instance"></param>
+	/// <param name="memberFunction"></param>
+	template<typename T, typename Event>
+	void Subscribe(GCEventType eventType, T* instance, void (T::* memberFunction)(Event&))
 	{
-		auto func = std::bind(memberFunction, instance, std::placeholders::_1);
-		m_systemCallback.push_back(func);
+		auto callback = [instance, memberFunction](GCEvent& ev)
+			{
+				Event& event = static_cast<Event&>(ev);
+				(instance->*memberFunction)(event);
+			};
+		m_eventCallbacks[eventType].push_back(callback);
 	}
 
 	/// <summary>
@@ -55,7 +64,7 @@ public:
 	/// </summary>
 	/// <param name="type">The event type</param>
 	/// <param name="id">The unique identifier ID to the callback</param>
-    void Unsubscribe(GCEventType type /*pass string as second parameter to identify the listener*/);
+    void Unsubscribe(GCEventType type);
 
 private:
 	/// <summary>
@@ -66,7 +75,6 @@ private:
 	void OnEvent(GCEvent& e);
 
 private:
-	std::map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventCallback;
-	std::vector<std::function<void(GCEvent&)>> m_systemCallback;
+	std::map<GCEventType, std::vector<std::function<void(GCEvent&)>>> m_eventCallbacks;
     GCQueue<GCEvent*> m_eventQueue;
 };
