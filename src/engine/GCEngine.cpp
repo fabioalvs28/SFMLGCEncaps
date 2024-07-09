@@ -25,8 +25,8 @@ void GCEngine::Run()
 {
     GCEventManager eventmanager = GCEventManager();
     GCKeyboardInputManager inputmanger = GCKeyboardInputManager();
+    inputmanger.SubscriEvent(&eventmanager);
 
-    inputmanger.RegisterEvent(&eventmanager);
 
     inputmanger.BindAction(GCKeyboardInputManager::A, GCKeyboardInputManager::DOWN, []() 
         {
@@ -38,6 +38,7 @@ void GCEngine::Run()
             inputmanger.UnbindAction(GCKeyboardInputManager::A, GCKeyboardInputManager::DOWN);
             LogEngineInfo("A key action is unbind");
         });
+
 
     if (!InitWindow())
     {

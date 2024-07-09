@@ -95,7 +95,7 @@ public:
 
     int GetStateSize() const override { return KeyboardState::KEYSTATECOUNT; };
 
-    void RegisterEvent(GCEventManager* eventmanager);
+    void SubscriEvent(GCEventManager* eventmanager);
 
     /// <summary>
     /// Bind a function to a specific key and key state

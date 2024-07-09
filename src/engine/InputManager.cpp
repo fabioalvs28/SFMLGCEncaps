@@ -106,7 +106,7 @@ void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
     callbacks[ev.GetKeyState()][ev.GetKeyID()](ev);
 }
 
-void GCKeyboardInputManager::RegisterEvent(GCEventManager* eventmanager)
+void GCKeyboardInputManager::SubscriEvent(GCEventManager* eventmanager)
 {
     m_eventManager = eventmanager;
     m_eventManager->Subscribe(GCEventType::KeyPressed, this, &GCKeyboardInputManager::OnKeyPressed);
