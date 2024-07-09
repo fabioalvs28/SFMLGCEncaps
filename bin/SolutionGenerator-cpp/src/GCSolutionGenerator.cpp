@@ -25,14 +25,16 @@ const string GCSolutionGenerator::s_rcExt = "hlsl;jpg;jpeg;png;wav;mp3;ico;dds;r
 json GCSolutionGenerator::m_data;
 unordered_set<string> GCSolutionGenerator::m_args;
 
-void GCSolutionGenerator::GenerateSolution(unordered_set<string> args)
+void GCSolutionGenerator::GenerateSolution(unordered_set<string> args, bool deleteFolder)
 {
     m_args = args;
 
     // Get Data
     FillData();
+
     // Delete folder without deleting source files
-    DeleteFolderSafe(s_idePath);
+    if(deleteFolder)
+        DeleteFolderSafe(s_idePath);
     
     // Generate
     GenerateSln();
@@ -164,7 +166,7 @@ void GCSolutionGenerator::GenerateSln()
 
     outputFile.close();
 
-    cout << fs::absolute(filePath) << " generated successfully!" << endl;
+    cout << fs::absolute(filePath) << GREEN << " generated successfully!" << RESET << endl;
 }
 
 void GCSolutionGenerator::GenerateVcxproj(json& project)
@@ -359,11 +361,11 @@ void GCSolutionGenerator::GenerateVcxproj(json& project)
     fs::create_directories(folderPath);
     XMLError eResult = doc.SaveFile(filePath.c_str());
     if (eResult != XML_SUCCESS) {
-        cerr << "Error saving file: " << eResult << endl;
+        cerr << RED << "Error saving file: " << eResult << RESET << endl;
         //return 1;
     }
 
-    cout << fs::absolute(filePath) << " generated successfully!" << endl;
+    cout <<  fs::absolute(filePath) << GREEN << " generated successfully!" << RESET << endl;
 }
 
 void GCSolutionGenerator::GenerateFilters(json& project)
@@ -415,11 +417,11 @@ void GCSolutionGenerator::GenerateFilters(json& project)
     fs::create_directories(folderPath);
     XMLError eResult = doc.SaveFile(filePath.c_str());
     if (eResult != XML_SUCCESS) {
-        cerr << "Error saving file: " << eResult << endl;
+        cerr << RED << "Error saving file: " << eResult << RESET << endl;
         //return 1;
     }
 
-    cout << fs::absolute(filePath) << " generated successfully!" << endl;
+    cout << fs::absolute(filePath) << GREEN << " generated successfully!" << RESET << endl;
 }
 
 json GCSolutionGenerator::ReadJsonFile(string fileName)
@@ -427,7 +429,7 @@ json GCSolutionGenerator::ReadJsonFile(string fileName)
     ifstream inputFile(fileName);
 
     if (!inputFile.is_open()) {
-        cerr << "Could not open the file!" << endl;
+        cerr << RED << "Could not open the file " << fileName << RESET << endl;
         return nullptr;
     }
 
@@ -559,7 +561,7 @@ string GCSolutionGenerator::GenerateGuid()
 {
     HRESULT hr = CoInitialize(NULL);
     if (FAILED(hr)) {
-        cerr << "Erreur lors de l'initialisation de COM" << endl;
+        cerr << RED << "Erreur lors de l'initialisation de COM" << RESET << endl;
         exit(1);
     }
 
@@ -567,7 +569,7 @@ string GCSolutionGenerator::GenerateGuid()
     HRESULT hCreateGuid = CoCreateGuid(&guid); 
     
     if (hCreateGuid != S_OK) {
-        cerr << "Erreur lors de la g�n�ration du GUID" << endl;
+        cerr << RED << "Erreur lors de la generation du GUID" << RESET << endl;
         return nullptr;
     }
 
@@ -702,8 +704,21 @@ bool GCSolutionGenerator::DeleteFolderSafe(string path)
                         bool filePresent = itSrc != srcExt.end() || itH != hExt.end() || itRc != rcExt.end();
 
                         if (filePresent) {
-                            canDelete = false;
-                            cout << "WARNING: the source file " << entry.path() << " is still present. The folder won't be deleted." << endl;
+                            cout << YELLOW << "WARNING: the source file " << entry.path() << " is still present and won't be deleted." << " Do you want to move it to the src folder ?" << RESET << endl;
+                            char yesNo = 0;
+                            while (yesNo != 'y' && yesNo != 'n') {
+                                cout << "y/n : ";
+                                cin >> yesNo;
+                                yesNo = tolower(yesNo);
+                            }
+                            if (yesNo == 'y') {
+                                bool hasMoved = MoveFileToSource(entry.path().string());
+                                if (hasMoved == false)
+                                    canDelete = false;
+                            }
+                            else {
+                                canDelete = false;
+                            }
                         }
                     }
                 }
@@ -714,10 +729,28 @@ bool GCSolutionGenerator::DeleteFolderSafe(string path)
             error_code ec;
             fs::remove_all(path, ec);
             if (ec) {
-                cerr << "Failed to remove directory: " << ec.message() << endl;
+                cerr << RED << "Failed to remove directory: " << ec.message() << RESET << endl;
             }
             return true;
         }
+    }
+    return false;
+}
+
+bool GCSolutionGenerator::MoveFileToSource(string path) 
+{
+    string str = RelativePath(s_vsPath, path);
+    fs::path source = fs::absolute(path);
+    fs::path destination = fs::absolute(s_srcPath + str);
+
+    try {
+        if (!fs::exists(destination.parent_path()))
+            fs::create_directories(destination.parent_path());
+        rename(source, destination);
+        return true;
+    }
+    catch (const fs::filesystem_error& e) {
+        cerr << RED << "Error while moving file: " << e.what() << RESET << endl;
     }
     return false;
 }
