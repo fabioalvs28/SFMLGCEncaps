@@ -1,0 +1,52 @@
+{
+    "name": "jeu_1",
+    "folder": "jeu_1/",
+    "nested": "Gameplay",
+    "dependencies": ["Engine"],
+    "vc_project_version": "17.0",
+    "root_namespace": "Jeu 1",
+    "windows_target_platform_version": "10.0",
+    "configuration": [
+        {
+            "name": "Debug|x64",
+            "type": "Application",
+            "use_debug_libraries": "true",
+            "platform_toolset": "v143",
+            "character_set": "Unicode",
+            "warning_level": "Level3",
+            "sdl_check": "true",
+            "preprocessor_definitions": "_DEBUG;_CONSOLE;SFML_STATIC;%(PreprocessorDefinitions)",
+            "conformance_mode": "true",
+            "generate_debug_information": "true",
+            "subsystem": "Console",
+            "language_standard": "stdcpp20",
+            "additional_include_directories" : "$(SolutionDir)Render;$(SolutionDir)..\\..\\src\\SFML-2.6.1\\include",
+            "additional_library_directories" : "$(SolutionDir)SFML-2.6.1\\lib\\$(Configuration);%(AdditionalLibraryDirectories)",
+            "additional_dependencies" : "sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;winmm.lib;gdi32.lib;freetype.lib%(AdditionalDependencies)",
+            "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
+            "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
+        },
+        {
+            "name": "Release|x64",
+            "type": "Application",
+            "use_debug_libraries": "false",
+            "platform_toolset": "v143",
+            "whole_program_optimization": "true",
+            "character_set": "Unicode",
+            "warning_level": "Level3",
+            "function_level_linking": "true",
+            "intrinsic_functions": "true",
+            "sdl_check": "true",
+            "preprocessor_definitions": "NDEBUG;_CONSOLE;%(PreprocessorDefinitions)",
+            "conformance_mode": "true",
+            "enable_comdat_folding": "true",
+            "optimize_references": "true",
+            "generate_debug_information": "true",
+            "subsystem": "Console",
+            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\SFML-2.6.1;",
+            "additional_dependencies" : "sfml-graphics.lib;sfml-window.lib;sfml-system.lib%(AdditionalDependencies)",
+            "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
+            "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
+        }
+    ]
+}

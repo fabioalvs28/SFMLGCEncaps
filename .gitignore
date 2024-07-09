@@ -1,0 +1,6 @@
+*.db-wal
+*.db-shm
+*.user
+/ide
+.vscode
+.drawio
