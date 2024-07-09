@@ -32,11 +32,12 @@ protected:
 
 public:
     Component();
+    Component(int flags);
     virtual ~Component() {};
     
     virtual int GetType() = 0;
     
-    virtual void Init() {}          // Should be pure virtual to properly work      TODO: Fix this
+    virtual void Init() = 0;
     virtual void Update() = 0;
     virtual void FixedUpdate() = 0;
     virtual void Render() = 0;
@@ -66,11 +67,12 @@ class SpriteRenderer : public Component
 public: enum { TYPE = 1 };
 
 public:
+	SpriteRenderer() : Component(RENDER) {}
     ~SpriteRenderer() override {}
     
     int GetType() override { return TYPE; }
     
-    void Init() override { m_flags = RENDER; }
+    void Init() override {}
     void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
@@ -96,8 +98,6 @@ class Collider : public Component
 public:
     Collider();
     ~Collider();
-    
-    void Init() override { m_flags = FIXED_UPDATE | RENDER; }
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -126,6 +126,7 @@ public:
     
     int GetType() override { return TYPE; }
     
+	void Init() override {}
     void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
@@ -149,7 +150,8 @@ public:
     ~CircleCollider() override {}
     
     int GetType() override { return TYPE; }
-    
+
+    void Init() override {}
     void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}
@@ -170,7 +172,7 @@ private:
     GCVEC3 m_velocity;
 
 public:
-    RigidBody() : m_velocity(0, 0, 0) {}
+	RigidBody() : Component(FIXED_UPDATE), m_velocity(0, 0, 0) {}
     ~RigidBody() override {}
     
     int GetType() override { return TYPE; }
@@ -230,11 +232,12 @@ class Script : public Component
 public: enum { TYPE = 7 };
 
 public:
+	Script() : Component(FIXED_UPDATE | RENDER) {}
     ~Script() override {};
     
     int GetType() override { return TYPE; }
     
-    void Init() override { m_flags = FIXED_UPDATE | RENDER; }
+    void Init() override {}
     void Update() override {}
     void FixedUpdate() override {}
     void Render() override {}

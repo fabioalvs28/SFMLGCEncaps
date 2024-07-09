@@ -8,26 +8,23 @@
 
 
 Component::Component()
-	: m_flags(0)
 {
+	m_flags = 0;
 	m_active = true;
 	m_pGameObject = nullptr;
 
-	Init();
-
-	std::string temp = "FLAG_FIXED_UPDATE: ";
 	if (IsFlagSet(FIXED_UPDATE))
-		temp += "true";
-	else
-		temp += "false";
+		;
 
-	temp += " | FLAG_RENDER: ";
 	if (IsFlagSet(RENDER))
-		temp += "true";
-	else
-		temp += "false";
+		;
+}
 
-	LogEngineDebug(temp.c_str());
+Component::Component(int flags)
+{
+	m_flags = flags;
+	m_active = true;
+	m_pGameObject = nullptr;
 
 	if (IsFlagSet(FIXED_UPDATE))
 		;
@@ -38,8 +35,9 @@ Component::Component()
 
 #pragma region Collider
 Collider::Collider()
+	: Component(FIXED_UPDATE | RENDER)
 {
-    m_trigger = false;
+	m_trigger = false;
 	m_visible = false;
 	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
 }
