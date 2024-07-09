@@ -1,5 +1,5 @@
-#include "framework.h"
-
+#include "pch.h"
+//test
 GCShader::GCShader() 
 {
 	m_RootSignature = nullptr;
@@ -12,6 +12,7 @@ GCShader::GCShader()
 	ZeroMemory(&psoDesc, sizeof(psoDesc));
 	m_pRender = nullptr;
 	m_flagEnabledBits = 0;
+	m_cullMode = D3D12_CULL_MODE_NONE;
 }
 
 
@@ -25,26 +26,24 @@ GCShader::~GCShader()
 	m_InputLayout.clear();
 }
 
-void GCShader::Render() 
+bool GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
-	m_pRender->GetCommandList()->SetPipelineState(GetPso());
-	m_pRender->GetCommandList()->SetGraphicsRootSignature(GetRootSign());
-}
-
-void GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits)
-{
-	
-	CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully");
-
-	// #TODO Check the other path
+	if (!CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
+		return false;
+	if (!CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully"))
+		return false;
 
 	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());
 	m_vsCsoPath = baseCsoPath + L"VS.cso";
 	m_psCsoPath = baseCsoPath + L"PS.cso";
 
+	m_cullMode = cullMode;
 	m_pRender = pRender;
 	m_flagEnabledBits = flagEnabledBits;
+
 	PreCompile(filePath, csoDestinationPath);
+
+	return true;
 }
  
 void GCShader::CompileShader()
@@ -70,19 +69,23 @@ void GCShader::CompileShader()
 		offset += sizeof(DirectX::XMFLOAT2); // Taille des coordonnées de texture
 	}
 
-
-	// #TODO Need To Interpret HLSL Data to Adapt Root Signature and Input Layout 
+	if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) {
+		m_InputLayout.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		offset += sizeof(DirectX::XMFLOAT3); // Taille des coordonnées de texture
+	}
 }
 
 
 void GCShader::RootSign()
 {
 	// Déclaration des paramètres racine
-	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[6];
 
 	slotRootParameter[CBV_SLOT_CB0].InitAsConstantBufferView(0);
 	slotRootParameter[CBV_SLOT_CB1].InitAsConstantBufferView(1);
-	UINT numParameters = 2;
+	slotRootParameter[CBV_SLOT_CB2].InitAsConstantBufferView(2);
+	slotRootParameter[CBV_SLOT_CB3].InitAsConstantBufferView(3);
+	UINT numParameters = 4;
 
 
 	// Configuration de l'échantillonneur statique
@@ -108,7 +111,14 @@ void GCShader::RootSign()
 		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE].InitAsDescriptorTable(1, &srvTable);
 		numParameters++;
+
+		CD3DX12_DESCRIPTOR_RANGE srvTable2;
+		srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE2].InitAsDescriptorTable(1, &srvTable2);
+		numParameters++;
 	}
+
+
 
 	rootSigDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
@@ -131,8 +141,7 @@ void GCShader::RootSign()
     }
 
     // Création de la signature racine
-    m_pRender->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature)
-    );
+    m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature));
 }
 void GCShader::Pso() 
 {
@@ -153,48 +162,36 @@ void GCShader::Pso()
 	};
 
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
-
-
+	psoDesc.RasterizerState.CullMode = m_cullMode;
 
 	// Customize the blend state for transparency
 	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	for (int i = 0; i < 1; ++i)
+	{
+		blendDesc.RenderTarget[i].BlendEnable = TRUE;
+		blendDesc.RenderTarget[i].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[i].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[i].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[i].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[i].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[i].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	}
 	psoDesc.BlendState = blendDesc;
 
 	// Use default depth stencil state
-	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); 
 
-
-
-	//// Configure depth stencil state
-	//D3D12_DEPTH_STENCIL_DESC depthStencilDesc = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	//depthStencilDesc.DepthEnable = TRUE;
-	//depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL; // Écrira au Z-buffer
-	//depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; // Comparaison de profondeur
-
-	//psoDesc.DepthStencilState = depthStencilDesc;
-
-
-	// Set other pipeline state settings
-	//psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME; //permet de voir les bordure
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = m_pRender->GetBackBufferFormat();
-	psoDesc.SampleDesc.Count = m_pRender->Get4xMsaaState() ? 4 : 1;
-	psoDesc.SampleDesc.Quality = m_pRender->Get4xMsaaState() ? (m_pRender->Get4xMsaaQuality() - 1) : 0;
-	psoDesc.DSVFormat = m_pRender->GetDepthStencilFormat();
+	psoDesc.NumRenderTargets = 4;
+	psoDesc.RTVFormats[0] = m_pRender->GetRenderResources()->GetBackBufferFormat();
+	psoDesc.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
+	psoDesc.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
+	psoDesc.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
 
 	// Create the graphics pipeline state
-	m_pRender->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO));
+	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO));
 }
 
 ID3D12RootSignature* GCShader::GetRootSign() 
@@ -287,8 +284,13 @@ void GCShader::PreCompile(const std::string& filePath, const std::string& csoDes
 	SaveShaderToFile(psByteCode, wideCsoDestinationPath + L"PS.cso");
 }
 
-void GCShader::Load() {
+bool GCShader::Load() {
 	CompileShader();
 	RootSign();
 	Pso();
+
+	if (!CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_PSO, m_vsByteCode, m_psByteCode))
+		return false;
+
+	return true;
 }

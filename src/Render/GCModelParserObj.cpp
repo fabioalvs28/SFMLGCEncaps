@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "pch.h"
 
 std::vector<std::string> split(std::string str, std::string delimiter)
 {
@@ -124,6 +124,24 @@ ModelInfos* GCModelParserObj::Parse(std::string filePath)
 			std::vector<float> uv = getFloatCoordinates(&strUv);
 
 			parsedModel->uvs.push_back(uv);
+		}
+
+		else if (line[0] == 'v' && line[1] == 'n') //Normals
+		{
+			std::string templine;
+
+			for (int i = 3; i < line.size(); i++)
+			{
+				templine.push_back(line[i]);
+			}
+
+			line = templine;
+
+			std::vector<std::string> strNormals = split(line, " ");
+
+			std::vector<float> normals = getFloatCoordinates(&strNormals);
+
+			parsedModel->normals.push_back(normals);
 		}
 	}
 

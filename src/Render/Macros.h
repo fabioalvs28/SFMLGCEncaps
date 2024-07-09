@@ -3,11 +3,12 @@
 bool CheckHResult(HRESULT hr, const std::string& msg);
 bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage);
 bool CheckExtension(std::string filePath, std::string fileExtension);
+bool CompareShaderMeshFlags(GCMaterial* pMaterial, GCMesh* pMesh);
 
 template <typename Iterator, typename Container>
 bool LogRemoveResource(Iterator it, const std::string& resourceName, Container& container)
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
     if (it == std::end(container))
     {
         std::wstring wideMessage = L"Resource " + std::wstring(resourceName.begin(), resourceName.end()) + L" not found, can't remove it\n";
@@ -30,11 +31,11 @@ bool CheckNull(T value)
 
 	if (value == nullptr)
 	{
-		return true;
+		return false;
 	}
 	else
 	{
-		return false;
+		return true;
 	}
 }
 
@@ -44,7 +45,7 @@ bool CheckNull(T value, Args ... args)
 
 	if (value == nullptr)
 	{
-		return true;
+		return false;
 	}
 	else 
 	{
@@ -56,7 +57,7 @@ bool CheckNull(T value, Args ... args)
 template<typename... Args>
 bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... args)
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
     do {
         bool allNotNull = true;
         const char* successMsgStr = successMsg;
@@ -77,17 +78,18 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
             profiler.LogInfo(msg);
             };
 
-        if (!(CheckNull(args...))) {
-            logInfo(successMsgStr);
-            return true;
-        }
-        else {
+        if (!CheckNull(args...)) {
             logWarning(warningMsgStr);
             return false;
+        }
+        else {
+            logInfo(successMsgStr);
+            return true;
         }
     } while (false);
 }
 
+// Debug Only ***
 
 // Variadic Check Ptr with 1 message Error 
 #ifdef _PROFILER
@@ -95,16 +97,15 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     CheckPointersNull(successMsg, warningMsg, __VA_ARGS__)
 #else
 #define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
-    do { } while (false)
+    true
 #endif
-    
 
 #ifdef _PROFILER
 #define CHECK_FILE(fileName, errorMessage, successMessage) \
     CheckFile(fileName, errorMessage, successMessage)
 #else
 #define CHECK_FILE(fileName, errorMessage, successMessage) \
-    false
+    true
 #endif
 
 #ifdef _PROFILER
@@ -112,7 +113,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     CheckExtension(filePath, fileExtension)
 #else
 #define CHECK_EXTENSION(filePath, fileExtension) \
-    false
+    true
 #endif
 
 #ifdef _PROFILER
@@ -120,16 +121,22 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     CheckHResult(hr, msg)
 #else
 #define CHECK_HRESULT(hr, msg) \
-    false
+    true
 #endif
 
+
 #ifdef _PROFILER
+#define COMPARE_SHADER_MESH_FLAGS(material, mesh) \
+    CompareShaderMeshFlags(material, mesh)
+#else
+#define COMPARE_SHADER_MESH_FLAGS(material, mesh) \
+    true
+#endif
+
+// Release & Debug ***
+
 #define LOG_REMOVE_RESOURCE(it, resourceName, container) \
     LogRemoveResource(it, resourceName, container)
-#else
-#define LOG_REMOVE_RESOURCE(it, resourceName, container) \
-    do { } while (false)
-#endif
 
 
 // For Release Instance, used in Destructor of resources
@@ -146,12 +153,15 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     }
 
 // Define flags
+// #TODO Change name in vertex color, vertex ...
+
 #define HAS_POSITION  0x01 // 00000001
 #define HAS_COLOR     0x02 // 00000010
 #define HAS_UV        0x04 // 00000100
 #define HAS_NORMAL    0x08 // 00001000
 #define HAS_TANGENT   0x10 // 00010000
 #define HAS_BINORMAL  0x20 // 00100000
+
 
 // Check if a specific flag is set
 #define HAS_FLAG(flags, flag) (((flags) & (flag)) != 0)
@@ -165,8 +175,10 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 // Emplacement Root Parameter Index
 #define CBV_SLOT_CB0 0
 #define CBV_SLOT_CB1 1
-#define DESCRIPTOR_TABLE_SLOT_TEXTURE 2
-
+#define CBV_SLOT_CB2 2
+#define CBV_SLOT_CB3 3
+#define DESCRIPTOR_TABLE_SLOT_TEXTURE 4
+#define DESCRIPTOR_TABLE_SLOT_TEXTURE2 5
 
 
 

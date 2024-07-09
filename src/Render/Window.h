@@ -1,4 +1,5 @@
 #pragma once
+
 class Window
 {
 public:
@@ -11,6 +12,13 @@ public:
     HINSTANCE AppInst()const;
     HWND      MainWnd()const;
     float     AspectRatio()const;
+
+
+    bool IsKeyDown(int keyCode) const {
+        // Implémentation spécifique à votre système d'entrée
+        // Exemple avec la Windows API :
+        return (GetAsyncKeyState(keyCode) & 0x8000) != 0;
+    };
 
     bool Get4xMsaaState()const;
     void Set4xMsaaState(bool value);
