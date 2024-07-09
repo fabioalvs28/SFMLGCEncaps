@@ -155,12 +155,12 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 // Define flags
 // #TODO Change name in vertex color, vertex ...
 
-#define HAS_POSITION  0x01 // 00000001
-#define HAS_COLOR     0x02 // 00000010
-#define HAS_UV        0x04 // 00000100
-#define HAS_NORMAL    0x08 // 00001000
-#define HAS_TANGENT   0x10 // 00010000
-#define HAS_BINORMAL  0x20 // 00100000
+#define VERTEX_POSITION  0x01 // 00000001
+#define VERTEX_COLOR     0x02 // 00000010
+#define VERTEX_UV        0x04 // 00000100
+#define VERTEX_NORMAL    0x08 // 00001000
+#define VERTEX_TANGENT   0x10 // 00010000
+#define VERTEX_BINORMAL  0x20 // 00100000
 
 
 // Check if a specific flag is set
@@ -183,3 +183,4 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 
 
 
+// Custom Error State

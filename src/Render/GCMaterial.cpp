@@ -51,7 +51,7 @@ void GCMaterial::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 
 bool GCMaterial::UpdateTexture()
 {
-    if (HAS_FLAG(m_pShader->GetFlagEnabledBits(), HAS_UV))
+    if (HAS_FLAG(m_pShader->GetFlagEnabledBits(), VERTEX_UV))
     {
         if (m_pTexture)
         {

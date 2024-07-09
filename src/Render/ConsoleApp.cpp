@@ -197,14 +197,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->Initialize(window, 1920, 1080);
 
     int flagsLightColor = 0;
-    SET_FLAG(flagsLightColor, HAS_POSITION);
-    SET_FLAG(flagsLightColor, HAS_COLOR);
-    SET_FLAG(flagsLightColor, HAS_NORMAL);
+    SET_FLAG(flagsLightColor, VERTEX_POSITION);
+    SET_FLAG(flagsLightColor, VERTEX_COLOR);
+    SET_FLAG(flagsLightColor, VERTEX_NORMAL);
 
     int flagsLightTexture = 0;
-    SET_FLAG(flagsLightTexture, HAS_POSITION);
-    SET_FLAG(flagsLightTexture, HAS_UV);
-    SET_FLAG(flagsLightTexture, HAS_NORMAL);
+    SET_FLAG(flagsLightTexture, VERTEX_POSITION);
+    SET_FLAG(flagsLightTexture, VERTEX_UV);
+    SET_FLAG(flagsLightTexture, VERTEX_NORMAL);
 
     auto geometryPostProcessing = graphics->CreateGeometryPrimitive(Quad, DirectX::XMFLOAT4(DirectX::Colors::Yellow));
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
@@ -215,8 +215,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
     auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
 
-    std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTextureBloom.hlsl";
-    std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTextureBloom";
+    std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
+    std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
     auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
 
     auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
@@ -224,8 +224,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->InitializeGraphicsResourcesStart();
 
     int flags = 0;
-    SET_FLAG(flags, HAS_POSITION);
-    SET_FLAG(flags, HAS_UV);
+    SET_FLAG(flags, VERTEX_POSITION);
+    SET_FLAG(flags, VERTEX_UV);
 
 
     auto meshPostProcessing = graphics->CreateMeshCustom(geometryPostProcessing.resource, flags);
@@ -259,7 +259,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
     XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, -4.0f, 3.0f); // Cube interne centr�
-    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-6.0f, 5.0f, -2.0f); // Cube interne centr�
+    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centr�
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sph�re d�plac�e dans le cube interne
 
     XMFLOAT4X4 worldCubeOuter;
@@ -267,10 +267,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     XMFLOAT4X4 worldCubeInner2;
     XMFLOAT4X4 worldSphere;
 
-    XMStoreFloat4x4(&worldCubeOuter, XMMatrixTranspose(worldMatrixCubeOuter));
-    XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInner));
-    XMStoreFloat4x4(&worldCubeInner2, XMMatrixTranspose(worldMatrixCubeInner2));
-    XMStoreFloat4x4(&worldSphere, XMMatrixTranspose(worldMatrixSphere));
+    XMStoreFloat4x4(&worldCubeOuter, worldMatrixCubeOuter);
+    XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInner);
+    XMStoreFloat4x4(&worldCubeInner2, worldMatrixCubeInner2);
+    XMStoreFloat4x4(&worldSphere, worldMatrixSphere);
 
     auto startTime = std::chrono::steady_clock::now();
 
@@ -287,7 +287,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
 
 
-        XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
+        XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInnerUpdated);
 
         // Gestion des entr�es utilisateur pour le d�placement de la cam�ra
         //if (window->IsKeyDown('Z')) {
@@ -297,9 +297,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         //    cameraPosition -= cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
         //}
 
-        viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
-        transposedViewMatrix = XMMatrixTranspose(viewMatrix);
-        XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+        //viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
+        //transposedViewMatrix = XMMatrixTranspose(viewMatrix);
+        //XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 
         GCMATERIALPROPERTIES materialProperties;
         materialProperties.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);

@@ -68,8 +68,6 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     m_renderWidth = renderWidth;
     m_renderHeight = renderHeight;
 
-
-
 	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
     m_pCbCameraInstances.push_back(pCbInstance);
 
@@ -182,12 +180,13 @@ ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& 
     }
 
     // Initialize the texture with the specified index
-    if (!texture->Initialize(filePath, this, index))
-        return ResourceCreationResult<GCTexture*>(false, nullptr);
+    GC_GRAPHICS_ERROR errorState = texture->Initialize(filePath, this, index);
+    if (errorState != 0)
+        return ResourceCreationResult<GCTexture*>(false, nullptr, errorState);
 
 
     // Return the result of the creation operation
-    return ResourceCreationResult<GCTexture*>(true, texture);
+    return ResourceCreationResult<GCTexture*>(true, texture, errorState);
 }
 
 ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
@@ -195,17 +194,19 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
     GCShader* pShader = new GCShader();
 
     int flags = 0;
-    SET_FLAG(flags, HAS_POSITION);
-    SET_FLAG(flags, HAS_COLOR);
+    SET_FLAG(flags, VERTEX_POSITION);
+    SET_FLAG(flags, VERTEX_COLOR);
 
-    if (!pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags))
-        return ResourceCreationResult<GCShader*>(false, nullptr);
-    if (!pShader->Load())
-        return ResourceCreationResult<GCShader*>(false, nullptr);
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags);
+    if (errorState != 0)
+        return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
+    errorState = pShader->Load();
+    if (errorState != 0)
+        return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
 
     m_vShaders.push_back(pShader);
 
-    return ResourceCreationResult<GCShader*>(true, pShader);
+    return ResourceCreationResult<GCShader*>(true, pShader, errorState);
 }
 
 ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
@@ -213,8 +214,8 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     GCShader* pShader = new GCShader();
 
     int flags = 0;
-    SET_FLAG(flags, HAS_POSITION);
-    SET_FLAG(flags, HAS_UV);
+    SET_FLAG(flags, VERTEX_POSITION);
+    SET_FLAG(flags, VERTEX_UV);
 
     if (!pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags));
         return ResourceCreationResult<GCShader*>(false, nullptr);
@@ -289,8 +290,8 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeomet
 ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometry)
 {
     int flagsLightColor = 0;
-    SET_FLAG(flagsLightColor, HAS_POSITION);
-    SET_FLAG(flagsLightColor, HAS_COLOR);
+    SET_FLAG(flagsLightColor, VERTEX_POSITION);
+    SET_FLAG(flagsLightColor, VERTEX_COLOR);
 
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 
@@ -342,8 +343,8 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometr
 ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeometry)
 {
     int flagsLightTexture = 0;
-    SET_FLAG(flagsLightTexture, HAS_POSITION);
-    SET_FLAG(flagsLightTexture, HAS_UV);
+    SET_FLAG(flagsLightTexture, VERTEX_POSITION);
+    SET_FLAG(flagsLightTexture, VERTEX_UV);
 
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 

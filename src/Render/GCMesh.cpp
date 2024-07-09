@@ -117,30 +117,30 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {
     size_t vertexSize = 0;
 
     // Manage offset bits size for reserve vector
-    if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) vertexSize += 3; 
-    if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) vertexSize += 4;
-    if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) vertexSize += 2; 
-    if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) vertexSize += 3; 
+    if (HAS_FLAG(m_flagEnabledBits, VERTEX_POSITION)) vertexSize += 3;
+    if (HAS_FLAG(m_flagEnabledBits, VERTEX_COLOR)) vertexSize += 4;
+    if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) vertexSize += 2;
+    if (HAS_FLAG(m_flagEnabledBits, VERTEX_NORMAL)) vertexSize += 3;
 
     vertexData.reserve(pGeometry->pos.size() * vertexSize);
 
     for (size_t i = 0; i < pGeometry->pos.size(); ++i) {
-        if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) {
+        if (HAS_FLAG(m_flagEnabledBits, VERTEX_POSITION)) {
             vertexData.push_back(pGeometry->pos[i].x);
             vertexData.push_back(pGeometry->pos[i].y);
             vertexData.push_back(pGeometry->pos[i].z);
         }
-        if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) {
+        if (HAS_FLAG(m_flagEnabledBits, VERTEX_COLOR)) {
             vertexData.push_back(pGeometry->color[i].x);
             vertexData.push_back(pGeometry->color[i].y);
             vertexData.push_back(pGeometry->color[i].z);
             vertexData.push_back(pGeometry->color[i].w);
         }
-        if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
+        if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
             vertexData.push_back(pGeometry->uv[i].x);
             vertexData.push_back(pGeometry->uv[i].y);
         }
-        if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) {
+        if (HAS_FLAG(m_flagEnabledBits, VERTEX_NORMAL)) {
             vertexData.push_back(pGeometry->normals[i].x);
             vertexData.push_back(pGeometry->normals[i].y);
             vertexData.push_back(pGeometry->normals[i].z);

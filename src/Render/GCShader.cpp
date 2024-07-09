@@ -26,12 +26,12 @@ GCShader::~GCShader()
 	m_InputLayout.clear();
 }
 
-bool GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
+GC_GRAPHICS_ERROR GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
 	if (!CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
-		return false;
+		return GCRENDER_ERROR_POINTER_NULL;
 	if (!CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully"))
-		return false;
+		return GCRENDER_ERROR_SHADER_CREATION_FAILED;
 
 	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());
 	m_vsCsoPath = baseCsoPath + L"VS.cso";
@@ -43,7 +43,7 @@ bool GCShader::Initialize(GCRender* pRender, const std::string& filePath, const 
 
 	PreCompile(filePath, csoDestinationPath);
 
-	return true;
+	return GCRENDER_SUCCESS_OK;
 }
  
 void GCShader::CompileShader()
@@ -54,22 +54,22 @@ void GCShader::CompileShader()
 	m_InputLayout.clear();
 
 	UINT offset = 0; 
-	if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) {
+	if (HAS_FLAG(m_flagEnabledBits, VERTEX_POSITION)) {
 		m_InputLayout.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT3); 
 	}
 
-	if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) {
+	if (HAS_FLAG(m_flagEnabledBits, VERTEX_COLOR)) {
 		m_InputLayout.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT4); 
 	}
 
-	if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
+	if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
 		m_InputLayout.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT2); // Taille des coordonnées de texture
 	}
 
-	if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) {
+	if (HAS_FLAG(m_flagEnabledBits, VERTEX_NORMAL)) {
 		m_InputLayout.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT3); // Taille des coordonnées de texture
 	}
@@ -106,7 +106,7 @@ void GCShader::RootSign()
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
 
 
-	if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
+	if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
 		CD3DX12_DESCRIPTOR_RANGE srvTable;
 		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE].InitAsDescriptorTable(1, &srvTable);
@@ -284,13 +284,13 @@ void GCShader::PreCompile(const std::string& filePath, const std::string& csoDes
 	SaveShaderToFile(psByteCode, wideCsoDestinationPath + L"PS.cso");
 }
 
-bool GCShader::Load() {
+GC_GRAPHICS_ERROR GCShader::Load() {
 	CompileShader();
 	RootSign();
 	Pso();
 
 	if (!CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_PSO, m_vsByteCode, m_psByteCode))
-		return false;
+		return GCRENDER_ERROR_POINTER_NULL;
 
-	return true;
+	return GCRENDER_SUCCESS_OK;
 }

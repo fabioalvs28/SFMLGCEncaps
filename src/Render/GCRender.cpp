@@ -281,8 +281,8 @@ void GCRender::CreatePostProcessingResources() {
 	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
 
 	int flags = 0;
-	SET_FLAG(flags, HAS_POSITION);
-	SET_FLAG(flags, HAS_UV);
+	SET_FLAG(flags, VERTEX_POSITION);
+	SET_FLAG(flags, VERTEX_UV);
 
 	m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags);
 	m_postProcessingShader->Load();
@@ -325,7 +325,7 @@ void GCRender::CreatePostProcessingResources() {
 
 	//// Create Object buffer Id Shader 
 	int flags2 = 0;
-	SET_FLAG(flags2, HAS_POSITION);
+	SET_FLAG(flags2, VERTEX_POSITION);
 
 	m_objectBufferIdShader = new GCShader();
 	std::string shaderFilePath2 = "../../../src/Render/Shaders/ObjectBufferId.hlsl";
@@ -703,7 +703,7 @@ void GCRender::PerformPostProcessing()
 //Always needs to be called right after drawing!!!
 bool GCRender::CompleteDraw()
 {
-    PerformPostProcessing();
+    //PerformPostProcessing();
 
 	CD3DX12_RESOURCE_BARRIER barrierBackToPresent2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierBackToPresent2);
