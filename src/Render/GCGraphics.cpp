@@ -70,10 +70,10 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 
 
 
-	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->Getmd3dDevice(), 1, true);
+	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
     m_pCbCameraInstances.push_back(pCbInstance);
 
-    pCbInstance = new GCShaderUploadBuffer<GCLIGHTSPROPERTIES>(m_pRender->Getmd3dDevice(), 1, true);
+    pCbInstance = new GCShaderUploadBuffer<GCLIGHTSPROPERTIES>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
     m_pCbLightPropertiesInstance = pCbInstance;
 
     GCLIGHTSPROPERTIES lightData = {};
@@ -102,7 +102,7 @@ bool GCGraphics::EndFrame()
 {
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 
-    m_pRender->PostDraw();
+    m_pRender->CompleteDraw();
 
     for (int i = 0; i < m_vMaterials.size(); i++) {
         m_vMaterials[i]->ResetCBCount();
@@ -130,7 +130,7 @@ bool GCGraphics::EndFrame()
 };
 
 bool GCGraphics::InitializeGraphicsResourcesStart() {
-    HRESULT hr = m_pRender->GetCommandList()->Reset(m_pRender->GetCommandAllocator(), nullptr);
+    HRESULT hr = m_pRender->GetRenderResources()->GetCommandList()->Reset(m_pRender->GetRenderResources()->GetCommandAllocator(), nullptr);
     if (!CHECK_HRESULT(hr, "CommandList->Reset()")) {
         return false;
     };
@@ -139,7 +139,7 @@ bool GCGraphics::InitializeGraphicsResourcesStart() {
 }
 bool GCGraphics::InitializeGraphicsResourcesEnd() {
     HRESULT hr;
-    hr = m_pRender->GetCommandList()->Close();
+    hr = m_pRender->GetRenderResources()->GetCommandList()->Close();
     if (!CHECK_HRESULT(hr, "CommandList()->Close()")) {
         return false;
     };

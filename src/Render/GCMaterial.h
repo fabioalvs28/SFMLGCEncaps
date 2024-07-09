@@ -45,6 +45,6 @@ private:
 template<typename ShaderTypeConstantBuffer>
 void GCMaterial::AddCbPerObject()
 {
-	GCShaderUploadBufferBase* pObjectCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->Getmd3dDevice(), 1, true);
+	GCShaderUploadBufferBase* pObjectCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
 	m_pCbObjectInstances.push_back(pObjectCB);
 }

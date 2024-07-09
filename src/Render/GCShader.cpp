@@ -141,8 +141,7 @@ void GCShader::RootSign()
     }
 
     // Création de la signature racine
-    m_pRender->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature)
-    );
+    m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature));
 }
 void GCShader::Pso() 
 {
@@ -186,13 +185,13 @@ void GCShader::Pso()
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 4;
-	psoDesc.RTVFormats[0] = m_pRender->GetBackBufferFormat();
-	psoDesc.SampleDesc.Count = m_pRender->Get4xMsaaState() ? 4 : 1;
-	psoDesc.SampleDesc.Quality = m_pRender->Get4xMsaaState() ? (m_pRender->Get4xMsaaQuality() - 1) : 0;
-	psoDesc.DSVFormat = m_pRender->GetDepthStencilFormat();
+	psoDesc.RTVFormats[0] = m_pRender->GetRenderResources()->GetBackBufferFormat();
+	psoDesc.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
+	psoDesc.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
+	psoDesc.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
 
 	// Create the graphics pipeline state
-	m_pRender->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO));
+	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO));
 }
 
 ID3D12RootSignature* GCShader::GetRootSign() 

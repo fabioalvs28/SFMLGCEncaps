@@ -22,7 +22,7 @@ bool GCMaterial::Initialize(GCShader* pShader)
 	m_pShader = pShader;
     m_pRender = m_pShader->m_pRender;
 
-    m_pCbMaterialPropertiesInstance = new GCShaderUploadBuffer<GCMATERIALPROPERTIES>(m_pRender->Getmd3dDevice(), 1, true);
+    m_pCbMaterialPropertiesInstance = new GCShaderUploadBuffer<GCMATERIALPROPERTIES>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
 
     GCMATERIALPROPERTIES materialProperties;
     materialProperties.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -55,7 +55,7 @@ bool GCMaterial::UpdateTexture()
     {
         if (m_pTexture)
         {
-            m_pRender->GetCommandList()->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, m_pTexture->GetTextureAddress());
+            m_pRender->GetRenderResources()->GetCommandList()->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, m_pTexture->GetTextureAddress());
             return true;
         }
         else

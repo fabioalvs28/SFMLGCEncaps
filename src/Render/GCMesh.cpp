@@ -158,8 +158,8 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {
     D3DCreateBlob(ibByteSize, &m_pBufferGeometryData->IndexBufferCPU);
     CopyMemory(m_pBufferGeometryData->IndexBufferCPU->GetBufferPointer(), pGeometry->indices.data(), ibByteSize);
 
-    m_pBufferGeometryData->VertexBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), vertexData.data(), vbByteSize, m_pBufferGeometryData->VertexBufferUploader);
-    m_pBufferGeometryData->IndexBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), pGeometry->indices.data(), ibByteSize, m_pBufferGeometryData->IndexBufferUploader);
+    m_pBufferGeometryData->VertexBufferGPU = CreateDefaultBuffer(m_pRender->GetRenderResources()->Getmd3dDevice(), m_pRender->GetRenderResources()->GetCommandList(), vertexData.data(), vbByteSize, m_pBufferGeometryData->VertexBufferUploader);
+    m_pBufferGeometryData->IndexBufferGPU = CreateDefaultBuffer(m_pRender->GetRenderResources()->Getmd3dDevice(), m_pRender->GetRenderResources()->GetCommandList(), pGeometry->indices.data(), ibByteSize, m_pBufferGeometryData->IndexBufferUploader);
 
     m_pBufferGeometryData->VertexByteStride = static_cast<UINT>(vertexSize * sizeof(float));
     m_pBufferGeometryData->VertexBufferByteSize = vbByteSize;
