@@ -8,14 +8,19 @@ GCTransform::GCTransform()
 
 void GCTransform::Identity()
 {
-	m_direction = GCVEC3(0, 0, 1);
-	m_right = GCVEC3(1, 0, 0);
-	m_up = GCVEC3(0, 1, 0);
-	m_rotation = GCQUATERNION(0, 0, 0, 1);
-	m_rotationMatrix = GCMATRIX::Identity();
-	m_position = GCVEC3(0, 0, 0);
-	m_matrix = GCMATRIX::Identity();
-	m_scale = GCVEC3(1, 1, 1);	
+	m_direction.SetFront();
+	m_right.SetRight();
+	m_up.SetUp();
+	m_rotation.SetIdentity();
+	m_rotationMatrix.SetIdentity();
+	m_position.SetZero();
+	if ( m_matrix.IsIdentity() == true )
+	{
+		// ! Remove matrix from worldMatrix
+	}
+	else m_worldMatrix.SetIdentity();
+	m_matrix.SetIdentity();
+	m_scale.SetOne();
 }
 
 void GCTransform::IdentityRotation()
