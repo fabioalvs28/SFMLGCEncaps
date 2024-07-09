@@ -96,14 +96,16 @@ void GCKeyboardInputManager::SendEvent(int index, BYTE state)
 
 void GCKeyboardInputManager::OnKeyPressed(GCKeyPressedEvent& ev)
 {
-    if (!callbacks[ev.GetKeyState()][ev.GetKeyID()]) return;
-    callbacks[ev.GetKeyState()][ev.GetKeyID()](ev);
+    auto it = callbacks[ev.GetKeyState()][ev.GetKeyID()];
+    if (!it) return;
+    it(ev);
 }
 
 void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
 {
-    if (!callbacks[ev.GetKeyState()][ev.GetKeyID()]) return;
-    callbacks[ev.GetKeyState()][ev.GetKeyID()](ev);
+    auto it = callbacks[ev.GetKeyState()][ev.GetKeyID()];
+    if (!it) return;
+    it(ev);
 }
 
 void GCKeyboardInputManager::SubscriEvent(GCEventManager* eventmanager)
