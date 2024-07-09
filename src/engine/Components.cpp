@@ -26,6 +26,9 @@ Component::Component(int flags)
 	m_active = true;
 	m_pGameObject = nullptr;
 
+	if (IsFlagSet(UPDATE))
+		;
+
 	if (IsFlagSet(FIXED_UPDATE))
 		;
 

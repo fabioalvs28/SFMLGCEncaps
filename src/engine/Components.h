@@ -5,8 +5,9 @@
 
 enum FLAGS
 {
-	FIXED_UPDATE    = 1 << 0,
-    RENDER          = 1 << 1,
+	UPDATE          = 1 << 0,
+	FIXED_UPDATE    = 1 << 1,
+    RENDER          = 1 << 2,
 };
 inline FLAGS operator|(FLAGS a, FLAGS b)
 {
@@ -194,6 +195,7 @@ class Animator : public Component
 public: enum { TYPE = 5 };
 
 public:
+	Animator() : Component(UPDATE) {}
     ~Animator() override {}
     
     int GetType() override { return TYPE; }
@@ -213,6 +215,7 @@ class SoundMixer : public Component
 public: enum { TYPE = 6 };
 
 public:
+	SoundMixer() : Component(UPDATE) {}
     ~SoundMixer() override {}
     
     int GetType() override { return TYPE; }
@@ -232,7 +235,7 @@ class Script : public Component
 public: enum { TYPE = 7 };
 
 public:
-	Script() : Component(FIXED_UPDATE | RENDER) {}
+	Script() : Component(UPDATE | FIXED_UPDATE) {}
     ~Script() override {};
     
     int GetType() override { return TYPE; }
