@@ -1,7 +1,7 @@
 #pragma once
 #include "SceneManager.h"
-#include "InputManager.h"
 #include "PhysicManager.h"
+#include "EventManager.h"
 
 class Component;
 class Collider;
@@ -26,7 +26,6 @@ public: void Update();
     
 protected:
     GCSceneManager m_pSceneManager;
-    GCInputManager m_pInputManager;
     GCPhysicManager m_pPhysicManager;
     GCEventManager m_pEventManager;
 };
