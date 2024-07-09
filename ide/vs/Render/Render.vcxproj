@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4768A162-8072-48AA-8F07-77D4139C9D2E}</ProjectGuid>
+    <ProjectGuid>{DEE159E9-1EE0-481A-92FC-C58C17E5093A}</ProjectGuid>
     <RootNamespace>Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -115,10 +115,10 @@
     <None Include="..\..\..\src\Render\Shaders\color.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\LightColor.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\LightTexture.hlsl" />
-    <None Include="..\..\..\src\Render\Shaders\LightTextureBloom.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\ObjectBufferId.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\PostProcessing.hlsl" />
     <None Include="..\..\..\src\Render\Shaders\texture.hlsl" />
+    <None Include="..\..\..\src\Render\Shaders\Utils.hlsl" />
     <None Include="..\..\..\src\Render\Textures\ahah.dds" />
     <None Include="..\..\..\src\Render\Textures\cottage_diffuse.dds" />
     <None Include="..\..\..\src\Render\Textures\cottage_normal.dds" />

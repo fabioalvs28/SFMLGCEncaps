@@ -213,7 +213,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
-    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
+    auto shaderLightColor = graphics->CreateShaderColor();
 
     std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
     std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
@@ -231,7 +231,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto meshPostProcessing = graphics->CreateMeshCustom(geometryPostProcessing.resource, flags);
     // Cr�ation des meshes
     auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
-    auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
+    auto meshCubeInner = graphics->CreateMeshColor(geoCubeInner.resource);
     auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";

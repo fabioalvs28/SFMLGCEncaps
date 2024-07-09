@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{A47C95DE-0E5B-407E-8EA6-51DF92FCAC6C}</UniqueIdentifier>
+      <UniqueIdentifier>{9F6AB673-901B-459E-B37C-2BF511CDBFCA}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{A47C2A91-CBD6-4755-B4B6-E0800E35F9A3}</UniqueIdentifier>
+      <UniqueIdentifier>{23497564-23E8-4238-B861-8600724C938B}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{326DDDF0-57A0-4FD1-A4D7-0F58D82C3A53}</UniqueIdentifier>
+      <UniqueIdentifier>{16893826-8719-43F7-91EB-60899945B0AF}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -180,9 +180,6 @@
     <None Include="..\..\..\src\Render\Shaders\LightTexture.hlsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\..\src\Render\Shaders\LightTextureBloom.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\..\..\src\Render\Shaders\ObjectBufferId.hlsl">
       <Filter>Resource Files</Filter>
     </None>
@@ -190,6 +187,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Shaders\texture.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\Render\Shaders\Utils.hlsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\Render\Textures\ahah.dds">

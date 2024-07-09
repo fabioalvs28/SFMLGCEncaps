@@ -1,3 +1,5 @@
+#include "Utils.hlsl"
+
 Texture2D g_texture : register(t0); // Texture bound to t0, register space 0
 SamplerState g_sampler : register(s0); // Sampler bound to s0
 
@@ -23,18 +25,6 @@ struct VertexOut
     float4 PosH : SV_POSITION;
     float2 UV : TEXCOORD;
 };
-
-float4x4 TransposeMatrix(float4x4 mat)
-{
-    float4x4 result;
-
-    result[0] = float4(mat[0].x, mat[1].x, mat[2].x, mat[3].x);
-    result[1] = float4(mat[0].y, mat[1].y, mat[2].y, mat[3].y);
-    result[2] = float4(mat[0].z, mat[1].z, mat[2].z, mat[3].z);
-    result[3] = float4(mat[0].w, mat[1].w, mat[2].w, mat[3].w);
-
-    return result;
-}
 
 // Vertex Shader
 VertexOut VS(VertexIn vin)
