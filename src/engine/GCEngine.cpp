@@ -24,7 +24,21 @@ void GCEngine::Shutdown()
 void GCEngine::Run()
 {
     GCEventManager eventmanager = GCEventManager();
-    GCInputManager inputmanger(&eventmanager);
+    GCKeyboardInputManager inputmanger = GCKeyboardInputManager();
+    inputmanger.SubscriEvent(&eventmanager);
+
+
+    inputmanger.BindAction(GCKeyboardInputManager::A, GCKeyboardInputManager::DOWN, []() 
+        {
+            LogEngineInfo("A key is pressed");
+        });
+
+    inputmanger.BindAction(GCKeyboardInputManager::SPACE, GCKeyboardInputManager::DOWN, [&]()
+        {
+            inputmanger.UnbindAction(GCKeyboardInputManager::A, GCKeyboardInputManager::DOWN);
+            LogEngineInfo("A key action is unbind");
+        });
+
 
     if (!InitWindow())
     {
@@ -40,7 +54,7 @@ void GCEngine::Run()
 
     while (m_isRunning)
     {
-        inputmanger.UpdateInputs();
+        inputmanger.Update();
         eventmanager.PollEvents();
         m_window->PollEvents();
         m_window->OnUpdate();
