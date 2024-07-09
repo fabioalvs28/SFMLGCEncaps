@@ -10,7 +10,7 @@ GCGraphics::GCGraphics()
     m_vShaders.clear();
     m_vMaterials.clear();
     m_vMeshes.clear();
-    m_vpCameraCB.clear();
+    m_pCbCameraInstances.clear();
 }
 
 GCGraphics::~GCGraphics()
@@ -39,24 +39,21 @@ GCGraphics::~GCGraphics()
     }
     m_vTextures.clear();
 
-    for (auto buffer : m_vpCameraCB)
+    for (auto buffer : m_pCbCameraInstances)
     {
         SAFE_DELETE(buffer);
     }
-    m_vpCameraCB.clear();
+    m_pCbCameraInstances.clear();
 
     SAFE_DELETE(m_pRender);
     SAFE_DELETE(m_pPrimitiveFactory);
     SAFE_DELETE(m_pModelParserFactory);
 }
 
-void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
+bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 {
-    CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow);
-
-    //Initializes Graphics for a window
-    m_pRender = new GCRender();
-    m_pRender->Initialize(pWindow, renderWidth, renderHeight);
+    if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
+        return false;
 
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
@@ -64,26 +61,46 @@ void GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 
     m_pPrimitiveFactory->Initialize();
 
-    // Create One camera
-    CreateCBCamera<GCVIEWPROJCB>();
+    //Initializes Graphics for a window
+    m_pRender = new GCRender();
+    m_pRender->Initialize(pWindow, renderWidth, renderHeight, this);
+    
+    m_renderWidth = renderWidth;
+    m_renderHeight = renderHeight;
+
+
+
+	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->Getmd3dDevice(), 1, true);
+    m_pCbCameraInstances.push_back(pCbInstance);
+
+    pCbInstance = new GCShaderUploadBuffer<GCLIGHTSPROPERTIES>(m_pRender->Getmd3dDevice(), 1, true);
+    m_pCbLightPropertiesInstance = pCbInstance;
+
+    GCLIGHTSPROPERTIES lightData = {};
+
+    UpdateConstantBuffer(lightData, m_pCbLightPropertiesInstance);
+
+    m_pRender->m_pCbLightPropertiesInstance = m_pCbLightPropertiesInstance;
+
+    return true;
 }
 
-void GCGraphics::StartFrame()
+bool GCGraphics::StartFrame()
 {
     for (auto& material : m_vMaterials)
     {
-        for (auto& cbObject : material->GetObjectCBData())
+        for (auto& cbObject : material->GetCbObjectInstance())
         {
             cbObject->m_isUsed = false;
         }
     }
     m_pRender->PrepareDraw();
 
+    return true;
 };
-void GCGraphics::EndFrame()
+bool GCGraphics::EndFrame()
 {
-
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 
     m_pRender->PostDraw();
 
@@ -94,7 +111,7 @@ void GCGraphics::EndFrame()
     // Vérification des CB inutilisés dans les matériaux / CHECK FOR REMOVE CB BUFFER IN MATERIALS 
     for (auto& material : m_vMaterials)
     {
-        for (auto& cbObject : material->GetObjectCBData())
+        for (auto& cbObject : material->GetCbObjectInstance())
         {
             if (cbObject->m_isUsed)
                 cbObject->m_framesSinceLastUse = 0;
@@ -103,26 +120,40 @@ void GCGraphics::EndFrame()
                 cbObject->m_framesSinceLastUse++;
                 if (cbObject->m_framesSinceLastUse > 180)
                 {
-                    
                     profiler.LogInfo("Constant buffer inutilisé trouvé dans le matériau : ");
                 }
             }
         }
     }
+
+    return true;
 };
 
-void GCGraphics::InitializeGraphicsResourcesStart() {
-    m_pRender->ResetCommandList(); // Reset Command List Before Resources Creation
+bool GCGraphics::InitializeGraphicsResourcesStart() {
+    HRESULT hr = m_pRender->GetCommandList()->Reset(m_pRender->GetCommandAllocator(), nullptr);
+    if (!CHECK_HRESULT(hr, "CommandList->Reset()")) {
+        return false;
+    };
+
+    return true;
 }
-void GCGraphics::InitializeGraphicsResourcesEnd() {
-    m_pRender->CloseCommandList(); // Close and Execute after creation
+bool GCGraphics::InitializeGraphicsResourcesEnd() {
+    HRESULT hr;
+    hr = m_pRender->GetCommandList()->Close();
+    if (!CHECK_HRESULT(hr, "CommandList()->Close()")) {
+        return false;
+    };
     m_pRender->ExecuteCommandList();
-    m_pRender->FlushCommandQueue();
+
+    if (!m_pRender->FlushCommandQueue())
+        return false;
+
+    return true;
 }
 
 ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& filePath)
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 
     // Creates and initializes a texture using a path
     GCTexture* texture = new GCTexture();
@@ -151,7 +182,9 @@ ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& 
     }
 
     // Initialize the texture with the specified index
-    texture->Initialize(filePath, this, index);
+    if (!texture->Initialize(filePath, this, index))
+        return ResourceCreationResult<GCTexture*>(false, nullptr);
+
 
     // Return the result of the creation operation
     return ResourceCreationResult<GCTexture*>(true, texture);
@@ -164,10 +197,12 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
     int flags = 0;
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_COLOR);
-    //SET_FLAG(flags, HAS_NORMAL);
 
-    pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags);
-    pShader->Load();
+    if (!pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags))
+        return ResourceCreationResult<GCShader*>(false, nullptr);
+    if (!pShader->Load())
+        return ResourceCreationResult<GCShader*>(false, nullptr);
+
     m_vShaders.push_back(pShader);
 
     return ResourceCreationResult<GCShader*>(true, pShader);
@@ -180,20 +215,22 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     int flags = 0;
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_UV);
-    //SET_FLAG(flags, HAS_NORMAL);
 
-    pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags);
-    pShader->Load();
+    if (!pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags));
+        return ResourceCreationResult<GCShader*>(false, nullptr);
+    if (!pShader->Load());
+        return ResourceCreationResult<GCShader*>(false, nullptr);
+
     m_vShaders.push_back(pShader);
 
     return ResourceCreationResult<GCShader*>(true, pShader);
 }
 
 // Specify the path, with the name of the shader at the file creation , example : CsoCompiled/texture, texture is the name of the file in Cso Compiled Folder
-ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits)
+ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
     GCShader* pShader = new GCShader();
-    pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits);
+    pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits, cullMode);
     pShader->Load();
 
     m_vShaders.push_back(pShader);
@@ -201,130 +238,189 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& fi
     return ResourceCreationResult<GCShader*>(true, pShader);
 }
 
-ResourceCreationResult<GCMesh*> GCGraphics::CreateMesh(GCGeometry* pGeometry)
+ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits)
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
-
-    // Check if Geometry is valid
-    if (!CheckPointersNull("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry))
+    if (!CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry))
     {
         return ResourceCreationResult<GCMesh*>(false, nullptr);
     }
 
-    // Find the first inactive slot in m_vMeshActiveFlags
-    auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+    GCMesh* pMesh = new GCMesh();
+    if (!pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits))
+        return ResourceCreationResult<GCMesh*>(false, nullptr);
 
-    // Inactive slot found
-    if (it != m_vMeshActiveFlags.end())
+    m_vMeshes.push_back(pMesh);
+    m_vMeshActiveFlags.push_back(true);
+
+    return ResourceCreationResult<GCMesh*>(true, pMesh);
+
+    //// Find the first inactive slot in m_vMeshActiveFlags
+    //auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+
+    //// Inactive slot found
+    //if (it != m_vMeshActiveFlags.end())
+    //{
+    //    size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
+
+    //    GCMesh* pMesh = new GCMesh();
+    //    if (!pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits))
+    //        return ResourceCreationResult<GCMesh*>(false, nullptr);
+
+    //    m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
+
+    //    m_vMeshActiveFlags[index] = true;
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
+    //// Not inactive slot 
+    //else
+    //{
+    //    GCMesh* pMesh = new GCMesh();
+    //    if (!pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits))
+    //        return ResourceCreationResult<GCMesh*>(false, nullptr);
+
+    //    m_vMeshes.push_back(pMesh);
+    //    m_vMeshActiveFlags.push_back(true);
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
+}
+
+ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometry)
+{
+    int flagsLightColor = 0;
+    SET_FLAG(flagsLightColor, HAS_POSITION);
+    SET_FLAG(flagsLightColor, HAS_COLOR);
+
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
+
+    // Check if Geometry is valid
+    if (!CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry))
+        return ResourceCreationResult<GCMesh*>(false, nullptr);
+
+    GCMesh* pMesh = new GCMesh();
+    if (!pMesh->Initialize(m_pRender, pGeometry, flagsLightColor))
+        return ResourceCreationResult<GCMesh*>(false, nullptr);
+
+    m_vMeshes.push_back(pMesh);
+    m_vMeshActiveFlags.push_back(true);
+
+    return ResourceCreationResult<GCMesh*>(true, pMesh);
+
+    //// Find the first inactive slot in m_vMeshActiveFlags
+    //auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+
+    //// Inactive slot found
+    //if (it != m_vMeshActiveFlags.end())
+    //{
+    //    size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
+
+    //    GCMesh* pMesh = new GCMesh();
+    //    if (!pMesh->Initialize(m_pRender, pGeometry, flagsLightColor))
+    //        return ResourceCreationResult<GCMesh*>(false, nullptr);
+
+    //    m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
+
+    //    m_vMeshActiveFlags[index] = true;
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
+    //// Not inactive slot 
+    //else
+    //{
+    //    GCMesh* pMesh = new GCMesh();
+    //    if (!pMesh->Initialize(m_pRender, pGeometry, flagsLightColor))
+    //        return ResourceCreationResult<GCMesh*>(false, nullptr);
+
+    //    m_vMeshes.push_back(pMesh);
+    //    m_vMeshActiveFlags.push_back(true);
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
+}
+
+ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeometry)
+{
+    int flagsLightTexture = 0;
+    SET_FLAG(flagsLightTexture, HAS_POSITION);
+    SET_FLAG(flagsLightTexture, HAS_UV);
+
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
+
+    // Check if Geometry is valid
+    if (!CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry))
     {
-        size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
-
-        GCMesh* pMesh = new GCMesh();
-        pMesh->Initialize(m_pRender, pGeometry);
-
-        m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
-
-        m_vMeshActiveFlags[index] = true;
-
-        return ResourceCreationResult<GCMesh*>(true, pMesh);
+        return ResourceCreationResult<GCMesh*>(false, nullptr);
     }
-    // Not inactive slot 
-    else
-    {
-        GCMesh* pMesh = new GCMesh();
-        pMesh->Initialize(m_pRender, pGeometry);
 
-        m_vMeshes.push_back(pMesh);
-        m_vMeshActiveFlags.push_back(true);
+    GCMesh* pMesh = new GCMesh();
+    pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
 
-        return ResourceCreationResult<GCMesh*>(true, pMesh);
-    }
+    m_vMeshes.push_back(pMesh);
+    m_vMeshActiveFlags.push_back(true);
+
+    return ResourceCreationResult<GCMesh*>(true, pMesh);
+
+    //// Find the first inactive slot in m_vMeshActiveFlags
+    //auto it = std::find(m_vMeshActiveFlags.begin(), m_vMeshActiveFlags.end(), false);
+
+    //// Inactive slot found
+    //if (it != m_vMeshActiveFlags.end())
+    //{
+    //    size_t index = std::distance(m_vMeshActiveFlags.begin(), it);
+
+    //    GCMesh* pMesh = new GCMesh();
+    //    pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
+
+    //    m_vMeshes.insert(m_vMeshes.begin() + index, pMesh);
+
+    //    m_vMeshActiveFlags[index] = true;
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
+    //// Not inactive slot 
+    //else
+    //{
+    //    GCMesh* pMesh = new GCMesh();
+    //    pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
+
+    //    m_vMeshes.push_back(pMesh);
+    //    m_vMeshActiveFlags.push_back(true);
+
+    //    return ResourceCreationResult<GCMesh*>(true, pMesh);
+    //}
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveColor(const std::string& primitiveName, const DirectX::XMFLOAT4& color)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)
 {
-    int flagsColor = 0;
-    SET_FLAG(flagsColor, HAS_POSITION);
-    SET_FLAG(flagsColor, HAS_COLOR);
-    //SET_FLAG(flagsColor, HAS_NORMAL);
+    GCGeometry* pGeometry = new GCGeometry();
 
-    // Call the unified BuildGeometry function
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagsColor);
+    if (!m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, pGeometry))
+        return ResourceCreationResult<GCGeometry*>(false, nullptr);
 
-    CHECK_POINTERSNULL("Primitive Geometry with Color created successfully", "Failed to create Primitive Geometry with Color", pGeometry);
+    if (!CHECK_POINTERSNULL("Primitive Geometry with Custom parameters created successfully", "Failed to create Primitive Geometry with Custom parameters", pGeometry))
+        return ResourceCreationResult<GCGeometry*>(false, nullptr);
 
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveTexture(const std::string& primitiveName)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
 {
-    int flagsTexture = 0;
-    SET_FLAG(flagsTexture, HAS_POSITION);
-    SET_FLAG(flagsTexture, HAS_UV);
-    //SET_FLAG(flagsTexture, HAS_NORMAL);
+    GCGeometry* pGeometry = new GCGeometry;
 
-    // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, DirectX::XMFLOAT4(DirectX::Colors::Gray), flagsTexture);
+    if(!m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, pGeometry))
+        return ResourceCreationResult<GCGeometry*>(false, nullptr);
 
-    CHECK_POINTERSNULL("Primitive Geometry with Texture created successfully", "Failed to create Primitive Geometry with Texture", pGeometry);
-
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
-}
-
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitiveCustom(const std::string& primitiveName, const DirectX::XMFLOAT4& color, int& flagEnabledBits)
-{
-    // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pPrimitiveFactory->BuildGeometry(primitiveName, color, flagEnabledBits);
-
-    CHECK_POINTERSNULL("Primitive Geometry with Custom parameters created successfully", "Failed to create Primitive Geometry with Custom parameters", pGeometry);
-
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
-}
-
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserColor(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
-{
-    int flagsColor = 0;
-    SET_FLAG(flagsColor, HAS_POSITION);
-    SET_FLAG(flagsColor, HAS_COLOR);
-    //SET_FLAG(flagsColor, HAS_NORMAL);
-
-    // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagsColor);
-
-    CHECK_POINTERSNULL("Geometry from Model Parser with Color created successfully", "Failed to create Geometry from Model Parser with Color", pGeometry);
-
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
-}
-
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserCustom(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType, int& flagEnabledBits)
-{
-    // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, color, fileExtensionType, flagEnabledBits);
-
-    CHECK_POINTERSNULL("Geometry from Model Parser with Custom parameters created successfully", "Failed to create Geometry from Model Parser with Custom parameters", pGeometry);
-
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry);
-}
-
-
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParserTexture(const std::string& filePath, Extensions fileExtensionType)
-{
-    int flagsTexture = 0;
-    SET_FLAG(flagsTexture, HAS_POSITION);
-    SET_FLAG(flagsTexture, HAS_UV);
-    //SET_FLAG(flagsTexture, HAS_NORMAL);
-
-    // Call the unified BuildGeometry function without color (nullptr)
-    GCGeometry* pGeometry = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, flagsTexture);
-
-    CHECK_POINTERSNULL("Geometry from Model Parser with Texture created successfully", "Failed to create Geometry from Model Parser with Texture", pGeometry);
+    if(!CHECK_POINTERSNULL("Geometry from Model Parser with Texture created successfully", "Failed to create Geometry from Model Parser with Texture", pGeometry))
+        return ResourceCreationResult<GCGeometry*>(false, nullptr);
 
     return ResourceCreationResult<GCGeometry*>(true, pGeometry);
 }
 
 ResourceCreationResult<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pShader)
 {
-    CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader);
+    if (!CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader))
+        return ResourceCreationResult<GCMaterial*>(false, nullptr);
 
     GCMaterial* material = new GCMaterial();
     material->Initialize(pShader);
@@ -355,12 +451,13 @@ std::vector<GCTexture*> GCGraphics::GetTextures()
 
 bool GCGraphics::RemoveShader(GCShader* pShader)
 {
-    CHECK_POINTERSNULL("Ptr for RemoveShader is not null", "Can't remove shader, pShader is null", pShader);
+    if (!CHECK_POINTERSNULL("Ptr for RemoveShader is not null", "Can't remove shader, pShader is null", pShader))
+        return false;
 
     // Removes Shader both from vector and the shader itself
     auto it = std::find(m_vShaders.begin(), m_vShaders.end(), pShader);
 
-    if (LogRemoveResource(it, "Shader", m_vShaders))
+    if (LOG_REMOVE_RESOURCE(it, "Shader", m_vShaders))
     {
         m_vShaders.erase(it);
         delete pShader;
@@ -371,11 +468,12 @@ bool GCGraphics::RemoveShader(GCShader* pShader)
 
 bool GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 {
-    CHECK_POINTERSNULL("Ptr for RemoveMaterial is not null", "Can't remove material, pMaterial is null", pMaterial);
+    if (!CHECK_POINTERSNULL("Ptr for RemoveMaterial is not null", "Can't remove material, pMaterial is null", pMaterial))
+        return false;
 
     auto it = std::find(m_vMaterials.begin(), m_vMaterials.end(), pMaterial);
 
-    if (LogRemoveResource(it, "Material", m_vMaterials))
+    if (LOG_REMOVE_RESOURCE(it, "Material", m_vMaterials))
     {
         m_vMaterials.erase(it);
         delete pMaterial;
@@ -386,14 +484,15 @@ bool GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 
 bool GCGraphics::RemoveMesh(GCMesh* pMesh)
 {
-    CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh);
+    if(!CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh))
+        return false;
 
     // Removes Mesh
     auto it = std::find(m_vMeshes.begin(), m_vMeshes.end(), pMesh);
 
     if (it != m_vMeshes.end())
     {
-        if (LogRemoveResource(it, "Mesh", m_vMeshes))
+        if (LOG_REMOVE_RESOURCE(it, "Mesh", m_vMeshes))
         {
             size_t index = std::distance(m_vMeshes.begin(), it);
 
@@ -413,12 +512,13 @@ bool GCGraphics::RemoveMesh(GCMesh* pMesh)
 
 bool GCGraphics::RemoveTexture(GCTexture* pTexture)
 {
-    CHECK_POINTERSNULL("Ptr for RemoveTexture is not null", "Can't remove texture, pTexture is null", pTexture);
+    if(CHECK_POINTERSNULL("Ptr for RemoveTexture is not null", "Can't remove texture, pTexture is null", pTexture)==false)
+        return false;
 
     // Removes Texture
     auto it = std::find(m_vTextures.begin(), m_vTextures.end(), pTexture);
 
-    if (LogRemoveResource(it, "Texture", m_vTextures))
+    if (LOG_REMOVE_RESOURCE(it, "Texture", m_vTextures))
     {
         size_t index = std::distance(m_vTextures.begin(), it);
 
@@ -435,27 +535,34 @@ bool GCGraphics::RemoveTexture(GCTexture* pTexture)
     return false;
 }
 
-void GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) {
+// Update per camera constant buffer
+bool GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) 
+{
     GCVIEWPROJCB cameraData;
     cameraData.view = viewMatrix;
     cameraData.proj = projectionMatrix;
 
-    UpdateConstantBuffer(cameraData, m_vpCameraCB[0]);
+    UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
 
-    m_pRender->m_pCurrentViewProj = m_vpCameraCB[0];
+    m_pRender->m_pCbCurrentViewProjInstance = m_pCbCameraInstances[0];
+
+    return true;
 }
 
-//Updates a cb data of a given material using the three matrices world/view/proj
-//using a count for now that'll need to be reset after each draw,might be subject to changes in the near future
-void GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix) {
+// Update per object constant buffer
+bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, float meshId)
+{
+    if (!CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial))
+        return false;
 
-    if (pMaterial->GetCount() >= pMaterial->GetObjectCBData().size())
-        pMaterial->CreateCBObject<GCWORLDCB>();
-
+    if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
+        pMaterial->AddCbPerObject<GCWORLDCB>();
+    }
     GCWORLDCB worldData;
     worldData.world = worldMatrix;
+    worldData.objectId = meshId;
     // Update 
-    pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetObjectCBData()[pMaterial->GetCount()]);
+    pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 
 }
 
@@ -480,4 +587,34 @@ DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT
 void GCGraphics::Resize(int width, int height) {
     m_pRender->ResizeRender(width, height);
     m_pRender->OnResize();
+}
+bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData)
+{
+    if (!CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial))
+        return false;
+
+    UpdateConstantBuffer(objectData, pMaterial->GetCbMaterialPropertiesInstance());
+    return true;
+}
+
+bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4 ambientLightColor, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, float shininess)
+{
+    if (!CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial))
+        return false;
+
+    GCMATERIALPROPERTIES materialData;
+    materialData.ambientLightColor = ambientLightColor;
+    materialData.ambient = ambient;
+    materialData.diffuse = diffuse;
+    materialData.specular = specular;
+    materialData.shininess = shininess;
+
+    UpdateConstantBuffer(materialData, pMaterial->GetCbMaterialPropertiesInstance());
+    return true;
+}
+
+bool GCGraphics::UpdateLights(GCLIGHTSPROPERTIES& objectData) {
+    UpdateConstantBuffer(objectData, m_pCbLightPropertiesInstance);
+
+    return true;
 }

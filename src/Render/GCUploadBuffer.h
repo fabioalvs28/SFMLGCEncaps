@@ -29,8 +29,6 @@ protected:
     UINT m_elementByteSize;
     bool m_isConstantBuffer;
 
-
-
     UINT CalcConstantBufferByteSize(UINT byteSize)
     {
         return (byteSize + 255) & ~255;

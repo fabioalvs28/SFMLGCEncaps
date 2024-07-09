@@ -84,13 +84,34 @@ GCMesh::~GCMesh()
     }
 }
 
-void GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry) {
+bool GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits) 
+{
+
+    if (!CHECK_POINTERSNULL("Pointers pRender & pGeometry Valid", "Pointers pRender & pGeometry Not valid", pRender, pGeometry)) {
+        return false;
+    }
+
     m_pRender = pRender;
-    UploadGeometryData(pGeometry);
+
+    UploadGeometryData(pGeometry, flagEnabledBits);
+
+    if (!CHECK_POINTERSNULL(
+        "All mesh buffer data pointers are valid",
+        "One or more mesh buffer data pointers are null",
+        m_pBufferGeometryData->VertexBufferCPU,
+        m_pBufferGeometryData->IndexBufferCPU,
+        m_pBufferGeometryData->VertexBufferGPU,
+        m_pBufferGeometryData->IndexBufferGPU
+    )) 
+    {
+        return false;
+    };
+
+    return true;
 }
 
-void GCMesh::UploadGeometryData(GCGeometry* pGeometry) {
-    m_flagEnabledBits = pGeometry->m_flagEnabledBits;
+void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {
+    m_flagEnabledBits = flagEnabledBits;
 
     std::vector<float> vertexData;
     size_t vertexSize = 0;

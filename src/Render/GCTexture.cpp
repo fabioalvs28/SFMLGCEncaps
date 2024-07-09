@@ -10,7 +10,7 @@ GCTexture::GCTexture()
 
 GCTexture::~GCTexture()
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 
     SAFE_RELEASE(m_pTextureBuffer);
     SAFE_RELEASE(m_pUploadTexture);
@@ -23,12 +23,14 @@ bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics, s
     //Initializes textures
     std::wstring wideFilePath(filePath.begin(), filePath.end());
 
-    CHECK_FILE(filePath, "Texture not found: " + filePath, "Texture file : " + filePath + " loaded successfully");
+    if (!CHECK_POINTERSNULL("Graphics ptr is not null", "Graphic pointer is null", pGraphics))
+        return false;
+    if (!CHECK_FILE(filePath, "Texture not found: " + filePath, "Texture file : " + filePath + " loaded successfully"))
+        return false;
 
     m_cbvSrvUavDescriptorSize = pGraphics->GetRender()->Getmd3dDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
     DirectX::CreateDDSTextureFromFile12(pGraphics->GetRender()->Getmd3dDevice(), pGraphics->GetRender()->GetCommandList(), wideFilePath.c_str(), &m_pTextureBuffer, &m_pUploadTexture);
-
 
     if (m_pTextureBuffer == nullptr || m_pUploadTexture == nullptr)
     {
@@ -53,6 +55,10 @@ bool GCTexture::Initialize(const std::string& filePath, GCGraphics* pGraphics, s
 
     m_textureAddress = CD3DX12_GPU_DESCRIPTOR_HANDLE(pGraphics->GetRender()->GetCbvSrvUavSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart());
     m_textureAddress.Offset(textureOffset, m_cbvSrvUavDescriptorSize);
+
+    if (!CHECK_POINTERSNULL("Texture buffers are not null", "Texture buffers are null", m_pTextureBuffer, m_pUploadTexture))
+        return false;
+
     return true;
 }
 
