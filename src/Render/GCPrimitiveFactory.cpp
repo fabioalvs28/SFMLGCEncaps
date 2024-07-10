@@ -412,12 +412,12 @@ bool GCPrimitiveFactory::Initialize()
 }
 
 
-bool GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color, GCGeometry* pGeometry)
+GC_GRAPHICS_ERROR GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color, GCGeometry* pGeometry)
 {
     //Builds a texture based geometry using pre-created ones
     //Needs a geometry name
     if (!CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", pGeometry))
-        return false;
+        return GCRENDER_ERROR_POINTER_NULL;
 
 	pGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]);
 	pGeometry->indiceNumber = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]).size();
@@ -432,5 +432,5 @@ bool GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 
 
     pGeometry->normals = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"normals"]);
 
-	return true;
+	return GCRENDER_SUCCESS_OK;
 }

@@ -17,7 +17,7 @@ GCMaterial::~GCMaterial()
 }
 
 
-bool GCMaterial::Initialize(GCShader* pShader) 
+GC_GRAPHICS_ERROR GCMaterial::Initialize(GCShader* pShader)
 {
 	m_pShader = pShader;
     m_pRender = m_pShader->m_pRender;
@@ -33,8 +33,7 @@ bool GCMaterial::Initialize(GCShader* pShader)
 
     UpdateConstantBuffer(materialProperties, m_pCbMaterialPropertiesInstance);
 
-
-    return true;
+    return GCRENDER_SUCCESS_OK;
 }
 
 bool GCMaterial::SetTexture(GCTexture* pTexture) {

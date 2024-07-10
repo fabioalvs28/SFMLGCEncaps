@@ -2,18 +2,18 @@
 
 class GCRenderResources {
 public:
-	
+
 	//Double RTV Resource For Final Render
 	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
 	//CPU Handle Address of the both
-	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize);}
+	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
 	//Render format
 	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
 
 	//Msaa
 	inline bool Get4xMsaaState() const { return m_4xMsaaState; }
 	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
-	
+
 	// CPU Handle address Depth Stencil Final Render
 	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewAddress() const { return m_pDsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 	//It's format
@@ -50,7 +50,7 @@ public:
 	ID3D12Resource* CreateRTT(bool test);
 
 private:
-	friend class GCRender;
+	friend class GCRenderContext;
 
 	Window* m_pWindow;
 
@@ -124,99 +124,6 @@ private:
 	std::vector<ID3D12Resource*> m_renderTargets;
 
 	void DeleteRenderTarget(ID3D12Resource* pRenderTarget);
-
-};
-
-class GCRender
-{
-public:
-	GCRender();
-
-	bool Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics);
-	bool InitDirect3D();
-
-	void LogAdapters();
-	void LogAdapterOutputs(IDXGIAdapter* adapter);
-	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
-
-	void EnableDebugController();
-
-	void CreateCommandObjects();
-	void CreateRtvAndDsvDescriptorHeaps();
-	void CreateCbvSrvUavDescriptorHeaps();
-	void CreateSwapChain();
-
-	void CreatePostProcessingResources();
-
-	// Resize 
-	void ReleasePreviousResources();
-	void ResizeSwapChain();
-	void CreateRenderTargetViews();
-	void CreateDepthStencilBufferAndView();
-	void UpdateViewport();
-
-	// Draw Part
-	void ResetCommandList();
-	void ExecuteCommandList();
-	void CloseCommandList();
-
-	bool FlushCommandQueue();
-	void PerformPostProcessing();
-	/**
-	* Pre-Draw.
-	 * @brief
-	 *
-	 * This function always needs to be called right before drawing!
-	 *
-	 * @return True if the preparation was a success/false otherwise.
-	 */
-	bool PrepareDraw();
-
-	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha);
-
-	/**
-	* Post-Draw.
-	 * @brief
-	 *
-	 * This function always needs to be called right after drawing!
-	 *
-	 * @return True if the execution of the drawing was a success/false otherwise.
-	 */
-	bool CompleteDraw();
-	/**
-	*  Draws an object(sends the data to the commandlist to be exact).
-	 * @brief
-	 *
-	 * This function takes into account the mesh you want to draw as well as the material you want to use to draw it.
-	 * Always call PrepareDraw before starting drawing/PostDraw after finishing drawing(you can call DrawObject multiple times in between the two PrepareDraw/PostDraw calls)
-	 *
-	 * @param Mesh.
-	 * @param Material.
-	 * @param Alpha(true for transparency,false for opaque).
-	 * @return True if the drawing was a success/false otherwise.
-	 */
-
-	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
-
-	// Getter
-	//GCShaderUploadBufferBase* m_pCurrentViewProj;
-	// Camera & Light -> Temporarily
-	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
-	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
-
-	inline GCRenderResources* GetRenderResources() { return m_pGCRenderResources; }
-
-	
-
-private:
-
-	// Post Processing Resources
-	GCShader* m_postProcessingShader;
-	// Object / Layers Buffer Id Resources
-	GCShader* m_objectBufferIdShader;
-
-	GCRenderResources* m_pGCRenderResources;
-
 
 };
 

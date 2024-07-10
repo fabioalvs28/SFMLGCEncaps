@@ -9,7 +9,11 @@ enum GC_GRAPHICS_ERROR {
 	GCRENDER_ERROR_MESH_CREATION_FAILED = -103,
 	GCRENDER_ERROR_MATERIAL_CREATION_FAILED = -104,
 	GCRENDER_ERROR_GEOMETRY_CREATION_FAILED = -105,
+	GCRENDER_ERROR_FILEPATH_NOT_FOUND = -106,
+	GCRENDER_ERROR_BAD_EXTENSION = -107,
+	GCRENDER_ERROR_RESOURCE_TO_REMOVE_DONT_FIND = -108,
 	GCRENDER_ERROR_UNKNOWN = -999,
+
 };
 
 template<typename ResourcePtr>
@@ -210,20 +214,18 @@ public:
 	bool UpdateLights(GCLIGHTSPROPERTIES& objectData);
 
 	// Remove Resources
-	bool RemoveShader(GCShader* pShader);
-	bool RemoveMaterial(GCMaterial* pMaterial);
-
+	GC_GRAPHICS_ERROR RemoveShader(GCShader* pShader);
+	GC_GRAPHICS_ERROR RemoveMaterial(GCMaterial* pMaterial);
+	GC_GRAPHICS_ERROR RemoveMesh(GCMesh* pMesh);
 	// Remove using active flags
-	bool RemoveMesh(GCMesh* pMesh);
-	// Remove using active flags
-	bool RemoveTexture(GCTexture* pTexture);
+	GC_GRAPHICS_ERROR RemoveTexture(GCTexture* pTexture);
 
 	std::vector<GCShader*> GetShaders();
 	std::vector<GCMaterial*> GetMaterials();
 	std::vector<GCMesh*> GetMeshes();
 	std::vector<GCTexture*> GetTextures();
 
-	GCRender* GetRender() const { return m_pRender; }
+	GCRenderContext* GetRender() const { return m_pRender; }
 
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
 	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
@@ -232,12 +234,11 @@ public:
 
 	// Manage inactive slot to push resource
 	std::vector<bool> m_vTextureActiveFlags;
-	std::vector<bool> m_vMeshActiveFlags;
 
 private:
 	// Render instance contain Window
 
-	GCRender* m_pRender;
+	GCRenderContext* m_pRender;
 
 	std::vector<GCTexture*> m_vTextures;
 	std::vector<GCShader*> m_vShaders;

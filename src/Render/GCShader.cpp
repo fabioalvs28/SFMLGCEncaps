@@ -28,7 +28,7 @@ GCShader::~GCShader()
 	m_InputLayout.clear();
 }
 
-GC_GRAPHICS_ERROR GCShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
+GC_GRAPHICS_ERROR GCShader::Initialize(GCRenderContext* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
 	if (!CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
 		return GCRENDER_ERROR_POINTER_NULL;

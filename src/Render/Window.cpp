@@ -56,7 +56,7 @@ void Window::Set4xMsaaState(bool value)
 	}
 }
 
-int Window::Run(GCRender* pRender)
+int Window::Run(GCRenderContext* pRender)
 {
 	MSG msg = { 0 };
 	mTimer.Reset();

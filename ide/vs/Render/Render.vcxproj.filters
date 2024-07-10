@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{3F05B2BE-27E5-4A2E-BAC5-D01107B2CB6B}</UniqueIdentifier>
+      <UniqueIdentifier>{F6B47CCB-FDCF-4990-B30B-6160AEFD64FF}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{E4678992-4145-4928-B6C4-AA38B4CCAF44}</UniqueIdentifier>
+      <UniqueIdentifier>{0C8E15F5-ACED-45F0-91F5-28AABFBEFD54}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{010AE864-DECF-46A3-8ABD-A4C29C37BAC0}</UniqueIdentifier>
+      <UniqueIdentifier>{1002D119-C59C-43A2-8747-F8E25EF250FF}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -45,7 +45,10 @@
     <ClCompile Include="..\..\..\src\Render\GCPrimitiveFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Render\GCRender.cpp">
+    <ClCompile Include="..\..\..\src\Render\GCRenderContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Render\GCRenderResources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Render\GCShader.cpp">
@@ -114,7 +117,10 @@
     <ClInclude Include="..\..\..\src\Render\GCPrimitiveIdEnum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Render\GCRender.h">
+    <ClInclude Include="..\..\..\src\Render\GCRenderContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Render\GCRenderResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Render\GCShader.h">

@@ -71,7 +71,8 @@ class GCMesh;
 class GCModelParser;
 class GCModelParserObj;
 class GCPrimitiveFactory;
-class GCRender;
+class GCRenderContext;
+class GCRenderResources;
 class GCShader;
 class GCTexture;
 class GCTextureFactory;
@@ -98,7 +99,8 @@ class Window;
 #include "Window.h"
 #include "Macros.h"
 #include "GCUploadBuffer.h"
-#include "GCRender.h"
+#include "GCRenderContext.h"
+#include "GCRenderResources.h"
 #include "Vectors.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"

@@ -84,11 +84,11 @@ GCMesh::~GCMesh()
     }
 }
 
-bool GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits) 
+GC_GRAPHICS_ERROR GCMesh::Initialize(GCRenderContext* pRender, GCGeometry* pGeometry, int& flagEnabledBits)
 {
 
     if (!CHECK_POINTERSNULL("Pointers pRender & pGeometry Valid", "Pointers pRender & pGeometry Not valid", pRender, pGeometry)) {
-        return false;
+        return GCRENDER_ERROR_POINTER_NULL;
     }
 
     m_pRender = pRender;
@@ -104,10 +104,10 @@ bool GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabl
         m_pBufferGeometryData->IndexBufferGPU
     )) 
     {
-        return false;
+        return GCRENDER_ERROR_POINTER_NULL;
     };
 
-    return true;
+    return GCRENDER_SUCCESS_OK;
 }
 
 void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {

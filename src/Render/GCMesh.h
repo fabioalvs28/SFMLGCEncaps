@@ -6,7 +6,7 @@ public:
 	GCMesh();
     ~GCMesh();
 
-    bool Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits);
+    GC_GRAPHICS_ERROR Initialize(GCRenderContext* pRender, GCGeometry* pGeometry, int& flagEnabledBits);
 
     void UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits);
 
@@ -14,7 +14,7 @@ public:
     inline int GetFlagEnabledBits() const { return m_flagEnabledBits; }
 
 private:
-    GCRender* m_pRender;
+    GCRenderContext* m_pRender;
     GCMESHBUFFERDATA* m_pBufferGeometryData;
 
     int m_flagEnabledBits;

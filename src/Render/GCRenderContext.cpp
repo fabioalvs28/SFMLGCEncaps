@@ -1,10 +1,10 @@
 #include "pch.h"
 
-GCRender::GCRender() {
+GCRenderContext::GCRenderContext() {
 
 }
 
-bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics)
+bool GCRenderContext::Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics)
 {
 	if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
 		return false;
@@ -22,23 +22,23 @@ bool GCRender::Initialize(Window* pWindow, int renderWidth, int renderHeight, GC
 	return true;
 }
 
-void GCRender::ResetCommandList() 
+void GCRenderContext::ResetCommandList() 
 {
 	m_pGCRenderResources->m_CommandList->Reset(m_pGCRenderResources->m_DirectCmdListAlloc, nullptr);
 }
 
-void GCRender::ExecuteCommandList() 
+void GCRenderContext::ExecuteCommandList() 
 {
 	ID3D12CommandList* cmdsLists[] = { m_pGCRenderResources->m_CommandList };
 	m_pGCRenderResources->m_CommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 }
 
-void GCRender::CloseCommandList() 
+void GCRenderContext::CloseCommandList() 
 {
 	m_pGCRenderResources->m_CommandList->Close();
 }
 
-void GCRender::EnableDebugController() 
+void GCRenderContext::EnableDebugController() 
 {
 	#if defined(DEBUG) || defined(_DEBUG) 
 		// Enable the D3D12 debug layer.
@@ -50,7 +50,7 @@ void GCRender::EnableDebugController()
 	#endif
 }
 
-bool GCRender::InitDirect3D()
+bool GCRenderContext::InitDirect3D()
 {
 	EnableDebugController();
 
@@ -104,7 +104,7 @@ bool GCRender::InitDirect3D()
 	return true;
 }
 
-void GCRender::LogAdapters()
+void GCRenderContext::LogAdapters()
 {
 	UINT i = 0;
 	IDXGIAdapter* adapter = nullptr;
@@ -132,7 +132,7 @@ void GCRender::LogAdapters()
 	}
 }
 
-void GCRender::LogAdapterOutputs(IDXGIAdapter* pAdapter)
+void GCRenderContext::LogAdapterOutputs(IDXGIAdapter* pAdapter)
 {
 	UINT i = 0;
 	IDXGIOutput* output = nullptr;
@@ -155,7 +155,7 @@ void GCRender::LogAdapterOutputs(IDXGIAdapter* pAdapter)
 	m_pGCRenderResources->m_canResize = true;
 }
 
-void GCRender::CreateCommandObjects()
+void GCRenderContext::CreateCommandObjects()
 {
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -177,7 +177,7 @@ void GCRender::CreateCommandObjects()
 	m_pGCRenderResources->m_CommandList->Close();
 }
 
-void GCRender::CreateSwapChain()
+void GCRenderContext::CreateSwapChain()
 {
 	// Release the previous swapchain we will be recreating.
 	if (m_pGCRenderResources->m_SwapChain != nullptr)
@@ -206,7 +206,7 @@ void GCRender::CreateSwapChain()
 	m_pGCRenderResources->m_dxgiFactory->CreateSwapChain(m_pGCRenderResources->m_CommandQueue, &sd, &m_pGCRenderResources->m_SwapChain);
 }
 
-void GCRender::CreateCbvSrvUavDescriptorHeaps()
+void GCRenderContext::CreateCbvSrvUavDescriptorHeaps()
 {
 	// Create CBV / SRV / UAV descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
@@ -217,7 +217,7 @@ void GCRender::CreateCbvSrvUavDescriptorHeaps()
 	m_pGCRenderResources->m_d3dDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap));
 }
 
-void GCRender::CreateRtvAndDsvDescriptorHeaps()
+void GCRenderContext::CreateRtvAndDsvDescriptorHeaps()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
 	rtvHeapDesc.NumDescriptors = m_pGCRenderResources->SwapChainBufferCount + 2;
@@ -235,7 +235,7 @@ void GCRender::CreateRtvAndDsvDescriptorHeaps()
 	m_pGCRenderResources->m_d3dDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_pGCRenderResources->m_pDsvHeap));
 }
 
-void GCRender::CreatePostProcessingResources() {
+void GCRenderContext::CreatePostProcessingResources() {
 	m_pGCRenderResources->m_pPostProcessingRtv= m_pGCRenderResources->CreateRTT(true);
 	
 
@@ -270,7 +270,7 @@ void GCRender::CreatePostProcessingResources() {
 	
 }
 
-void GCRender::OnResize() 
+void GCRenderContext::OnResize() 
 {
 	// Checks initial conditions
 	m_pGCRenderResources->m_canResize = true;
@@ -297,7 +297,7 @@ void GCRender::OnResize()
 	UpdateViewport();
 }
 
-void GCRender::ReleasePreviousResources() 
+void GCRenderContext::ReleasePreviousResources() 
 {
 	for (int i = 0; i < m_pGCRenderResources->SwapChainBufferCount; ++i)
 	{
@@ -312,7 +312,7 @@ void GCRender::ReleasePreviousResources()
 	}
 }
 
-void GCRender::ResizeSwapChain() 
+void GCRenderContext::ResizeSwapChain() 
 {
 	m_pGCRenderResources->m_SwapChain->ResizeBuffers(
 		m_pGCRenderResources->SwapChainBufferCount,
@@ -324,7 +324,7 @@ void GCRender::ResizeSwapChain()
 	m_pGCRenderResources->m_CurrBackBuffer = 0;
 }
 
-void GCRender::CreateRenderTargetViews() 
+void GCRenderContext::CreateRenderTargetViews() 
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_pGCRenderResources->m_pRtvHeap->GetCPUDescriptorHandleForHeapStart());
 	for (UINT i = 0; i < m_pGCRenderResources->SwapChainBufferCount; i++)
@@ -375,7 +375,7 @@ void GCRender::CreateRenderTargetViews()
 	//rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
 }
 
-void GCRender::CreateDepthStencilBufferAndView()
+void GCRenderContext::CreateDepthStencilBufferAndView()
 {
 	D3D12_RESOURCE_DESC depthStencilDesc = {};
 	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -434,7 +434,7 @@ void GCRender::CreateDepthStencilBufferAndView()
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &CommonToDepthWrite2);
 }
 
-void GCRender::UpdateViewport() 
+void GCRenderContext::UpdateViewport() 
 {
 	m_pGCRenderResources->m_ScreenViewport.TopLeftX = (m_pGCRenderResources->m_pWindow->GetClientWidth() - m_pGCRenderResources->m_renderWidth) / 2;
 	m_pGCRenderResources->m_ScreenViewport.TopLeftY = (m_pGCRenderResources->m_pWindow->GetClientHeight() - m_pGCRenderResources->m_renderHeight) / 2;
@@ -451,7 +451,7 @@ void GCRender::UpdateViewport()
 	};
 }
 
-bool GCRender::FlushCommandQueue()
+bool GCRenderContext::FlushCommandQueue()
 {
 	HRESULT hr;
 	// Advance the fence value to mark commands up to this fence point.
@@ -483,7 +483,7 @@ bool GCRender::FlushCommandQueue()
 }
 
 
-bool GCRender::PrepareDraw() 
+bool GCRenderContext::PrepareDraw() 
 {
 
 	HRESULT hr = m_pGCRenderResources->m_DirectCmdListAlloc->Reset();
@@ -511,7 +511,7 @@ bool GCRender::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_ObjectIdBufferRtvAddress, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	//m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_ObjectIdBufferRtvAddress, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	/*m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);*/
 
 
@@ -530,7 +530,7 @@ bool GCRender::PrepareDraw()
 
 
 
-bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
+bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
 {
 	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
 		return false;
@@ -641,7 +641,7 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
 
 // #TODO RESTRUCTURE RENDER -> GCRenderContext GCRenderResources -> Compute Shader
 
-void GCRender::PerformPostProcessing()
+void GCRenderContext::PerformPostProcessing()
 {
 	// Transition pour le rendu sur m_pPostProcessingRtv
 	CD3DX12_RESOURCE_BARRIER barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -722,7 +722,7 @@ void GCRender::PerformPostProcessing()
 
 
 //Always needs to be called right after drawing!!!
-bool GCRender::CompleteDraw()
+bool GCRenderContext::CompleteDraw()
 {
     //PerformPostProcessing();
 
@@ -749,7 +749,7 @@ bool GCRender::CompleteDraw()
 	return true;
 }
 
-void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format) 	
+void GCRenderContext::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format) 	
 {
 	UINT count = 0;
 	UINT flags = 0;
@@ -773,91 +773,3 @@ void GCRender::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 	}
 }
 
-ID3D12Resource* GCRenderResources::CreateRTT(bool isStateRenderTarget)
-{
-	if(isStateRenderTarget)
-	{
-		ID3D12Resource* renderTargetTexture = nullptr;
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), 2 + testCount, m_rtvDescriptorSize);
-		// Define the texture description
-		D3D12_RESOURCE_DESC textureDesc = {};
-		textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-		textureDesc.Width = m_pWindow->GetClientWidth(); // Example width
-		textureDesc.Height = m_pWindow->GetClientHeight(); // Example height
-		textureDesc.DepthOrArraySize = 1;
-		textureDesc.MipLevels = 1;
-		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-		// Define the clear value
-		D3D12_CLEAR_VALUE clearValue = {};
-		clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		clearValue.Color[0] = 0.0f;
-		clearValue.Color[1] = 0.0f;
-		clearValue.Color[2] = 0.0f;
-		clearValue.Color[3] = 1.0f;
-		// Create the render target texture
-		CD3DX12_HEAP_PROPERTIES test2 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-		HRESULT hr = m_d3dDevice->CreateCommittedResource(
-			&test2,
-			D3D12_HEAP_FLAG_NONE,
-			&textureDesc,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			&clearValue,
-			IID_PPV_ARGS(&renderTargetTexture)
-		);
-		if (FAILED(hr)) {
-			// Handle error
-			MessageBoxA(nullptr, "Failed to create render target texture", "Error", MB_OK);
-		}
-		m_d3dDevice->CreateRenderTargetView(renderTargetTexture, nullptr, rtvHeapHandle);
-		rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
-		m_renderTargets.push_back(renderTargetTexture);
-		testCount += 1;
-		return renderTargetTexture;
-	}
-	else {
-		ID3D12Resource* renderTargetTexture = nullptr;
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), 2 + testCount, m_rtvDescriptorSize);
-		D3D12_RESOURCE_DESC textureDesc2 = {};
-		textureDesc2.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-		textureDesc2.Width = m_pWindow->GetClientWidth();
-		textureDesc2.Height = m_pWindow->GetClientHeight();
-		textureDesc2.DepthOrArraySize = 1;
-		textureDesc2.MipLevels = 1;
-		textureDesc2.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		textureDesc2.SampleDesc.Count = 1;
-		textureDesc2.SampleDesc.Quality = 0;
-		textureDesc2.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-		textureDesc2.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-
-		CD3DX12_HEAP_PROPERTIES test2 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-		HRESULT hr = m_d3dDevice->CreateCommittedResource(
-			&test2,
-			D3D12_HEAP_FLAG_NONE,
-			&textureDesc2,
-			D3D12_RESOURCE_STATE_COMMON,
-			nullptr,
-			IID_PPV_ARGS(&renderTargetTexture));
-		if (FAILED(hr)) {
-			// Handle error
-			MessageBoxA(nullptr, "Failed to create render target texture", "Error", MB_OK);
-		}
-		m_d3dDevice->CreateRenderTargetView(renderTargetTexture, nullptr, rtvHeapHandle);
-		rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
-		m_renderTargets.push_back(renderTargetTexture);
-		testCount += 1;
-		return renderTargetTexture;
-	}
-}
-
-void GCRenderResources::DeleteRenderTarget(ID3D12Resource* pRenderTarget) {
-	auto it = std::find(m_renderTargets.begin(), m_renderTargets.end(), pRenderTarget);
-	if (it != m_renderTargets.end()) {
-		if (pRenderTarget) {
-			pRenderTarget->Release();
-			pRenderTarget = nullptr;
-		}
-		m_renderTargets.erase(it);
-	}
-}
