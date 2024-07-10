@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "DDSTextureLoader.cpp"
 
 GCTexture::GCTexture()
 {

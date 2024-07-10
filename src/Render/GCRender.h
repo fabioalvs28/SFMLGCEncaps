@@ -33,7 +33,7 @@ public:
 	void ExecuteCommandList();
 	void CloseCommandList();
 
-	void FlushCommandQueue();
+	bool FlushCommandQueue();
 	void PerformPostProcessing();
 	/**
 	* Pre-Draw.
@@ -98,17 +98,17 @@ public:
 	inline UINT GetRenderHeight() const { return m_renderHeight; }
 
 	inline void ResizeRender(int width, int height) { m_renderWidth = width;  m_renderHeight = height;}
-	GCShaderUploadBufferBase* m_pCurrentViewProj;
+	//GCShaderUploadBufferBase* m_pCurrentViewProj;
 	// Camera & Light -> Temporarily
 	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
 	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	Window* GetCurrentWindow() { return m_pWindow; }
-	ID3D12Resource* CreateRTT();
+	ID3D12Resource* CreateRTT(bool test);
 	void DeleteRenderTarget(ID3D12Resource* pRenderTarget);
 private:
 	Window* m_pWindow;
-
+	int testCount = 0;
 	// Swap chain size
 	int m_renderWidth;
 	int	m_renderHeight;

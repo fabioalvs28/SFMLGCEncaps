@@ -22,7 +22,7 @@ public:
 	 * @param render-Window's desired width(preferably 1920 or lower).
 	 * @param render-Window's desired height(preferably 1080 or lower).
 	 */
-	void Initialize(Window* pWindow, int renderWidth, int renderHeight);
+	bool Initialize(Window* pWindow, int renderWidth, int renderHeight);
 
 	// Each Frame
 		/**
@@ -32,7 +32,7 @@ public:
 	 * This function contains the prepareDraw func.
 	 *
 	 */
-	void StartFrame();
+	bool StartFrame();
 	/**
 	* Call it at the end of a frame.
 	 * @brief
@@ -40,7 +40,7 @@ public:
 	 * This function contains the postDraw func.
 	 *
 	 */
-	void EndFrame();
+	bool EndFrame();
 	/**
 	* Call it before initializing ressources.
 	 * @brief
@@ -48,7 +48,7 @@ public:
 	 * This function resets the command list so that you can create ressources,don't forget to call InitializeGraphicsResourcesEnd after your last initialization.
 	 *
 	 */
-	void InitializeGraphicsResourcesStart();
+	bool InitializeGraphicsResourcesStart();
 	/**
 	* Call it after initializing ressources.
 	 * @brief
@@ -56,7 +56,7 @@ public:
 	 * This function executes what's inside the command list ,don't forget to call InitializeGraphicsResourcesStart before.
 	 *
 	 */
-	void InitializeGraphicsResourcesEnd();
+	bool InitializeGraphicsResourcesEnd();
 
 	// Shader
 	/**

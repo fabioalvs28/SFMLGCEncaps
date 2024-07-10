@@ -31,7 +31,7 @@ public:
 	ID3DBlob* LoadShaderFromFile(const std::wstring& filename);
 	void PreCompile(const std::string& filePath, const std::string& csoDestinationPath);
 
-	void Load();
+	bool Load();
 	void SetRenderTarget(ID3D12Resource* rtt);
 	GCRender* m_pRender;
 	ID3D12Resource* m_pRtt = nullptr;

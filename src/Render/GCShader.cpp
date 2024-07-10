@@ -184,6 +184,7 @@ void GCShader::Pso()
 
 	psoDesc2.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc2.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	psoDesc2.RasterizerState.CullMode = m_cullMode;
 	psoDesc.RasterizerState.CullMode = m_cullMode;
 
 	// Customize the blend state for transparency
@@ -206,19 +207,19 @@ void GCShader::Pso()
 	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-
-	// for (int i = 0; i < 1; ++i)
-	// {
-	// 	blendDesc.RenderTarget[i].BlendEnable = TRUE;
-	// 	blendDesc.RenderTarget[i].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	// 	blendDesc.RenderTarget[i].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	// 	blendDesc.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
-	// 	blendDesc.RenderTarget[i].SrcBlendAlpha = D3D12_BLEND_ONE;
-	// 	blendDesc.RenderTarget[i].DestBlendAlpha = D3D12_BLEND_ZERO;
-	// 	blendDesc.RenderTarget[i].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	// 	blendDesc.RenderTarget[i].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	// }
-	// psoDesc.BlendState = blendDesc;
+	psoDesc.BlendState = blendDesc;
+	 //for (int i = 0; i < 1; ++i)
+	 //{
+	 //	blendDesc.RenderTarget[i].BlendEnable = TRUE;
+	 //	blendDesc.RenderTarget[i].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	 //	blendDesc.RenderTarget[i].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	 //	blendDesc.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
+	 //	blendDesc.RenderTarget[i].SrcBlendAlpha = D3D12_BLEND_ONE;
+	 //	blendDesc.RenderTarget[i].DestBlendAlpha = D3D12_BLEND_ZERO;
+	 //	blendDesc.RenderTarget[i].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	 //	blendDesc.RenderTarget[i].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	 //}
+	 //psoDesc.BlendState = blendDesc;
 	//?
 
 	// Use default depth stencil state
@@ -341,7 +342,7 @@ bool GCShader::Load() {
 	CompileShader();
 	RootSign();
 	Pso();
-	if (!CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_PSO, m_vsByteCode, m_psByteCode))
+	if (!CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_PSO1, m_PSO2, m_vsByteCode, m_psByteCode))
 		return false;
 	return true;
 }

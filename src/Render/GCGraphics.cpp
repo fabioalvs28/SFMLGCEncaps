@@ -64,9 +64,6 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     //Initializes Graphics for a window
     m_pRender = new GCRender();
     m_pRender->Initialize(pWindow, renderWidth, renderHeight, this);
-    
-    m_renderWidth = renderWidth;
-    m_renderHeight = renderHeight;
 
 
 
@@ -198,7 +195,7 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_COLOR);
 
-    if (!pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags))
+    if (!pShader->Initialize(m_pRender, "../../../src/RenderApp/Shaders/color.hlsl", "../../../src/RenderApp/CsoCompiled/color", flags))
         return ResourceCreationResult<GCShader*>(false, nullptr);
     if (!pShader->Load())
         return ResourceCreationResult<GCShader*>(false, nullptr);
@@ -216,7 +213,7 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_UV);
 
-    if (!pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags));
+    if (!pShader->Initialize(m_pRender, "../../../src/RenderApp/Shaders/texture.hlsl", "../../../src/RenderApp/CsoCompiled/texture", flags));
         return ResourceCreationResult<GCShader*>(false, nullptr);
     if (!pShader->Load());
         return ResourceCreationResult<GCShader*>(false, nullptr);
