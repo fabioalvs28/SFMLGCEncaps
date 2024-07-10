@@ -1,8 +1,9 @@
 #pragma once
 #include "SceneManager.h"
-#include "InputManager.h"
 #include "PhysicManager.h"
+#include "EventManager.h"
 
+class Component;
 class Collider;
 class GCGameObject;
 class GCScene;
@@ -10,6 +11,7 @@ class GC;
 
 class GCGameManager 
 {
+friend class Component;
 friend class Collider;
 friend class GCGameObject;
 friend class GCScene;
@@ -24,7 +26,6 @@ public: void Update();
     
 protected:
     GCSceneManager m_pSceneManager;
-    GCInputManager m_pInputManager;
     GCPhysicManager m_pPhysicManager;
     GCEventManager m_pEventManager;
 };
