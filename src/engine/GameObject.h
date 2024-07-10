@@ -2,8 +2,8 @@
 #include "Vector.h"
 #include "Map.h"
 #include "List.h"
+#include "GameObjectTransform.h"
 
-class GCGameObjectTransform;
 class Component;
 class GCScene;
 class GCSceneManager;
