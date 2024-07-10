@@ -1,6 +1,9 @@
 #pragma once
-#include "../core/framework.h"
+#include "Vector.h"
+#include "Map.h"
+#include "List.h"
 
+class GCGameObjectTransform;
 class Component;
 class GCScene;
 class GCSceneManager;
@@ -11,6 +14,7 @@ class GCGameObject
 {
 friend class GCScene;
 friend class GCSceneManager;
+friend class GCGameObjectTransform;
 
 protected:
     GCGameObject( GCScene* pScene );
@@ -43,7 +47,7 @@ public:
     unsigned int GetID() const;
     GCScene* GetScene() const;
     GCGameObject* GetParent() const;
-    GCList<GCGameObject*> GetChildren() const;
+    GCList<GCGameObject*>& GetChildren();
     bool IsActive() const;
     const char* GetName() const;
     const char* GetTag( int index ) const;
@@ -63,7 +67,7 @@ protected:
     void RemoveComponent( int type );
 
 public:
-    GCTransform m_transform;
+    GCGameObjectTransform m_transform;
 
 protected:
     static inline unsigned int s_gameObjectsCount = 0;

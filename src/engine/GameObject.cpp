@@ -1,13 +1,12 @@
 #include "pch.h"
 #include "GameObject.h"
 
-#include "../core/framework.h"
+#include "GameObjectTransform.h"
 #include "Components.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "GC.h"
 
-// todo A GameObject needs 2 transforms (self and world)
 // todo DESTROY( GameObject*& pGameObject ) -> also does pGameObject = nullptr
 
 
@@ -286,7 +285,7 @@ GCGameObject* GCGameObject::GetParent() const { return m_pParent; }
 //////////////////////////////////////////////////////////
 /// @return A Linked List of the GameObject's children.
 //////////////////////////////////////////////////////////
-GCList<GCGameObject*> GCGameObject::GetChildren() const { return m_childrenList; }
+GCList<GCGameObject*>& GCGameObject::GetChildren() { return m_childrenList; }
 
 /////////////////////////////////////////////////////////////////////////////
 /// @return A boolean value indicating the active state of the GameObject.
