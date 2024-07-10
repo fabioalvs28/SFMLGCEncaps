@@ -12,27 +12,19 @@ private:
 	/*
 	 * Components that need to be fixed updated
 	 */
-	GCVector<Component*> m_components;
-
-	/*
-	 * TODO:
-	 * Should be removed as we now have a list of colliders
-	 */
-	GCVector<RigidBody*> m_rigidbodies;
+	GCList<Component*> m_components;
 
 	/*
 	 * Colliders that need to be checked for collision
 	 */
-	GCVector<Collider*> m_colliders;
+	GCList<Collider*> m_colliders;
 public:
 	GCPhysicManager();
 	~GCPhysicManager();
 
-	void RegisterComponent(Component* component);
-	void UnregisterComponent(Component* component);
+	void RegisterComponent(Component* pComponent);
 
-	void RegisterCollider(Collider* collider);
-	void UnregisterCollider(Collider* collider);
+	void RegisterCollider(Collider* pCollider);
 
 	void Update();
 

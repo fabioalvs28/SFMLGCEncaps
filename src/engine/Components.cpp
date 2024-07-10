@@ -44,11 +44,6 @@ Collider::Collider()
 	m_visible = false;
 	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
 }
-
-Collider::~Collider()
-{
-	GC::m_pActiveGameManager.m_pPhysicManager.UnregisterCollider(this);
-}
 #pragma endregion Collider
 
 #pragma region RigidBody

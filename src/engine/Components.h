@@ -96,7 +96,7 @@ class Collider : public Component
 
 public:
     Collider();
-    ~Collider();
+    ~Collider() override {}
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }

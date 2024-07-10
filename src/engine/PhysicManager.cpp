@@ -19,80 +19,27 @@ void GCPhysicManager::RegisterComponent(Component* component)
 	m_components.PushBack(component);
 }
 
-void GCPhysicManager::UnregisterComponent(Component* component)
-{
-	m_components.Remove(m_components.GetIndex(component));
-}
-
 void GCPhysicManager::RegisterCollider(Collider* collider)
 {
 	m_colliders.PushBack(collider);
 }
 
-void GCPhysicManager::UnregisterCollider(Collider* collider)
-{
-	m_colliders.Remove(m_colliders.GetIndex(collider));
-}
-
 void GCPhysicManager::Update()
 {
-	// Update components
-	for (Component* component : m_components)
-		component->FixedUpdate();
+	for (GCListNode<Component*>* pComponentNode = m_components.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext())
+		pComponentNode->GetData()->FixedUpdate();
 
-	// Update rigidbodies					TODO: remove this
-	for (RigidBody* rigidbody : m_rigidbodies)
-		rigidbody->FixedUpdate();
-
-	for (int i = 0; i < m_colliders.GetSize(); i++)
+	for (GCListNode<Collider*>* pColliderNode = m_colliders.GetFirstNode(); pColliderNode != nullptr; pColliderNode = pColliderNode->GetNext())
 	{
-		for (int j = i + 1; j < m_colliders.GetSize(); j++)
+		for (GCListNode<Collider*>* pNextColliderNode = pColliderNode->GetNext(); pNextColliderNode != nullptr; pNextColliderNode = pNextColliderNode->GetNext())
 		{
-			if (!CheckCollision(*m_colliders.Get(i), *m_colliders.Get(j)))
+			if (!CheckCollision(*pColliderNode->GetData(), *pNextColliderNode->GetData()))
 				continue;
 
 			// Resolve collision
 			LogEngineDebug("Collision detected");
 		}
 	}
-	//for (Collider* collider : m_colliders)
-	//{
-	//	for (Collider* checkCollider : m_colliders)
-	//	{
-	//		if (&collider == &checkCollider)
-	//			continue;
-
-	//		/*std::string temp = "FIRST IS: ";
-	//		if (Animator::TYPE == BoxCollider::TYPE) {
-	//			temp += "Box";
-	//		}
-	//		else if (collider->GetID() == CircleCollider::TYPE) {
-	//			temp += "Circle";
-	//		}
-	//		else {
-	//			temp += "Invalid";
-	//		}
-	//		LogEngineDebug(temp.c_str());
-
-	//		temp = "SECOND IS: ";
-	//		if (Animator::TYPE == BoxCollider::TYPE) {
-	//			temp += "Box";
-	//		}
-	//		else if (checkCollider->GetID() == CircleCollider::TYPE) {
-	//			temp += "Circle";
-	//		}
-	//		else {
-	//			temp += "Invalid";
-	//		}
-	//		LogEngineDebug(temp.c_str());*/
-
-	//		if (!CheckCollision(*collider, *checkCollider))
-	//			continue;
-
-	//		// Resolve collision
-	//		//LogEngineDebug("Collision detected");
-	//	}
-	//}
 }
 
 bool GCPhysicManager::CheckCollision(Collider& collider1, Collider& collider2)
