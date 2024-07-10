@@ -1,0 +1,8 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(516,5): warning MSB8004: Le répertoire Intermediate ne se termine pas par une barre oblique finale. Cette instance de build ajoutera une barre oblique, comme requis, pour permettre l'évaluation correcte du répertoire Intermediate.
+  GCSolutionGenerator.cpp
+  main.cpp
+  tinyxml2.cpp
+  Génération de code en cours...
+/src/tinyxml2.cpp(1,1): error C1083: Impossible d'ouvrir le fichier source : '..\src\tinyxml2.cpp' : No such file or directory
+  (compiler le fichier source '/src/tinyxml2.cpp')
+  
