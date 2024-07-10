@@ -43,9 +43,9 @@
             "generate_debug_information": "true",
             "subsystem": "Windows",
             "language_standard": "stdcpp20",
-            "additional_include_directories" : "$(SolutionDir)Render;$(SolutionDir)..\\..\\src\\SFML-2.6.1",
+            "additional_include_directories" : "$(SolutionDir)Render",
             "additional_library_directories" : "$(SolutionDir)Render\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
-            "additional_dependencies" : "Render.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib%(AdditionalDependencies)",
+            "additional_dependencies" : "Render.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         }
