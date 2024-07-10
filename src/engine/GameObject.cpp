@@ -329,5 +329,5 @@ void GCGameObject::RemoveComponent( int type )
 void GCGameObject::ClearComponents()
 {
     for ( auto it : m_componentsList )
-        RemoveComponent( it.second->GetType() );
+        RemoveComponent( it.second->GetID() );
 }

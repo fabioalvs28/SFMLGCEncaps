@@ -4,8 +4,12 @@
 
 // TODO Adding lots of stuff to the components
 // todo 2 transforms for colliders (self & wold)
+// todo Enable children of components
 
 class GCGameObject;
+class GCUpdateManager;
+class GCPhysicsManager;
+class GCRenderManager;
 
 
 
@@ -22,12 +26,17 @@ inline FLAGS operator|(FLAGS a, FLAGS b) { return static_cast<FLAGS>(static_cast
 class Component
 {
 friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicsManager;
+friend class GCRenderManager;
+public: virtual const int GetID() = 0;
 
 public:
     Component();
     Component( int flags );
     virtual ~Component() = default;
     
+    void Init();
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
@@ -42,14 +51,14 @@ public:
     bool IsFlagSet( FLAGS flag ) { return ( m_flags & flag ) != 0; }
 
 protected:
-    static int GetComponentCount() { return ++componentCount; }
-    void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
-
-protected:
     inline static int componentCount = 0;
     GCGameObject* m_pGameObject;
     bool m_active;
 	int m_flags;
+    
+    GCListNode<Component*>* m_pUpdateNode;
+    GCListNode<Component*>* m_pPhysicsNode;
+    GCListNode<Component*>* m_pRenderNode;
 
 };
 
@@ -57,8 +66,10 @@ protected:
 
 class SpriteRenderer : public Component
 {
-public: static const int GetID() { return m_ID; }
-protected: inline static const int m_ID = Component::GetComponentCount();
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 public:
 	SpriteRenderer() : Component( RENDER ) {}
@@ -103,8 +114,10 @@ protected:
 
 class BoxCollider : public Collider
 {
-public: static const int GetID() { return m_ID; }
-protected: inline static const int m_ID = Component::GetComponentCount();
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 private:
     GCVEC2 m_size;
@@ -126,8 +139,10 @@ public:
 
 class CircleCollider : public Collider
 {
-public: static const int GetID() { return m_ID; }
-protected: inline static const int m_ID = Component::GetComponentCount();
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 private:
     float m_radius;
@@ -148,8 +163,10 @@ public:
 
 class RigidBody : public Component
 {
-public: static const int GetID() { return m_ID; }
-protected: inline static const int m_ID = Component::GetComponentCount();
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 private:
     GCVEC3 m_velocity;
@@ -169,8 +186,10 @@ public:
 
 class Animator : public Component
 {
-public: static const int GetID() { return m_ID; }
-protected: inline static const int m_ID = Component::GetComponentCount();
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 public:
 	Animator() : Component( UPDATE ) {}
@@ -185,8 +204,10 @@ public:
 
 class SoundMixer : public Component
 {
-public: static const int GetID() { return m_ID; }
-protected: inline static const int m_ID = Component::GetComponentCount();
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 public:
 	SoundMixer() : Component( UPDATE ) {}
@@ -201,8 +222,10 @@ public:
 
 class ScriptList : public Component
 {
-public: static const int GetID() { return m_ID; }
-protected: inline static const int m_ID = Component::GetComponentCount();
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 public:
 	ScriptList() {}

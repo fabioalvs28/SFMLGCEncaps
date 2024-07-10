@@ -66,7 +66,7 @@ void GCPhysicManager::Update()
 	//		if (Animator::TYPE == BoxCollider::TYPE) {
 	//			temp += "Box";
 	//		}
-	//		else if (collider->GetType() == CircleCollider::TYPE) {
+	//		else if (collider->GetID() == CircleCollider::TYPE) {
 	//			temp += "Circle";
 	//		}
 	//		else {
@@ -78,7 +78,7 @@ void GCPhysicManager::Update()
 	//		if (Animator::TYPE == BoxCollider::TYPE) {
 	//			temp += "Box";
 	//		}
-	//		else if (checkCollider->GetType() == CircleCollider::TYPE) {
+	//		else if (checkCollider->GetID() == CircleCollider::TYPE) {
 	//			temp += "Circle";
 	//		}
 	//		else {
@@ -97,19 +97,19 @@ void GCPhysicManager::Update()
 
 bool GCPhysicManager::CheckCollision(Collider& collider1, Collider& collider2)
 {
-	switch (collider1.GetType())
+	switch (collider1.GetID())
 	{
 	case 2:
-		if (collider2.GetType() == 2)
+		if (collider2.GetID() == 2)
 			return GCPhysic::CheckBox2DvsBox2D(collider1, collider2);
-		else if (collider2.GetType() == 3)
+		else if (collider2.GetID() == 3)
 			return GCPhysic::CheckBox2DvsCircle(collider1, collider2);
 		break;
 
 	case 3:
-		if (collider2.GetType() == 2)
+		if (collider2.GetID() == 2)
 			return GCPhysic::CheckBox2DvsCircle(collider2, collider1);
-		else if (collider2.GetType() == 3)
+		else if (collider2.GetID() == 3)
 			return GCPhysic::CheckCirclevsCircle(collider1, collider2);
 		break;
 	default:

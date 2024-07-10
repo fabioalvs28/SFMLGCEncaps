@@ -103,7 +103,7 @@ T* GCGameObject::AddComponent()
 {
     if ( GetComponent<T>() != nullptr ) return nullptr;
     T* component = new T();
-    component->SetGameObject( this );
+    component->m_pGameObject = this;
     m_componentsList.Insert( T::TYPE, component );
     return component;
 }
