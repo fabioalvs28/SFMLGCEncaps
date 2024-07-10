@@ -22,30 +22,6 @@ GCScene::GCScene()
 	m_active = false;
 }
 
-////////////////////////////////////////////////////////////////
-/// @brief Updates the Scene and all its GameObjects.
-/// 
-/// @note It will also update the parent Scene if it has one.
-////////////////////////////////////////////////////////////////
-void GCScene::Update()
-{
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
-		pGameObjectNode->GetData()->Update();
-	if ( m_pParent != nullptr ) m_pParent->Update();
-}
-
-//////////////////////////////////////////////////////////////////////////////
-/// @brief Renders all its GameObjects that can be rendered.
-/// 
-/// @note It will also render the parent Scene's GameObjects if it has one.
-//////////////////////////////////////////////////////////////////////////////
-void GCScene::Render()
-{
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
-		pGameObjectNode->GetData()->Render();
-	if ( m_pParent != nullptr ) m_pParent->Render();
-}
-
 ////////////////////////////////////////////////////
 /// @brief Creates a new Scene.
 /// 

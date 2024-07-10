@@ -33,32 +33,6 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_layer = 0;
 }
 
-////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the GameObject and its Components.
-/// 
-/// @note The GameObject won't update if not active or not fully created.
-////////////////////////////////////////////////////////////////////////////
-void GCGameObject::Update()
-{
-    if ( m_active == false || m_created == false ) return;
-    for ( auto it : m_componentsList )
-        if ( it.second->m_active == true )
-            it.second->Update();
-}
-
-////////////////////////////////////////////////////////////////////////////
-/// @brief Renders the GameObject's Components related to rendering.
-/// 
-/// @note The GameObject won't render if not active or not fully created.
-////////////////////////////////////////////////////////////////////////////
-void GCGameObject::Render()
-{
-    if ( m_active == false || m_created == false ) return;
-    for ( auto it : m_componentsList )
-        if ( it.second->m_active == true )
-            it.second->Render();
-}
-
 /////////////////////////////////////////////////////////
 /// @brief Duplicates the GameObject.
 /// 

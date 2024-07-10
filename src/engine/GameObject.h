@@ -19,9 +19,6 @@ friend class GCGameObjectTransform;
 protected:
     GCGameObject( GCScene* pScene );
     ~GCGameObject() = default;
-    
-    void Update();
-    void Render();
 
 public:
     GCGameObject* Duplicate();

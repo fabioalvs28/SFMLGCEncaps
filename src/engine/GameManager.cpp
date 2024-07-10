@@ -16,7 +16,5 @@ void GCGameManager::Update()
 {
     m_pPhysicManager.Update();
     m_pUpdateManager.Update();
-    m_pSceneManager.Update();
     m_pSceneManager.NewDelete();
-    m_pSceneManager.Render();
 }
