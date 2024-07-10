@@ -32,8 +32,8 @@ public:
 
 	GC_GRAPHICS_ERROR Load();
 
-	bool Load();
 	void SetRenderTarget(ID3D12Resource* rtt);
+
 	GCRender* m_pRender;
 	ID3D12Resource* m_pRtt = nullptr;
 protected:

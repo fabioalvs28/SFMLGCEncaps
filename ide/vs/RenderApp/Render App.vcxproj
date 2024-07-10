@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{C73C601B-FFC1-4A79-8777-986A4A0BEE65}</ProjectGuid>
+    <ProjectGuid>{A85E8086-1F21-4B7D-95EC-D68940819255}</ProjectGuid>
     <RootNamespace>Render App</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -55,7 +55,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -88,6 +87,11 @@
     <None Include="..\..\..\src\RenderApp\monkeyUv.obj" />
     <None Include="..\..\..\src\RenderApp\Shaders\color.hlsl" />
     <None Include="..\..\..\src\RenderApp\Shaders\customTest.hlsl" />
+    <None Include="..\..\..\src\RenderApp\Shaders\LightColor.hlsl" />
+    <None Include="..\..\..\src\RenderApp\Shaders\LightTexture.hlsl" />
+    <None Include="..\..\..\src\RenderApp\Shaders\LightTextureBloom.hlsl" />
+    <None Include="..\..\..\src\RenderApp\Shaders\ObjectBufferId.hlsl" />
+    <None Include="..\..\..\src\RenderApp\Shaders\PostProcessing.hlsl" />
     <None Include="..\..\..\src\RenderApp\Shaders\texture.hlsl" />
     <None Include="..\..\..\src\RenderApp\Textures\ahah.dds" />
     <None Include="..\..\..\src\RenderApp\Textures\gojo.dds" />

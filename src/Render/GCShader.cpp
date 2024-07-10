@@ -207,19 +207,6 @@ void GCShader::Pso()
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	psoDesc.BlendState = blendDesc;
-	 //for (int i = 0; i < 1; ++i)
-	 //{
-	 //	blendDesc.RenderTarget[i].BlendEnable = TRUE;
-	 //	blendDesc.RenderTarget[i].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	 //	blendDesc.RenderTarget[i].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	 //	blendDesc.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
-	 //	blendDesc.RenderTarget[i].SrcBlendAlpha = D3D12_BLEND_ONE;
-	 //	blendDesc.RenderTarget[i].DestBlendAlpha = D3D12_BLEND_ZERO;
-	 //	blendDesc.RenderTarget[i].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	 //	blendDesc.RenderTarget[i].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	 //}
-	 //psoDesc.BlendState = blendDesc;
-	//?
 
 	// Use default depth stencil state
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
@@ -232,22 +219,22 @@ void GCShader::Pso()
 	psoDesc.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
 	psoDesc.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
 	psoDesc.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
-	psoDesc.RTVFormats[0] = m_pRender->GetBackBufferFormat();
-	psoDesc.SampleDesc.Count = m_pRender->Get4xMsaaState() ? 4 : 1;
-	psoDesc.SampleDesc.Quality = m_pRender->Get4xMsaaState() ? (m_pRender->Get4xMsaaQuality() - 1) : 0;
-	psoDesc.DSVFormat = m_pRender->GetDepthStencilFormat();
-	m_pRender->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO1));
+	psoDesc.RTVFormats[0] = m_pRender->GetRenderResources()->GetBackBufferFormat();
+	psoDesc.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
+	psoDesc.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
+	psoDesc.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
+	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO1));
 
 	psoDesc2.SampleMask = UINT_MAX;
 	psoDesc2.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc2.NumRenderTargets = 1;
-	psoDesc2.RTVFormats[0] = m_pRender->GetBackBufferFormat();
-	psoDesc2.SampleDesc.Count = m_pRender->Get4xMsaaState() ? 4 : 1;
-	psoDesc2.SampleDesc.Quality = m_pRender->Get4xMsaaState() ? (m_pRender->Get4xMsaaQuality() - 1) : 0;
-	psoDesc2.DSVFormat = m_pRender->GetDepthStencilFormat();
+	psoDesc2.RTVFormats[0] = m_pRender->GetRenderResources()->GetBackBufferFormat();
+	psoDesc2.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
+	psoDesc2.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
+	psoDesc2.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
 	// Create the graphics pipeline state
-	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO));
-	m_pRender->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc2, IID_PPV_ARGS(&m_PSO2));
+	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO1));
+	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc2, IID_PPV_ARGS(&m_PSO2));
 }
 
 ID3D12RootSignature* GCShader::GetRootSign() 

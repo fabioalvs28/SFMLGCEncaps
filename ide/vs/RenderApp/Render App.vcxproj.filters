@@ -2,15 +2,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{5E0C20F2-02DE-4D6E-90C6-9C480B27A5F3}</UniqueIdentifier>
+      <UniqueIdentifier>{BB01558F-7B3C-4575-9FB7-F0381FD84287}</UniqueIdentifier>
       <Extensions>cpp;c</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{529D7D58-8709-4A70-A055-7BC2DECA63B0}</UniqueIdentifier>
+      <UniqueIdentifier>{C55E71CB-7647-46EF-8CC1-D159F09DD03C}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{D7CE3EB7-E880-4C08-9420-6C1DF59609D3}</UniqueIdentifier>
+      <UniqueIdentifier>{5761EE80-4C9D-4C8B-87E4-68773EF4E642}</UniqueIdentifier>
       <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
     </Filter>
   </ItemGroup>
@@ -28,6 +28,21 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\RenderApp\Shaders\customTest.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Shaders\LightColor.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Shaders\LightTexture.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Shaders\LightTextureBloom.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Shaders\ObjectBufferId.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\RenderApp\Shaders\PostProcessing.hlsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\..\src\RenderApp\Shaders\texture.hlsl">
