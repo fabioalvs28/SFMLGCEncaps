@@ -35,7 +35,6 @@ GC_GRAPHICS_ERROR GCTexture::Initialize(const std::string& filePath, GCGraphics*
     {
         return GCRENDER_ERROR_POINTER_NULL;
     }
-
     //Heap
     CD3DX12_CPU_DESCRIPTOR_HANDLE handleDescriptor(pGraphics->GetRender()->GetRenderResources()->GetCbvSrvUavSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
     handleDescriptor.Offset(textureOffset, m_cbvSrvUavDescriptorSize);

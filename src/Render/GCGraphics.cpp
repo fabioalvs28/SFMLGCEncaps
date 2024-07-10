@@ -64,9 +64,6 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     //Initializes Graphics for a window
     m_pRender = new GCRender();
     m_pRender->Initialize(pWindow, renderWidth, renderHeight, this);
-    
-    m_renderWidth = renderWidth;
-    m_renderHeight = renderHeight;
 
 	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
     m_pCbCameraInstances.push_back(pCbInstance);
@@ -576,8 +573,9 @@ void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
     uploadBufferInstance->CopyData(0, objectData);
 }
 
+
 DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view) {
-    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_renderWidth, m_renderHeight, proj, view);
+    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pRender->GetRenderWidth(), m_pRender->GetRenderHeight(), proj, view);
 
     DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 
@@ -587,6 +585,10 @@ DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT
     return worldMatrix;
 }
 
+void GCGraphics::Resize(int width, int height) {
+    m_pRender->ResizeRender(width, height);
+    m_pRender->OnResize();
+}
 bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData)
 {
     if (!CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial))
