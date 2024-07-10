@@ -49,4 +49,13 @@ public:
 
         return macAddresses;
     }
+
+    static std::string GetTime()
+    {
+        SYSTEMTIME time;
+        GetLocalTime(&time);
+        char buffer[256];
+        snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d", time.wHour, time.wMinute, time.wSecond);
+        return buffer;
+    }
 };
