@@ -217,10 +217,13 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     SET_FLAG(flags, VERTEX_POSITION);
     SET_FLAG(flags, VERTEX_UV);
 
-    if (!pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags));
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags);
+    if (errorState != 0);
         return ResourceCreationResult<GCShader*>(false, nullptr);
-    if (!pShader->Load());
-        return ResourceCreationResult<GCShader*>(false, nullptr);
+
+    errorState = pShader->Load();
+    if (errorState != 0);
+        return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
 
     m_vShaders.push_back(pShader);
 

@@ -318,7 +318,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); 
         directionalLight.spotAngle = 0.0f; 
         directionalLight.lightIntensity = 1.3f;
-        directionalLight.lightType = 0; 
+        directionalLight.lightType = LIGHT_TYPE_DIRECTIONAL;
 
         GCLIGHT pointLight;
         pointLight.position = DirectX::XMFLOAT3(0.0f, 4.0f, 0.0f); // Position en 2D (x, y, 0)
@@ -326,7 +326,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
         pointLight.spotAngle = 0.0f; // Angle du spot si applicable
         pointLight.lightIntensity = 20.4f;
-        pointLight.lightType = 2; // Type de lumière ponctuelle
+        pointLight.lightType = LIGHT_TYPE_POINT; // Type de lumière ponctuelle
 
 
         lightData.lights[1] = pointLight;

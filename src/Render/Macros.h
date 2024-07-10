@@ -183,4 +183,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 
 
 
-// Custom Error State
+// Lights Type
+#define LIGHT_TYPE_DIRECTIONAL 0
+#define LIGHT_TYPE_SPOT 1
+#define LIGHT_TYPE_POINT 2
