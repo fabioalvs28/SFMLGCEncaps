@@ -43,8 +43,7 @@ void GCSceneManager::Render() { m_pActiveScene->Render(); }
 GCScene* GCSceneManager::CreateScene()
 {
 	GCScene* pScene = new GCScene();
-    m_scenesList.PushBack( pScene );
-	pScene->m_pNode = m_scenesList.GetLastNode();
+    pScene->m_pNode = m_scenesList.PushBack( pScene );
 	if ( m_pActiveScene == nullptr ) SetActiveScene( pScene );
 	return pScene;
 }
@@ -64,8 +63,7 @@ void GCSceneManager::SetActiveScene( GCScene* pScene )
 void GCSceneManager::LoadScene( GCScene* pScene )
 {
 	if ( pScene->m_pLoadedNode != nullptr ) return;
-	m_loadedScenesList.PushBack( pScene );
-	pScene->m_pLoadedNode = m_loadedScenesList.GetLastNode();
+	pScene->m_pLoadedNode = m_loadedScenesList.PushBack( pScene );
 }
 
 ///////////////////////////////////////////////////////////
@@ -106,8 +104,7 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 void GCSceneManager::CreateGameObject( GCGameObject* pGameObject )
 {
 	GCScene* pScene = pGameObject->m_pScene;
-	pScene->m_gameObjectsList.PushBack( pGameObject );
-	pGameObject->m_pSceneNode = pScene->m_gameObjectsList.GetLastNode();
+	pGameObject->m_pSceneNode = pScene->m_gameObjectsList.PushBack( pGameObject );
 	pGameObject->m_created = true;
 }
 

@@ -29,8 +29,7 @@ private:
 	
 	void AddGameObjectToDeleteQueue( GCGameObject* pGameObject );
 	void AddGameObjectToCreateQueue( GCGameObject* pGameObject );
-
-protected:
+	
 	GCScene* CreateScene();
 
 private:

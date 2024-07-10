@@ -101,8 +101,7 @@ void GCScene::MoveGameObjectToScene( GCGameObject* pGameObject )
 {
 	if ( pGameObject->m_pScene == this ) return;
 	pGameObject->m_pScene->RemoveGameObjectFromScene( pGameObject );
-	m_gameObjectsList.PushBack( pGameObject );
-	pGameObject->m_pSceneNode = m_gameObjectsList.GetLastNode();
+	pGameObject->m_pSceneNode = m_gameObjectsList.PushBack( pGameObject );
 	pGameObject->m_pScene = this;
 	// todo Assert for the errors instead of returning nothing
 }
@@ -214,8 +213,7 @@ void GCScene::AddChild( GCScene* pChild )
         if ( pChild == pAncestor ) return;
 	
 	pChild->RemoveParent();
-	m_childrenList.PushBack( pChild );
-	pChild->m_pChildNode = m_childrenList.GetLastNode();
+	pChild->m_pChildNode = m_childrenList.PushBack( pChild );
 	pChild->m_pParent = this;
     // todo Assert for the errors instead of simply returning nothing
 }

@@ -135,8 +135,7 @@ void GCGameObject::AddChild( GCGameObject* pChild )
         if ( pChild == pAncestor ) return;
     
     pChild->RemoveParent();
-    m_childrenList.PushBack( pChild );
-    pChild->m_pChildNode = m_childrenList.GetLastNode();
+    pChild->m_pChildNode = m_childrenList.PushBack( pChild );
     pChild->m_pParent = this;
     // todo Updating the transform so that the GameObject stays where it was before it was added
     // todo Assert for the errors instead of simply returning nothing
