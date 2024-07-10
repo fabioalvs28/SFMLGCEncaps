@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Thread.h"
+#include "Log.h"
+
+#pragma region STLTHREAD
 
 GCThread::GCThread() : m_isRunning(false) {}
 
@@ -54,3 +57,50 @@ std::thread::id GCThread::GetId() const
 {
 	return m_thread.get_id();
 }
+
+#pragma endregion
+
+#pragma region WinThread
+
+WinThread::~WinThread()
+{
+	Join();
+}
+
+bool WinThread::Start(std::function<void()> task)
+{
+	m_task = task; 
+
+	if (m_isRunning)
+		return; 
+
+	m_isRunning = true;
+
+	m_threadHandle = CreateThread(
+		nullptr,
+		0,
+		ThreadFunc,
+		this,
+		0,
+		&m_threadID
+	);
+
+	if (m_threadHandle == nullptr)
+	{
+		LogCoreError("Failed to create thread", GetLastError());
+		m_isRunning = false;
+		return false;
+	}
+	return true;
+}
+
+void WinThread::Join()
+{
+	if (m_threadHandle != nullptr)
+	{
+		WaitForSingleObject(m_threadHandle, INFINITE);
+		CloseHandle(m_threadHandle);
+		m_threadHandle = nullptr;
+	}
+}
+#pragma endregion

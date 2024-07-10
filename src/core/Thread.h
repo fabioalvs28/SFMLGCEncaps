@@ -3,7 +3,10 @@
 #include <thread>
 #include <mutex>
 #include <functional>
+#include <Windows.h>
 
+
+#pragma region STLThread
 class GCThread
 {
 public:
@@ -23,3 +26,32 @@ private:
 	std::mutex m_mutex; 
 	bool m_isRunning = false;
 };
+#pragma endregion
+
+#pragma region WinThead
+class WinThread
+{
+public:
+	WinThread() : m_threadHandle(nullptr), m_threadID(0) {}
+	~WinThread();
+
+	bool Start(std::function<void()> task);
+	void Join(); 
+	DWORD GetThreadId() const { return m_threadID; }
+
+private:
+
+	static DWORD WINAPI ThreadFunc(LPVOID lpParam)
+	{
+		WinThread* thread = static_cast<WinThread*>(lpParam);
+		thread->m_task();
+		thread->m_isRunning = false;
+		return 0;
+	}
+
+	HANDLE m_threadHandle; 
+	DWORD m_threadID;
+	std::function<void()> m_task;
+	bool m_isRunning = false;
+};
+#pragma endregion
