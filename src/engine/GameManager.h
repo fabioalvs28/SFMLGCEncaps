@@ -10,7 +10,6 @@ class Collider;
 class GCGameObject;
 class GCScene;
 class GC;
-class SpriteRenderer;
 
 class GCGameManager
 {
@@ -19,6 +18,8 @@ class GCGameManager
     friend class GCGameObject;
     friend class GCScene;
     friend class GC;
+    friend class BoxCollider;
+    friend class CircleCollider;
 
 protected:
     GCGameManager() = default;
@@ -28,9 +29,13 @@ public: void Init();
 public: void Update();
 
 protected:
-    GCRenderManager m_pRenderManager;
+//    GCKeyboardInputManager m_pInputManager;
     GCPhysicManager m_pPhysicManager;
     GCUpdateManager m_pUpdateManager;
     GCEventManager m_pEventManager;
     GCSceneManager m_pSceneManager;
+
+public : 
+
+    GCRenderManager m_pRenderManager;
 };

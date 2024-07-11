@@ -65,22 +65,35 @@ void GCRenderManager::CreateGeometry()
 
 void GCRenderManager::RegisterComponent(Component* component)
 {
-
-    /*for (GCListNode<Component*>* pComponent = m_pComponentList.GetFirstNode(); pComponent != nullptr; pComponent->GetNext())
+    if (m_pComponentList.GetFirstNode() == nullptr)
     {
-        if (pComponent->GetData()->m_pGameObject->GetLayer() <= component->m_pGameObject->GetLayer())
-        {
-            component->m_pRenderNode = pComponent->PushBefore(component);
-            break;
-        }
-        else if ( pComponent == m_pComponentList.GetLastNode() )
-        {
-            m_pComponentList.PushBack(component);
-            component->m_pRenderNode = m_pComponentList.GetLastNode();
-        }
-    }*/
+        component->m_pRenderNode = m_pComponentList.PushBack(component);
+        return;
+    }
 
     m_pComponentList.PushBack(component);
-    component->m_pRenderNode = m_pComponentList.GetLastNode();
+    
+    //if ( m_pComponentList.GetFirstNode() == m_pComponentList.GetLastNode())
+    //{
+    //    if (m_pComponentList.GetFirstNode()->GetData()->GetGameObject()->GetLayer() <= m_pComponentList.GetLastNode()->GetData()->GetGameObject()->GetLayer())
+    //        m_pComponentList.PushBack(component);
+    //    else
+    //        m_pComponentList.PushFront(component);
+    //    return;
+    //}
+
+    //for (GCListNode<Component*>* pComponent = m_pComponentList.GetFirstNode(); pComponent != nullptr; pComponent->GetNext())
+    //{
+    //    if (pComponent->GetData()->m_pGameObject->GetLayer() >= component->m_pGameObject->GetLayer())
+    //    {
+    //        component->m_pRenderNode = pComponent->PushBefore(component);
+    //        break;
+    //    }
+    //    else if ( pComponent == m_pComponentList.GetLastNode() )
+    //    {
+    //        component->m_pRenderNode = m_pComponentList.PushBack(component);
+    //    }
+    //}
+
 }
 

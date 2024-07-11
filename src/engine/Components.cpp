@@ -23,6 +23,7 @@ Component::Component( int flags )
         ;
 
     if ( IsFlagSet( RENDER ) )
+			GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent(this);
         ;
 }
 
@@ -39,12 +40,9 @@ void Component::Init()
 
 
 
-SpriteRenderer::SpriteRenderer()
+SpriteRenderer::SpriteRenderer() : Component(RENDER)
 {
-	GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent(this);
-
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
-
 
 	pGraphics->InitializeGraphicsResourcesStart();
 	m_pMesh = pGraphics->CreateMesh(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane);
@@ -63,9 +61,6 @@ SpriteRenderer::~SpriteRenderer()
 		m_pRenderNode->Remove();
 }
 
-void SpriteRenderer::Render()
-{
-}
 
 void SpriteRenderer::SetSprite(std::string texturePath)
 {
@@ -94,17 +89,19 @@ void SpriteRenderer::SetColor()
 #pragma region Collider
 Collider::Collider() : Component( FIXED_UPDATE | RENDER )
 {
-    m_trigger = false;
-    m_visible = false;
-    GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
+	m_trigger = false;
+	m_visible = false;
+	//GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
+
 }
+
 #pragma endregion Collider
 
 BoxCollider::BoxCollider()
 {
-	GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent(this);
 
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
+
 
 	pGraphics->InitializeGraphicsResourcesStart();
 	m_pMesh = pGraphics->CreateMesh(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane);
@@ -118,13 +115,13 @@ BoxCollider::BoxCollider()
 
 CircleCollider::CircleCollider()
 {
-	GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent(this);
-
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
+
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMesh(GC::m_pActiveGameManager.m_pRenderManager.m_pCircle);
+	m_pMesh = pGraphics->CreateMesh(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane);
 	pGraphics->InitializeGraphicsResourcesEnd();
+
 
 	GCShader* shaderColor = pGraphics->CreateShaderColor();
 	m_pMaterial = pGraphics->CreateMaterial(shaderColor);

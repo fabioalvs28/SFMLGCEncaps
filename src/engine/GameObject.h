@@ -17,10 +17,10 @@ friend class GCSceneManager;
 friend class GCGameObjectTransform;
 
 protected:
+    GCGameObject( GCScene* pScene );
     ~GCGameObject() = default;
 
 public:
-    GCGameObject( GCScene* pScene );
     GCGameObject* Duplicate();
     void Destroy();
     

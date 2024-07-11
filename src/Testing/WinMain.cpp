@@ -68,16 +68,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	GC::m_pActiveGameManager.m_pRenderManager.CreateGeometry();
 
-	GCScene* pScene = new GCScene();
+	GCScene* pScene = GCScene::Create();
+	GCGameObject* test1 = pScene->CreateGameObject();
+	GCGameObject* test2 = pScene->CreateGameObject();
+	GCGameObject* test3 = pScene->CreateGameObject();
 
 
-	GCGameObject* test1 = new GCGameObject(pScene);
-	GCGameObject* test2 = new GCGameObject(pScene);
-	GCGameObject* test3 = new GCGameObject(pScene);
-
-	//test1->AddComponent<BoxCollider>();
+	test1->AddComponent<BoxCollider>();
 	test2->AddComponent<SpriteRenderer>(); 
-	//test3->AddComponent<CircleCollider>();
+	test3->AddComponent<CircleCollider>();
 
 	int flagsTexture = 0;
 	SET_FLAG(flagsTexture, HAS_POSITION);
@@ -89,8 +88,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	test1->m_transform.m_position.x = 100;
 	test1->m_transform.m_position.y = 100;
+
 	test2->m_transform.m_position.x = 200;
 	test2->m_transform.m_position.y = 200;
+
 	test3->m_transform.m_position.x = 500;
 	test3->m_transform.m_position.y = 200;
 

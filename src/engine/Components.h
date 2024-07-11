@@ -75,8 +75,8 @@ public:
     const int GetID() { return m_ID; }
 
 public:
-	SpriteRenderer() : Component( RENDER ) {}
-    ~SpriteRenderer() override {}
+    SpriteRenderer();
+    ~SpriteRenderer() override; 
     
     void Render() override {}
     void Destroy() override {}
@@ -140,8 +140,6 @@ public:
     inline GCVEC2 GetSize() { return m_size; }
     inline void SetSize( GCVEC2 size ) { m_size = size; }
 
-    GCMesh* m_pMesh;
-    GCMaterial* m_pMaterial;
 };
 
 
@@ -166,9 +164,6 @@ public:
 
     inline float GetRadius() { return m_radius; }
     inline void SetRadius( float radius ) { m_radius = radius; }
-
-    GCMesh* m_pMesh;
-    GCMaterial* m_pMaterial;
 
 };
 
