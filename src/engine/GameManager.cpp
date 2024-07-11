@@ -7,17 +7,16 @@
 void GCGameManager::Init()
 {
     m_pRenderManager = GCRenderManager();
+    m_pPhysicManager = GCPhysicManager();
+    m_pUpdateManager = GCUpdateManager();
     m_pEventManager = GCEventManager();
     m_pSceneManager = GCSceneManager();
-    m_pPhysicManager = GCPhysicManager();
 }
 
 void GCGameManager::Update()
 {
     m_pRenderManager.Render();
-    //m_pInputManager.Update();
-    //m_pPhysicManager.Update();
-    //m_pSceneManager.Update();
-    //m_pSceneManager.NewDelete();
-    //m_pSceneManager.Render();
+    m_pPhysicManager.Update();
+    m_pUpdateManager.Update();
+    m_pSceneManager.NewDelete();
 }

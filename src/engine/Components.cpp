@@ -8,18 +8,36 @@
 #include "GameObject.h"
 
 
-Component::Component()
+
+Component::Component() { Init(); }
+
+Component::Component( int flags )
 {
-	m_flags = 0;
-	m_active = true;
-	m_pGameObject = nullptr;
+    Init();
+    m_flags = flags;
+    
+    if ( IsFlagSet( UPDATE ) )
+        ;
 
-	if (IsFlagSet(FIXED_UPDATE))
-		;
+    if ( IsFlagSet( FIXED_UPDATE ) )
+        ;
 
-	if (IsFlagSet(RENDER))
-		;
+    if ( IsFlagSet( RENDER ) )
+        ;
 }
+
+void Component::Init()
+{
+    m_flags = 0;
+    m_active = true;
+    m_pGameObject = nullptr;
+    
+    m_pUpdateNode = nullptr;
+    m_pPhysicsNode = nullptr;
+    m_pRenderNode = nullptr;
+}
+
+
 
 SpriteRenderer::SpriteRenderer()
 {
@@ -71,38 +89,14 @@ void SpriteRenderer::SetColor()
 	m_pMaterial = pGraphics->CreateMaterial(shaderColor);
 }
 
-Collider::Collider()
-Component::Component(int flags)
-{
-	m_flags = flags;
-	m_active = true;
-	m_pGameObject = nullptr;
 
-	if (IsFlagSet(UPDATE))
-		;
-
-	if (IsFlagSet(FIXED_UPDATE))
-		;
-
-	if (IsFlagSet(RENDER))
-		;
-}
 
 #pragma region Collider
-Collider::Collider()
-	: Component(FIXED_UPDATE | RENDER)
+Collider::Collider() : Component( FIXED_UPDATE | RENDER )
 {
-	m_trigger = false;
-	m_visible = false;
-	//GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
-
-}
-
-Collider::~Collider()
-{
-	//GC::m_pActiveGameManager.m_pPhysicManager.UnregisterCollider(this);
-	if (m_pRenderNode != nullptr)
-		m_pRenderNode->Remove();
+    m_trigger = false;
+    m_visible = false;
+    GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
 }
 #pragma endregion Collider
 
@@ -135,10 +129,13 @@ CircleCollider::CircleCollider()
 	GCShader* shaderColor = pGraphics->CreateShaderColor();
 	m_pMaterial = pGraphics->CreateMaterial(shaderColor);
 }
+
+
+
 #pragma region RigidBody
 void RigidBody::FixedUpdate()
 {
-	// Apply velocity
-	m_pGameObject->m_transform.Translate(m_velocity);		// TODO: Multiply by the fixed delta time
+    // Apply velocity
+    m_pGameObject->m_transform.Translate(m_velocity);        // TODO: Multiply by the fixed delta time
 }
 #pragma endregion RigidBody

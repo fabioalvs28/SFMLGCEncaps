@@ -1,5 +1,8 @@
 #pragma once
-#include "../core/framework.h"
+#include "Vector.h"
+#include "Map.h"
+#include "List.h"
+#include "GameObjectTransform.h"
 
 class Component;
 class GCScene;
@@ -11,12 +14,10 @@ class GCGameObject
 {
 friend class GCScene;
 friend class GCSceneManager;
+friend class GCGameObjectTransform;
 
 protected:
     ~GCGameObject() = default;
-    
-    void Update();
-    void Render();
 
 public:
     GCGameObject( GCScene* pScene );
@@ -43,7 +44,7 @@ public:
     unsigned int GetID() const;
     GCScene* GetScene() const;
     GCGameObject* GetParent() const;
-    GCList<GCGameObject*> GetChildren() const;
+    GCList<GCGameObject*>& GetChildren();
     bool IsActive() const;
     const char* GetName() const;
     const char* GetTag( int index ) const;
@@ -63,7 +64,7 @@ protected:
     void RemoveComponent( int type );
 
 public:
-    GCTransform m_transform;
+    GCGameObjectTransform m_transform;
 
 protected:
     static inline unsigned int s_gameObjectsCount = 0;
@@ -99,8 +100,8 @@ T* GCGameObject::AddComponent()
 {
     if ( GetComponent<T>() != nullptr ) return nullptr;
     T* component = new T();
-    component->SetGameObject( this );
-    m_componentsList.Insert( T::TYPE, component );
+    component->m_pGameObject = this;
+    m_componentsList.Insert( T::GetIDStatic(), component);
     return component;
 }
 
@@ -113,7 +114,7 @@ template<class T>
 T* GCGameObject::GetComponent()
 {
     Component* component;
-    if ( m_componentsList.Find( T::TYPE, component ) == true )
+    if ( m_componentsList.Find( T::GetIDStatic(), component ) == true )
         return (T*) component;
     return nullptr;
 }

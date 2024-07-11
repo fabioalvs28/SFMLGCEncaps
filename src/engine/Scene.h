@@ -11,9 +11,6 @@ friend class GCSceneManager;
 
 protected:
 	virtual ~GCScene() = default;
-	
-	void Update();
-	void Render();
 
 public:
 	GCScene();

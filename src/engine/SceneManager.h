@@ -15,9 +15,7 @@ private:
     GCSceneManager() = default;
 	virtual ~GCSceneManager() = default;
 	
-	void Update();
 	void NewDelete();
-	void Render();
 	
 	void SetActiveScene( GCScene* pScene );
 	void LoadScene( GCScene* pScene );
@@ -29,8 +27,7 @@ private:
 	
 	void AddGameObjectToDeleteQueue( GCGameObject* pGameObject );
 	void AddGameObjectToCreateQueue( GCGameObject* pGameObject );
-
-protected:
+	
 	GCScene* CreateScene();
 
 private:

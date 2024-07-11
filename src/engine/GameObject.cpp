@@ -1,13 +1,12 @@
 #include "pch.h"
 #include "GameObject.h"
 
-#include "../core/framework.h"
+#include "GameObjectTransform.h"
 #include "Components.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "GC.h"
 
-// todo A GameObject needs 2 transforms (self and world)
 // todo DESTROY( GameObject*& pGameObject ) -> also does pGameObject = nullptr
 
 
@@ -32,32 +31,6 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_active = true;
     m_name = "GameObject";
     m_layer = 0;
-}
-
-////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the GameObject and its Components.
-/// 
-/// @note The GameObject won't update if not active or not fully created.
-////////////////////////////////////////////////////////////////////////////
-void GCGameObject::Update()
-{
-    if ( m_active == false || m_created == false ) return;
-    for ( auto it : m_componentsList )
-        if ( it.second->m_active == true )
-            it.second->Update();
-}
-
-////////////////////////////////////////////////////////////////////////////
-/// @brief Renders the GameObject's Components related to rendering.
-/// 
-/// @note The GameObject won't render if not active or not fully created.
-////////////////////////////////////////////////////////////////////////////
-void GCGameObject::Render()
-{
-    if ( m_active == false || m_created == false ) return;
-    for ( auto it : m_componentsList )
-        if ( it.second->m_active == true )
-            it.second->Render();
 }
 
 /////////////////////////////////////////////////////////
@@ -136,8 +109,7 @@ void GCGameObject::AddChild( GCGameObject* pChild )
         if ( pChild == pAncestor ) return;
     
     pChild->RemoveParent();
-    m_childrenList.PushBack( pChild );
-    pChild->m_pChildNode = m_childrenList.GetLastNode();
+    pChild->m_pChildNode = m_childrenList.PushBack( pChild );
     pChild->m_pParent = this;
     // todo Updating the transform so that the GameObject stays where it was before it was added
     // todo Assert for the errors instead of simply returning nothing
@@ -286,7 +258,7 @@ GCGameObject* GCGameObject::GetParent() const { return m_pParent; }
 //////////////////////////////////////////////////////////
 /// @return A Linked List of the GameObject's children.
 //////////////////////////////////////////////////////////
-GCList<GCGameObject*> GCGameObject::GetChildren() const { return m_childrenList; }
+GCList<GCGameObject*>& GCGameObject::GetChildren() { return m_childrenList; }
 
 /////////////////////////////////////////////////////////////////////////////
 /// @return A boolean value indicating the active state of the GameObject.
@@ -331,5 +303,5 @@ void GCGameObject::RemoveComponent( int type )
 void GCGameObject::ClearComponents()
 {
     for ( auto it : m_componentsList )
-        RemoveComponent( it.second->GetType() );
+        RemoveComponent( it.second->GetID() );
 }

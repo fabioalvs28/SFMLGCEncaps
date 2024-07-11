@@ -1,9 +1,9 @@
 #pragma once
-#include "SceneManager.h"
 #include "PhysicManager.h"
 #include "RenderManager.h"
-#include "../../src/Render/Window.h"
+#include "UpdateManager.h"
 #include "EventManager.h"
+#include "SceneManager.h"
 
 class Component;
 class Collider;
@@ -28,11 +28,9 @@ public: void Init();
 public: void Update();
 
 protected:
-//    GCKeyboardInputManager m_pInputManager;
-//    GCPhysicManager m_pPhysicManager;
-//    GCEventManager m_pEventManager;
-    GCSceneManager m_pSceneManager;
     GCRenderManager m_pRenderManager;
     GCPhysicManager m_pPhysicManager;
+    GCUpdateManager m_pUpdateManager;
     GCEventManager m_pEventManager;
+    GCSceneManager m_pSceneManager;
 };
