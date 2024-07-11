@@ -13,6 +13,7 @@ class GCGameObject;
 class Component
 {
 friend class GCGameObject;
+friend class GCRenderManager;
 
 public: enum { TYPE = 0 };
 
@@ -37,16 +38,19 @@ protected:
     void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
 
 protected:
+    GCListNode<Component*>* m_pRenderNode;
     GCGameObject* m_pGameObject;
     bool m_active;
 
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
 };
 
 
 
 class SpriteRenderer : public Component
 {
-    friend class GCRenderManager;
+friend class GCRenderManager;
 public: enum { TYPE = 1 };
 
 public:
@@ -57,7 +61,7 @@ public:
     
     void Init() override {}
     void Update() override {}
-    void Render() override {}
+    void Render() override;
     void Destroy() override {}
     
     
@@ -67,12 +71,10 @@ public:
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }
 
-    GCVEC2 pos;
 protected:
-    GCListNode<SpriteRenderer*>* m_pRenderNode;
+
     GCColor m_color;
-    GCMesh* m_pMesh;
-    GCMaterial* m_pMaterial;
+
 };
 
 
@@ -91,6 +93,7 @@ public:
     bool IsVisible() { return m_visible; }
 
 protected:
+
     bool m_trigger;
     bool m_visible;
 
@@ -107,6 +110,7 @@ private:
 
 
 public:
+    BoxCollider(); 
     ~BoxCollider() override {}
     
     int GetType() override { return TYPE; }
@@ -119,6 +123,8 @@ public:
     inline GCVEC2 GetSize() { return m_size; }
     inline void SetSize( GCVEC2 size ) { m_size = size; }
 
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
 };
 
 
@@ -131,6 +137,7 @@ private:
     float m_radius;
 
 public:
+    CircleCollider();
     ~CircleCollider() override {}
     
     int GetType() override { return TYPE; }
@@ -142,6 +149,9 @@ public:
 
     inline float GetRadius() { return m_radius; }
     inline void SetRadius( float radius ) { m_radius = radius; }
+
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
 
 };
 

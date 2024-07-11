@@ -10,13 +10,13 @@ friend class GCGameObject;
 friend class GCSceneManager;
 
 protected:
-	GCScene();
 	virtual ~GCScene() = default;
 	
 	void Update();
 	void Render();
 
 public:
+	GCScene();
 	static GCScene* Create();
 	void Load();
 	void Unload();

@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "PhysicManager.h"
 #include "RenderManager.h"
+#include "../../src/Render/Window.h"
 
 class Collider;
 class GCGameObject;
@@ -26,9 +27,9 @@ public: void Init();
 public: void Update();
 
 protected:
-    GCKeyboardInputManager m_pInputManager;
-    GCPhysicManager m_pPhysicManager;
-    GCEventManager m_pEventManager;
+//    GCKeyboardInputManager m_pInputManager;
+//    GCPhysicManager m_pPhysicManager;
+//    GCEventManager m_pEventManager;
     GCSceneManager m_pSceneManager;
 
 public:

@@ -3,6 +3,7 @@
 
 class GCGraphics;
 class GCGeometry;
+class Window;
 
 class GCRenderManager
 {
@@ -14,23 +15,20 @@ class GCRenderManager
     };
 
 private:
-    GCList<SpriteRenderer*> m_pSpriteRendererList;
+    GCList<Component*> m_pComponentList;
 public:
     GCRenderManager();
     ~GCRenderManager();
 
-    void RegisterSpriteRenderer(SpriteRenderer* spriteRenderer);
-
-    void SetShaderTexture(SpriteRenderer* spriteRenderer, std::string texturePath);
-    void SetShaderColor(SpriteRenderer* spriteRenderer);
+    void RegisterComponent(Component* pComponent);
 
     void CreateGeometry();
 
-    void Update();
     void Render();
 
     GCGraphics* m_pGraphics; 
-    GCGeometry* m_pPlane; 
+    GCGeometry* m_pPlane;
+    GCGeometry* m_pCircle;
 
     DirectX::XMFLOAT4X4 m_storedProjectionMatrix;
     DirectX::XMFLOAT4X4 m_storedViewMatrix;

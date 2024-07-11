@@ -52,7 +52,7 @@ struct GCTest : GCSHADERCB {
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 
-	GCKeyboardInputManager keyinput; 
+	//GCKeyboardInputManager keyinput; 
 
 	GC::m_pActiveGameManager.Init();
 
@@ -63,14 +63,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Window* window = new Window(hInstance);
 	window->Initialize();
 
-	//GCGraphics* graphics = new GCGraphics();
 	GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics->Initialize(window, 1920, 1080);
 
 
 	GC::m_pActiveGameManager.m_pRenderManager.CreateGeometry();
 
-	SpriteRenderer test1 = SpriteRenderer();
-	SpriteRenderer test2 = SpriteRenderer();
+	GCScene* pScene = new GCScene();
+
+
+	GCGameObject* test1 = new GCGameObject(pScene);
+	GCGameObject* test2 = new GCGameObject(pScene);
+	GCGameObject* test3 = new GCGameObject(pScene);
+
+	//test1->AddComponent<BoxCollider>();
+	test2->AddComponent<SpriteRenderer>(); 
+	//test3->AddComponent<CircleCollider>();
 
 	int flagsTexture = 0;
 	SET_FLAG(flagsTexture, HAS_POSITION);
@@ -80,12 +87,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SET_FLAG(flagsColor, HAS_POSITION);
 	SET_FLAG(flagsColor, HAS_COLOR);
 
-	test1.SetColor();
-	test2.SetSprite("../../../src/Render/Textures/texture.dds");
+	test1->m_transform.m_position.x = 100;
+	test1->m_transform.m_position.y = 100;
+	test2->m_transform.m_position.x = 200;
+	test2->m_transform.m_position.y = 200;
+	test3->m_transform.m_position.x = 500;
+	test3->m_transform.m_position.y = 200;
 
-	test1.pos = { 400,400 };
-	test2.pos = { 800,800 };
 
+	test2->GetComponent<SpriteRenderer>()->SetSprite("../../../src/Render/Textures/texture.dds");
+
+	//test1.pos = { 400,400 };
+	//test2.pos = { 800,800 };
 
 	//// Geometry (Resource)
 	//GCGeometry* geo = graphics->CreateGeometryPrimitiveTexture("plane");
@@ -225,7 +238,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 		//graphics->EndFrame();
-		//// ********************
+	//	//// ********************
+
+	GC::m_pActiveGameManager.m_pRenderManager.Render();
 
 	window->Run(GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics->GetRender());
 

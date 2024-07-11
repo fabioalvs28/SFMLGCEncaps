@@ -13,13 +13,13 @@ friend class GCScene;
 friend class GCSceneManager;
 
 protected:
-    GCGameObject( GCScene* pScene );
     ~GCGameObject() = default;
     
     void Update();
     void Render();
 
 public:
+    GCGameObject( GCScene* pScene );
     GCGameObject* Duplicate();
     void Destroy();
     
