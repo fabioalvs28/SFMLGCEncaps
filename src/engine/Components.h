@@ -228,3 +228,48 @@ protected:
 
 
 
+class Script : public Component
+{
+
+protected:
+    Script() = default;
+    virtual ~Script() = default;
+    
+    virtual void OnTriggerEnter( Collider* collider ) = 0;
+    virtual void OnTriggerStay( Collider* collider ) = 0;
+    virtual void OnTriggerExit( Collider* collider ) = 0;
+
+protected:
+    inline static int scriptCount = (1<<15)-1;
+
+};
+
+#define CREATE_SCRIPT_START( CLASS_NAME ) \
+    class Script##CLASS_NAME : public Script \
+    { \
+    public: \
+        static const int GetIDStatic() { return m_ID; } \
+        const int GetID() override { return m_ID; } \
+     \
+    protected: \
+        Script##CLASS_NAME() = default; \
+        ~Script##CLASS_NAME() {} \
+         \
+        void Start() override {}; \
+        void Update() override {}; \
+        void FixedUpdate() override {}; \
+        void Destroy() override {} \
+         \
+        void OnTriggerEnter( Collider* collider ) override {}; \
+        void OnTriggerStay( Collider* collider ) override {}; \
+        void OnTriggerExit( Collider* collider ) override {}; \
+     \
+    protected: \
+        inline static const int m_ID = ++Script::scriptCount; \
+        inline static int m_flags = UPDATE | FIXED_UPDATE; \
+     \
+    private:
+
+#define CREATE_SCRIPT_END };
+
+
