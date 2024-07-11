@@ -1,14 +1,10 @@
 #pragma once
 
-
-
 class GCRenderContext
 {
 public:
-	GCRenderContext();
-
 	bool Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics);
-	bool InitDirect3D();
+	bool InitDX12RenderPipeline();
 
 	void LogAdapters();
 	void LogAdapterOutputs(IDXGIAdapter* adapter);
@@ -17,8 +13,6 @@ public:
 	void EnableDebugController();
 
 	void CreateCommandObjects();
-	void CreateRtvAndDsvDescriptorHeaps();
-	void CreateCbvSrvUavDescriptorHeaps();
 	void CreateSwapChain();
 
 	void CreatePostProcessingResources();
@@ -73,16 +67,11 @@ public:
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
-	// Getter
-	//GCShaderUploadBufferBase* m_pCurrentViewProj;
 	// Camera & Light -> Temporarily
 	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
 	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	inline GCRenderResources* GetRenderResources() { return m_pGCRenderResources; }
-
-	
-
 private:
 
 	// Post Processing Resources
@@ -94,7 +83,3 @@ private:
 
 
 };
-
-#ifndef ReleaseCom
-#define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }
-#endif

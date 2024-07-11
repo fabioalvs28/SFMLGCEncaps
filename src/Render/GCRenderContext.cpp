@@ -1,9 +1,5 @@
 #include "pch.h"
 
-GCRenderContext::GCRenderContext() {
-
-}
-
 bool GCRenderContext::Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics)
 {
 	if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
@@ -16,8 +12,8 @@ bool GCRenderContext::Initialize(Window* pWindow, int renderWidth, int renderHei
 	m_pGCRenderResources->m_pWindow = pWindow;
 
 
-	InitDirect3D();
-	OnResize();
+	InitDX12RenderPipeline();
+
 
 	return true;
 }
@@ -38,19 +34,7 @@ void GCRenderContext::CloseCommandList()
 	m_pGCRenderResources->m_CommandList->Close();
 }
 
-void GCRenderContext::EnableDebugController() 
-{
-	#if defined(DEBUG) || defined(_DEBUG) 
-		// Enable the D3D12 debug layer.
-		{
-			ID3D12Debug* debugController;
-			D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
-			debugController->EnableDebugLayer();
-		}
-	#endif
-}
-
-bool GCRenderContext::InitDirect3D()
+bool GCRenderContext::InitDX12RenderPipeline()
 {
 	EnableDebugController();
 
@@ -65,10 +49,7 @@ bool GCRenderContext::InitDirect3D()
 		IDXGIAdapter* pWarpAdapter;
 		m_pGCRenderResources->m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pWarpAdapter));
 
-		D3D12CreateDevice(
-			pWarpAdapter,
-			D3D_FEATURE_LEVEL_11_0,
-			IID_PPV_ARGS(&m_pGCRenderResources->m_d3dDevice));
+		D3D12CreateDevice(pWarpAdapter, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_pGCRenderResources->m_d3dDevice));
 	}
 
 	m_pGCRenderResources->m_d3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_pGCRenderResources->m_Fence));
@@ -94,65 +75,22 @@ bool GCRenderContext::InitDirect3D()
 
 	CreateCommandObjects();
 	CreateSwapChain();
-	CreateRtvAndDsvDescriptorHeaps();
-	CreateCbvSrvUavDescriptorHeaps();
+	
+	//Create RTV/DSV Descriptor Heaps
+	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1000, false, &m_pGCRenderResources->m_pRtvHeap);
+	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 2, false, &m_pGCRenderResources->m_pDsvHeap);
+	//Create CBV/SRV/UAV Descriptor Heaps
+	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2000, true, &m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap);
+
+	//*
 
 	CreatePostProcessingResources();
 
 	m_pGCRenderResources->m_canResize = true;
 
+	OnResize();
+
 	return true;
-}
-
-void GCRenderContext::LogAdapters()
-{
-	UINT i = 0;
-	IDXGIAdapter* adapter = nullptr;
-	std::vector<IDXGIAdapter*> adapterList;
-	while (m_pGCRenderResources->m_dxgiFactory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND)
-	{
-		DXGI_ADAPTER_DESC desc;
-		adapter->GetDesc(&desc);
-
-		std::wstring text = L"***Adapter: ";
-		text += desc.Description;
-		text += L"\n";
-
-		OutputDebugString(text.c_str());
-
-		adapterList.push_back(adapter);
-
-		++i;
-	}
-
-	for (size_t i = 0; i < adapterList.size(); ++i)
-	{
-		LogAdapterOutputs(adapterList[i]);
-		ReleaseCom(adapterList[i]);
-	}
-}
-
-void GCRenderContext::LogAdapterOutputs(IDXGIAdapter* pAdapter)
-{
-	UINT i = 0;
-	IDXGIOutput* output = nullptr;
-	while (pAdapter->EnumOutputs(i, &output) != DXGI_ERROR_NOT_FOUND)
-	{
-		DXGI_OUTPUT_DESC desc;
-		output->GetDesc(&desc);
-
-		std::wstring text = L"***Output: ";
-		text += desc.DeviceName;
-		text += L"\n";
-		OutputDebugString(text.c_str());
-
-		LogOutputDisplayModes(output, m_pGCRenderResources->m_BackBufferFormat);
-
-		ReleaseCom(output);
-
-		++i;
-	}
-	m_pGCRenderResources->m_canResize = true;
 }
 
 void GCRenderContext::CreateCommandObjects()
@@ -160,9 +98,16 @@ void GCRenderContext::CreateCommandObjects()
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	m_pGCRenderResources->m_d3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_pGCRenderResources->m_CommandQueue));
 
-	m_pGCRenderResources->m_d3dDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_pGCRenderResources->m_DirectCmdListAlloc));
+	m_pGCRenderResources->m_d3dDevice->CreateCommandQueue(
+		&queueDesc, 
+		IID_PPV_ARGS(&m_pGCRenderResources->m_CommandQueue)
+	);
+
+	m_pGCRenderResources->m_d3dDevice->CreateCommandAllocator( 
+		D3D12_COMMAND_LIST_TYPE_DIRECT, 
+		IID_PPV_ARGS(&m_pGCRenderResources->m_DirectCmdListAlloc)
+	);
 
 	m_pGCRenderResources->m_d3dDevice->CreateCommandList(0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
@@ -171,9 +116,6 @@ void GCRenderContext::CreateCommandObjects()
 		IID_PPV_ARGS(&m_pGCRenderResources->m_CommandList)
 	);
 
-	// Start off in a closed state.  This is because the first time we refer 
-	// to the command list we will Reset it, and it needs to be closed before
-	// calling Reset.
 	m_pGCRenderResources->m_CommandList->Close();
 }
 
@@ -202,21 +144,8 @@ void GCRenderContext::CreateSwapChain()
 	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	// Note: Swap chain uses queue to perform flush.
+	// #NOTE -> Swap chain uses queue to perform flush.
 	m_pGCRenderResources->m_dxgiFactory->CreateSwapChain(m_pGCRenderResources->m_CommandQueue, &sd, &m_pGCRenderResources->m_SwapChain);
-}
-
-void GCRenderContext::CreateCbvSrvUavDescriptorHeaps()
-{
-	// Create CBV / SRV / UAV descriptor heap
-	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1000, true, &m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap);
-}
-
-void GCRenderContext::CreateRtvAndDsvDescriptorHeaps()
-{
-	// Create Rtv & Dsv Descriptor Heaps
-	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1000, false, &m_pGCRenderResources->m_pRtvHeap);
-	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 2, false, &m_pGCRenderResources->m_pDsvHeap);
 }
 
 void GCRenderContext::CreatePostProcessingResources() {
@@ -224,63 +153,56 @@ void GCRenderContext::CreatePostProcessingResources() {
 		GC_DESCRIPTOR_RESOURCE* rtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 		m_pGCRenderResources->m_pPostProcessingRtv = rtv->resource;
 		m_pGCRenderResources->m_pPostProcessingRtvAddress = rtv->cpuHandle;
+
+		//Create Post Processing Shader
+		m_postProcessingShader = new GCShader();
+		std::string shaderFilePath = "../../../src/Render/Shaders/PostProcessing.hlsl";
+		std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
+		int flags = 0;
+		SET_FLAG(flags, VERTEX_POSITION);
+		SET_FLAG(flags, VERTEX_UV);
+		m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags);
+		m_postProcessingShader->Load();
 	}
-
-
-	// Create A post Processing Shader
-	m_postProcessingShader = new GCShader();
-
-	std::string shaderFilePath = "../../../src/Render/Shaders/PostProcessing.hlsl";
-	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
-
-	int flags = 0;
-	SET_FLAG(flags, VERTEX_POSITION);
-	SET_FLAG(flags, VERTEX_UV);
-
-	m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags);
-	m_postProcessingShader->Load();
-
-
-	// Create RTV For Object Buffer Id For pass Mesh id to pixel, to apply them on a texture 
+	
 	{
-		
+		//Create RTV For Object Buffer Id For pass Mesh id to pixel, to apply them on a texture 
 		GC_DESCRIPTOR_RESOURCE* rtv = m_pGCRenderResources->CreateRTVTexture(DXGI_FORMAT_R16G16B16A16_FLOAT, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 		m_pGCRenderResources->m_ObjectIdBufferRtv = rtv->resource;
 		m_pGCRenderResources->m_ObjectIdBufferRtvAddress = rtv->cpuHandle;
+
+		//Create Object buffer Id Shader 
+		int flags2 = 0;
+		SET_FLAG(flags2, VERTEX_POSITION);
+		m_objectBufferIdShader = new GCShader();
+		std::string shaderFilePath2 = "../../../src/Render/Shaders/ObjectBufferId.hlsl";
+		std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/ObjectBufferId";
+		m_objectBufferIdShader->Initialize(this, shaderFilePath2, csoDestinationPath2, flags2);
+		m_objectBufferIdShader->SetRenderTargetFormats(DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
+		m_objectBufferIdShader->Load();
 	}
-
-
-	//// Create Object buffer Id Shader 
-	int flags2 = 0;
-	SET_FLAG(flags2, VERTEX_POSITION);
-
-	m_objectBufferIdShader = new GCShader();
-	std::string shaderFilePath2 = "../../../src/Render/Shaders/ObjectBufferId.hlsl";
-	std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/ObjectBufferId";
-
-	m_objectBufferIdShader->Initialize(this, shaderFilePath2, csoDestinationPath2, flags2);
-	m_objectBufferIdShader->SetRenderTargetFormats(DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
-	m_objectBufferIdShader->Load();
+	
 
 }
 
 void GCRenderContext::OnResize() 
 {
-	// Checks initial conditions
-	m_pGCRenderResources->m_canResize = true;
-	if (m_pGCRenderResources->m_canResize == false)
-		return;
+	// #TODO NeedLess ?
+	
+	//m_pGCRenderResources->m_canResize = true;
+	//if (m_pGCRenderResources->m_canResize == false)
+	//	return;
 
-	assert(m_pGCRenderResources->m_d3dDevice);
-	assert(m_pGCRenderResources->m_SwapChain);
-	assert(m_pGCRenderResources->m_DirectCmdListAlloc);
+	CHECK_POINTERSNULL("Device not null", "Device is null", m_pGCRenderResources->m_d3dDevice);
+	CHECK_POINTERSNULL("SwapChain not null", "SwapChain is null", m_pGCRenderResources->m_d3dDevice);
+	CHECK_POINTERSNULL("Command Allocator not null", "Command Allocator is null", m_pGCRenderResources->m_d3dDevice);
 
 	FlushCommandQueue();
-
 	ResetCommandList();
 
 	ReleasePreviousResources();
 	ResizeSwapChain();
+
 	CreateRenderTargetViews();
 	CreateDepthStencilBufferAndView();
 
@@ -332,74 +254,14 @@ void GCRenderContext::CreateRenderTargetViews()
 
 void GCRenderContext::CreateDepthStencilBufferAndView()
 {
-	auto dsv1 = m_pGCRenderResources->CreateDepthStencilBufferAndView(m_pGCRenderResources->m_DepthStencilFormat);
+	auto dsv1 = m_pGCRenderResources->CreateDepthStencilBufferAndView(m_pGCRenderResources->m_DepthStencilFormat, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 	m_pGCRenderResources->m_DepthStencilBuffer = dsv1->resource;
 	m_pGCRenderResources->m_DepthStencilBufferAddress = dsv1->cpuHandle;
 
-	auto dsv2 = m_pGCRenderResources->CreateDepthStencilBufferAndView(m_pGCRenderResources->m_DepthStencilFormat);
+	auto dsv2 = m_pGCRenderResources->CreateDepthStencilBufferAndView(m_pGCRenderResources->m_DepthStencilFormat, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 	m_pGCRenderResources->m_ObjectIdDepthStencilBuffer = dsv2->resource;
 	m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress = dsv2->cpuHandle;
 
-
-
-	//D3D12_RESOURCE_DESC depthStencilDesc = {};
-	//depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	//depthStencilDesc.Alignment = 0;
-	//depthStencilDesc.Width = m_pGCRenderResources->m_renderWidth;
-	//depthStencilDesc.Height = m_pGCRenderResources->m_renderHeight;
-	//depthStencilDesc.DepthOrArraySize = 1;
-	//depthStencilDesc.MipLevels = 1;
-	//depthStencilDesc.Format = m_pGCRenderResources->m_DepthStencilFormat;
-	//depthStencilDesc.SampleDesc.Count = m_pGCRenderResources->m_4xMsaaState ? 4 : 1;
-	//depthStencilDesc.SampleDesc.Quality = m_pGCRenderResources->m_4xMsaaState ? (m_pGCRenderResources->m_4xMsaaQuality - 1) : 0;
-	//depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	//depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-
-	//D3D12_CLEAR_VALUE optClear = {};
-	//optClear.Format = m_pGCRenderResources->m_DepthStencilFormat;
-	//optClear.DepthStencil.Depth = 1.0f;
-	//optClear.DepthStencil.Stencil = 0;
-
-	//CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
-	//m_pGCRenderResources->m_d3dDevice->CreateCommittedResource(
-	//	&heapProps,
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&depthStencilDesc,
-	//	D3D12_RESOURCE_STATE_COMMON,
-	//	&optClear,
-	//	IID_PPV_ARGS(&m_pGCRenderResources->m_DepthStencilBuffer)
-	//);
-
-	//D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	//dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
-	//dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	//dsvDesc.Format = m_pGCRenderResources->m_DepthStencilFormat;
-	//dsvDesc.Texture2D.MipSlice = 0;
-
-	//m_pGCRenderResources->m_DepthStencilBufferAddress = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pGCRenderResources->m_pDsvHeap->GetCPUDescriptorHandleForHeapStart());
-	//m_pGCRenderResources->m_DepthStencilBufferAddress.Offset(1, m_pGCRenderResources->m_dsvDescriptorSize);
-	//m_pGCRenderResources->m_d3dDevice->CreateDepthStencilView(m_pGCRenderResources->m_DepthStencilBuffer, &dsvDesc, m_pGCRenderResources->m_DepthStencilBufferAddress);
-
-	//CD3DX12_RESOURCE_BARRIER CommonToDepthWrite(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_DepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
-	//m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &CommonToDepthWrite);
-
-	//// Second depth stencil for Mesh buffer id 
-	//m_pGCRenderResources->m_d3dDevice->CreateCommittedResource(
-	//	&heapProps,
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&depthStencilDesc,
-	//	D3D12_RESOURCE_STATE_COMMON,
-	//	&optClear,
-	//	IID_PPV_ARGS(&m_pGCRenderResources->m_ObjectIdDepthStencilBuffer)
-	//);
-
-
-	//m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pGCRenderResources->m_pDsvHeap->GetCPUDescriptorHandleForHeapStart());
-	//m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress.Offset(1, m_pGCRenderResources->m_dsvDescriptorSize);
-	//m_pGCRenderResources->m_d3dDevice->CreateDepthStencilView(m_pGCRenderResources->m_ObjectIdDepthStencilBuffer, &dsvDesc, m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress);
-
-	//CD3DX12_RESOURCE_BARRIER CommonToDepthWrite2(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_ObjectIdDepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
-	//m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &CommonToDepthWrite2);
 }
 
 void GCRenderContext::UpdateViewport() 
@@ -471,7 +333,6 @@ bool GCRenderContext::PrepareDraw()
 	// Swap
 	CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &ResBar);
-
 
 
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
@@ -563,16 +424,12 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 	return true;
 }
 
-
-
-
-//Always needs to be called right after drawing!!!
 bool GCRenderContext::CompleteDraw()
 {
-	//PerformPostProcessing();
+	PerformPostProcessing();
 
-	CD3DX12_RESOURCE_BARRIER RtToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToPresent);
+	//CD3DX12_RESOURCE_BARRIER RtToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	//m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToPresent);
 
 
 	// Fermer la liste de commandes
@@ -591,8 +448,15 @@ bool GCRenderContext::CompleteDraw()
 		return false;
 	}
 
-	// Passer au back buffer suivant
+	// Swap front - back buffer index
 	m_pGCRenderResources->m_CurrBackBuffer = (m_pGCRenderResources->m_CurrBackBuffer + 1) % m_pGCRenderResources->SwapChainBufferCount;
+
+
+	//Clear frame counter for resource using - Release short time resource
+	// #WARNING It will replace resource on these offset already allocated
+	m_pGCRenderResources->m_srvOffsetCount = 300;
+
+
 
 	// Flush the command queue
 	if (FlushCommandQueue() == false)
@@ -619,19 +483,8 @@ void GCRenderContext::PerformPostProcessing()
 	CD3DX12_RESOURCE_BARRIER RtToPixelShader = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToPixelShader);
 
-	// Post process texture linking to shader
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = m_pGCRenderResources->GetBackBufferFormat();
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = 1;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle(m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-	srvCpuHandle.Offset(90, m_pGCRenderResources->m_cbvSrvUavDescriptorSize);
-	m_pGCRenderResources->m_d3dDevice->CreateShaderResourceView(m_pGCRenderResources->CurrentBackBuffer(), &srvDesc, srvCpuHandle);
-	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	srvGpuHandle.Offset(90, m_pGCRenderResources->m_cbvSrvUavDescriptorSize);
+	//Post process texture linking to shader
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->GetBackBufferFormat());
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, srvGpuHandle);
 
 	// Transition pour la texture d'Object ID (g_ObjectIdBuffer)
@@ -682,9 +535,71 @@ void GCRenderContext::PerformPostProcessing()
 
 }
 
+void GCRenderContext::EnableDebugController()
+{
+#if defined(DEBUG) || defined(_DEBUG) 
+	// Enable the D3D12 debug layer.
+	{
+		ID3D12Debug* debugController;
+		D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
+		debugController->EnableDebugLayer();
+	}
+#endif
+}
 
+void GCRenderContext::LogAdapters()
+{
+	UINT i = 0;
+	IDXGIAdapter* adapter = nullptr;
+	std::vector<IDXGIAdapter*> adapterList;
 
-void GCRenderContext::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format) 	
+	while (m_pGCRenderResources->m_dxgiFactory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND)
+	{
+		DXGI_ADAPTER_DESC desc;
+		adapter->GetDesc(&desc);
+
+		std::wstring text = L"***Adapter: ";
+		text += desc.Description;
+		text += L"\n";
+
+		OutputDebugString(text.c_str());
+
+		adapterList.push_back(adapter);
+
+		++i;
+	}
+
+	for (size_t i = 0; i < adapterList.size(); ++i)
+	{
+		LogAdapterOutputs(adapterList[i]);
+		ReleaseCom(adapterList[i]);
+	}
+}
+
+void GCRenderContext::LogAdapterOutputs(IDXGIAdapter* pAdapter)
+{
+	UINT i = 0;
+	IDXGIOutput* output = nullptr;
+	while (pAdapter->EnumOutputs(i, &output) != DXGI_ERROR_NOT_FOUND)
+	{
+		DXGI_OUTPUT_DESC desc;
+		output->GetDesc(&desc);
+
+		std::wstring text = L"***Output: ";
+		text += desc.DeviceName;
+		text += L"\n";
+		OutputDebugString(text.c_str());
+
+		LogOutputDisplayModes(output, m_pGCRenderResources->m_BackBufferFormat);
+
+		ReleaseCom(output);
+
+		++i;
+	}
+	m_pGCRenderResources->m_canResize = true;
+}
+
+void GCRenderContext::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 {
 	UINT count = 0;
 	UINT flags = 0;

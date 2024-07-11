@@ -235,7 +235,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto meshCubeInner = graphics->CreateMeshColor(geoCubeInner.resource);
     auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
     //graphics->GetRender()->FlushCommandQueue();
-    meshSphere.resource->TestUpdateANewGeometry(geoCubeInner.resource);
+    //meshSphere.resource->TestUpdateANewGeometry(geoCubeInner.resource);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";

@@ -201,7 +201,7 @@ void GCShader::Pso()
 	psoDescAlpha.NumRenderTargets = rtvSize;
 	psoDescAlpha.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
 	psoDescAlpha.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
-	psoDescAlpha.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	psoDescAlpha.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
 
 	psoDescNoAlpha.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
 	psoDescNoAlpha.SampleMask = UINT_MAX;
@@ -209,7 +209,7 @@ void GCShader::Pso()
 	psoDescNoAlpha.NumRenderTargets = rtvSize;
 	psoDescNoAlpha.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
 	psoDescNoAlpha.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
-	psoDescNoAlpha.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	psoDescNoAlpha.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
 
 	for (UINT i = 0; i < rtvSize; ++i) {
 		psoDescAlpha.RTVFormats[i] = m_rtvFormats[i];

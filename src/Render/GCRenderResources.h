@@ -50,8 +50,6 @@ public:
 
 	// Setter 
 	inline void ResizeRender(int width, int height) { m_renderWidth = width;  m_renderHeight = height; }
-
-
 private:
 	friend class GCRenderContext;
 
@@ -129,36 +127,21 @@ private:
 
 	// Rtv Manager
 	int m_rtvOffsetCount = 2;
+	//int m_rtvUseCount; // use count each frame to know if we need add
 	std::list<GC_DESCRIPTOR_RESOURCE*> m_lRenderTargets;
 	GC_DESCRIPTOR_RESOURCE* CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE, D3D12_CLEAR_VALUE* clearValue = nullptr);
 	GC_DESCRIPTOR_RESOURCE* CreateRTV(ID3D12Resource* pResource);
 	//*
 
 
-
-
 	// Srv Manager
-	int m_srvOffsetCount = 0;
-	std::list<GC_DESCRIPTOR_RESOURCE*> m_lShaderResourceView;
+	int m_srvOffsetCount = 300;
+	std::list<CD3DX12_GPU_DESCRIPTOR_HANDLE> m_lShaderResourceView;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
 	//*
 
 	// Dsv Manager
 	int m_dsvOffsetCount = 0;
 	std::list<GC_DESCRIPTOR_RESOURCE*> m_lDepthStencilView;
-	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat);
-
-
-
-
-	//ID3D12Resource* CreateRTT(bool test);
-	//void DeleteRenderTarget(ID3D12Resource* pRenderTarget);
-	//int testCount = 0;
-	//std::vector<ID3D12Resource*> m_renderTargets;
-
-
-
+	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags);
 };
-
-#ifndef ReleaseCom
-#define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }
-#endif
