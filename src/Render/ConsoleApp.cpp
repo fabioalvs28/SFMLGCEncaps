@@ -333,7 +333,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
         lightData.lights[1] = pointLight;
-
         lightData.lights[0] = directionalLight;
 
         graphics->UpdateLights(lightData);

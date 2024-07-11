@@ -121,7 +121,7 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateDepthStencilBufferAndView(DXGI_
 		&optClear,
 		IID_PPV_ARGS(&depthStencilBuffer)
 	);
-	CHECK_HRESULT(hr, "ERROR DS PAS BON");
+	CHECK_HRESULT(hr, "Dsv Bad Init");
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;

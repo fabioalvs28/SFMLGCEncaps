@@ -180,10 +180,12 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 #define DESCRIPTOR_TABLE_SLOT_TEXTURE 4
 #define DESCRIPTOR_TABLE_SLOT_TEXTURE2 5
 
-
-
-
 // Lights Type
 #define LIGHT_TYPE_DIRECTIONAL 0
 #define LIGHT_TYPE_SPOT 1
 #define LIGHT_TYPE_POINT 2
+
+// 
+#ifndef ReleaseCom
+#define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }
+#endif

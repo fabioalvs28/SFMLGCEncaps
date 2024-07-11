@@ -25,12 +25,13 @@ public:
 	void UpdateViewport();
 
 	// Draw Part
-	void ResetCommandList();
+	bool ResetCommandList();
 	void ExecuteCommandList();
-	void CloseCommandList();
+	bool CloseCommandList();
 
 	bool FlushCommandQueue();
 	void PerformPostProcessing();
+	void PerformPixelIdMapping(GCMesh* pMesh, bool alpha);
 	/**
 	* Pre-Draw.
 	 * @brief
@@ -67,6 +68,13 @@ public:
 
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
+
+	void ActiveBasicPostProcessing();
+	void ActivePixelIDMapping();
+
+	void DesactiveBasicPostProcessing();
+	void DesactivePixelIDMapping();
+
 	// Camera & Light -> Temporarily
 	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
 	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
@@ -74,12 +82,13 @@ public:
 	inline GCRenderResources* GetRenderResources() { return m_pGCRenderResources; }
 private:
 
+	bool m_isBasicPostProcessingActivated = false;
+	bool m_isPixelIDMappingActivated = false; 
+
 	// Post Processing Resources
 	GCShader* m_postProcessingShader;
 	// Object / Layers Buffer Id Resources
 	GCShader* m_objectBufferIdShader;
 
 	GCRenderResources* m_pGCRenderResources;
-
-
 };
