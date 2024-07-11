@@ -3,25 +3,28 @@
 GCShader::GCShader() 
 {
 	m_RootSignature = nullptr;
-	m_PSO1 = nullptr;
-	m_PSO2 = nullptr;
+	m_pPsoAlpha = nullptr;
+	m_pPsoNoAlpha = nullptr;
 	m_InputLayout.clear(); 
 	m_vsByteCode = nullptr;
 	m_psByteCode = nullptr;
 	m_vsCsoPath.clear();
 	m_psCsoPath.clear();
-	ZeroMemory(&psoDesc, sizeof(psoDesc));
 	m_pRender = nullptr;
 	m_flagEnabledBits = 0;
 	m_cullMode = D3D12_CULL_MODE_NONE;
+
+	for (int i = 0; i < 4; ++i) {
+		m_rtvFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	}
 }
 
 
 GCShader::~GCShader()
 {
 	SAFE_RELEASE(m_RootSignature);
-	SAFE_RELEASE(m_PSO1);
-	SAFE_RELEASE(m_PSO2);
+	SAFE_RELEASE(m_pPsoAlpha);
+	SAFE_RELEASE(m_pPsoNoAlpha);
 	SAFE_RELEASE(m_vsByteCode);
 	SAFE_RELEASE(m_psByteCode);
 
@@ -120,13 +123,9 @@ void GCShader::RootSign()
 		numParameters++;
 	}
 
-
-
 	rootSigDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 
-
-	// Sérialisation de la signature racine
 	ID3DBlob* serializedRootSig = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
@@ -145,46 +144,30 @@ void GCShader::RootSign()
     // Création de la signature racine
     m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature));
 }
+
 void GCShader::Pso() 
 {
 	// Initialize the graphics pipeline state description
-	ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-	psoDesc.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
-	psoDesc.pRootSignature = m_RootSignature;
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDescAlpha = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDescNoAlpha = {};
 
-	psoDesc.VS =
-	{
-		reinterpret_cast<BYTE*>(m_vsByteCode->GetBufferPointer()),
-		m_vsByteCode->GetBufferSize()
-	};
-	psoDesc.PS =
-	{
-		reinterpret_cast<BYTE*>(m_psByteCode->GetBufferPointer()),
-		m_psByteCode->GetBufferSize()
-	};
+	psoDescAlpha.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
+	psoDescAlpha.pRootSignature = m_RootSignature;
 
-	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	psoDescNoAlpha.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
+	psoDescNoAlpha.pRootSignature = m_RootSignature;
 
-	ZeroMemory(&psoDesc2, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-	psoDesc2.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
-	psoDesc2.pRootSignature = m_RootSignature;
+	psoDescAlpha.VS = { reinterpret_cast<BYTE*>(m_vsByteCode->GetBufferPointer()), m_vsByteCode->GetBufferSize()};
+	psoDescAlpha.PS ={ reinterpret_cast<BYTE*>(m_psByteCode->GetBufferPointer()), m_psByteCode->GetBufferSize()};
 
-	psoDesc2.VS =
-	{
-		reinterpret_cast<BYTE*>(m_vsByteCode->GetBufferPointer()),
-		m_vsByteCode->GetBufferSize()
-	};
-	psoDesc2.PS =
-	{
-		reinterpret_cast<BYTE*>(m_psByteCode->GetBufferPointer()),
-		m_psByteCode->GetBufferSize()
-	};
+	psoDescNoAlpha.VS = { reinterpret_cast<BYTE*>(m_vsByteCode->GetBufferPointer()), m_vsByteCode->GetBufferSize() };
+	psoDescNoAlpha.PS = { reinterpret_cast<BYTE*>(m_psByteCode->GetBufferPointer()), m_psByteCode->GetBufferSize() };
 
-	psoDesc2.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc2.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
-	psoDesc2.RasterizerState.CullMode = m_cullMode;
-	psoDesc.RasterizerState.CullMode = m_cullMode;
+	psoDescAlpha.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDescAlpha.RasterizerState.CullMode = m_cullMode;
+
+	psoDescNoAlpha.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDescNoAlpha.RasterizerState.CullMode = m_cullMode;
 
 	// Customize the blend state for transparency
 	CD3DX12_BLEND_DESC blendDesc1(D3D12_DEFAULT);
@@ -196,7 +179,7 @@ void GCShader::Pso()
 	blendDesc1.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	blendDesc1.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc1.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	psoDesc2.BlendState = blendDesc1;
+
 	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
 	blendDesc.RenderTarget[0].BlendEnable = FALSE; // Disable blending
 	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
@@ -206,35 +189,36 @@ void GCShader::Pso()
 	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-	psoDesc.BlendState = blendDesc;
 
-	// Use default depth stencil state
-	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
-	psoDesc2.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
+	psoDescAlpha.BlendState = blendDesc;
+	psoDescNoAlpha.BlendState = blendDesc1;
 
-	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 4;
-	psoDesc.RTVFormats[0] = m_pRender->GetRenderResources()->GetBackBufferFormat();
-	psoDesc.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
-	psoDesc.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
-	psoDesc.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
-	psoDesc.RTVFormats[0] = m_pRender->GetRenderResources()->GetBackBufferFormat();
-	psoDesc.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
-	psoDesc.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
-	psoDesc.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
-	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO1));
+	int rtvSize = sizeof(m_rtvFormats) / sizeof(DXGI_FORMAT);
 
-	psoDesc2.SampleMask = UINT_MAX;
-	psoDesc2.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc2.NumRenderTargets = 1;
-	psoDesc2.RTVFormats[0] = m_pRender->GetRenderResources()->GetBackBufferFormat();
-	psoDesc2.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
-	psoDesc2.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
-	psoDesc2.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
+	psoDescAlpha.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
+	psoDescAlpha.SampleMask = UINT_MAX;
+	psoDescAlpha.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDescAlpha.NumRenderTargets = rtvSize;
+	psoDescAlpha.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
+	psoDescAlpha.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
+	psoDescAlpha.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	psoDescNoAlpha.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
+	psoDescNoAlpha.SampleMask = UINT_MAX;
+	psoDescNoAlpha.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDescNoAlpha.NumRenderTargets = rtvSize;
+	psoDescNoAlpha.SampleDesc.Count = m_pRender->GetRenderResources()->Get4xMsaaState() ? 4 : 1;
+	psoDescNoAlpha.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
+	psoDescNoAlpha.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	for (UINT i = 0; i < rtvSize; ++i) {
+		psoDescAlpha.RTVFormats[i] = m_rtvFormats[i];
+		psoDescNoAlpha.RTVFormats[i] = m_rtvFormats[i];
+	}
+
 	// Create the graphics pipeline state
-	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO1));
-	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDesc2, IID_PPV_ARGS(&m_PSO2));
+	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDescAlpha, IID_PPV_ARGS(&m_pPsoAlpha));
+	m_pRender->GetRenderResources()->Getmd3dDevice()->CreateGraphicsPipelineState(&psoDescNoAlpha, IID_PPV_ARGS(&m_pPsoNoAlpha));
 }
 
 ID3D12RootSignature* GCShader::GetRootSign() 
@@ -244,9 +228,9 @@ ID3D12RootSignature* GCShader::GetRootSign()
 
 ID3D12PipelineState* GCShader::GetPso(bool alpha) 
 {
-	if(alpha)
-		return m_PSO2;
-	return m_PSO1;
+	if (alpha == true)
+		return m_pPsoAlpha;
+	return m_pPsoNoAlpha;
 }
 
 ID3DBlob* GCShader::GetmvsByteCode()
@@ -334,7 +318,7 @@ GC_GRAPHICS_ERROR GCShader::Load() {
 	RootSign();
 	Pso();
 
-	if (!CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_PSO, m_vsByteCode, m_psByteCode))
+	if (!CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_pPsoAlpha, m_pPsoNoAlpha, m_vsByteCode, m_psByteCode))
 		return GCRENDER_ERROR_POINTER_NULL;
 
 	return GCRENDER_SUCCESS_OK;
@@ -342,4 +326,9 @@ GC_GRAPHICS_ERROR GCShader::Load() {
 
 void GCShader::SetRenderTarget(ID3D12Resource* rtt) {
 	m_pRtt = rtt;
+}
+
+void GCShader::SetRenderTargetFormats(DXGI_FORMAT format, int i)
+{
+	m_rtvFormats[i] = format;
 }

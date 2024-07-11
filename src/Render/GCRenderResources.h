@@ -1,5 +1,11 @@
 #pragma once
 
+struct GC_DESCRIPTOR_RESOURCE
+{
+	ID3D12Resource* resource;
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
+};
+
 class GCRenderResources {
 public:
 
@@ -15,7 +21,7 @@ public:
 	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
 
 	// CPU Handle address Depth Stencil Final Render
-	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewAddress() const { return m_pDsvHeap->GetCPUDescriptorHandleForHeapStart(); }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewAddress() const { return m_DepthStencilBufferAddress; }
 	//It's format
 	inline DXGI_FORMAT GetDepthStencilFormat() const { return m_DepthStencilFormat; }
 
@@ -46,9 +52,6 @@ public:
 	inline void ResizeRender(int width, int height) { m_renderWidth = width;  m_renderHeight = height; }
 
 
-	// Res Creation
-	ID3D12Resource* CreateRTT(bool test);
-
 private:
 	friend class GCRenderContext;
 
@@ -70,7 +73,10 @@ private:
 	ID3D12GraphicsCommandList* m_CommandList;
 	IDXGISwapChain* m_SwapChain;
 	ID3D12Resource* m_SwapChainBuffer[SwapChainBufferCount];
+
 	ID3D12Resource* m_DepthStencilBuffer;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_DepthStencilBufferAddress;
+
 	ID3D12CommandQueue* m_CommandQueue;
 	ID3D12CommandAllocator* m_DirectCmdListAlloc;
 
@@ -118,12 +124,38 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdDepthStencilBufferAddress; //Cpu Handle Address
 
 
-	// Gianni 
-	int testCount = 0;
+	//Descriptor Heap Creation
+	void CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** ppDescriptorHeap);
 
-	std::vector<ID3D12Resource*> m_renderTargets;
+	// Rtv Manager
+	int m_rtvOffsetCount = 2;
+	std::list<GC_DESCRIPTOR_RESOURCE*> m_lRenderTargets;
+	GC_DESCRIPTOR_RESOURCE* CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE, D3D12_CLEAR_VALUE* clearValue = nullptr);
+	GC_DESCRIPTOR_RESOURCE* CreateRTV(ID3D12Resource* pResource);
+	//*
 
-	void DeleteRenderTarget(ID3D12Resource* pRenderTarget);
+
+
+
+	// Srv Manager
+	int m_srvOffsetCount = 0;
+	std::list<GC_DESCRIPTOR_RESOURCE*> m_lShaderResourceView;
+	//*
+
+	// Dsv Manager
+	int m_dsvOffsetCount = 0;
+	std::list<GC_DESCRIPTOR_RESOURCE*> m_lDepthStencilView;
+	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat);
+
+
+
+
+	//ID3D12Resource* CreateRTT(bool test);
+	//void DeleteRenderTarget(ID3D12Resource* pRenderTarget);
+	//int testCount = 0;
+	//std::vector<ID3D12Resource*> m_renderTargets;
+
+
 
 };
 

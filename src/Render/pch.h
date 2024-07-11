@@ -61,6 +61,8 @@ enum GC_PRIMITIVE_ID;
 // Add William 
 class GCGraphicsLogger;
 enum GC_GRAPHICS_ERROR;
+
+struct GC_DESCRIPTOR_RESOURCE;
 //
 
 

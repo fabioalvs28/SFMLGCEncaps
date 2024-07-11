@@ -223,7 +223,7 @@ public:
 	std::vector<GCShader*> GetShaders();
 	std::vector<GCMaterial*> GetMaterials();
 	std::vector<GCMesh*> GetMeshes();
-	std::vector<GCTexture*> GetTextures();
+	std::list<GCTexture*> GetTextures();
 
 	GCRenderContext* GetRender() const { return m_pRender; }
 
@@ -233,14 +233,14 @@ public:
 	GCShaderUploadBufferBase* GetCbLightPropertiesInstance() const { return m_pCbLightPropertiesInstance; }
 
 	// Manage inactive slot to push resource
-	std::vector<bool> m_vTextureActiveFlags;
+	std::list<bool> m_lTextureActiveFlags;
 
 private:
 	// Render instance contain Window
 
 	GCRenderContext* m_pRender;
 
-	std::vector<GCTexture*> m_vTextures;
+	std::list<GCTexture*> m_lTextures;
 	std::vector<GCShader*> m_vShaders;
 	std::vector<GCMaterial*> m_vMaterials;
 	std::vector<GCMesh*> m_vMeshes;

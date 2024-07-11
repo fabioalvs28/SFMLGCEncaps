@@ -6,7 +6,7 @@ GCGraphics::GCGraphics()
     m_pPrimitiveFactory = nullptr;
     m_pModelParserFactory = nullptr;
 
-    m_vTextures.clear();
+    m_lTextures.clear();
     m_vShaders.clear();
     m_vMaterials.clear();
     m_vMeshes.clear();
@@ -33,11 +33,11 @@ GCGraphics::~GCGraphics()
     }
     m_vMeshes.clear();
 
-    for (auto texture : m_vTextures)
+    for (auto texture : m_lTextures)
     {
         SAFE_DELETE(texture);
     }
-    m_vTextures.clear();
+    m_lTextures.clear();
 
     for (auto buffer : m_pCbCameraInstances)
     {
@@ -146,41 +146,45 @@ bool GCGraphics::InitializeGraphicsResourcesEnd() {
     return true;
 }
 
-ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& filePath)
-{
+
+ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& filePath) {
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 
     // Creates and initializes a texture using a path
     GCTexture* texture = new GCTexture();
 
-    // Find the first inactive slot in m_vTextureActiveFlags
-    auto it = std::find(m_vTextureActiveFlags.begin(), m_vTextureActiveFlags.end(), false);
+    // Find the first inactive slot in m_lTextureActiveFlags
+    auto it = std::find(m_lTextureActiveFlags.begin(), m_lTextureActiveFlags.end(), false);
 
     size_t index;
+    auto listIt = m_lTextures.begin();
 
-    if (it != m_vTextureActiveFlags.end()) {
+    if (it != m_lTextureActiveFlags.end()) {
         // Calculate the index of the found position
-        index = std::distance(m_vTextureActiveFlags.begin(), it);
+        index = std::distance(m_lTextureActiveFlags.begin(), it);
+
+        // Advance the iterator to the same position in m_lTextures
+        std::advance(listIt, index);
 
         // Insert the texture at the found index
-        m_vTextures.insert(m_vTextures.begin() + index, texture);
+        m_lTextures.insert(listIt, texture);
 
         // Set the corresponding flag to true
-        m_vTextureActiveFlags[index] = true;
+        *it = true;
     }
     else {
         // If no inactive slot was found, push the texture to the end
-        index = m_vTextures.size(); // Index will be the last position
+        index = m_lTextures.size(); // Index will be the last position
 
-        m_vTextures.push_back(texture);
-        m_vTextureActiveFlags.push_back(true);
+        m_lTextures.push_back(texture);
+        m_lTextureActiveFlags.push_back(true);
     }
 
     // Initialize the texture with the specified index
     GC_GRAPHICS_ERROR errorState = texture->Initialize(filePath, this, index);
-    if (errorState != 0)
+    if (errorState != GCRENDER_SUCCESS_OK) {
         return ResourceCreationResult<GCTexture*>(false, nullptr, errorState);
-
+    }
 
     // Return the result of the creation operation
     return ResourceCreationResult<GCTexture*>(true, texture, errorState);
@@ -369,9 +373,9 @@ std::vector<GCMesh*> GCGraphics::GetMeshes()
     return m_vMeshes;
 }
 
-std::vector<GCTexture*> GCGraphics::GetTextures() 
+std::list<GCTexture*> GCGraphics::GetTextures() 
 {
-    return m_vTextures;
+    return m_lTextures;
 }
 
 GC_GRAPHICS_ERROR GCGraphics::RemoveShader(GCShader* pShader)
@@ -415,37 +419,36 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveMesh(GCMesh* pMesh)
     // Removes Mesh
     auto it = std::find(m_vMeshes.begin(), m_vMeshes.end(), pMesh);
 
-    if (it != m_vMeshes.end())
+    if (LOG_REMOVE_RESOURCE(it, "Mesh", m_vMeshes))
     {
-        if (LOG_REMOVE_RESOURCE(it, "Mesh", m_vMeshes))
-        {
-            m_vMeshes.erase(it);
-            delete pMesh;
-            return GCRENDER_SUCCESS_OK;
-        }
+        m_vMeshes.erase(it);
+        delete pMesh;
+        return GCRENDER_SUCCESS_OK;
     }
+
     return GCRENDER_ERROR_RESOURCE_TO_REMOVE_DONT_FIND;
 }
 
-GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture)
-{
-    if (CHECK_POINTERSNULL("Ptr for RemoveTexture is not null", "Can't remove texture, pTexture is null", pTexture) == false)
+GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
+    if (pTexture == nullptr) {
         return GCRENDER_ERROR_POINTER_NULL;
+    }
 
     // Removes Texture
-    auto it = std::find(m_vTextures.begin(), m_vTextures.end(), pTexture);
+    auto it = std::find(m_lTextures.begin(), m_lTextures.end(), pTexture);
 
-    if (LOG_REMOVE_RESOURCE(it, "Texture", m_vTextures))
-    {
-        size_t index = std::distance(m_vTextures.begin(), it);
+    if (it != m_lTextures.end()) {
+        size_t index = std::distance(m_lTextures.begin(), it);
 
-        if (index < m_vTextureActiveFlags.size())
-        {
-            m_vTextureActiveFlags[index] = false;
+        auto flagIt = m_lTextureActiveFlags.begin();
+        std::advance(flagIt, index);
+
+        if (flagIt != m_lTextureActiveFlags.end()) {
+            *flagIt = false;
         }
 
         delete pTexture;
-        m_vTextures.erase(it);
+        m_lTextures.erase(it);
 
         return GCRENDER_SUCCESS_OK;
     }

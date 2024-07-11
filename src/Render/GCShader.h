@@ -33,28 +33,34 @@ public:
 	GC_GRAPHICS_ERROR Load();
 
 	void SetRenderTarget(ID3D12Resource* rtt);
+	void SetRenderTargetFormats(DXGI_FORMAT format, int i);
 
 	GCRenderContext* m_pRender;
+
+	//
 	ID3D12Resource* m_pRtt = nullptr;
-protected:
+private:
 	// Initialize var
 	D3D12_CULL_MODE m_cullMode;
 
 	ID3D12RootSignature* m_RootSignature;
-	ID3D12PipelineState* m_PSO1;
-	ID3D12PipelineState* m_PSO2;
+
+	ID3D12PipelineState* m_pPsoAlpha;
+	ID3D12PipelineState* m_pPsoNoAlpha;
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
 
 	ID3DBlob* m_vsByteCode;
 	ID3DBlob* m_psByteCode;
-
-	// Var used in Compile Shader override func
+	
+	//Path
 	std::wstring m_vsCsoPath;
 	std::wstring m_psCsoPath;
 
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc2;
-	//int m_type;
 	int m_flagEnabledBits;
+
+	//Pso 
+	DXGI_FORMAT m_rtvFormats[4]; 
 };
+
+
