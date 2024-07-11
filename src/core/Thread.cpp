@@ -72,7 +72,7 @@ bool WinThread::Start(std::function<void()> task)
 	m_task = task; 
 
 	if (m_isRunning)
-		return; 
+		return false; 
 
 	m_isRunning = true;
 
