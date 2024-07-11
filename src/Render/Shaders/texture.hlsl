@@ -1,9 +1,9 @@
 Texture2D g_texture : register(t0); // Texture bound to t0, register space 0
-SamplerState g_sampler : register(s0); // Sampler bound to s0, register space 0
+SamplerState g_sampler : register(s0); // Sampler bound to s0
 
 cbuffer cbPerObject : register(b0)
 {
-    float4x4 gWorld;
+    float4x4 gWorld; // World matrix
 };
 
 cbuffer cbPerCamera : register(b1)
@@ -24,6 +24,7 @@ struct VertexOut
     float2 UV : TEXCOORD;
 };
 
+// Vertex Shader
 VertexOut VS(VertexIn vin)
 {
     VertexOut vout;
@@ -37,13 +38,15 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
+// Pixel Shader
 float4 PS(VertexOut pin) : SV_Target
 {
+    // Échantillonner la texture à partir des coordonnées UV du vertex
     float4 texColor = g_texture.Sample(g_sampler, pin.UV);
-    return texColor * texColor.a; // Apply transparency using alpha channel
-}
+    
+    // Appliquer l'alpha pour la transparence
+    float alpha = texColor.a;
 
-    //vout.PosH = mul(mul(float4(vin.PosL, 1.0f), float4x4(1.0f, 0.0f, 0.0f, 0.0f,
-    //                                                  0.0f, 1.0f, 0.0f, 0.0f,
-    //                                                  0.0f, 0.0f, 1.0f, 0.0f,
-    //                                                  0.0f, 0.0f, 0.0f, 1.0f)), mul(gView, gProj));
+    // Retourner la couleur texturée avec l'alpha
+    return float4(texColor.rgb, alpha);
+}

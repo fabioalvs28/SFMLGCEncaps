@@ -8,6 +8,7 @@ struct ModelInfos
 	std::vector<std::vector<float>> coords;
 	std::vector<std::vector<uint16_t>> facesInfos;
 	std::vector<std::vector<float>> uvs;
+	std::vector<std::vector<float>> normals;
 };
 
 class GCModelParser
@@ -16,7 +17,7 @@ public:
 	GCModelParser();
 	virtual ~GCModelParser();
 
-	GCGeometry* BuildModel(std::string filePath, DirectX::XMFLOAT4 color, Extensions fileExtension, int& flagEnabledBits);
+	bool BuildModel(std::string filePath, DirectX::XMFLOAT4 color, Extensions fileExtension, GCGeometry* pGeometry);
 
 	bool Parse(std::string filePath, Extensions fileExtension);
 

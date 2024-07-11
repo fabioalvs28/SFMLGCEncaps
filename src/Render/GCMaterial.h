@@ -12,7 +12,7 @@ public:
 	GCShader* GetShader() const { return m_pShader; }
 
 	template<typename ShaderTypeConstantBuffer>
-	void CreateCBObject();
+	void AddCbPerObject();
 
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 
@@ -20,7 +20,8 @@ public:
 	bool UpdateTexture();
 
 	// Object
-	std::vector<GCShaderUploadBufferBase*> GetObjectCBData() { return m_vpObjectCB; }
+	std::vector<GCShaderUploadBufferBase*> GetCbObjectInstance() { return m_pCbObjectInstances; }
+	GCShaderUploadBufferBase* GetCbMaterialPropertiesInstance() { return m_pCbMaterialPropertiesInstance; }
 
 	// Draw Count
     void IncrementCBCount() { m_iCount++; }
@@ -35,17 +36,15 @@ private:
 	GCTexture* m_pTexture;
 
 	// Properties
-	DirectX::XMFLOAT4 m_diffuseAlbedo;
-	DirectX::XMFLOAT3 m_fresnelR0;
-	float m_roughness;
+	GCShaderUploadBufferBase* m_pCbMaterialPropertiesInstance;
 
 	// Many cb for multiple object drawing
-	std::vector<GCShaderUploadBufferBase*> m_vpObjectCB;
+	std::vector<GCShaderUploadBufferBase*> m_pCbObjectInstances;
 };
 
 template<typename ShaderTypeConstantBuffer>
-void GCMaterial::CreateCBObject()
+void GCMaterial::AddCbPerObject()
 {
-	GCShaderUploadBufferBase* pObjectCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->Getmd3dDevice(), 1, true);
-	m_vpObjectCB.push_back(pObjectCB);
+	GCShaderUploadBufferBase* pObjectCB = new GCShaderUploadBuffer<ShaderTypeConstantBuffer>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
+	m_pCbObjectInstances.push_back(pObjectCB);
 }

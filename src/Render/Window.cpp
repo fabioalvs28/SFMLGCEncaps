@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "pch.h"
 
 LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -61,7 +61,7 @@ int Window::Run(GCRender* pRender)
 	MSG msg = { 0 };
 	mTimer.Reset();
 
-	while (msg.message != WM_QUIT)
+	if (msg.message != WM_QUIT)
 	{
 		// If there are Window messages then process them.
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))

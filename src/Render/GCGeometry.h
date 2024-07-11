@@ -5,8 +5,6 @@ struct GCGeometry
 public:
 	virtual ~GCGeometry() {}
 
-	int m_flagEnabledBits;
-
 	std::vector<std::uint16_t> indices;
 
 	std::size_t vertexNumber;
