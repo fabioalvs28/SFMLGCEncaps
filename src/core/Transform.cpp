@@ -8,23 +8,25 @@ GCTransform::GCTransform()
 
 void GCTransform::Identity()
 {
-	m_direction = GCVEC3(0, 0, 1);
-	m_right = GCVEC3(1, 0, 0);
-	m_up = GCVEC3(0, 1, 0);
-	m_rotation = GCQUATERNION(0, 0, 0, 1);
-	m_rotationMatrix = GCMATRIX::Identity();
-	m_position = GCVEC3(0, 0, 0);
-	m_matrix = GCMATRIX::Identity();
-	m_scale = GCVEC3(1, 1, 1);	
+	m_direction.SetFront();
+	m_right.SetRight();
+	m_up.SetUp();
+	m_rotation.SetIdentity();
+	m_rotationMatrix.SetIdentity();
+	
+	m_position.SetZero();
+	m_scale.SetOne();
+	
+	m_matrix.SetIdentity();
 }
 
 void GCTransform::IdentityRotation()
 {
-	m_direction = GCVEC3(0, 0, 1);
-	m_right = GCVEC3(1, 0, 0);
-	m_up = GCVEC3(0, 1, 0);
-	m_rotation = GCQUATERNION(0, 0, 0, 1);
-	m_rotationMatrix = GCMATRIX::Identity();
+	m_direction.SetFront();
+	m_right.SetRight();
+	m_up.SetUp();
+	m_rotation.SetIdentity();
+	m_rotationMatrix.SetIdentity();
 }
 
 void GCTransform::FromMatrix(const GCMATRIX& matrix)
@@ -115,31 +117,25 @@ void GCTransform::RotateRoll(float angle)
 	Rotate(0, 0, angle);
 }
 
-void GCTransform::RotateWorld(float x, float y, float z)
+void GCTransform::SetRotation(float yaw, float pitch, float roll)
 {
 	IdentityRotation();
-	Rotate(y, x, z);
+	Rotate(yaw, pitch, roll);
 }
 
-void GCTransform::RotateWorldX(float angle)
+void GCTransform::SetRotationX(float angle)
 {
-	RotateWorld(angle, 0, 0);
+	SetRotation(angle, 0, 0);
 }
 
-void GCTransform::RotateWorldY(float angle)
+void GCTransform::SetRotationY(float angle)
 {
-	RotateWorld(0, angle, 0);
+	SetRotation(0, angle, 0);
 }
 
-void GCTransform::RotateWorldZ(float angle)
+void GCTransform::SetRotationZ(float angle)
 {
-	RotateWorld(0, 0, angle);
-}
-
-void GCTransform::Scale(const GCVEC3& scale)
-{
-	m_scale *= scale;
-	m_matrix.Scale(m_scale.x, m_scale.y, m_scale.z);
+	SetRotation(0, 0, angle);
 }
 
 void GCTransform::Translate(const GCVEC3& translation)
@@ -150,3 +146,34 @@ void GCTransform::Translate(const GCVEC3& translation)
 	m_matrix._43 = m_position.z;
 }
 
+void GCTransform::SetPosition(const GCVEC3& position)
+{
+	m_position = position;
+	m_matrix._41 = m_position.x;
+	m_matrix._42 = m_position.y;
+	m_matrix._43 = m_position.z;
+}
+
+void GCTransform::Scale(const GCVEC3& scale)
+{
+	m_scale *= scale;
+	m_matrix._11 *= m_scale.x;
+	m_matrix._22 *= m_scale.y;
+	m_matrix._33 *= m_scale.z;
+}
+
+void GCTransform::Scale(const float scale)
+{
+	m_scale *= scale;
+	m_matrix._11 *= m_scale.x;
+	m_matrix._22 *= m_scale.y;
+	m_matrix._33 *= m_scale.z;
+}
+
+void GCTransform::SetScale(const GCVEC3& scale)
+{
+	m_scale = scale;
+	m_matrix._11 = m_scale.x;
+	m_matrix._22 = m_scale.y;
+	m_matrix._33 = m_scale.z;
+}

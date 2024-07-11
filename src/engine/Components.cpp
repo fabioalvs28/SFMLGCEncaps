@@ -7,25 +7,12 @@
 #include "GameObject.h"
 
 
-Component::Component()
+Component::Component() { Init(); }
+
+Component::Component( int flags )
 {
-	m_flags = 0;
-	m_active = true;
-	m_pGameObject = nullptr;
-
-	if (IsFlagSet(FIXED_UPDATE))
-		;
-
-	if (IsFlagSet(RENDER))
-		;
-}
-
-Component::Component(int flags)
-{
-	m_flags = flags;
-	m_active = true;
-	m_pGameObject = nullptr;
-
+	Init();
+	
 	if (IsFlagSet(UPDATE))
 		;
 
@@ -36,6 +23,19 @@ Component::Component(int flags)
 		;
 }
 
+void Component::Init()
+{
+	m_flags = 0;
+	m_active = true;
+	m_pGameObject = nullptr;
+	
+	m_pUpdateNode = nullptr;
+	m_pPhysicsNode = nullptr;
+	m_pRenderNode = nullptr;
+}
+
+
+
 #pragma region Collider
 Collider::Collider()
 	: Component(FIXED_UPDATE | RENDER)
@@ -43,11 +43,6 @@ Collider::Collider()
 	m_trigger = false;
 	m_visible = false;
 	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
-}
-
-Collider::~Collider()
-{
-	GC::m_pActiveGameManager.m_pPhysicManager.UnregisterCollider(this);
 }
 #pragma endregion Collider
 

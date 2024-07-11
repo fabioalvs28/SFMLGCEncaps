@@ -2,6 +2,16 @@
 #include "../core/framework.h"
 #include "GCColor.h"
 
+// TODO Adding lots of stuff to the components
+// todo 2 transforms for colliders (self & wold)
+// todo Enable children of components
+
+class GCGameObject;
+class GCUpdateManager;
+class GCPhysicsManager;
+class GCRenderManager;
+
+
 
 enum FLAGS
 {
@@ -9,35 +19,24 @@ enum FLAGS
 	FIXED_UPDATE    = 1 << 1,
     RENDER          = 1 << 2,
 };
-inline FLAGS operator|(FLAGS a, FLAGS b)
-{
-	return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-
-class GCGameObject;
-
-// TODO Adding lots of stuff to the components
-// todo 2 transforms for colliders (self & wold)
+inline FLAGS operator|(FLAGS a, FLAGS b) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
 
 
 class Component
 {
 friend class GCGameObject;
-
-public: enum { TYPE = 0 };
-
-protected:
-	int m_flags;
+friend class GCUpdateManager;
+friend class GCPhysicsManager;
+friend class GCRenderManager;
+public: virtual const int GetID() = 0;
 
 public:
     Component();
-    Component(int flags);
-    virtual ~Component() {};
+    Component( int flags );
+    virtual ~Component() = default;
     
-    virtual int GetType() = 0;
-    
+    void Init();
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
@@ -47,16 +46,19 @@ public:
     
     bool IsActive() { return m_active; }
 
-    inline GCGameObject* GetGameObject() { return m_pGameObject; }
+    GCGameObject* GetGameObject() { return m_pGameObject; }
 
-    inline bool IsFlagSet(FLAGS flag) { return (m_flags & flag) != 0; }
-
-protected:
-    void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
+    bool IsFlagSet( FLAGS flag ) { return ( m_flags & flag ) != 0; }
 
 protected:
+    inline static int componentCount = 0;
     GCGameObject* m_pGameObject;
     bool m_active;
+	int m_flags;
+    
+    GCListNode<Component*>* m_pUpdateNode;
+    GCListNode<Component*>* m_pPhysicsNode;
+    GCListNode<Component*>* m_pRenderNode;
 
 };
 
@@ -64,17 +66,17 @@ protected:
 
 class SpriteRenderer : public Component
 {
-public: enum { TYPE = 1 };
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 public:
-	SpriteRenderer() : Component(RENDER) {}
+	SpriteRenderer() : Component( RENDER ) {}
     ~SpriteRenderer() override {}
-    
-    int GetType() override { return TYPE; }
     
     void Render() override {}
     void Destroy() override {}
-    
     
     void SetSprite() {};
     void SetColor( GCColor& color ) { m_color = color; }
@@ -94,7 +96,7 @@ class Collider : public Component
 
 public:
     Collider();
-    ~Collider();
+    ~Collider() override {}
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -112,7 +114,10 @@ protected:
 
 class BoxCollider : public Collider
 {
-public: enum { TYPE = 2 };
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 private:
     GCVEC2 m_size;
@@ -120,8 +125,6 @@ private:
 
 public:
     ~BoxCollider() override {}
-    
-    int GetType() override { return TYPE; }
     
     void FixedUpdate() override {}
     void Render() override {}
@@ -136,15 +139,16 @@ public:
 
 class CircleCollider : public Collider
 {
-public: enum { TYPE = 3 };
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 private:
     float m_radius;
 
 public:
     ~CircleCollider() override {}
-    
-    int GetType() override { return TYPE; }
 
     void FixedUpdate() override {}
     void Render() override {}
@@ -159,16 +163,17 @@ public:
 
 class RigidBody : public Component
 {
-public: enum { TYPE = 4 };
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 private:
     GCVEC3 m_velocity;
 
 public:
-	RigidBody() : Component(FIXED_UPDATE), m_velocity(0, 0, 0) {}
+	RigidBody() : Component( FIXED_UPDATE ), m_velocity(0, 0, 0) {}
     ~RigidBody() override {}
-    
-    int GetType() override { return TYPE; }
     
     void FixedUpdate() override;
     void Destroy() override {}
@@ -181,13 +186,14 @@ public:
 
 class Animator : public Component
 {
-public: enum { TYPE = 5 };
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 public:
-	Animator() : Component(UPDATE) {}
+	Animator() : Component( UPDATE ) {}
     ~Animator() override {}
-    
-    int GetType() override { return TYPE; }
     
     void Update() override {}
     void Destroy() override {}
@@ -198,13 +204,14 @@ public:
 
 class SoundMixer : public Component
 {
-public: enum { TYPE = 6 };
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 public:
-	SoundMixer() : Component(UPDATE) {}
+	SoundMixer() : Component( UPDATE ) {}
     ~SoundMixer() override {}
-    
-    int GetType() override { return TYPE; }
     
     void Update() override {}
     void Destroy() override {}
@@ -213,18 +220,17 @@ public:
 
 
 
-class Script : public Component
+class ScriptList : public Component
 {
-public: enum { TYPE = 7 };
+protected: inline static const int m_ID = ++Component::componentCount;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() { return m_ID; }
 
 public:
-	Script() : Component(UPDATE | FIXED_UPDATE) {}
-    ~Script() override {};
+	ScriptList() {}
+    ~ScriptList() override {};
     
-    int GetType() override { return TYPE; }
-    
-    void Update() override {}
-    void FixedUpdate() override {}
     void Destroy() override {}
 
 };

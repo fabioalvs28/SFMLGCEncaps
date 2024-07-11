@@ -45,8 +45,8 @@ public:
     
     void Init();
     
-    void PushBack( const T& data );
-    void PushFront( const T& data );
+    GCListNode<T>* PushBack( const T& data );
+    GCListNode<T>* PushFront( const T& data );
     
     void Clear();
     
@@ -197,7 +197,7 @@ void GCList<T>::Init()
 /// @param data The data to be added to the List.
 /////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-void GCList<T>::PushBack( const T& data )
+GCListNode<T>* GCList<T>::PushBack( const T& data )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
@@ -210,6 +210,7 @@ void GCList<T>::PushBack( const T& data )
     }
     m_pTail = pNewNode;
     if ( m_pHead == nullptr ) m_pHead = pNewNode;
+    return pNewNode;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +221,7 @@ void GCList<T>::PushBack( const T& data )
 /// @param data The data to be added to the List.
 /////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-void GCList<T>::PushFront( const T& data )
+GCListNode<T>* GCList<T>::PushFront( const T& data )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
@@ -233,6 +234,7 @@ void GCList<T>::PushFront( const T& data )
     pNewNode->m_pPrev = nullptr;
     m_pHead = pNewNode;
     if ( m_pTail == nullptr ) m_pTail = pNewNode;
+    return pNewNode;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
