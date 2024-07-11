@@ -3,6 +3,19 @@
 #include "GCColor.h"
 #include "../../src/render/framework.h"
 
+
+enum FLAGS
+{
+	UPDATE          = 1 << 0,
+	FIXED_UPDATE    = 1 << 1,
+    RENDER          = 1 << 2,
+};
+inline FLAGS operator|(FLAGS a, FLAGS b)
+{
+	return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+
 class GCGameObject;
 
 // TODO Adding lots of stuff to the components
@@ -17,15 +30,19 @@ friend class GCRenderManager;
 
 public: enum { TYPE = 0 };
 
+protected:
+	int m_flags;
+
 public:
     Component();
+    Component(int flags);
     virtual ~Component() {};
     
     virtual int GetType() = 0;
     
-    virtual void Init() = 0;
-    virtual void Update() = 0;
-    virtual void Render() = 0;
+    virtual void Update() {}
+    virtual void FixedUpdate() {}
+    virtual void Render() {}
     virtual void Destroy() = 0;
     
     void SetActive( bool active ) { m_active = active; }
@@ -33,6 +50,8 @@ public:
     bool IsActive() { return m_active; }
 
     inline GCGameObject* GetGameObject() { return m_pGameObject; }
+
+    inline bool IsFlagSet(FLAGS flag) { return (m_flags & flag) != 0; }
 
 protected:
     void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
@@ -54,14 +73,12 @@ friend class GCRenderManager;
 public: enum { TYPE = 1 };
 
 public:
-    SpriteRenderer();
-    ~SpriteRenderer() override;
+	SpriteRenderer() : Component(RENDER) {}
+    ~SpriteRenderer() override {}
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
-    void Update() override {}
-    void Render() override;
+    void Render() override {}
     void Destroy() override {}
     
     
@@ -85,7 +102,7 @@ class Collider : public Component
 public:
     Collider();
     ~Collider();
-    
+
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
     
@@ -115,8 +132,7 @@ public:
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
-    void Update() override {}
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
@@ -141,9 +157,8 @@ public:
     ~CircleCollider() override {}
     
     int GetType() override { return TYPE; }
-    
-    void Init() override {}
-    void Update() override {}
+
+    void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
@@ -161,14 +176,16 @@ class RigidBody : public Component
 {
 public: enum { TYPE = 4 };
 
+private:
+    GCVEC3 m_velocity;
+
 public:
+	RigidBody() : Component(FIXED_UPDATE), m_velocity(0, 0, 0) {}
     ~RigidBody() override {}
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
-    void Update() override {}
-    void Render() override {}
+    void FixedUpdate() override;
     void Destroy() override {}
     
     void AddForce( GCVEC2 force ) {}
@@ -182,13 +199,12 @@ class Animator : public Component
 public: enum { TYPE = 5 };
 
 public:
+	Animator() : Component(UPDATE) {}
     ~Animator() override {}
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
     void Update() override {}
-    void Render() override {}
     void Destroy() override {}
 
 };
@@ -200,13 +216,12 @@ class SoundMixer : public Component
 public: enum { TYPE = 6 };
 
 public:
+	SoundMixer() : Component(UPDATE) {}
     ~SoundMixer() override {}
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
     void Update() override {}
-    void Render() override {}
     void Destroy() override {}
 
 };
@@ -218,13 +233,13 @@ class Script : public Component
 public: enum { TYPE = 7 };
 
 public:
+	Script() : Component(UPDATE | FIXED_UPDATE) {}
     ~Script() override {};
     
     int GetType() override { return TYPE; }
     
-    void Init() override {}
     void Update() override {}
-    void Render() override {}
+    void FixedUpdate() override {}
     void Destroy() override {}
 
 };

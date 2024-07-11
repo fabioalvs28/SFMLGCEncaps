@@ -1,10 +1,11 @@
 #pragma once
 #include "SceneManager.h"
-#include "InputManager.h"
 #include "PhysicManager.h"
 #include "RenderManager.h"
 #include "../../src/Render/Window.h"
+#include "EventManager.h"
 
+class Component;
 class Collider;
 class GCGameObject;
 class GCScene;
@@ -31,7 +32,7 @@ protected:
 //    GCPhysicManager m_pPhysicManager;
 //    GCEventManager m_pEventManager;
     GCSceneManager m_pSceneManager;
-
-public:
     GCRenderManager m_pRenderManager;
+    GCPhysicManager m_pPhysicManager;
+    GCEventManager m_pEventManager;
 };
