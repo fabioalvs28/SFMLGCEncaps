@@ -1,10 +1,10 @@
 #pragma once
 #include "../core/framework.h"
 #include "GCColor.h"
+#include "Map.h"
 
 // TODO Adding lots of stuff to the components
 // todo 2 transforms for colliders (self & wold)
-// todo Enable children of components
 
 class GCGameObject;
 class GCUpdateManager;
@@ -32,18 +32,16 @@ friend class GCRenderManager;
 public: virtual const int GetID() = 0;
 
 public:
-    Component();
-    Component( int flags );
+    Component( GCGameObject* pGameObject );
     virtual ~Component() = default;
     
-    void Init();
+    virtual void Start() {}
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
     virtual void Destroy() = 0;
     
     void SetActive( bool active ) { m_active = active; }
-    
     bool IsActive() { return m_active; }
 
     GCGameObject* GetGameObject() { return m_pGameObject; }
@@ -52,9 +50,9 @@ public:
 
 protected:
     inline static int componentCount = 0;
+	static int m_flags;
     GCGameObject* m_pGameObject;
     bool m_active;
-	int m_flags;
     
     GCListNode<Component*>* m_pUpdateNode;
     GCListNode<Component*>* m_pPhysicsNode;
@@ -66,17 +64,9 @@ protected:
 
 class SpriteRenderer : public Component
 {
-protected: inline static const int m_ID = ++Component::componentCount;
 public:
     static const int GetIDStatic() { return m_ID; }
-    const int GetID() { return m_ID; }
-
-public:
-	SpriteRenderer() : Component( RENDER ) {}
-    ~SpriteRenderer() override {}
-    
-    void Render() override {}
-    void Destroy() override {}
+    const int GetID() override { return m_ID; }
     
     void SetSprite() {};
     void SetColor( GCColor& color ) { m_color = color; }
@@ -85,6 +75,15 @@ public:
     GCColor& GetColor() { return m_color; }
 
 protected:
+	SpriteRenderer( GCGameObject* pGameObject );
+    ~SpriteRenderer() override {}
+
+    void Render() override {}
+    void Destroy() override {}
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    inline static int m_flags = RENDER;
     GCColor m_color;
 
 };
@@ -95,7 +94,7 @@ class Collider : public Component
 {
 
 public:
-    Collider();
+    Collider( GCGameObject* pGameObject );
     ~Collider() override {}
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
@@ -105,6 +104,7 @@ public:
     bool IsVisible() { return m_visible; }
 
 protected:
+    inline static int m_flags = FIXED_UPDATE | RENDER;
     bool m_trigger;
     bool m_visible;
 
@@ -114,24 +114,24 @@ protected:
 
 class BoxCollider : public Collider
 {
-protected: inline static const int m_ID = ++Component::componentCount;
 public:
     static const int GetIDStatic() { return m_ID; }
-    const int GetID() { return m_ID; }
+    const int GetID() override { return m_ID; }
 
-private:
-    GCVEC2 m_size;
+    inline GCVEC2 GetSize() { return m_size; }
+    inline void SetSize( GCVEC2 size ) { m_size = size; }
 
-
-public:
+protected:
+    BoxCollider( GCGameObject* pGameObject );
     ~BoxCollider() override {}
-    
+
     void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
-    inline GCVEC2 GetSize() { return m_size; }
-    inline void SetSize( GCVEC2 size ) { m_size = size; }
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    GCVEC2 m_size;
 
 };
 
@@ -139,23 +139,24 @@ public:
 
 class CircleCollider : public Collider
 {
-protected: inline static const int m_ID = ++Component::componentCount;
 public:
     static const int GetIDStatic() { return m_ID; }
-    const int GetID() { return m_ID; }
+    const int GetID() override { return m_ID; }
+    
+    inline float GetRadius() { return m_radius; }
+    inline void SetRadius( float radius ) { m_radius = radius; }
 
-private:
-    float m_radius;
-
-public:
+protected:
+    CircleCollider( GCGameObject* pGameObject );
     ~CircleCollider() override {}
-
+    
     void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
-    inline float GetRadius() { return m_radius; }
-    inline void SetRadius( float radius ) { m_radius = radius; }
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    float m_radius;
 
 };
 
@@ -163,22 +164,23 @@ public:
 
 class RigidBody : public Component
 {
-protected: inline static const int m_ID = ++Component::componentCount;
 public:
     static const int GetIDStatic() { return m_ID; }
-    const int GetID() { return m_ID; }
+    const int GetID() override { return m_ID; }
+    
+    void AddForce( GCVEC2 force ) {}
 
-private:
-    GCVEC3 m_velocity;
-
-public:
-	RigidBody() : Component( FIXED_UPDATE ), m_velocity(0, 0, 0) {}
+protected:
+    RigidBody( GCGameObject* pGameObject );
     ~RigidBody() override {}
     
     void FixedUpdate() override;
     void Destroy() override {}
-    
-    void AddForce( GCVEC2 force ) {}
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    inline static int m_flags = FIXED_UPDATE;
+    GCVEC3 m_velocity;
 
 };
 
@@ -186,17 +188,20 @@ public:
 
 class Animator : public Component
 {
-protected: inline static const int m_ID = ++Component::componentCount;
 public:
     static const int GetIDStatic() { return m_ID; }
-    const int GetID() { return m_ID; }
+    const int GetID() override { return m_ID; }
 
-public:
-	Animator() : Component( UPDATE ) {}
+protected:
+	Animator( GCGameObject* pGameObject );
     ~Animator() override {}
     
     void Update() override {}
     void Destroy() override {}
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    inline static int m_flags = UPDATE;
 
 };
 
@@ -204,33 +209,22 @@ public:
 
 class SoundMixer : public Component
 {
-protected: inline static const int m_ID = ++Component::componentCount;
 public:
     static const int GetIDStatic() { return m_ID; }
-    const int GetID() { return m_ID; }
+    const int GetID() override { return m_ID; }
 
-public:
-	SoundMixer() : Component( UPDATE ) {}
+protected:
+	SoundMixer( GCGameObject* pGameObject );
     ~SoundMixer() override {}
     
     void Update() override {}
     void Destroy() override {}
 
-};
-
-
-
-class ScriptList : public Component
-{
-protected: inline static const int m_ID = ++Component::componentCount;
-public:
-    static const int GetIDStatic() { return m_ID; }
-    const int GetID() { return m_ID; }
-
-public:
-	ScriptList() {}
-    ~ScriptList() override {};
-    
-    void Destroy() override {}
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    inline static int m_flags = UPDATE;
 
 };
+
+
+

@@ -99,10 +99,9 @@ template<class T>
 T* GCGameObject::AddComponent()
 {
     if ( GetComponent<T>() != nullptr ) return nullptr;
-    T* component = new T();
-    component->m_pGameObject = this;
-    m_componentsList.Insert( T::GetIDStatic(), component);
-    return component;
+    T* pComponent = new T( this );
+    m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    return pComponent;
 }
 
 ///////////////////////////////////////////////////////////
