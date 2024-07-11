@@ -7,9 +7,6 @@
 // todo 2 transforms for colliders (self & wold)
 
 class GCGameObject;
-class GCUpdateManager;
-class GCPhysicsManager;
-class GCRenderManager;
 
 
 
@@ -27,19 +24,10 @@ class Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
-friend class GCPhysicsManager;
+friend class GCPhysicManager;
 friend class GCRenderManager;
-public: virtual const int GetID() = 0;
-
 public:
-    Component( GCGameObject* pGameObject );
-    virtual ~Component() = default;
-    
-    virtual void Start() {}
-    virtual void Update() {}
-    virtual void FixedUpdate() {}
-    virtual void Render() {}
-    virtual void Destroy() = 0;
+    virtual const int GetID() = 0;
     
     void SetActive( bool active ) { m_active = active; }
     bool IsActive() { return m_active; }
@@ -49,8 +37,18 @@ public:
     bool IsFlagSet( FLAGS flag ) { return ( m_flags & flag ) != 0; }
 
 protected:
+    Component( GCGameObject* pGameObject );
+    virtual ~Component() = default;
+    
+    virtual void Start() {}
+    virtual void Update() {}
+    virtual void FixedUpdate() {}
+    virtual void Render() {}
+    virtual void Destroy() = 0;
+
+protected:
     inline static int componentCount = 0;
-	static int m_flags;
+	inline static int m_flags = 0;
     GCGameObject* m_pGameObject;
     bool m_active;
     
@@ -64,6 +62,10 @@ protected:
 
 class SpriteRenderer : public Component
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -75,7 +77,7 @@ public:
     GCColor& GetColor() { return m_color; }
 
 protected:
-	SpriteRenderer( GCGameObject* pGameObject );
+	SpriteRenderer( GCGameObject* pGameObject ) : Component( pGameObject ) {};
     ~SpriteRenderer() override {}
 
     void Render() override {}
@@ -92,6 +94,10 @@ protected:
 
 class Collider : public Component
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 
 public:
     Collider( GCGameObject* pGameObject );
@@ -114,6 +120,10 @@ protected:
 
 class BoxCollider : public Collider
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -122,7 +132,7 @@ public:
     inline void SetSize( GCVEC2 size ) { m_size = size; }
 
 protected:
-    BoxCollider( GCGameObject* pGameObject );
+    BoxCollider( GCGameObject* pGameObject ) : Collider( pGameObject ) {};
     ~BoxCollider() override {}
 
     void FixedUpdate() override {}
@@ -139,6 +149,10 @@ protected:
 
 class CircleCollider : public Collider
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -147,7 +161,7 @@ public:
     inline void SetRadius( float radius ) { m_radius = radius; }
 
 protected:
-    CircleCollider( GCGameObject* pGameObject );
+    CircleCollider( GCGameObject* pGameObject ) : Collider( pGameObject ) {};
     ~CircleCollider() override {}
     
     void FixedUpdate() override {}
@@ -164,6 +178,10 @@ protected:
 
 class RigidBody : public Component
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -188,12 +206,16 @@ protected:
 
 class Animator : public Component
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
 protected:
-	Animator( GCGameObject* pGameObject );
+	Animator( GCGameObject* pGameObject ) : Component( pGameObject ) {};
     ~Animator() override {}
     
     void Update() override {}
@@ -209,12 +231,16 @@ protected:
 
 class SoundMixer : public Component
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
 protected:
-	SoundMixer( GCGameObject* pGameObject );
+	SoundMixer( GCGameObject* pGameObject ) : Component( pGameObject ) {};
     ~SoundMixer() override {}
     
     void Update() override {}
@@ -230,9 +256,13 @@ protected:
 
 class Script : public Component
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 
 protected:
-    Script() = default;
+    Script( GCGameObject* pGameObject ) : Component( pGameObject ) {};
     virtual ~Script() = default;
     
     virtual void OnTriggerEnter( Collider* collider ) = 0;
