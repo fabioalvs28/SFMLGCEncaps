@@ -1,36 +1,14 @@
-#include "pch.h"
 #include "RenderManager.h"
 #include "GC.h"
 #include "GameObject.h"
-#include "../../src/render/framework.h"
+#include "../../src/Render/pch.h"
+
+using namespace DirectX;
 
 GCRenderManager::GCRenderManager()
 {
 
     m_pGraphics = new GCGraphics();
-
-    /*m_pGraphics->Initialize(pWindow, pWindow->GetWidth(), pWindow->GetHeight());*/
-
-    //euuh HASSOUL c'est pour la caméra.
-
-    DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);  // Position de la caméra
-    DirectX::XMVECTOR targetPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // Point visé par la caméra
-    DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);       // Vecteur "up" de la caméra
-
-    float viewWidth = 10.0f;    // Largeur de la vue
-    float viewHeight = 10.0f;   // Hauteur de la vue
-    float nearZ = 0.1f;         // Plan proche
-    float farZ = 100.0f;        // Plan éloigné
-
-    DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, nearZ, farZ);
-    DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, targetPosition, upVector);
-
-    DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrix);
-    DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrix);
-
-    DirectX::XMStoreFloat4x4(&m_storedProjectionMatrix, transposedProjectionMatrix);
-    DirectX::XMStoreFloat4x4(&m_storedViewMatrix, transposedViewMatrix);
-
 }
 
 GCRenderManager::~GCRenderManager()
@@ -58,8 +36,8 @@ void GCRenderManager::Render()
 
 void GCRenderManager::CreateGeometry()
 {
-    m_pPlane = m_pGraphics->CreateGeometryPrimitiveTexture("plane");
-    m_pCircle = m_pGraphics->CreateGeometryPrimitiveTexture("circle");
+    m_pPlane = m_pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red)).resource;
+    m_pCircle = m_pGraphics->CreateGeometryPrimitive(Circle, XMFLOAT4(Colors::Blue)).resource;
 }
 
 

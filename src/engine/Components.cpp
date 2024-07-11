@@ -1,10 +1,9 @@
-#include "pch.h"
 #include "Components.h"
 
 #include "Log.h"
 
 #include "GC.h"
-#include "../../src/Render/framework.h"
+#include "../../src/Render/pch.h"
 #include "GameObject.h"
 
 
@@ -45,12 +44,12 @@ SpriteRenderer::SpriteRenderer() : Component(RENDER)
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMesh(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane);
+	m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 
-	GCShader* shaderColor = pGraphics->CreateShaderColor();
-	m_pMaterial = pGraphics->CreateMaterial(shaderColor);
+	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
+	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
 
 	m_color = GCColor();
 }
@@ -67,11 +66,11 @@ void SpriteRenderer::SetSprite(std::string texturePath)
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	GCTexture* texture = pGraphics->CreateTexture(texturePath);
+	GCTexture* texture = pGraphics->CreateTexture(texturePath).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
-	GCShader* shaderTexture = pGraphics->CreateShaderTexture();
-	GCMaterial* pMaterial = pGraphics->CreateMaterial(shaderTexture);
+	GCShader* shaderTexture = pGraphics->CreateShaderTexture().resource;
+	GCMaterial* pMaterial = pGraphics->CreateMaterial(shaderTexture).resource;
 	m_pMaterial = pMaterial;
 	m_pMaterial->SetTexture(texture);
 }
@@ -80,8 +79,8 @@ void SpriteRenderer::SetColor()
 {
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
-	GCShader* shaderColor = pGraphics->CreateShaderColor();
-	m_pMaterial = pGraphics->CreateMaterial(shaderColor);
+	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
+	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
 }
 
 
@@ -104,12 +103,12 @@ BoxCollider::BoxCollider()
 
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMesh(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane);
+	m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 
-	GCShader* shaderColor = pGraphics->CreateShaderColor();
-	m_pMaterial = pGraphics->CreateMaterial(shaderColor);
+	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
+	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
 
 }
 
@@ -119,12 +118,12 @@ CircleCollider::CircleCollider()
 
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMesh(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane);
+	m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 
-	GCShader* shaderColor = pGraphics->CreateShaderColor();
-	m_pMaterial = pGraphics->CreateMaterial(shaderColor);
+	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
+	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
 }
 
 

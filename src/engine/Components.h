@@ -1,7 +1,8 @@
 #pragma once
 #include "../core/framework.h"
 #include "GCColor.h"
-#include "../../src/render/framework.h"
+#include "../../src/Render/pch.h"
+
 
 // TODO Adding lots of stuff to the components
 // todo 2 transforms for colliders (self & wold)
