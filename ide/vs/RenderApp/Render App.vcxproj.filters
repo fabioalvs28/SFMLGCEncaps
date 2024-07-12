@@ -1,61 +1,61 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{68DE01AB-7959-481A-8B88-2F79A8BB8AF0}</UniqueIdentifier>
-      <Extensions>cpp;c</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{48325498-2EBB-407D-9549-25E615B79EF6}</UniqueIdentifier>
-      <Extensions>h;hpp</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{12B0D0DD-50CE-4F07-A629-BCF7729B6928}</UniqueIdentifier>
-      <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\src\RenderApp\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <None Include="..\..\..\src\RenderApp\monkey.obj">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\monkeyUv.obj">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Shaders\color.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Shaders\customTest.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Shaders\LightColor.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Shaders\LightTexture.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Shaders\LightTextureBloom.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Shaders\ObjectBufferId.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Shaders\PostProcessing.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Shaders\texture.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Textures\ahah.dds">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Textures\gojo.dds">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\src\RenderApp\Textures\texture.dds">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <Filter Include="Header Files">
+            <UniqueIdentifier>{80BAE901-FAE3-42C1-916D-D8D3714188C6}</UniqueIdentifier>
+            <Extensions>h;hpp</Extensions>
+        </Filter>
+        <Filter Include="Source Files">
+            <UniqueIdentifier>{26F56620-E981-4384-AB50-B9B356FAAD5C}</UniqueIdentifier>
+            <Extensions>cpp;c</Extensions>
+        </Filter>
+        <Filter Include="Resource Files">
+            <UniqueIdentifier>{001BC022-72B8-40A7-8863-12E80FEB7A53}</UniqueIdentifier>
+            <Extensions>hlsl;jpg;jpeg;png;wav;mp3;ico;dds;rc;obj</Extensions>
+        </Filter>
+    </ItemGroup>
+    <ItemGroup>
+        <ClCompile Include="..\..\..\src\RenderApp\main.cpp">
+            <Filter>Source Files</Filter>
+        </ClCompile>
+        <None Include="..\..\..\src\RenderApp\monkey.obj">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\monkeyUv.obj">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Shaders\color.hlsl">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Shaders\customTest.hlsl">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Shaders\LightColor.hlsl">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Shaders\LightTexture.hlsl">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Shaders\LightTextureBloom.hlsl">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Shaders\ObjectBufferId.hlsl">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Shaders\PostProcessing.hlsl">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Shaders\texture.hlsl">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Textures\ahah.dds">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Textures\gojo.dds">
+            <Filter>Resource Files</Filter>
+        </None>
+        <None Include="..\..\..\src\RenderApp\Textures\texture.dds">
+            <Filter>Resource Files</Filter>
+        </None>
+    </ItemGroup>
 </Project>
