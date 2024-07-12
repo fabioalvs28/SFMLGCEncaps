@@ -180,14 +180,6 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 // Unset a specific flag
 #define UNSET_FLAG(flags, flag) ((flags) &= ~(flag))
 
-// Emplacement Root Parameter Index
-#define CBV_SLOT_CB0 0
-#define CBV_SLOT_CB1 1
-#define CBV_SLOT_CB2 2
-#define CBV_SLOT_CB3 3
-#define DESCRIPTOR_TABLE_SLOT_SLOT1 4
-#define DESCRIPTOR_TABLE_SLOT_SLOT2 5
-
 // Lights Type
 #define LIGHT_TYPE_DIRECTIONAL 0
 #define LIGHT_TYPE_SPOT 1

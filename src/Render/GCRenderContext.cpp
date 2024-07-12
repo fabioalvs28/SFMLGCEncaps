@@ -171,7 +171,12 @@ void GCRenderContext::CreatePostProcessingResources() {
 		SET_FLAG(flags, VERTEX_POSITION);
 		SET_FLAG(flags, VERTEX_UV);
 
-		m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags);
+		int rootParametersFlag = 0;
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2);
+		//
+
+		m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags, D3D12_CULL_MODE_BACK, rootParametersFlag);
 		m_postProcessingShader->Load();
 	}
 	
@@ -184,10 +189,16 @@ void GCRenderContext::CreatePostProcessingResources() {
 		//Create Object buffer Id Shader 
 		int flags2 = 0;
 		SET_FLAG(flags2, VERTEX_POSITION);
+
+		int rootParametersFlag = 0;
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+
 		m_objectBufferIdShader = new GCShader();
 		std::string shaderFilePath2 = "../../../src/Render/Shaders/ObjectBufferId.hlsl";
 		std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/ObjectBufferId";
-		m_objectBufferIdShader->Initialize(this, shaderFilePath2, csoDestinationPath2, flags2);
+
+		m_objectBufferIdShader->Initialize(this, shaderFilePath2, csoDestinationPath2, flags2, D3D12_CULL_MODE_BACK, rootParametersFlag);
 		m_objectBufferIdShader->SetRenderTargetFormats(m_pGCRenderResources->GetBackBufferFormat(), 1);
 		m_objectBufferIdShader->Load();
 	}
@@ -389,7 +400,8 @@ void GCRenderContext::PerformPixelIdMapping(GCMesh* pMesh, bool alpha) {
 
 bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
 {
-	if (pMaterial == nullptr || pMaterial->GetShader() == nullptr || pMesh == nullptr)
+	GCShader* pShader = pMaterial->GetShader();
+	if (pMaterial == nullptr || pShader == nullptr || pMesh == nullptr)
 		return false;
 	if (!COMPARE_SHADER_MESH_FLAGS(pMaterial, pMesh))
 		return false;
@@ -409,18 +421,24 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 		pMaterial->UpdateTexture();
 
 		// Update cb0, cb of object
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB0, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+		m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_0, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
 
 		// Set cb object buffer on used
 		pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->m_isUsed = true;
 		pMaterial->IncrementCBCount();
 
 		// cb1, Camera
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB1, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
+		m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_1, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
+		
+		int rootParameterFlag = pMaterial->GetShader()->GetFlagRootParameters();
+
+		
 		// cb2, Material Properties
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB2, pMaterial->GetCbMaterialPropertiesInstance()->Resource()->GetGPUVirtualAddress());
+		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB2)) 
+			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_2, pMaterial->GetCbMaterialPropertiesInstance()->Resource()->GetGPUVirtualAddress());
 		// cb3, Light Properties
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(CBV_SLOT_CB3, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
+		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB3))
+			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_3, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
 
 		// Draw
 		m_pGCRenderResources->m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
@@ -490,7 +508,7 @@ void GCRenderContext::PerformPostProcessing()
 
 	//Post process texture linking to shader
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->GetBackBufferFormat());
-	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_SLOT1, srvGpuHandle);
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_postProcessingShader->m_rootParameter_DescriptorTable_1, srvGpuHandle);
 
 	// Transition pour la texture d'Object ID (g_ObjectIdBuffer)
 	//CD3DX12_RESOURCE_BARRIER barrierToShaderResource2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_ObjectIdBufferRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
@@ -500,7 +518,7 @@ void GCRenderContext::PerformPostProcessing()
 	if (m_isPixelIDMappingActivated) 
 	{
 		srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->GetBackBufferFormat());
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_SLOT2, srvGpuHandle);
+		m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_postProcessingShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
 	}
 
 	// Draw quad on post process rtv

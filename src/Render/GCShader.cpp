@@ -86,25 +86,25 @@ void GCShader::CompileShader()
 
 void GCShader::RootSign()
 {
-	CD3DX12_ROOT_PARAMETER slotRootParameter[6];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[6]; // Max parameters for a shader
 
-	UINT numParameters = 0;
+	UINT numParameters = 0; // Dynamic param attribution
 
 	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB0)) {
-		slotRootParameter[CBV_SLOT_CB0].InitAsConstantBufferView(0);
-		numParameters++;
+		m_rootParameter_ConstantBuffer_0 = numParameters;
+		slotRootParameter[numParameters++].InitAsConstantBufferView(0);
 	}
 	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB1)) {
-		slotRootParameter[CBV_SLOT_CB1].InitAsConstantBufferView(1);
-		numParameters++;
+		m_rootParameter_ConstantBuffer_1 = numParameters;
+		slotRootParameter[numParameters++].InitAsConstantBufferView(1);
 	}
 	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB2))  {
-		slotRootParameter[CBV_SLOT_CB2].InitAsConstantBufferView(2);
-		numParameters++;
+		m_rootParameter_ConstantBuffer_2 = numParameters;
+		slotRootParameter[numParameters++].InitAsConstantBufferView(2);
 	}
 	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB3)) {
-		slotRootParameter[CBV_SLOT_CB3].InitAsConstantBufferView(3);
-		numParameters++;
+		m_rootParameter_ConstantBuffer_3 = numParameters;
+		slotRootParameter[numParameters++].InitAsConstantBufferView(3);
 	}
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSample = CD3DX12_STATIC_SAMPLER_DESC(
@@ -126,19 +126,18 @@ void GCShader::RootSign()
 	if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
 
 		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1)) {
+			m_rootParameter_DescriptorTable_1 = numParameters;
 			CD3DX12_DESCRIPTOR_RANGE srvTable;
 			srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-			slotRootParameter[DESCRIPTOR_TABLE_SLOT_SLOT1].InitAsDescriptorTable(1, &srvTable);
-			numParameters++;
+			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable);
 		}
 		
 		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2)) {
+			m_rootParameter_DescriptorTable_2 = numParameters;
 			CD3DX12_DESCRIPTOR_RANGE srvTable2;
 			srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
-			slotRootParameter[DESCRIPTOR_TABLE_SLOT_SLOT2].InitAsDescriptorTable(1, &srvTable2);
-			numParameters++;
+			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable2);
 		}
-		
 	}
 
 	rootSignDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);

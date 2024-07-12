@@ -194,15 +194,15 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
 {
     GCShader* pShader = new GCShader();
 
-    int flags = 0;
-    SET_FLAG(flags, VERTEX_POSITION);
-    SET_FLAG(flags, VERTEX_COLOR);
+    int vertexFlags = 0;
+    SET_FLAG(vertexFlags, VERTEX_POSITION);
+    SET_FLAG(vertexFlags, VERTEX_COLOR);
 
-    int rootParametersFlag = DEFAULT_ROOT_PARAMETER_FLAG;
-    //SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
-    //SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+    int rootParametersFlag = 0;
+    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
+    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
 
-    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags, D3D12_CULL_MODE_BACK, rootParametersFlag);
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     if (errorState != 0)
         return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
     errorState = pShader->Load();
@@ -222,7 +222,12 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     SET_FLAG(vertexFlags, VERTEX_POSITION);
     SET_FLAG(vertexFlags, VERTEX_UV);
 
-    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags);
+    int rootParametersFlag = 0;
+    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
+    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
+
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     if (errorState != 0);
         return ResourceCreationResult<GCShader*>(false, nullptr);
 
