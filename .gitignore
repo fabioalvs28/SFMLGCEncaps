@@ -1,6 +1,318 @@
+<<<<<<< HEAD
+﻿################################################################################
+# Ce fichier .gitignore a été automatiquement créé par Microsoft(R) Visual Studio.
+################################################################################
+
+/ide/vs/.vs/Engine/v17/Browse.VC.db
+/ide/vs/.vs/Engine/v17/Solution.VC.db
+/ide/vs/.vs/GC Engine/v17/Solution.VC.db-wal
+/ide/vs/.vs/GC Engine/v17/Solution.VC.db-shm
+/ide/vs/.vs/GC Engine/v17/Solution.VC.db
+/ide/vs/.vs/GC Engine/v17/Browse.VC.db
+/ide/vs/.vs/GC Engine/v17/Browse.VC.db-shm
+/ide/vs/.vs/GC Engine/FileContentIndex/2587f4ab-bd7a-494f-8d62-530d1233be20.vsidx
+/ide/vs/.vs/GC Engine/v17/ipch/AutoPCH/1f6c1729d29ef0b4/MAIN.ipch
+/ide/vs/.vs/GC Engine/v17/Browse.VC.opendb
+/ide/vs/Render/Build/Debug/intermediate/Render.pch
+ide/vs/.vs/GC Engine/v17/ipch/4c9207d09960a4dd.ipch
+ide/vs/.vs/GC Engine/v17/ipch/AutoPCH/9381bb877892019c/MAIN.ipch
+ide/vs/.vs/GC Engine/FileContentIndex/443ae7c0-2fd5-49e9-9c70-60623d4562b8.vsidx
+bin/visual-solution-generator/json/Render.json
+bin/visual-solution-generator/json/RenderApp.json
+bin/visual-solution-generator/json/template.json
+bin/visual-solution-generator/json/Testing.json
+ide/vs/.vs/GC Engine/FileContentIndex/f6773991-a39c-432b-ae74-cf30925bffd3.vsidx
+ide/vs/.vs/GC Engine/v17/.suo
+ide/vs/.vs/GC Engine/v17/Browse.VC.db-wal
+ide/vs/.vs/GC Engine/v17/DocumentLayout.json
+ide/vs/CsoCompiled/colorPS.cso
+ide/vs/CsoCompiled/colorVS.cso
+ide/vs/CsoCompiled/texturePS.cso
+ide/vs/CsoCompiled/textureVS.cso
+ide/vs/GC Engine.sln
+ide/vs/Render/Build/Debug/intermediate/ConsoleApp.obj
+ide/vs/Render/Build/Debug/intermediate/DDSTextureLoader.obj
+ide/vs/Render/Build/Debug/intermediate/GCGeometry.obj
+ide/vs/Render/Build/Debug/intermediate/GCGraphics.obj
+ide/vs/Render/Build/Debug/intermediate/GCGraphicsProfiler.obj
+ide/vs/Render/Build/Debug/intermediate/GCMaterial.obj
+ide/vs/Render/Build/Debug/intermediate/GCMesh.obj
+ide/vs/Render/Build/Debug/intermediate/GCModelParser.obj
+ide/vs/Render/Build/Debug/intermediate/GCModelParserObj.obj
+ide/vs/Render/Build/Debug/intermediate/GCPrimitiveFactory.obj
+ide/vs/Render/Build/Debug/intermediate/GCRender.obj
+ide/vs/Render/Build/Debug/intermediate/GCShader.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderColor.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderCustom.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderTexture.obj
+ide/vs/Render/Build/Debug/intermediate/GCTexture.obj
+ide/vs/Render/Build/Debug/intermediate/GCTextureFactory.obj
+ide/vs/Render/Build/Debug/intermediate/MathHelper.obj
+ide/vs/Render/Build/Debug/intermediate/Render.Build.CppClean.log
+ide/vs/Render/Build/Debug/intermediate/Render.exe.recipe
+ide/vs/Render/Build/Debug/intermediate/Render.ilk
+ide/vs/Render/Build/Debug/intermediate/Render.log
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Cl.items.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib-link.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib-link.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/link.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/link.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/link.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/link.write.2u.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Render.lastbuildstate
+ide/vs/Render/Build/Debug/intermediate/Timer.obj
+ide/vs/Render/Build/Debug/intermediate/vc143.idb
+ide/vs/Render/Build/Debug/intermediate/vc143.pdb
+ide/vs/Render/Build/Debug/intermediate/Window.obj
+ide/vs/Render/Build/Debug/Render.exe
+ide/vs/Render/Build/Debug/Render.idb
+ide/vs/Render/Build/Debug/Render.lib
+ide/vs/Render/Build/Debug/Render.pdb
+ide/vs/Render/Render.vcxproj
+ide/vs/Render/Render.vcxproj.filters
+ide/vs/RenderApp/Build/Debug/intermediate/main.obj
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.exe.recipe
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.ilk
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.log
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.command.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/Cl.items.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.read.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.write.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.command.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.read.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.secondary.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.write.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/Render App.lastbuildstate
+ide/vs/RenderApp/Build/Debug/intermediate/vc143.idb
+ide/vs/RenderApp/Build/Debug/intermediate/vc143.pdb
+ide/vs/RenderApp/Build/Debug/Render App.exe
+ide/vs/RenderApp/Build/Debug/Render App.pdb
+ide/vs/RenderApp/Render App.vcxproj
+ide/vs/RenderApp/Render App.vcxproj.filters
+src/Render/ConsoleApp.cpp
+src/Render/CsoCompiled/colorPS.cso
+src/Render/CsoCompiled/colorVS.cso
+src/Render/CsoCompiled/texturePS.cso
+src/Render/CsoCompiled/textureVS.cso
+bin/visual-solution-generator/json/Render.json
+bin/visual-solution-generator/json/RenderApp.json
+bin/visual-solution-generator/json/template.json
+bin/visual-solution-generator/json/Testing.json
+ide/vs/.vs/GC Engine/v17/.suo
+ide/vs/.vs/GC Engine/v17/DocumentLayout.json
+ide/vs/CsoCompiled/colorPS.cso
+ide/vs/CsoCompiled/colorVS.cso
+ide/vs/CsoCompiled/texturePS.cso
+ide/vs/CsoCompiled/textureVS.cso
+ide/vs/GC Engine.sln
+ide/vs/Render/Build/Debug/intermediate/ConsoleApp.obj
+ide/vs/Render/Build/Debug/intermediate/DDSTextureLoader.obj
+ide/vs/Render/Build/Debug/intermediate/GCGeometry.obj
+ide/vs/Render/Build/Debug/intermediate/GCGraphics.obj
+ide/vs/Render/Build/Debug/intermediate/GCMaterial.obj
+ide/vs/Render/Build/Debug/intermediate/GCMesh.obj
+ide/vs/Render/Build/Debug/intermediate/GCModelParser.obj
+ide/vs/Render/Build/Debug/intermediate/GCModelParserObj.obj
+ide/vs/Render/Build/Debug/intermediate/GCPrimitiveFactory.obj
+ide/vs/Render/Build/Debug/intermediate/GCRender.obj
+ide/vs/Render/Build/Debug/intermediate/GCShader.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderColor.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderCustom.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderTexture.obj
+ide/vs/Render/Build/Debug/intermediate/GCTexture.obj
+ide/vs/Render/Build/Debug/intermediate/GCTextureFactory.obj
+ide/vs/Render/Build/Debug/intermediate/MathHelper.obj
+ide/vs/Render/Build/Debug/intermediate/Render.Build.CppClean.log
+ide/vs/Render/Build/Debug/intermediate/Render.exe.recipe
+ide/vs/Render/Build/Debug/intermediate/Render.log
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Cl.items.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib-link.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib-link.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Render.lastbuildstate
+ide/vs/Render/Build/Debug/intermediate/Timer.obj
+ide/vs/Render/Build/Debug/intermediate/Window.obj
+ide/vs/Render/Build/Debug/Render.idb
+ide/vs/Render/Build/Debug/Render.lib
+ide/vs/Render/Build/Debug/Render.pdb
+ide/vs/Render/Render.vcxproj
+ide/vs/Render/Render.vcxproj.filters
+ide/vs/RenderApp/Build/Debug/intermediate/main.obj
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.exe.recipe
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.ilk
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.log
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.command.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/Cl.items.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.read.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.write.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.command.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.read.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.secondary.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.write.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/Render App.lastbuildstate
+ide/vs/RenderApp/Build/Debug/intermediate/vc143.idb
+ide/vs/RenderApp/Build/Debug/intermediate/vc143.pdb
+ide/vs/RenderApp/Build/Debug/Render App.exe
+ide/vs/RenderApp/Build/Debug/Render App.pdb
+ide/vs/RenderApp/Render App.vcxproj
+ide/vs/RenderApp/Render App.vcxproj.filters
+src/Render/ConsoleApp.cpp
+src/Render/CsoCompiled/colorPS.cso
+src/Render/CsoCompiled/colorVS.cso
+src/Render/CsoCompiled/texturePS.cso
+src/Render/CsoCompiled/textureVS.cso
+bin/visual-solution-generator/json/Render.json
+bin/visual-solution-generator/json/RenderApp.json
+bin/visual-solution-generator/json/template.json
+bin/visual-solution-generator/json/Testing.json
+ide/vs/.vs/GC Engine/v17/.suo
+ide/vs/.vs/GC Engine/v17/DocumentLayout.json
+ide/vs/CsoCompiled/colorPS.cso
+ide/vs/CsoCompiled/colorVS.cso
+ide/vs/CsoCompiled/texturePS.cso
+ide/vs/CsoCompiled/textureVS.cso
+ide/vs/GC Engine.sln
+ide/vs/Render/Build/Debug/intermediate/ConsoleApp.obj
+ide/vs/Render/Build/Debug/intermediate/DDSTextureLoader.obj
+ide/vs/Render/Build/Debug/intermediate/GCGeometry.obj
+ide/vs/Render/Build/Debug/intermediate/GCGraphics.obj
+ide/vs/Render/Build/Debug/intermediate/GCMaterial.obj
+ide/vs/Render/Build/Debug/intermediate/GCMesh.obj
+ide/vs/Render/Build/Debug/intermediate/GCModelParser.obj
+ide/vs/Render/Build/Debug/intermediate/GCModelParserObj.obj
+ide/vs/Render/Build/Debug/intermediate/GCPrimitiveFactory.obj
+ide/vs/Render/Build/Debug/intermediate/GCRender.obj
+ide/vs/Render/Build/Debug/intermediate/GCShader.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderColor.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderCustom.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderTexture.obj
+ide/vs/Render/Build/Debug/intermediate/GCTexture.obj
+ide/vs/Render/Build/Debug/intermediate/GCTextureFactory.obj
+ide/vs/Render/Build/Debug/intermediate/MathHelper.obj
+ide/vs/Render/Build/Debug/intermediate/Render.Build.CppClean.log
+ide/vs/Render/Build/Debug/intermediate/Render.exe.recipe
+ide/vs/Render/Build/Debug/intermediate/Render.log
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Cl.items.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib-link.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib-link.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Render.lastbuildstate
+ide/vs/Render/Build/Debug/intermediate/Timer.obj
+ide/vs/Render/Build/Debug/intermediate/Window.obj
+ide/vs/Render/Build/Debug/Render.idb
+ide/vs/Render/Build/Debug/Render.lib
+ide/vs/Render/Build/Debug/Render.pdb
+ide/vs/Render/Render.vcxproj
+ide/vs/Render/Render.vcxproj.filters
+ide/vs/RenderApp/Build/Debug/intermediate/main.obj
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.exe.recipe
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.ilk
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.log
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.command.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/Cl.items.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.read.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.write.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.command.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.read.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.secondary.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.write.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/Render App.lastbuildstate
+ide/vs/RenderApp/Build/Debug/intermediate/vc143.idb
+ide/vs/RenderApp/Build/Debug/intermediate/vc143.pdb
+ide/vs/RenderApp/Build/Debug/Render App.exe
+ide/vs/RenderApp/Build/Debug/Render App.pdb
+ide/vs/RenderApp/Render App.vcxproj
+ide/vs/RenderApp/Render App.vcxproj.filters
+src/Render/ConsoleApp.cpp
+src/Render/CsoCompiled/colorPS.cso
+src/Render/CsoCompiled/colorVS.cso
+src/Render/CsoCompiled/texturePS.cso
+src/Render/CsoCompiled/textureVS.cso
+bin/visual-solution-generator/json/Render.json
+bin/visual-solution-generator/json/RenderApp.json
+bin/visual-solution-generator/json/template.json
+bin/visual-solution-generator/json/Testing.json
+ide/vs/.vs/GC Engine/v17/.suo
+ide/vs/.vs/GC Engine/v17/DocumentLayout.json
+ide/vs/CsoCompiled/colorPS.cso
+ide/vs/CsoCompiled/colorVS.cso
+ide/vs/CsoCompiled/texturePS.cso
+ide/vs/CsoCompiled/textureVS.cso
+ide/vs/GC Engine.sln
+ide/vs/Render/Build/Debug/intermediate/ConsoleApp.obj
+ide/vs/Render/Build/Debug/intermediate/DDSTextureLoader.obj
+ide/vs/Render/Build/Debug/intermediate/GCGeometry.obj
+ide/vs/Render/Build/Debug/intermediate/GCGraphics.obj
+ide/vs/Render/Build/Debug/intermediate/GCMaterial.obj
+ide/vs/Render/Build/Debug/intermediate/GCMesh.obj
+ide/vs/Render/Build/Debug/intermediate/GCModelParser.obj
+ide/vs/Render/Build/Debug/intermediate/GCModelParserObj.obj
+ide/vs/Render/Build/Debug/intermediate/GCPrimitiveFactory.obj
+ide/vs/Render/Build/Debug/intermediate/GCRender.obj
+ide/vs/Render/Build/Debug/intermediate/GCShader.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderColor.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderCustom.obj
+ide/vs/Render/Build/Debug/intermediate/GCShaderTexture.obj
+ide/vs/Render/Build/Debug/intermediate/GCTexture.obj
+ide/vs/Render/Build/Debug/intermediate/GCTextureFactory.obj
+ide/vs/Render/Build/Debug/intermediate/MathHelper.obj
+ide/vs/Render/Build/Debug/intermediate/Render.Build.CppClean.log
+ide/vs/Render/Build/Debug/intermediate/Render.exe.recipe
+ide/vs/Render/Build/Debug/intermediate/Render.log
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Cl.items.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/CL.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib-link.read.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib-link.write.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Lib.command.1.tlog
+ide/vs/Render/Build/Debug/intermediate/Render.tlog/Render.lastbuildstate
+ide/vs/Render/Build/Debug/intermediate/Timer.obj
+ide/vs/Render/Build/Debug/intermediate/Window.obj
+ide/vs/Render/Build/Debug/Render.idb
+ide/vs/Render/Build/Debug/Render.lib
+ide/vs/Render/Build/Debug/Render.pdb
+ide/vs/Render/Render.vcxproj
+ide/vs/Render/Render.vcxproj.filters
+ide/vs/RenderApp/Build/Debug/intermediate/main.obj
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.exe.recipe
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.ilk
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.log
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.command.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/Cl.items.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.read.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/CL.write.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.command.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.read.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.secondary.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/link.write.1.tlog
+ide/vs/RenderApp/Build/Debug/intermediate/Render App.tlog/Render App.lastbuildstate
+ide/vs/RenderApp/Build/Debug/intermediate/vc143.idb
+ide/vs/RenderApp/Build/Debug/intermediate/vc143.pdb
+ide/vs/RenderApp/Build/Debug/Render App.exe
+ide/vs/RenderApp/Build/Debug/Render App.pdb
+ide/vs/RenderApp/Render App.vcxproj
+ide/vs/RenderApp/Render App.vcxproj.filters
+src/Render/ConsoleApp.cpp
+src/Render/CsoCompiled/colorPS.cso
+src/Render/CsoCompiled/colorVS.cso
+src/Render/CsoCompiled/texturePS.cso
+src/Render/CsoCompiled/textureVS.cso
+=======
 *.db-wal
 *.db-shm
 *.user
 /ide
 .vscode
 .drawio
+>>>>>>> main
