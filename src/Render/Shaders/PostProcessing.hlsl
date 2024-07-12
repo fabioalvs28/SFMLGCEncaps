@@ -28,10 +28,10 @@ float4 PS(VSOutput pin) : SV_Target
 
     // Decode rgb
     float objectId = sampledMeshBufferId.r * 255.0f; 
-    objectId += sampledMeshBufferId.g * 255.0f; 
-    objectId += sampledMeshBufferId.b * 255.0f * 255.0f; 
+    //objectId += sampledMeshBufferId.g * 255.0f; 
+    //objectId += sampledMeshBufferId.b * 255.0f * 255.0f; 
     
-    if (objectId == 50)
+    if (objectId == 2.0f)
     {
         return float4(0.5f, 0.3f, 0.6f, 1.0f);
     }

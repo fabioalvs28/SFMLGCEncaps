@@ -350,11 +350,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
 
-        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere, 3.0f);
-        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere, 3.0f);
+        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
-        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
-        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
+        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());

@@ -54,10 +54,11 @@ PSOutput PS(VertexOut pin) : SV_Target
     
     // Encode rgb
     float r = float(objectId % 256) / 255.0f; 
-    float g = float((objectId / 256) % 256) / 255.0f; 
-    float b = float((objectId / (256 * 256)) % 256) / 255.0f; 
+    //float g = float((objectId / 256) % 256) / 255.0f; 
+    //float b = float((objectId / (256 * 256)) % 256) / 255.0f; 
+    // #TODO Encoder d'autres paramètres | depth?
     
-    output.color2 = float4(r, g, b, 1.0f);
+    output.color2 = float4(r, 0.0f, 0.0f, 1.0f);
     // Color & Alpha
     return output;
 }
