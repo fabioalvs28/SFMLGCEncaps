@@ -70,25 +70,6 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, 
 	return descriptorResource;
 }
 
-//GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTV(ID3D12Resource* pResource)
-//{
-//	//Handle Cpu
-//	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_rtvOffsetCount, m_rtvDescriptorSize);
-//	rtvHeapHandle.Offset(m_rtvOffsetCount, m_rtvDescriptorSize);
-//
-//	m_d3dDevice->CreateRenderTargetView(pResource, nullptr, rtvHeapHandle);
-//
-//	// Manager Rtv
-//	GC_DESCRIPTOR_RESOURCE* descriptorResource = new GC_DESCRIPTOR_RESOURCE;
-//	descriptorResource->resource = pResource;
-//	descriptorResource->cpuHandle = rtvHeapHandle;
-//	m_lRenderTargets.push_back(descriptorResource);
-//
-//	m_rtvOffsetCount++;
-//
-//	return descriptorResource;
-//}
-
 GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags)
 {
 	HRESULT hr;
@@ -144,48 +125,6 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateDepthStencilBufferAndView(DXGI_
 
 CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format)
 {
-	// #TODO PAS POSSIBLE REUTILISATION CAR NOUVEAU BUFFER + PENSER AU RELEASE SI SA FAIT TROP DE FRAME QUE C'est NO USED
-	
-	// If the number of used SRV Texture is superior to the number of SRV Textures already allocated, create a new SRV 
-	//if (m_srvUseCount >= m_lShaderResourceView.size()) {
-
-	//	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	//	srvDesc.Format = format;
-	//	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//	srvDesc.Texture2D.MostDetailedMip = 0;
-	//	srvDesc.Texture2D.MipLevels = 1;
-	//	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-
-	//	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle(m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-	//	srvCpuHandle.Offset(m_srvOffsetCount, m_cbvSrvUavDescriptorSize);
-	//	m_d3dDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
-
-
-	//	GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
-	//	profiler.LogWarning("Offset srv count : " + std::to_string(m_srvOffsetCount));
-
-	//	//m_lShaderResourceView.push_back(srvGpuHandle);
-	//	m_lShaderResourceView.push_back(m_srvOffsetCount);
-	//
-	//	m_srvOffsetCount++;
-
-
-	//	return m_srvOffsetCount;
-	//}
-	//else {
-	//	/*auto it = m_lShaderResourceView.begin();
-	//	std::advance(it, m_srvUseCount);
-	//	GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
-	//	profiler.LogWarning("Index in array : " + std::to_string(m_srvUseCount));
-	//	return *it;*/
-
-	//	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	//	srvGpuHandle.Offset(300, m_cbvSrvUavDescriptorSize);
-	//	return 300;
-	//}
-
-	//m_srvUseCount++;
-
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -210,12 +149,8 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateSrvWithTexture(ID3D12Reso
 	
 	m_srvOffsetCount++;
 
-
 	return srvGpuHandle;
 }
-
-
-
 
 //void GCRenderResources::DeleteRenderTarget(ID3D12Resource* pRenderTarget) {
 //	auto it = std::find(m_renderTargets.begin(), m_renderTargets.end(), pRenderTarget);

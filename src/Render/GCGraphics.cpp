@@ -198,7 +198,11 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
     SET_FLAG(flags, VERTEX_POSITION);
     SET_FLAG(flags, VERTEX_COLOR);
 
-    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags);
+    int rootParametersFlag = DEFAULT_ROOT_PARAMETER_FLAG;
+    //SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
+    //SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", flags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     if (errorState != 0)
         return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
     errorState = pShader->Load();
@@ -214,11 +218,11 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
 {
     GCShader* pShader = new GCShader();
 
-    int flags = 0;
-    SET_FLAG(flags, VERTEX_POSITION);
-    SET_FLAG(flags, VERTEX_UV);
+    int vertexFlags = 0;
+    SET_FLAG(vertexFlags, VERTEX_POSITION);
+    SET_FLAG(vertexFlags, VERTEX_UV);
 
-    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags);
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags);
     if (errorState != 0);
         return ResourceCreationResult<GCShader*>(false, nullptr);
 
@@ -232,11 +236,11 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
 }
 
 // Specify the path, with the name of the shader at the file creation , example : CsoCompiled/texture, texture is the name of the file in Cso Compiled Folder
-ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
+ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode, int flagRootParameters)
 {
     GCShader* pShader = new GCShader();
 
-    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits, cullMode);
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits, cullMode, flagRootParameters);
     if (errorState != 0) {
         ResourceCreationResult<GCShader*>(false, nullptr, errorState);
     }

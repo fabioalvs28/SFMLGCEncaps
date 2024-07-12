@@ -31,7 +31,7 @@ GCShader::~GCShader()
 	m_InputLayout.clear();
 }
 
-GC_GRAPHICS_ERROR GCShader::Initialize(GCRenderContext* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
+GC_GRAPHICS_ERROR GCShader::Initialize(GCRenderContext* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode, int flagRootParameters)
 {
 	if (!CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
 		return GCRENDER_ERROR_POINTER_NULL;
@@ -44,7 +44,10 @@ GC_GRAPHICS_ERROR GCShader::Initialize(GCRenderContext* pRender, const std::stri
 
 	m_cullMode = cullMode;
 	m_pRender = pRender;
+
+	// Vertex Input Layout
 	m_flagEnabledBits = flagEnabledBits;
+	m_flagRootParameters = flagRootParameters;
 
 	PreCompile(filePath, csoDestinationPath);
 
@@ -83,17 +86,27 @@ void GCShader::CompileShader()
 
 void GCShader::RootSign()
 {
-	// Déclaration des paramètres racine
 	CD3DX12_ROOT_PARAMETER slotRootParameter[6];
 
-	slotRootParameter[CBV_SLOT_CB0].InitAsConstantBufferView(0);
-	slotRootParameter[CBV_SLOT_CB1].InitAsConstantBufferView(1);
-	slotRootParameter[CBV_SLOT_CB2].InitAsConstantBufferView(2);
-	slotRootParameter[CBV_SLOT_CB3].InitAsConstantBufferView(3);
-	UINT numParameters = 4;
+	UINT numParameters = 0;
 
+	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB0)) {
+		slotRootParameter[CBV_SLOT_CB0].InitAsConstantBufferView(0);
+		numParameters++;
+	}
+	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB1)) {
+		slotRootParameter[CBV_SLOT_CB1].InitAsConstantBufferView(1);
+		numParameters++;
+	}
+	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB2))  {
+		slotRootParameter[CBV_SLOT_CB2].InitAsConstantBufferView(2);
+		numParameters++;
+	}
+	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB3)) {
+		slotRootParameter[CBV_SLOT_CB3].InitAsConstantBufferView(3);
+		numParameters++;
+	}
 
-	// Configuration de l'échantillonneur statique
 	CD3DX12_STATIC_SAMPLER_DESC staticSample = CD3DX12_STATIC_SAMPLER_DESC(
 		0, // shaderRegister
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR, // filter
@@ -108,40 +121,35 @@ void GCShader::RootSign()
 		D3D12_FLOAT32_MAX // maxLOD
 	);
 
-	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
-
+	CD3DX12_ROOT_SIGNATURE_DESC rootSignDesc;
 
 	if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
-		CD3DX12_DESCRIPTOR_RANGE srvTable;
-		srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE].InitAsDescriptorTable(1, &srvTable);
-		numParameters++;
 
-		CD3DX12_DESCRIPTOR_RANGE srvTable2;
-		srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
-		slotRootParameter[DESCRIPTOR_TABLE_SLOT_TEXTURE2].InitAsDescriptorTable(1, &srvTable2);
-		numParameters++;
+		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1)) {
+			CD3DX12_DESCRIPTOR_RANGE srvTable;
+			srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+			slotRootParameter[DESCRIPTOR_TABLE_SLOT_SLOT1].InitAsDescriptorTable(1, &srvTable);
+			numParameters++;
+		}
+		
+		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2)) {
+			CD3DX12_DESCRIPTOR_RANGE srvTable2;
+			srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+			slotRootParameter[DESCRIPTOR_TABLE_SLOT_SLOT2].InitAsDescriptorTable(1, &srvTable2);
+			numParameters++;
+		}
+		
 	}
 
-	rootSigDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
+	rootSignDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ID3DBlob* serializedRootSig = nullptr;
 	ID3DBlob* errorBlob = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
+	HRESULT hr = D3D12SerializeRootSignature(&rootSignDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
 
-	// Gestion des erreurs de sérialisation
-	if (errorBlob != nullptr)
-	{
-		::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-	}
+	if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
 
-    // Gestion des erreurs de sérialisation
-    if (errorBlob != nullptr) {
-        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-    }
-
-    // Création de la signature racine
     m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature));
 }
 

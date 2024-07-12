@@ -166,9 +166,11 @@ void GCRenderContext::CreatePostProcessingResources() {
 		m_postProcessingShader = new GCShader();
 		std::string shaderFilePath = "../../../src/Render/Shaders/PostProcessing.hlsl";
 		std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
+
 		int flags = 0;
 		SET_FLAG(flags, VERTEX_POSITION);
 		SET_FLAG(flags, VERTEX_UV);
+
 		m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags);
 		m_postProcessingShader->Load();
 	}
@@ -488,7 +490,7 @@ void GCRenderContext::PerformPostProcessing()
 
 	//Post process texture linking to shader
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->GetBackBufferFormat());
-	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, srvGpuHandle);
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_SLOT1, srvGpuHandle);
 
 	// Transition pour la texture d'Object ID (g_ObjectIdBuffer)
 	//CD3DX12_RESOURCE_BARRIER barrierToShaderResource2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_ObjectIdBufferRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
@@ -498,7 +500,7 @@ void GCRenderContext::PerformPostProcessing()
 	if (m_isPixelIDMappingActivated) 
 	{
 		srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->GetBackBufferFormat());
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE2, srvGpuHandle);
+		m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_SLOT2, srvGpuHandle);
 	}
 
 	// Draw quad on post process rtv

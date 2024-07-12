@@ -196,6 +196,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGraphics* graphics = new GCGraphics();
     graphics->Initialize(window, 1920, 1080);
 
+    //graphics->GetRender()->ActiveBasicPostProcessing();
+    //graphics->GetRender()->ActivePixelIDMapping();
+
     int flagsLightColor = 0;
     SET_FLAG(flagsLightColor, VERTEX_POSITION);
     SET_FLAG(flagsLightColor, VERTEX_COLOR);

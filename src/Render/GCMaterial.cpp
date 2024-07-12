@@ -54,7 +54,7 @@ bool GCMaterial::UpdateTexture()
     {
         if (m_pTexture)
         {
-            m_pRender->GetRenderResources()->GetCommandList()->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, m_pTexture->GetTextureAddress());
+            m_pRender->GetRenderResources()->GetCommandList()->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_SLOT1, m_pTexture->GetTextureAddress());
             return true;
         }
         else
