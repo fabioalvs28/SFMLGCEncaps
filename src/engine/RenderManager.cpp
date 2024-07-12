@@ -1,7 +1,9 @@
+#include "pch.h"
+
 #include "RenderManager.h"
 #include "GC.h"
 #include "GameObject.h"
-#include "../../src/Render/pch.h"
+#include "../render/pch.h"
 
 using namespace DirectX;
 
@@ -9,6 +11,22 @@ GCRenderManager::GCRenderManager()
 {
 
     m_pGraphics = new GCGraphics();
+
+    m_cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
+    m_cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+    m_cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+    //HASSOUL
+    float viewWidth = 20.0f;
+    float viewHeight = 20.0f;
+    XMMATRIX projectionMatrix = XMMatrixOrthographicLH(viewWidth, viewHeight, 1.0f, 1000.0f);
+    XMMATRIX viewMatrix = XMMatrixLookAtLH(m_cameraPosition, m_cameraTarget, m_cameraUp);
+    XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
+    XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
+
+    XMStoreFloat4x4(&m_storedProjectionMatrix, transposedProjectionMatrix);
+    XMStoreFloat4x4(&m_storedViewMatrix, transposedViewMatrix);
+
 }
 
 GCRenderManager::~GCRenderManager()
@@ -24,11 +42,15 @@ void GCRenderManager::Render()
     for ( GCListNode<Component*>* componentNode = m_pComponentList.GetFirstNode(); componentNode != nullptr ; componentNode = componentNode->GetNext() )
     {
         Component* pComponent = componentNode->GetData();
+        
+        XMMATRIX worldMatrix = XMMatrixScaling(pComponent->m_pGameObject->m_transform.m_scale.x, pComponent->m_pGameObject->m_transform.m_scale.y, pComponent->m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(pComponent->m_pGameObject->m_transform.m_position.x, pComponent->m_pGameObject->m_transform.m_position.y, pComponent->m_pGameObject->m_transform.m_position.z); // Cube externe (skybox)
 
-        GCTest test = m_pGraphics->ToPixel<GCTest>(pComponent->m_pGameObject->m_transform.m_position.x  , pComponent->m_pGameObject->m_transform.m_position.y , m_storedProjectionMatrix, m_storedViewMatrix);
+        XMFLOAT4X4 worldMatrice; 
+        XMStoreFloat4x4(&worldMatrice, XMMatrixTranspose(worldMatrix));
 
-        m_pGraphics->UpdateCustomCBObject<GCTest>(pComponent->m_pMaterial, test);
+        m_pGraphics->UpdateWorldConstantBuffer(pComponent->m_pMaterial, worldMatrice);
         m_pGraphics->GetRender()->DrawObject(pComponent->m_pMesh, pComponent->m_pMaterial);
+        
     }
 
     m_pGraphics->EndFrame();
@@ -36,8 +58,8 @@ void GCRenderManager::Render()
 
 void GCRenderManager::CreateGeometry()
 {
-    m_pPlane = m_pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red)).resource;
-    m_pCircle = m_pGraphics->CreateGeometryPrimitive(Circle, XMFLOAT4(Colors::Blue)).resource;
+    m_pPlane = m_pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Orange)).resource;
+    //m_pCircle = m_pGraphics->CreateGeometryPrimitive(Circle, XMFLOAT4(Colors::Blue)).resource;
 }
 
 
@@ -72,6 +94,5 @@ void GCRenderManager::RegisterComponent(Component* component)
     //        component->m_pRenderNode = m_pComponentList.PushBack(component);
     //    }
     //}
-
 }
 

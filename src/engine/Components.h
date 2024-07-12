@@ -1,8 +1,10 @@
 #pragma once
 #include "../core/framework.h"
-#include "GCColor.h"
-#include "../../src/Render/pch.h"
+#include "../Render/pch.h"
 
+#include "GCColor.h"
+
+using namespace DirectX;
 
 // TODO Adding lots of stuff to the components
 // todo 2 transforms for colliders (self & wold)
@@ -64,6 +66,9 @@ protected:
 
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
+
+    XMMATRIX* m_worldMatrix;
+
 };
 
 

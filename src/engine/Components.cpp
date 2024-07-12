@@ -1,11 +1,12 @@
+#include "pch.h"
 #include "Components.h"
-
 #include "Log.h"
-
 #include "GC.h"
-#include "../../src/Render/pch.h"
 #include "GameObject.h"
+#include "../Render/pch.h"
 
+
+using namespace DirectX;
 
 
 Component::Component() { Init(); }
@@ -44,13 +45,8 @@ SpriteRenderer::SpriteRenderer() : Component(RENDER)
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
+	m_pMesh = pGraphics->CreateMeshTexture(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
-
-
-	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
-	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
-
 	m_color = GCColor();
 }
 
@@ -69,10 +65,12 @@ void SpriteRenderer::SetSprite(std::string texturePath)
 	GCTexture* texture = pGraphics->CreateTexture(texturePath).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
-	GCShader* shaderTexture = pGraphics->CreateShaderTexture().resource;
-	GCMaterial* pMaterial = pGraphics->CreateMaterial(shaderTexture).resource;
-	m_pMaterial = pMaterial;
+	auto shaderTexture = pGraphics->CreateShaderTexture();
+	auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
+	m_pMaterial = mat.resource;
 	m_pMaterial->SetTexture(texture);
+
+	
 }
 
 void SpriteRenderer::SetColor()
@@ -132,6 +130,6 @@ CircleCollider::CircleCollider()
 void RigidBody::FixedUpdate()
 {
     // Apply velocity
-    m_pGameObject->m_transform.Translate(m_velocity);        // TODO: Multiply by the fixed delta time
+    //m_pGameObject->m_transform.Translate(m_velocity);        // TODO: Multiply by the fixed delta time
 }
 #pragma endregion RigidBody

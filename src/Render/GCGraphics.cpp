@@ -216,10 +216,14 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     SET_FLAG(flags, HAS_POSITION);
     SET_FLAG(flags, HAS_UV);
 
-    if (!pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags));
+    if (pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", flags) == false)
+    {
         return ResourceCreationResult<GCShader*>(false, nullptr);
-    if (!pShader->Load());
+    }
+    if (pShader->Load() == false)
+    {
         return ResourceCreationResult<GCShader*>(false, nullptr);
+    }
 
     m_vShaders.push_back(pShader);
 

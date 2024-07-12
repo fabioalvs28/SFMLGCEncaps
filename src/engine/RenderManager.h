@@ -1,9 +1,8 @@
 #pragma once
 #include "Components.h"
+#include "../Render/pch.h"
 
-class GCGraphics;
-class GCGeometry;
-class Window;
+using namespace DirectX;
 
 class GCRenderManager
 {
@@ -23,4 +22,13 @@ public:
     GCGraphics* m_pGraphics; 
     GCGeometry* m_pPlane;
     GCGeometry* m_pCircle;
+
+
+    //camera
+    XMVECTOR m_cameraPosition ;
+    XMVECTOR m_cameraTarget ;
+    XMVECTOR m_cameraUp ;
+    XMFLOAT4X4 m_storedProjectionMatrix;
+    XMFLOAT4X4 m_storedViewMatrix;
+
 };

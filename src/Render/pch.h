@@ -1,5 +1,5 @@
-#ifndef PCH_H
-#define PCH_H
+#ifndef RENDER_PCH_H
+#define RENDER_PCH_H
 #pragma once
 
 #pragma comment(lib, "d3d12.lib")
@@ -97,7 +97,6 @@ class Window;
 #include "Macros.h"
 #include "GCUploadBuffer.h"
 #include "GCRender.h"
-#include "Vectors.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"
@@ -109,9 +108,8 @@ class Window;
 #include "GCTexture.h"
 #include "GCGraphics.h"
 #include "GCTextureFactory.h"
-#include "Timer.h"
 #include "GCUtils.h"
 
 
 
-#endif // PCH_H
+#endif // RENDER_PCH_H
