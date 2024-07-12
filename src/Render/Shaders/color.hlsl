@@ -39,9 +39,18 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-// Pixel shader
-float4 PS(VertexOut pin) : SV_Target
+struct PSOutput
 {
+    float4 color1 : SV_Target0;
+    float4 color2 : SV_Target1;
+};
+
+// Pixel shader
+PSOutput PS(VertexOut pin) : SV_Target
+{
+    PSOutput output;
+    output.color1 = pin.Color;
+    output.color1 = pin.Color;
     // Color & Alpha
-    return pin.Color;
+    return output;
 }
