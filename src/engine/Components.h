@@ -4,7 +4,7 @@
 #include "Map.h"
 
 // TODO Adding lots of stuff to the components
-// todo 2 transforms for colliders (self & wold)
+// TODO Transforms for colliders
 
 class GCGameObject;
 
@@ -16,7 +16,7 @@ enum FLAGS
 	FIXED_UPDATE    = 1 << 1,
     RENDER          = 1 << 2,
 };
-inline FLAGS operator|(FLAGS a, FLAGS b) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
+inline FLAGS operator|( FLAGS a, FLAGS b ) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
 
 
@@ -34,8 +34,6 @@ public:
 
     GCGameObject* GetGameObject() { return m_pGameObject; }
 
-    bool IsFlagSet( FLAGS flag ) { return ( m_flags & flag ) != 0; }
-
 protected:
     Component( GCGameObject* pGameObject );
     virtual ~Component() = default;
@@ -44,7 +42,9 @@ protected:
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
-    virtual void Destroy() = 0;
+    virtual void Destroy() {}
+
+    bool IsFlagSet( FLAGS flag ) { return ( m_flags & flag ) != 0; }
 
 protected:
     inline static int componentCount = 0;
@@ -128,8 +128,8 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-    inline GCVEC2 GetSize() { return m_size; }
-    inline void SetSize( GCVEC2 size ) { m_size = size; }
+    GCVEC2 GetSize() { return m_size; }
+    void SetSize( GCVEC2 size ) { m_size = size; }
 
 protected:
     BoxCollider( GCGameObject* pGameObject ) : Collider( pGameObject ) {};
@@ -157,8 +157,8 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
-    inline float GetRadius() { return m_radius; }
-    inline void SetRadius( float radius ) { m_radius = radius; }
+    float GetRadius() { return m_radius; }
+    void SetRadius( float radius ) { m_radius = radius; }
 
 protected:
     CircleCollider( GCGameObject* pGameObject ) : Collider( pGameObject ) {};

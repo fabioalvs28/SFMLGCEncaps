@@ -3,7 +3,6 @@
 
 class GCGameObject;
 class GCScene;
-class GCGameManager;
 
 class GCSceneManager
 {

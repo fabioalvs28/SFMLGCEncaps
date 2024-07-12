@@ -2,13 +2,14 @@
 #include "Components.h"
 
 #include "Log.h"
-
-#include "GC.h"
 #include "GameObject.h"
+#include "GC.h"
+
 
 
 Component::Component( GCGameObject* pGameObject )
 {
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "A nullptr pGameObject was given in the Component constructor" );
 	m_flags = 0;
 	m_active = true;
 	m_pGameObject = pGameObject;
@@ -37,6 +38,8 @@ Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
 	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
 }
 #pragma endregion Collider
+
+
 
 #pragma region RigidBody
 RigidBody::RigidBody( GCGameObject* pGameObject ) : Component( pGameObject )
