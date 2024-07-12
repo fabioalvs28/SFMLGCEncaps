@@ -196,8 +196,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGraphics* graphics = new GCGraphics();
     graphics->Initialize(window, 1920, 1080);
 
-    //graphics->GetRender()->ActiveBasicPostProcessing();
-    //graphics->GetRender()->ActivePixelIDMapping();
+    graphics->GetRender()->ActiveBasicPostProcessing();
+    graphics->GetRender()->ActivePixelIDMapping();
 
     int flagsLightColor = 0;
     SET_FLAG(flagsLightColor, VERTEX_POSITION);
@@ -344,17 +344,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-        graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter, 1.0f);
-        graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource,true);
+        //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter, 1.0f);
+        //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource,true);
 
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
 
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere, 3.0f);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere, 3.0f);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());

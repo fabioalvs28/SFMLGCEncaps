@@ -3,6 +3,7 @@
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld; // World matrix
+    float objectId;
 };
 
 cbuffer cbPerCamera : register(b1)
@@ -50,7 +51,13 @@ PSOutput PS(VertexOut pin) : SV_Target
 {
     PSOutput output;
     output.color1 = pin.Color;
-    output.color1 = pin.Color;
+    
+    // Encode rgb
+    float r = float(objectId % 256) / 255.0f; 
+    float g = float((objectId / 256) % 256) / 255.0f; 
+    float b = float((objectId / (256 * 256)) % 256) / 255.0f; 
+    
+    output.color2 = float4(r, g, b, 1.0f);
     // Color & Alpha
     return output;
 }

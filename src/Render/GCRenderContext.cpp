@@ -186,21 +186,21 @@ void GCRenderContext::CreatePostProcessingResources() {
 		m_pGCRenderResources->m_ObjectIdBufferRtv = rtv->resource;
 		m_pGCRenderResources->m_ObjectIdBufferRtvAddress = rtv->cpuHandle;
 
-		//Create Object buffer Id Shader 
-		int flags2 = 0;
-		SET_FLAG(flags2, VERTEX_POSITION);
+		////Create Object buffer Id Shader 
+		//int flags2 = 0;
+		//SET_FLAG(flags2, VERTEX_POSITION);
 
-		int rootParametersFlag = 0;
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+		//int rootParametersFlag = 0;
+		//SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
+		//SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
 
-		m_objectBufferIdShader = new GCShader();
-		std::string shaderFilePath2 = "../../../src/Render/Shaders/ObjectBufferId.hlsl";
-		std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/ObjectBufferId";
+		//m_objectBufferIdShader = new GCShader();
+		//std::string shaderFilePath2 = "../../../src/Render/Shaders/ObjectBufferId.hlsl";
+		//std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/ObjectBufferId";
 
-		m_objectBufferIdShader->Initialize(this, shaderFilePath2, csoDestinationPath2, flags2, D3D12_CULL_MODE_BACK, rootParametersFlag);
-		m_objectBufferIdShader->SetRenderTargetFormats(m_pGCRenderResources->GetBackBufferFormat(), 1);
-		m_objectBufferIdShader->Load();
+		//m_objectBufferIdShader->Initialize(this, shaderFilePath2, csoDestinationPath2, flags2, D3D12_CULL_MODE_BACK, rootParametersFlag);
+		//m_objectBufferIdShader->SetRenderTargetFormats(m_pGCRenderResources->GetBackBufferFormat(), 1);
+		//m_objectBufferIdShader->Load();
 	}
 	
 
@@ -362,11 +362,20 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_ObjectIdBufferRtvAddress, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
+	D3D12_CPU_DESCRIPTOR_HANDLE basicRtv = m_pGCRenderResources->CurrentBackBufferViewAddress();
+	D3D12_CPU_DESCRIPTOR_HANDLE basicDsv = m_pGCRenderResources->GetDepthStencilViewAddress();
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dsv = m_pGCRenderResources->GetDepthStencilViewAddress();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pGCRenderResources->CurrentBackBufferViewAddress();
-	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &rtv, TRUE, &dsv);
+	if (m_isPixelIDMappingActivated) {
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvs[2] = { basicRtv, m_pGCRenderResources->m_ObjectIdBufferRtvAddress };
+		D3D12_CPU_DESCRIPTOR_HANDLE dsvs[2] = { basicDsv, m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress };
+		m_pGCRenderResources->m_CommandList->OMSetRenderTargets(2, rtvs, FALSE, dsvs);
+	}
+	// Basic Render
+	else {
 
+		m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &basicRtv, FALSE, &basicDsv);
+	}
+	
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap };
 	m_pGCRenderResources->m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
@@ -444,17 +453,6 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 		m_pGCRenderResources->m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 	}
 
-
-
-	//Object/Layers Buffer Id Draw
-	if (m_isPixelIDMappingActivated)
-	{
-		PerformPixelIdMapping(pMesh, alpha);
-	}
-
-
-	// ******************
-
 	return true;
 }
 
@@ -517,7 +515,7 @@ void GCRenderContext::PerformPostProcessing()
 	//Object/Layers BufferId Linking to shader
 	if (m_isPixelIDMappingActivated) 
 	{
-		srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->GetBackBufferFormat());
+		srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_ObjectIdBufferRtv, m_pGCRenderResources->GetBackBufferFormat());
 		m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_postProcessingShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
 	}
 

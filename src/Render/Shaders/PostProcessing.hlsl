@@ -19,47 +19,23 @@ VSOutput VS(float3 posL : POSITION, float2 uv : TEXCOORD)
     return output;
 }
 
-// Pixel shader
+// Pixel shader principal
 float4 PS(VSOutput pin) : SV_Target
 {
-    float w;
-    float h;
-    const int BlurRadius = 30; 
-    static const float GaussianWeights[30] =
-    {
-        0.009259f, 0.012945f, 0.017284f, 0.022397f, 0.028401f,
-        0.035399f, 0.043466f, 0.052647f, 0.062957f, 0.074381f,
-        0.086874f, 0.100356f, 0.114710f, 0.129790f, 0.145423f,
-        0.161411f, 0.177535f, 0.193554f, 0.209217f, 0.224266f,
-        0.238449f, 0.251523f, 0.263263f, 0.273468f, 0.281964f,
-        0.288610f, 0.293304f, 0.295981f, 0.296614f, 0.295215f
-    };
-
-    g_texture.GetDimensions(w, h);
-    
-
     float4 sampledColor = g_texture.Sample(g_sampler, pin.UV);
+    float4 sampledMeshBufferId = g_meshBufferIdTexture.Sample(g_sampler, pin.UV);
+
+
+    // Decode rgb
+    float objectId = sampledMeshBufferId.r * 255.0f; 
+    objectId += sampledMeshBufferId.g * 255.0f; 
+    objectId += sampledMeshBufferId.b * 255.0f * 255.0f; 
     
-
-    float4 filteredColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-    // Échantillonner les pixels environnants selon le noyau de flou gaussien
-    for (int i = -BlurRadius; i <= BlurRadius; ++i)
+    if (objectId == 50)
     {
-        int index = i + BlurRadius;
-        if (index >= 0 && index < 30) // Check if index is within bounds
-        {
-            float weight = GaussianWeights[index];
-        
-            float2 offset = float2(i / w, 0.0f); // Adjusted to ensure correct offset
-            float2 uv = pin.UV + offset;
-
-            float4 neighborColor = g_texture.Sample(g_sampler, uv);
-            filteredColor += neighborColor * weight;
-        }
+        return float4(0.5f, 0.3f, 0.6f, 1.0f);
     }
 
 
-    return filteredColor;
+    return sampledColor;
 }
-

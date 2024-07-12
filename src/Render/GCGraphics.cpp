@@ -489,7 +489,12 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     }
     GCWORLDCB worldData;
     worldData.world = worldMatrix;
-    worldData.objectId = meshId;
+
+    //const int MAX_MESH_ID = 1000; // Supposons que vos IDs de mesh vont de 0 à 1000
+    //int meshID = 55;
+    //float normalizedID = static_cast<float>(meshID) / MAX_MESH_ID;
+
+    worldData.objectId = 50;
     // Update 
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 
