@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief Creates the GameObjects in the "Creation Queue" and Destroys the GameObjects in the "Deletion Queue".
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void GCSceneManager::NewDelete()
+void GCSceneManager::Update()
 {
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToCreateList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
 		CreateGameObject( pGameObjectNode->GetData() );

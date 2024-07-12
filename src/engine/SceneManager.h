@@ -15,7 +15,7 @@ private:
     GCSceneManager() = default;
 	virtual ~GCSceneManager() = default;
 	
-	void NewDelete();
+	void Update();
 	
 	void SetActiveScene( GCScene* pScene );
 	void LoadScene( GCScene* pScene );
