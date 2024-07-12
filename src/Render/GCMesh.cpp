@@ -74,7 +74,6 @@ GCMesh::GCMesh()
 
     m_pParticleBufferGPU = nullptr;
     m_pParticleBufferUploader = nullptr;
-    m_Particles.resize(2);
 }
 
 GCMesh::~GCMesh()
@@ -116,7 +115,6 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {
     std::vector<float> vertexData;
     size_t vertexSize = 0;
 
-    std::vector<uint16_t> indices;
     // Manage offset bits size for reserve vector
     if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) vertexSize += 3; 
     if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) vertexSize += 4;
@@ -125,39 +123,36 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {
 
     vertexData.reserve(pGeometry->pos.size() * vertexSize * 2);
 
-    for (int i = 0; i < m_Particles.size(); i++)
+    for (size_t i = 0; i < pGeometry->pos.size(); ++i)
     {
-        for (size_t j = 0; j < pGeometry->pos.size(); ++j)
+        if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) 
         {
-            if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) 
-            {
-                vertexData.push_back(pGeometry->pos[j].x + i * 1.0f);
-                vertexData.push_back(pGeometry->pos[j].y);
-                vertexData.push_back(pGeometry->pos[j].z);
-            }
-            if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR))
-            {
-                vertexData.push_back(pGeometry->color[j].x);
-                vertexData.push_back(pGeometry->color[j].y);
-                vertexData.push_back(pGeometry->color[j].z);
-                vertexData.push_back(pGeometry->color[j].w);
-            }
-            if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) {
-                vertexData.push_back(pGeometry->uv[j].x);
-                vertexData.push_back(pGeometry->uv[j].y);
-            }
-            if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) 
-            {
-                vertexData.push_back(pGeometry->normals[j].x);
-                vertexData.push_back(pGeometry->normals[j].y);
-                vertexData.push_back(pGeometry->normals[j].z);
-            }
+            vertexData.push_back(pGeometry->pos[i].x);
+            vertexData.push_back(pGeometry->pos[i].y);
+            vertexData.push_back(pGeometry->pos[i].z);
         }
-        indices.insert(indices.begin(), pGeometry->indices.begin(), pGeometry->indices.end());
+        if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR))
+        {
+            vertexData.push_back(pGeometry->color[i].x);
+            vertexData.push_back(pGeometry->color[i].y);
+            vertexData.push_back(pGeometry->color[i].z);
+            vertexData.push_back(pGeometry->color[i].w);
+        }
+        if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) 
+        {
+            vertexData.push_back(pGeometry->uv[i].x);
+            vertexData.push_back(pGeometry->uv[i].y);
+        }
+        if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) 
+        {
+            vertexData.push_back(pGeometry->normals[i].x);
+            vertexData.push_back(pGeometry->normals[i].y);
+            vertexData.push_back(pGeometry->normals[i].z);
+        }
     }
 
     const UINT vbByteSize = static_cast<UINT>(vertexData.size() * sizeof(float));
-    const UINT ibByteSize = static_cast<UINT>(indices.size() * sizeof(std::uint16_t));
+    const UINT ibByteSize = static_cast<UINT>(pGeometry->indices.size() * sizeof(std::uint16_t));
 
     m_pBufferGeometryData = new GCMESHBUFFERDATA();
 
@@ -165,18 +160,36 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {
     CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
 
     D3DCreateBlob(ibByteSize, &m_pBufferGeometryData->IndexBufferCPU);
-    CopyMemory(m_pBufferGeometryData->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
-
+    CopyMemory(m_pBufferGeometryData->IndexBufferCPU->GetBufferPointer(), pGeometry->indices.data(), ibByteSize);
+    
     m_pBufferGeometryData->VertexBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), vertexData.data(), vbByteSize, &m_pBufferGeometryData->VertexBufferUploader);
-    m_pBufferGeometryData->IndexBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), indices.data(), ibByteSize, &m_pBufferGeometryData->IndexBufferUploader);
+    m_pBufferGeometryData->IndexBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), pGeometry->indices.data(), ibByteSize, &m_pBufferGeometryData->IndexBufferUploader);
 
     m_pBufferGeometryData->VertexByteStride = static_cast<UINT>(vertexSize * sizeof(float));
     m_pBufferGeometryData->VertexBufferByteSize = vbByteSize;
     m_pBufferGeometryData->IndexFormat = DXGI_FORMAT_R16_UINT;
     m_pBufferGeometryData->IndexBufferByteSize = ibByteSize;
 
-    m_pBufferGeometryData->IndexCount = static_cast<UINT>(indices.size());
+    m_pBufferGeometryData->IndexCount = static_cast<UINT>(pGeometry->indices.size());
 }
+
+//bool GCMesh::AddParticle(GCGeometry* pGeometry, DirectX::XMFLOAT3 pos)
+//{
+//    GCPARTICLE particle;
+//    particle.pParticleGeometry = pGeometry;
+//    particle.initPos = pos;
+//
+//    m_Particles.push_back(particle);
+//
+//    return true;
+//}
+
+//bool GCMesh::DeleteParticleAt(int index)
+//{
+//    m_Particles.erase(m_Particles.begin() + index);
+//
+//    return true;
+//}
 
 void GCMesh::InitializeParticleSystem(size_t maxParticles)
 {
@@ -190,40 +203,39 @@ void GCMesh::InitializeParticleSystem(size_t maxParticles)
                               static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f };
 
         // Give each particle a random position and velocity for better visualization
-        particle.Position = particle.initPos;
+        particle.position = particle.initPos;
 
-        particle.Velocity = { static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f,
+        particle.velocity = { static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f,
                               static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f,
                               static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f };
-        particle.Lifetime = 2.0f;
-        particle.Age = 0.0f;
+        particle.lifetime = 2.0f;
+        particle.age = 0.0f;
     }
 
     const UINT particleByteSize = static_cast<UINT>(m_Particles.size() * sizeof(GCPARTICLE));
 
     // Check the return value of CreateDefaultBuffer to ensure buffer creation was successful
     m_pParticleBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), m_Particles.data(), particleByteSize, &m_pParticleBufferUploader);
-    
 }
 
 void GCMesh::UpdateParticles(float deltaTime)
 {
     for (auto& particle : m_Particles)
     {
-        if (particle.Age < particle.Lifetime)
+        if (particle.age < particle.lifetime)
         {
             // Update particle position based on velocity
-            particle.Position.x += particle.Velocity.x * deltaTime;
-            particle.Position.y += particle.Velocity.y * deltaTime;
-            particle.Position.z += particle.Velocity.z * deltaTime;
+            particle.position.x += particle.velocity.x * deltaTime;
+            particle.position.y += particle.velocity.y * deltaTime;
+            particle.position.z += particle.velocity.z * deltaTime;
 
             // Update age of the particle
-            particle.Age += deltaTime;
+            particle.age += deltaTime;
         }
         else
         {
-            particle.Age = 0;
-            particle.Position = particle.initPos;
+            particle.age = 0;
+            particle.position = particle.initPos;
         }
     }
 
@@ -246,8 +258,8 @@ void GCMesh::UpdateParticles(float deltaTime)
 void GCMesh::RenderParticles(GCGraphics* graphics, GCMaterial* material, DirectX::XMMATRIX viewProjMatrix)
 {
     for (const auto& particle : m_Particles) {
-        if (particle.Age < particle.Lifetime) {
-            DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(particle.Position.x, particle.Position.y, particle.Position.z);
+        if (particle.age < particle.lifetime) {
+            DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(particle.position.x, particle.position.y, particle.position.z);
             DirectX::XMMATRIX worldViewProjMatrix = worldMatrix * viewProjMatrix;
             DirectX::XMFLOAT4X4 worldViewProj;
             DirectX::XMStoreFloat4x4(&worldViewProj, XMMatrixTranspose(worldViewProjMatrix));
@@ -257,3 +269,82 @@ void GCMesh::RenderParticles(GCGraphics* graphics, GCMaterial* material, DirectX
     }
 }
 
+//bool GCMesh::UpdateGeometryData(GCGeometry* pNewGeometry, int& newFlagEnabledBits)
+//{
+//    if (!pNewGeometry || !m_pBufferGeometryData) {
+//        // Log or handle the error
+//        return false;
+//    }
+//
+//    m_flagEnabledBits = newFlagEnabledBits;
+//
+//    // Calculate new vertex size based on updated flags
+//    size_t newVertexSize = 0;
+//    if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) newVertexSize += 3;
+//    if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) newVertexSize += 4;
+//    if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) newVertexSize += 2;
+//    if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) newVertexSize += 3;
+//
+//    std::vector<float> newVertexData;
+//    newVertexData.reserve(pNewGeometry->pos.size() * newVertexSize * 2);
+//
+//    for (size_t i = 0; i < pNewGeometry->pos.size(); ++i)
+//    {
+//        if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION))
+//        {
+//            newVertexData.push_back(pNewGeometry->pos[i].x);
+//            newVertexData.push_back(pNewGeometry->pos[i].y);
+//            newVertexData.push_back(pNewGeometry->pos[i].z);
+//        }
+//        if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR))
+//        {
+//            newVertexData.push_back(pNewGeometry->color[i].x);
+//            newVertexData.push_back(pNewGeometry->color[i].y);
+//            newVertexData.push_back(pNewGeometry->color[i].z);
+//            newVertexData.push_back(pNewGeometry->color[i].w);
+//        }
+//        if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) 
+//        {
+//            newVertexData.push_back(pNewGeometry->uv[i].x);
+//            newVertexData.push_back(pNewGeometry->uv[i].y);
+//        }
+//        if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL))
+//        {
+//            newVertexData.push_back(pNewGeometry->normals[i].x);
+//            newVertexData.push_back(pNewGeometry->normals[i].y);
+//            newVertexData.push_back(pNewGeometry->normals[i].z);
+//        }
+//    }
+//
+//    const UINT newVbByteSize = static_cast<UINT>(newVertexData.size() * sizeof(float));
+//    const UINT newIbByteSize = static_cast<UINT>(pNewGeometry->indices.size() * sizeof(uint16_t));
+//
+//    // Map the upload buffer and copy the vertex data
+//    void* pVertexDataBegin = nullptr;
+//    HRESULT hr = m_pBufferGeometryData->VertexBufferUploader->Map(0, nullptr, &pVertexDataBegin);
+//    if (FAILED(hr)) {
+//        // Log or handle the error
+//        return false;
+//    }
+//    memcpy(pVertexDataBegin, newVertexData.data(), newVbByteSize);
+//    m_pBufferGeometryData->VertexBufferUploader->Unmap(0, nullptr);
+//
+//    // Map the upload buffer and copy the index data
+//    void* pIndexDataBegin = nullptr;
+//    hr = m_pBufferGeometryData->IndexBufferUploader->Map(0, nullptr, &pIndexDataBegin);
+//    if (FAILED(hr)) {
+//        // Log or handle the error
+//        return false;
+//    }
+//    memcpy(pIndexDataBegin, pNewGeometry->indices.data(), newIbByteSize);
+//    m_pBufferGeometryData->IndexBufferUploader->Unmap(0, nullptr);
+//
+//    // Update the buffer size and data
+//    m_pBufferGeometryData->VertexByteStride = static_cast<UINT>(newVertexSize * sizeof(float));
+//    m_pBufferGeometryData->VertexBufferByteSize = newVbByteSize;
+//    m_pBufferGeometryData->IndexFormat = DXGI_FORMAT_R16_UINT;
+//    m_pBufferGeometryData->IndexBufferByteSize = newIbByteSize;
+//    m_pBufferGeometryData->IndexCount = static_cast<UINT>(pNewGeometry->indices.size());
+//
+//    return true;
+//}

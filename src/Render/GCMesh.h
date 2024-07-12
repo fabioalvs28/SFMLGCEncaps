@@ -1,12 +1,12 @@
 #pragma once
 struct GCPARTICLE
 {
+    GCGeometry* pParticleGeometry;
     DirectX::XMFLOAT3 initPos;
-    DirectX::XMFLOAT3 Position;
-    DirectX::XMFLOAT3 Velocity;
-    float Lifetime;
-    float Age;
-
+    DirectX::XMFLOAT3 position;
+    DirectX::XMFLOAT3 velocity;
+    float lifetime;
+    float age;
 };
 
 class GCMesh
@@ -14,7 +14,6 @@ class GCMesh
 public:
 	GCMesh();
     ~GCMesh();
-
 
     void UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits);
 
@@ -24,11 +23,15 @@ public:
 
     int GetFlagEnabledBits() const { return m_flagEnabledBits; }
 
+    bool AddParticle(GCGeometry* pGeometry, DirectX::XMFLOAT3 position);
+
+    bool DeleteParticleAt(int index);
+
     void InitializeParticleSystem(size_t maxParticles);
     void UpdateParticles(float deltaTime);
     void RenderParticles(GCGraphics* graphics, GCMaterial* material, DirectX::XMMATRIX viewProjMatrix);
-private:
 
+private:
 
     GCRender* m_pRender;
     GCMESHBUFFERDATA* m_pBufferGeometryData;
@@ -42,8 +45,8 @@ private:
         const void* initData,
         UINT64 byteSize,
         ID3D12Resource** uploadBuffer);
-    // Particle System members
 
+    // Particle System members
     std::vector<GCPARTICLE> m_Particles;
     ID3D12Resource* m_pParticleBufferGPU;
     ID3D12Resource* m_pParticleBufferUploader;
