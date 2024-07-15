@@ -725,207 +725,207 @@ int GCImage::GetPixelCount(int r, int g, int b, int a)
 
 //** All drawing Functions **//
 
-//void GCImage::WritePixel(int x, int y, COLORREF color, int d, int id)
-//{
-//	if (x < 0 || x >= m_width || y < 0 || y >= m_height) 
-//	{
-//		return;
-//	}
-//	int index = (x + y * m_width) * m_channels;
-//	data[index] = GetRValue(color);
-//	data[index + 1] = GetGValue(color);
-//	data[index + 2] = GetBValue(color);
-//}
-//
-//bool GCImage::SavePNG(GCFile* file, int* pOutSize, bool gray)
-//{
-//	if (file == nullptr || m_rgba == nullptr)
-//		return false;
-//
-//	BYTE* png = nullptr;
-//	size_t size = 0;
-//	UI32 error = lodepng_encodeEx(&png, &size, m_rgba, m_width, m_height, m_bitCount, gray);
-//	if (error)
-//		return false;
-//
-//	file->Write(png, (int)size);
-//	DELPTRS(png);
-//
-//	if (pOutSize)
-//		*pOutSize = (int)size;
-//	return true;
-//
-//}
-//
-//void GCImage::DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-//	if (abs(y2 - y1) < abs(x2 - x1)) 
-//	{
-//		if (x1 > x2) 
-//		{
-//			DrawLineLow(x2, y2, x1, y1, r, g, b, a);
-//		}
-//		else 
-//		{
-//			DrawLineLow(x1, y1, x2, y2, r, g, b, a);
-//		}
-//	}
-//	else 
-//	{
-//		if (y1 > y2) 
-//		{
-//			DrawLineHigh(x2, y2, x1, y1, r, g, b, a);
-//		}
-//		else 
-//		{
-//			DrawLineHigh(x1, y1, x2, y2, r, g, b, a);
-//		}
-//	}
-//}
-//
-//void GCImage::DrawLineLow(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-//	int dx = x2 - x1;
-//	int dy = y2 - y1;
-//	int yi = 1;
-//	if (dy < 0) 
-//	{
-//		yi = -1;
-//		dy = -dy;
-//	}
-//	int D = 2 * dy - dx;
-//	int y = y1;
-//
-//	for (int x = x1; x <= x2; ++x) 
-//	{
-//		SetPixel(x, y, r, g, b, a);
-//		if (D > 0) {
-//			y += yi;
-//			D -= 2 * dx;
-//		}
-//		D += 2 * dy;
-//	}
-//}
-//
-//void GCImage::DrawLineHigh(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-//	int dx = x2 - x1;
-//	int dy = y2 - y1;
-//	int xi = 1;
-//	if (dx < 0) 
-//	{
-//		xi = -1;
-//		dx = -dx;
-//	}
-//	int D = 2 * dx - dy;
-//	int x = x1;
-//
-//	for (int y = y1; y <= y2; ++y) 
-//	{
-//		SetPixel(x, y, r, g, b, a);
-//		if (D > 0 )
-//		{
-//			x += xi;
-//			D -= 2 * dy;
-//		}
-//		D += 2 * dx;
-//	}
-//}
-//
-//void GCImage::DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-//	DrawLine(x, y, x + w - 1, y, r, g, b, a);
-//	DrawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a);
-//	DrawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a);
-//	DrawLine(x, y + h - 1, x, y, r, g, b, a);
-//}
-//
-//void GCImage::FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-//	for (int i = y; i < y + h; ++i)
-//	{
-//		for (int j = x; j < x + w; ++j) 
-//		{
-//			SetPixel(j, i, r, g, b, a);
-//		}
-//	}
-//}
-//
-//void GCImage::DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-//{
-//	int f = 1 - radius;
-//	int ddF_x = 1;
-//	int ddF_y = -2 * radius;
-//	int x1 = 0;
-//	int y1 = radius;
-//
-//	SetPixel(x, y + radius, r, g, b, a);
-//	SetPixel(x, y - radius, r, g, b, a);
-//	SetPixel(x + radius, y, r, g, b, a);
-//	SetPixel(x - radius, y, r, g, b, a);
-//
-//	while (x1 < y1)
-//	{
-//		if (f >= 0)
-//		{
-//			y1--;
-//			ddF_y += 2;
-//			f += ddF_y;
-//		}
-//		x1++;
-//		ddF_x += 2;
-//		f += ddF_x;
-//
-//		SetPixel(x + x1, y + y1, r, g, b, a);
-//		SetPixel(x - x1, y + y1, r, g, b, a);
-//		SetPixel(x + x1, y - y1, r, g, b, a);
-//		SetPixel(x - x1, y - y1, r, g, b, a);
-//		SetPixel(x + y1, y + x1, r, g, b, a);
-//		SetPixel(x - y1, y + x1, r, g, b, a);
-//		SetPixel(x + y1, y - x1, r, g, b, a);
-//		SetPixel(x - y1, y - x1, r, g, b, a);
-//	}
-//
-//}
-//
-//void GCImage::FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-//{
-//	int f = 1 - radius;
-//	int ddF_x = 1;
-//	int ddF_y = -2 * radius;
-//	int x1 = 0;
-//	int y1 = radius;
-//
-//	for (int i = y - radius; i <= y + radius; i++) 
-//	{
-//		SetPixel(x, i, r, g, b, a);
-//	}
-//
-//	while (x1 < y1)
-//	{
-//		if (f >= 0) 
-//		{
-//			y1--;
-//			ddF_y += 2;
-//			f += ddF_y;
-//		}
-//		x1++;
-//		ddF_x += 2;
-//		f += ddF_x;
-//
-//		for (int i = y - y1; i <= y + y1; i++) 
-//		{
-//			SetPixel(x + x1, i, r, g, b, a);
-//			SetPixel(x - x1, i, r, g, b, a);
-//			SetPixel(x + y1, i, r, g, b, a);
-//			SetPixel(x - y1, i, r, g, b, a);
-//		}
-//	}
-//}
-//
-//void GCImage::Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) 
-//{
-//	for (int y = 0; y < m_height; ++y) {
-//		for (int x = 0; x < m_width; ++x) {
-//			SetPixel(x, y, r, g, b, a);
-//		}
-//	}
-//}
+void GCImage::WritePixel(int x, int y, COLORREF color, int d, int id)
+{
+	if (x < 0 || x >= m_width || y < 0 || y >= m_height) 
+	{
+		return;
+	}
+	int index = (x + y * m_width) * m_channels;
+	data[index] = GetRValue(color);
+	data[index + 1] = GetGValue(color);
+	data[index + 2] = GetBValue(color);
+}
+
+bool GCImage::SavePNG(GCFile* file, int* pOutSize, bool gray)
+{
+	if (file == nullptr || m_rgba == nullptr)
+		return false;
+
+	BYTE* png = nullptr;
+	size_t size = 0;
+	UI32 error = lodepng_encodeEx(&png, &size, m_rgba, m_width, m_height, m_bitCount, gray);
+	if (error)
+		return false;
+
+	file->Write(png, (int)size);
+	DELPTRS(png);
+
+	if (pOutSize)
+		*pOutSize = (int)size;
+	return true;
+
+}
+
+void GCImage::DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	if (abs(y2 - y1) < abs(x2 - x1)) 
+	{
+		if (x1 > x2) 
+		{
+			DrawLineLow(x2, y2, x1, y1, r, g, b, a);
+		}
+		else 
+		{
+			DrawLineLow(x1, y1, x2, y2, r, g, b, a);
+		}
+	}
+	else 
+	{
+		if (y1 > y2) 
+		{
+			DrawLineHigh(x2, y2, x1, y1, r, g, b, a);
+		}
+		else 
+		{
+			DrawLineHigh(x1, y1, x2, y2, r, g, b, a);
+		}
+	}
+}
+
+void GCImage::DrawLineLow(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	int dx = x2 - x1;
+	int dy = y2 - y1;
+	int yi = 1;
+	if (dy < 0) 
+	{
+		yi = -1;
+		dy = -dy;
+	}
+	int D = 2 * dy - dx;
+	int y = y1;
+
+	for (int x = x1; x <= x2; ++x) 
+	{
+		SetPixel(x, y, r, g, b, a);
+		if (D > 0) {
+			y += yi;
+			D -= 2 * dx;
+		}
+		D += 2 * dy;
+	}
+}
+
+void GCImage::DrawLineHigh(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	int dx = x2 - x1;
+	int dy = y2 - y1;
+	int xi = 1;
+	if (dx < 0) 
+	{
+		xi = -1;
+		dx = -dx;
+	}
+	int D = 2 * dx - dy;
+	int x = x1;
+
+	for (int y = y1; y <= y2; ++y) 
+	{
+		SetPixel(x, y, r, g, b, a);
+		if (D > 0 )
+		{
+			x += xi;
+			D -= 2 * dy;
+		}
+		D += 2 * dx;
+	}
+}
+
+void GCImage::DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	DrawLine(x, y, x + w - 1, y, r, g, b, a);
+	DrawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a);
+	DrawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a);
+	DrawLine(x, y + h - 1, x, y, r, g, b, a);
+}
+
+void GCImage::FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	for (int i = y; i < y + h; ++i)
+	{
+		for (int j = x; j < x + w; ++j) 
+		{
+			SetPixel(j, i, r, g, b, a);
+		}
+	}
+}
+
+void GCImage::DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+	int f = 1 - radius;
+	int ddF_x = 1;
+	int ddF_y = -2 * radius;
+	int x1 = 0;
+	int y1 = radius;
+
+	SetPixel(x, y + radius, r, g, b, a);
+	SetPixel(x, y - radius, r, g, b, a);
+	SetPixel(x + radius, y, r, g, b, a);
+	SetPixel(x - radius, y, r, g, b, a);
+
+	while (x1 < y1)
+	{
+		if (f >= 0)
+		{
+			y1--;
+			ddF_y += 2;
+			f += ddF_y;
+		}
+		x1++;
+		ddF_x += 2;
+		f += ddF_x;
+
+		SetPixel(x + x1, y + y1, r, g, b, a);
+		SetPixel(x - x1, y + y1, r, g, b, a);
+		SetPixel(x + x1, y - y1, r, g, b, a);
+		SetPixel(x - x1, y - y1, r, g, b, a);
+		SetPixel(x + y1, y + x1, r, g, b, a);
+		SetPixel(x - y1, y + x1, r, g, b, a);
+		SetPixel(x + y1, y - x1, r, g, b, a);
+		SetPixel(x - y1, y - x1, r, g, b, a);
+	}
+
+}
+
+void GCImage::FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+	int f = 1 - radius;
+	int ddF_x = 1;
+	int ddF_y = -2 * radius;
+	int x1 = 0;
+	int y1 = radius;
+
+	for (int i = y - radius; i <= y + radius; i++) 
+	{
+		SetPixel(x, i, r, g, b, a);
+	}
+
+	while (x1 < y1)
+	{
+		if (f >= 0) 
+		{
+			y1--;
+			ddF_y += 2;
+			f += ddF_y;
+		}
+		x1++;
+		ddF_x += 2;
+		f += ddF_x;
+
+		for (int i = y - y1; i <= y + y1; i++) 
+		{
+			SetPixel(x + x1, i, r, g, b, a);
+			SetPixel(x - x1, i, r, g, b, a);
+			SetPixel(x + y1, i, r, g, b, a);
+			SetPixel(x - y1, i, r, g, b, a);
+		}
+	}
+}
+
+void GCImage::Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) 
+{
+	for (int y = 0; y < m_height; ++y) {
+		for (int x = 0; x < m_width; ++x) {
+			SetPixel(x, y, r, g, b, a);
+		}
+	}
+}
 
 bool GCImage::Flip(bool horz, bool vert)
 {

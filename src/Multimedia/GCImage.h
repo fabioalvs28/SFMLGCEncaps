@@ -182,13 +182,13 @@ public:
 	// Create Empty Image, w and h are the width and height, bpp is the bits per pixel (24 or 32)
 	void CreateEmptyImage(int w, int h, int bpp);
 
-	//void WritePixel(int x, int y, COLORREF color, int d = 0, int id = -1);
-	//void DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void WritePixel(int x, int y, COLORREF color, int d = 0, int id = -1);
+	void DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 	//Flip the image, horz is the horizontal flag and vert is the vertical flag
 	bool Flip(bool horz = true, bool vert = false);
