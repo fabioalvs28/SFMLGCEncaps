@@ -9,6 +9,9 @@ struct GC_DESCRIPTOR_RESOURCE
 class GCRenderResources {
 public:
 
+	GCRenderResources();
+	~GCRenderResources();
+
 	//Double RTV Resource For Final Render
 	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
 	//CPU Handle Address of the both
@@ -79,7 +82,7 @@ private:
 
 	//Fence
 	ID3D12Fence* m_Fence;
-	UINT64 m_CurrentFence = 0;
+	UINT64 m_CurrentFence;
 
 	//Descriptor heaps
 	ID3D12DescriptorHeap* m_pRtvHeap;
@@ -87,21 +90,21 @@ private:
 	ID3D12DescriptorHeap* m_pCbvSrvUavDescriptorHeap;
 
 	//Descriptors size
-	UINT m_rtvDescriptorSize = 0;
-	UINT m_dsvDescriptorSize = 0;
-	UINT m_cbvSrvUavDescriptorSize = 0;
+	UINT m_rtvDescriptorSize;
+	UINT m_dsvDescriptorSize;
+	UINT m_cbvSrvUavDescriptorSize;
 
 	//State var
-	bool m_canResize = true;
-	int m_CurrBackBuffer = 0;
+	bool m_canResize;
+	int m_CurrBackBuffer;
 
 	//Format
-	DXGI_FORMAT m_DepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	DXGI_FORMAT m_BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	DXGI_FORMAT m_DepthStencilFormat;
+	DXGI_FORMAT m_BackBufferFormat;
 
 	//Msaa
-	bool m_4xMsaaState = false;    // 4X MSAA enabled
-	UINT m_4xMsaaQuality = 0;      // quality level of 4X MSAA
+	bool m_4xMsaaState;    // 4X MSAA enabled
+	UINT m_4xMsaaQuality;      // quality level of 4X MSAA
 
 	//Screen
 	D3D12_VIEWPORT m_ScreenViewport;
@@ -113,7 +116,7 @@ private:
 	ID3D12Resource* m_pPostProcessingRtv;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_pPostProcessingRtvAddress;
 
-	//Object / Layers Buffer Id Resources -> #TODO Change the norm for object id, layers id
+	//Pixel Id Mapping Resources
 	ID3D12Resource* m_ObjectIdBufferRtv; //Rtv Buffer
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdBufferRtvAddress; //Cpu Handle Address
 	//#TODO Use the principal dsv, in reading 
@@ -125,10 +128,8 @@ private:
 
 	//Rtv Manager
 	int m_rtvOffsetCount = 2;
-	//int m_rtvUseCount; // use count each frame to know if we need add
 	std::list<GC_DESCRIPTOR_RESOURCE*> m_lRenderTargets;
 	GC_DESCRIPTOR_RESOURCE* CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE, D3D12_CLEAR_VALUE* clearValue = nullptr);
-	GC_DESCRIPTOR_RESOURCE* CreateSwapchainRTV(ID3D12Resource* pResource);
 
 	//Srv Manager
 	int m_srvOffsetCount = 300;

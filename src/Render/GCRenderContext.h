@@ -3,6 +3,9 @@
 class GCRenderContext
 {
 public:
+	GCRenderContext();
+	~GCRenderContext();
+
 	bool Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics);
 	bool InitDX12RenderPipeline();
 

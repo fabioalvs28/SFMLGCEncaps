@@ -230,7 +230,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     SET_FLAG(flags, VERTEX_POSITION);
     SET_FLAG(flags, VERTEX_UV);
 
-
     auto meshPostProcessing = graphics->CreateMeshCustom(geometryPostProcessing.resource, flags);
 
     // Cr�ation des meshes
@@ -358,7 +357,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());
+
+        //break;
     }
+
+    //delete graphics;
 
     return 0;
 }

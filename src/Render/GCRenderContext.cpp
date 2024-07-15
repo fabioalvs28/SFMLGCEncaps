@@ -1,5 +1,24 @@
 #include "pch.h"
 
+GCRenderContext::GCRenderContext()
+	: m_pGCRenderResources(nullptr),
+	m_pCbCurrentViewProjInstance(nullptr),
+	m_pCbLightPropertiesInstance(nullptr),
+	m_postProcessingShader(nullptr),
+	m_objectBufferIdShader(nullptr),
+	m_isBasicPostProcessingActivated(false),
+	m_isPixelIDMappingActivated(false) {
+}
+
+GCRenderContext::~GCRenderContext() {
+	SAFE_DELETE(m_pGCRenderResources);
+	SAFE_DELETE(m_pCbCurrentViewProjInstance);
+	SAFE_DELETE(m_pCbLightPropertiesInstance);
+	SAFE_DELETE(m_postProcessingShader);
+	SAFE_DELETE(m_objectBufferIdShader);
+}
+
+
 bool GCRenderContext::Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics)
 {
 	if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
@@ -11,9 +30,7 @@ bool GCRenderContext::Initialize(Window* pWindow, int renderWidth, int renderHei
 	m_pGCRenderResources->m_renderHeight = renderHeight;
 	m_pGCRenderResources->m_pWindow = pWindow;
 
-
 	InitDX12RenderPipeline();
-
 
 	return true;
 }

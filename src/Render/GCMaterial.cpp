@@ -1,19 +1,22 @@
 #include "pch.h"
 
 GCMaterial::GCMaterial()
+    : m_pRender(nullptr),
+    m_pShader(nullptr),
+    m_pTexture(nullptr),
+    m_pCbMaterialPropertiesInstance(nullptr)
 {
-    m_pRender = nullptr;
-    m_pShader = nullptr;
-    m_pTexture = nullptr;
-    m_pCbMaterialPropertiesInstance = nullptr;
 }
 
 GCMaterial::~GCMaterial()
 {
-    delete(m_pRender);
-    delete(m_pShader);
-    delete(m_pTexture);
-    delete(m_pCbMaterialPropertiesInstance);
+    SAFE_DELETE(m_pCbMaterialPropertiesInstance);
+
+    for (auto* cb : m_pCbObjectInstances)
+    {
+        SAFE_DELETE(cb);
+    }
+    m_pCbObjectInstances.clear();
 }
 
 
