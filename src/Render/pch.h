@@ -103,7 +103,6 @@ class Window;
 #include "GCUploadBuffer.h"
 #include "GCRenderContext.h"
 #include "GCRenderResources.h"
-#include "Vectors.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"

@@ -434,7 +434,7 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 
 	//Basic Draw
 	{
-		m_pGCRenderResources->m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso(true));
+		m_pGCRenderResources->m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso(alpha));
 		m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
 
 		m_pGCRenderResources->m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

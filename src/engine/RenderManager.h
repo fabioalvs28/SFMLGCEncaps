@@ -8,7 +8,7 @@ class GCRenderManager
 {
     friend class GCGameObject;
 private:
-    GCList<Component*> m_pComponentList;
+    std::vector<Component*> m_componentList;
 public:
     GCRenderManager();
     ~GCRenderManager();

@@ -16,7 +16,7 @@ GCRenderManager::GCRenderManager()
     m_cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
     m_cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-    //HASSOUL
+    //Set Camera
     float viewWidth = 20.0f;
     float viewHeight = 20.0f;
     XMMATRIX projectionMatrix = XMMatrixOrthographicLH(viewWidth, viewHeight, 1.0f, 1000.0f);
@@ -27,30 +27,25 @@ GCRenderManager::GCRenderManager()
     XMStoreFloat4x4(&m_storedProjectionMatrix, transposedProjectionMatrix);
     XMStoreFloat4x4(&m_storedViewMatrix, transposedViewMatrix);
 
+    m_componentList = std::vector<Component*>(0);
+
 }
 
 GCRenderManager::~GCRenderManager()
 {
 }
 
-void GCRenderManager::Render()
+void GCRenderManager::Render() // Render : order by layer, and spriteRenderer before Collider.
 {
     m_pGraphics->StartFrame();
 
     m_pGraphics->UpdateViewProjConstantBuffer(m_storedProjectionMatrix, m_storedViewMatrix);
 
-    for ( GCListNode<Component*>* componentNode = m_pComponentList.GetFirstNode(); componentNode != nullptr ; componentNode = componentNode->GetNext() )
+    // Affichage : premier de la liste au prmeier plan.
+
+    for ( int i = 0 ; i < m_componentList.size() ; i ++ )
     {
-        Component* pComponent = componentNode->GetData();
-        
-        XMMATRIX worldMatrix = XMMatrixScaling(pComponent->m_pGameObject->m_transform.m_scale.x, pComponent->m_pGameObject->m_transform.m_scale.y, pComponent->m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(pComponent->m_pGameObject->m_transform.m_position.x, pComponent->m_pGameObject->m_transform.m_position.y, pComponent->m_pGameObject->m_transform.m_position.z); // Cube externe (skybox)
-
-        XMFLOAT4X4 worldMatrice; 
-        XMStoreFloat4x4(&worldMatrice, XMMatrixTranspose(worldMatrix));
-
-        m_pGraphics->UpdateWorldConstantBuffer(pComponent->m_pMaterial, worldMatrice);
-        m_pGraphics->GetRender()->DrawObject(pComponent->m_pMesh, pComponent->m_pMaterial);
-        
+        m_componentList[i]->Render();
     }
 
     m_pGraphics->EndFrame();
@@ -58,41 +53,37 @@ void GCRenderManager::Render()
 
 void GCRenderManager::CreateGeometry()
 {
-    m_pPlane = m_pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Orange)).resource;
+    m_pPlane = m_pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red)).resource;
     //m_pCircle = m_pGraphics->CreateGeometryPrimitive(Circle, XMFLOAT4(Colors::Blue)).resource;
 }
 
 
 void GCRenderManager::RegisterComponent(Component* component)
 {
-    if (m_pComponentList.GetFirstNode() == nullptr)
+    if (m_componentList.size() == 0)
     {
-        component->m_pRenderNode = m_pComponentList.PushBack(component);
+        m_componentList.push_back(component); 
         return;
     }
 
-    m_pComponentList.PushBack(component);
+    m_componentList.push_back(component);
     
-    //if ( m_pComponentList.GetFirstNode() == m_pComponentList.GetLastNode())
-    //{
-    //    if (m_pComponentList.GetFirstNode()->GetData()->GetGameObject()->GetLayer() <= m_pComponentList.GetLastNode()->GetData()->GetGameObject()->GetLayer())
-    //        m_pComponentList.PushBack(component);
-    //    else
-    //        m_pComponentList.PushFront(component);
-    //    return;
-    //}
-
-    //for (GCListNode<Component*>* pComponent = m_pComponentList.GetFirstNode(); pComponent != nullptr; pComponent->GetNext())
-    //{
-    //    if (pComponent->GetData()->m_pGameObject->GetLayer() >= component->m_pGameObject->GetLayer())
+    ////if ( m_componentList.size() == 2 )
+    ////{
+    //    if ( m_componentList[0]->GetGameObject()->GetID() == component->GetGameObject()->GetID() )
     //    {
-    //        component->m_pRenderNode = pComponent->PushBefore(component);
-    //        break;
+    //        if (m_componentList[0].)
     //    }
-    //    else if ( pComponent == m_pComponentList.GetLastNode() )
-    //    {
-    //        component->m_pRenderNode = m_pComponentList.PushBack(component);
-    //    }
+    ////    else if ( m_componentList[0]->GetGameObject()->GetLayer() >= m_componentList[1]->GetGameObject()->GetLayer() )
+    ////        m_componentList.push_back(component);
+    ////    else
+    ////        m_componentList.insert(0, component);
+    ////    return;
+    ////}
+    //
+    //while ( true )
+    //{
+    //
     //}
 }
 

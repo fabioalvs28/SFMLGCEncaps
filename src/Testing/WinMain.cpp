@@ -64,15 +64,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     GC::m_pActiveGameManager.m_pRenderManager.CreateGeometry();
 
-    int flagsLightColor = 0;
-    SET_FLAG(flagsLightColor, HAS_POSITION);
-    SET_FLAG(flagsLightColor, HAS_COLOR);
-    SET_FLAG(flagsLightColor, HAS_NORMAL);
+    //int flagsLightColor = 0;
+    //SET_FLAG(flagsLightColor, HAS_POSITION);
+    //SET_FLAG(flagsLightColor, HAS_COLOR);
+    //SET_FLAG(flagsLightColor, HAS_NORMAL);
 
-    int flagsLightTexture = 0;
-    SET_FLAG(flagsLightTexture, HAS_POSITION);
-    SET_FLAG(flagsLightTexture, HAS_UV);
-    SET_FLAG(flagsLightTexture, HAS_NORMAL);
+    //int flagsLightTexture = 0;
+    //SET_FLAG(flagsLightTexture, HAS_POSITION);
+    //SET_FLAG(flagsLightTexture, HAS_UV);
+    //SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
     GCScene* pScene = GCScene::Create();
     GCGameObject* test1 = pScene->CreateGameObject();
@@ -81,8 +81,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
     //test1->AddComponent<BoxCollider>();
-    test3->AddComponent<SpriteRenderer>();
     test2->AddComponent<SpriteRenderer>();
+    test3->AddComponent<BoxCollider>();
+    //test2->AddComponent<SpriteRenderer>();
 
     test1->m_transform.m_position.x = 2;
     test1->m_transform.m_position.y = 0;
@@ -90,26 +91,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     
     test2->m_transform.m_position.x = 6;
     test2->m_transform.m_position.y = 0;
-    test2->m_transform.m_scale.x = 10;
-    test2->m_transform.m_scale.y = 10;
+    test2->m_transform.m_scale.x = 2;
+    test2->m_transform.m_scale.y = 4;
 
-    test3->m_transform.m_position.x = 7.3;
-    test3->m_transform.m_position.y = 5.65;
-    test3->m_transform.m_scale.x = 2;
-    test3->m_transform.m_scale.y = 4;
+    test3->m_transform.m_position.x = 7.3f;
+    test3->m_transform.m_position.y = -2;
+    test3->m_transform.m_scale.x = 6;
+    test3->m_transform.m_scale.y = 6;
     
-    test2->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/caow.dds");
-    test3->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/Captain_Flameheart_Art.dds");
+    //test2->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/caow.dds");
+    test2->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/Captain_Flameheart_Art.dds");
 
-    auto startTime = std::chrono::steady_clock::now();
+    //auto startTime = std::chrono::steady_clock::now();
 
     while (true) {
-        auto currentTime = std::chrono::steady_clock::now();
+        /*auto currentTime = std::chrono::steady_clock::now();
         float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
 
         float rotationSpeed = 1.0f;
         float angle = rotationSpeed * elapsedTime;
-        XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
+        XMMATRIX rotationMatrix = XMMatrixRotationY(angle);*/
 
         // Mettre à jour la matrice de transformation du cube interne
         //XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;

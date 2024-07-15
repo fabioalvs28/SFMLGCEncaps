@@ -48,7 +48,7 @@ struct PSOutput
     float4 color2 : SV_Target1;
 };
 
-PSOutput PS(VertexOut pin) : SV_Target
+float4 PS(VertexOut pin) : SV_Target
 {
     float4 texColor = g_texture.Sample(g_sampler, pin.UV);
     return texColor; // Apply transparency using alpha channel
@@ -57,7 +57,7 @@ PSOutput PS(VertexOut pin) : SV_Target
     output.color1 = texColor;
     
     float r = float(objectId % 256) / 255.0f;
-    output.color2 = float4(r, 0.0f, 0.0f, 1.0f);
+    //output.color2 = float4(r, 0.0f, 0.0f, 1.0f);
     
-    return output;
+    return float4(texColor.rgb, texColor.a);
 }

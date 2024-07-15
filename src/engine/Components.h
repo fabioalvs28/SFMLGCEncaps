@@ -64,11 +64,6 @@ protected:
     GCListNode<Component*>* m_pPhysicsNode;
     GCListNode<Component*>* m_pRenderNode;
 
-    GCMesh* m_pMesh;
-    GCMaterial* m_pMaterial;
-
-    XMMATRIX* m_worldMatrix;
-
 };
 
 
@@ -84,7 +79,7 @@ public:
     SpriteRenderer();
     ~SpriteRenderer() override; 
     
-    void Render() override {}
+    void Render() override;
     void Destroy() override {}
     
     
@@ -97,6 +92,11 @@ public:
 protected:
 
     GCColor m_color;
+
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
+
+    XMMATRIX* m_worldMatrix;
 
 };
 
@@ -120,6 +120,11 @@ protected:
     bool m_trigger;
     bool m_visible;
 
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
+
+    XMMATRIX* m_worldMatrix;
+
 };
 
 
@@ -140,7 +145,7 @@ public:
     ~BoxCollider() override {}
     
     void FixedUpdate() override {}
-    void Render() override {}
+    void Render() override;
     void Destroy() override {}
 
     inline GCVEC2 GetSize() { return m_size; }
@@ -165,7 +170,7 @@ public:
     ~CircleCollider() override {}
 
     void FixedUpdate() override {}
-    void Render() override {}
+    void Render() override;
     void Destroy() override {}
 
     inline float GetRadius() { return m_radius; }

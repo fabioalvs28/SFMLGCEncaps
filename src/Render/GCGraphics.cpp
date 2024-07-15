@@ -228,11 +228,11 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
-    if (errorState != 0);
+    if (errorState != 0)
         return ResourceCreationResult<GCShader*>(false, nullptr);
 
     errorState = pShader->Load();
-    if (errorState != 0);
+    if (errorState != 0)
         return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
 
     m_vShaders.push_back(pShader);

@@ -50,13 +50,6 @@ SpriteRenderer::SpriteRenderer() : Component(RENDER)
 	m_color = GCColor();
 }
 
-SpriteRenderer::~SpriteRenderer()
-{
-	if (m_pRenderNode != nullptr)
-		m_pRenderNode->Remove();
-}
-
-
 void SpriteRenderer::SetSprite(std::string texturePath)
 {
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
@@ -81,6 +74,23 @@ void SpriteRenderer::SetColor()
 	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
 }
 
+void SpriteRenderer::Render()
+{
+	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
+
+	XMMATRIX worldMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x, m_pGameObject->m_transform.m_scale.y, m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z); 
+
+	XMFLOAT4X4 worldMatrix4X4;
+	XMStoreFloat4x4(&worldMatrix4X4, worldMatrix);
+
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix4X4);
+	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial,true);
+}
+
+SpriteRenderer::~SpriteRenderer()
+{
+}
+
 
 
 #pragma region Collider
@@ -97,32 +107,64 @@ Collider::Collider() : Component( FIXED_UPDATE | RENDER )
 BoxCollider::BoxCollider()
 {
 
-	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
+	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
 
-	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
-	pGraphics->InitializeGraphicsResourcesEnd();
+	//pGraphics->InitializeGraphicsResourcesStart();
+	//m_pMesh = pGraphics->CreateMeshTexture(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
+	//GCTexture* texture = pGraphics->CreateTexture("C:/Users/emaillard-salin/Desktop/EmptySquare.dds").resource;
+	//pGraphics->InitializeGraphicsResourcesEnd();
 
-
-	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
-	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
+	//auto shaderTexture = pGraphics->CreateShaderTexture();
+	//auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
+	//m_pMaterial = mat.resource;
+	//m_pMaterial->SetTexture(texture);
 
 }
+
+
+void BoxCollider::Render()
+{
+	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
+
+	//XMMATRIX meshMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x + m_size.x , m_pGameObject->m_transform.m_scale.y + m_size.y , m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z);
+
+	//XMFLOAT4X4 meshMatrix4X4;
+	//XMStoreFloat4x4(&meshMatrix4X4, meshMatrix);
+
+	//pGraphics->UpdateWorldConstantBuffer(m_pMaterial, meshMatrix4X4);
+	//pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
+
+}
+
 
 CircleCollider::CircleCollider()
 {
-	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
+	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
 
-	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
-	pGraphics->InitializeGraphicsResourcesEnd();
+	//pGraphics->InitializeGraphicsResourcesStart();
+	//m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pCircle).resource;
+	//pGraphics->InitializeGraphicsResourcesEnd();
 
 
-	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
-	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
+	//GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
+	//m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
 }
+
+void CircleCollider::Render()
+{
+	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
+
+	//XMMATRIX worldMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x, m_pGameObject->m_transform.m_scale.y, m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z);
+
+	//XMFLOAT4X4 worldMatrix4X4;
+	//XMStoreFloat4x4(&worldMatrix4X4, worldMatrix);
+
+	//pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix4X4);
+	//pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
+}
+
 
 
 
