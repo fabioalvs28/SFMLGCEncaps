@@ -1,5 +1,86 @@
 #include "pch.h"
 
+
+GCRenderResources::GCRenderResources()
+	: m_pWindow(nullptr),
+	m_renderWidth(800), // Default width
+	m_renderHeight(600), // Default height
+	m_pGraphics(nullptr),
+	m_dxgiFactory(nullptr),
+	m_d3dDevice(nullptr),
+	m_CommandList(nullptr),
+	m_SwapChain(nullptr),
+	m_DepthStencilBuffer(nullptr),
+	m_CommandQueue(nullptr),
+	m_DirectCmdListAlloc(nullptr),
+	m_Fence(nullptr),
+	m_CurrentFence(0),
+	m_pRtvHeap(nullptr),
+	m_pDsvHeap(nullptr),
+	m_pCbvSrvUavDescriptorHeap(nullptr),
+	m_rtvDescriptorSize(0),
+	m_dsvDescriptorSize(0),
+	m_cbvSrvUavDescriptorSize(0),
+	m_canResize(true),
+	m_CurrBackBuffer(0),
+	m_DepthStencilFormat(DXGI_FORMAT_D24_UNORM_S8_UINT),
+	m_BackBufferFormat(DXGI_FORMAT_R8G8B8A8_UNORM),
+	m_4xMsaaState(false),
+	m_4xMsaaQuality(0),
+	m_pPostProcessingRtv(nullptr),
+	m_ObjectIdBufferRtv(nullptr),
+	m_ObjectIdDepthStencilBuffer(nullptr)
+{
+}
+
+GCRenderResources::~GCRenderResources() {
+	// Release all RTV resources
+	for (auto& rtvResource : m_lRenderTargets) {
+		SAFE_RELEASE(rtvResource->resource);
+		SAFE_DELETE(rtvResource);
+	}
+
+	// Release all DSV resources
+	for (auto& dsvResource : m_lDepthStencilView) {
+		SAFE_RELEASE(dsvResource->resource);
+		SAFE_DELETE(dsvResource);
+	}
+
+	// Release Post Processing Resources
+	SAFE_RELEASE(m_pPostProcessingRtv);
+
+	// Release Object/Layer ID Resources
+	SAFE_RELEASE(m_ObjectIdBufferRtv);
+	SAFE_RELEASE(m_ObjectIdDepthStencilBuffer);
+
+	// Release Swap Chain Buffers
+	for (int i = 0; i < SwapChainBufferCount; ++i) {
+		SAFE_RELEASE(m_SwapChainBuffer[i]);
+	}
+
+	// Release Depth Stencil Buffer
+	SAFE_RELEASE(m_DepthStencilBuffer);
+
+	// Release Descriptor Heaps
+	SAFE_RELEASE(m_pRtvHeap);
+	SAFE_RELEASE(m_pDsvHeap);
+	SAFE_RELEASE(m_pCbvSrvUavDescriptorHeap);
+
+	// Release Command List and Allocator
+	SAFE_RELEASE(m_CommandList);
+	SAFE_RELEASE(m_DirectCmdListAlloc);
+
+	// Release Command Queue
+	SAFE_RELEASE(m_CommandQueue);
+
+	// Release Fence
+	SAFE_RELEASE(m_Fence);
+
+	// Release Device and Factory
+	SAFE_RELEASE(m_d3dDevice);
+	SAFE_RELEASE(m_dxgiFactory);
+}
+
 void GCRenderResources::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** pDescriptorHeap)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};

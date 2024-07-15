@@ -196,8 +196,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGraphics* graphics = new GCGraphics();
     graphics->Initialize(window, 1920, 1080);
 
-    //graphics->GetRender()->ActiveBasicPostProcessing();
-    //graphics->GetRender()->ActivePixelIDMapping();
+    graphics->GetRender()->ActiveBasicPostProcessing();
+    graphics->GetRender()->ActivePixelIDMapping();
 
     int flagsLightColor = 0;
     SET_FLAG(flagsLightColor, VERTEX_POSITION);
@@ -212,7 +212,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto geometryPostProcessing = graphics->CreateGeometryPrimitive(Quad, DirectX::XMFLOAT4(DirectX::Colors::Yellow));
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
     auto geoCubeInner = graphics->CreateGeometryPrimitive(Cube, XMFLOAT4(Colors::Green));
-    auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
+    auto geoSphere = graphics->CreateGeometryPrimitive(Cube, XMFLOAT4(Colors::Yellow));
 
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
@@ -229,7 +229,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     int flags = 0;
     SET_FLAG(flags, VERTEX_POSITION);
     SET_FLAG(flags, VERTEX_UV);
-
 
     auto meshPostProcessing = graphics->CreateMeshCustom(geometryPostProcessing.resource, flags);
 
@@ -358,7 +357,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());
+
+        //break;
     }
+
+    //delete graphics;
 
     return 0;
 }

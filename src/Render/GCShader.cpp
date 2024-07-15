@@ -187,18 +187,18 @@ void GCShader::Pso()
 	blendDesc1.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc1.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
-	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
-	blendDesc.RenderTarget[0].BlendEnable = FALSE; // Disable blending
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ZERO;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	CD3DX12_BLEND_DESC blendDesc2(D3D12_DEFAULT);
+	blendDesc2.RenderTarget[0].BlendEnable = FALSE; // Disable blending
+	blendDesc2.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+	blendDesc2.RenderTarget[0].DestBlend = D3D12_BLEND_ZERO;
+	blendDesc2.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc2.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc2.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	blendDesc2.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc2.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
-	psoDescAlpha.BlendState = blendDesc;
-	psoDescNoAlpha.BlendState = blendDesc1;
+	psoDescAlpha.BlendState = blendDesc1;
+	psoDescNoAlpha.BlendState = blendDesc2;
 
 	int rtvSize = sizeof(m_rtvFormats) / sizeof(DXGI_FORMAT);
 

@@ -10,6 +10,7 @@ SamplerState g_sampler : register(s0); // Sampler bound to s0
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld; // World matrix
+    float objectId;
 };
 
 cbuffer cbPerCamera : register(b1)
@@ -83,9 +84,17 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-// Pixel shader
-float4 PS(VertexOut pin) : SV_Target
+struct PSOutput
 {
+    float4 color1 : SV_Target0;
+    float4 color2 : SV_Target1;
+};
+
+// Pixel shader
+PSOutput PS(VertexOut pin) : SV_Target
+{
+    PSOutput output;
+    
     float4 texColor = g_texture.Sample(g_sampler, pin.UV);
     
     float3x3 invViewMatrix = (float3x3) transpose(gView); // Transpose of view matrix
@@ -145,9 +154,8 @@ float4 PS(VertexOut pin) : SV_Target
     finalColor.rgb += specularColor * texColor.rgb;
     finalColor.a = texColor.a;
 
-    return finalColor;
+    output.color1 = finalColor;
+    float r = float(objectId % 256) / 255.0f;
+    output.color2 = float4(r, 0.0f, 0.0f, 1.0f);
+    return output;
 }
-
-
-
-
