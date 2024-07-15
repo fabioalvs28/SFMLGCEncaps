@@ -2,43 +2,36 @@
 #include "Components.h"
 
 #include "Log.h"
-
-#include "GC.h"
 #include "GameObject.h"
+#include "GC.h"
 
 
-Component::Component() { Init(); }
 
-Component::Component( int flags )
+Component::Component( GCGameObject* pGameObject )
 {
-	Init();
-	
-	if (IsFlagSet(UPDATE))
-		;
-
-	if (IsFlagSet(FIXED_UPDATE))
-		;
-
-	if (IsFlagSet(RENDER))
-		;
-}
-
-void Component::Init()
-{
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "A nullptr pGameObject was given in the Component constructor" );
 	m_flags = 0;
 	m_active = true;
-	m_pGameObject = nullptr;
+	m_pGameObject = pGameObject;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
 	m_pRenderNode = nullptr;
+	
+	if ( IsFlagSet( UPDATE ) )
+		;
+
+	if ( IsFlagSet( FIXED_UPDATE ) )
+		;
+
+	if ( IsFlagSet( RENDER ) )
+		;
 }
 
 
 
 #pragma region Collider
-Collider::Collider()
-	: Component(FIXED_UPDATE | RENDER)
+Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
 {
 	m_trigger = false;
 	m_visible = false;
@@ -46,7 +39,14 @@ Collider::Collider()
 }
 #pragma endregion Collider
 
+
+
 #pragma region RigidBody
+RigidBody::RigidBody( GCGameObject* pGameObject ) : Component( pGameObject )
+{
+	m_velocity.SetZero();
+}
+
 void RigidBody::FixedUpdate()
 {
 	// Apply velocity

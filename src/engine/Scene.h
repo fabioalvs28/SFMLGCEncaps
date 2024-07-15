@@ -22,7 +22,6 @@ public:
 	void RemoveParent();
 	GCScene* CreateChild();
 	void AddChild( GCScene* pScene );
-	void RemoveChild( GCScene* pChild );
 	void DestroyChildren();
 	
 	GCGameObject* CreateGameObject();

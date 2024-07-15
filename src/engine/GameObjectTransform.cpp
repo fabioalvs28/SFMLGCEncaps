@@ -66,7 +66,7 @@ void GCGameObjectTransform::RotateRoll( float angle )
 
 
 
-void GCGameObjectTransform::SetRotation(float yaw, float pitch, float roll)
+void GCGameObjectTransform::SetRotation( float yaw, float pitch, float roll )
 {
 	GCTransform::SetRotation( yaw, pitch, roll );
 	UpdateWorldMatrixFromParent();
@@ -76,9 +76,29 @@ void GCGameObjectTransform::SetRotation(float yaw, float pitch, float roll)
 
 void GCGameObjectTransform::UpdateWorldMatrixFromParent()
 {
-	m_worldMatrix = m_pGameObject->m_pParent->m_transform.m_worldMatrix;
-	m_worldMatrix *= m_matrix;
-    UpdateChildren();
+	if ( m_pGameObject->m_pParent == nullptr )
+		m_worldMatrix = m_matrix;
+	
+	else
+	{
+		m_worldMatrix = m_pGameObject->m_pParent->m_transform.m_worldMatrix;
+		m_worldMatrix *= m_matrix;
+	}
+	
+	UpdateChildren();
+}
+
+void GCGameObjectTransform::UpdateLocalMatrixFromWorld()
+{
+	if ( m_pGameObject->m_pParent == nullptr )
+		m_matrix = m_worldMatrix;
+	
+	else
+	{
+		m_matrix = m_pGameObject->m_pParent->m_transform.m_worldMatrix;
+		m_matrix.Inverse();
+		m_matrix *= m_worldMatrix;
+	}
 }
 
 void GCGameObjectTransform::UpdateChildren()
