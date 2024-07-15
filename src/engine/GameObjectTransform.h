@@ -7,6 +7,8 @@ class GCGameObject;
 
 struct GCGameObjectTransform: public GCTransform
 {
+friend class GCGameObject;
+
 	GCMATRIX m_worldMatrix;
 	GCGameObject* m_pGameObject;
 	
@@ -26,7 +28,9 @@ struct GCGameObjectTransform: public GCTransform
 	void SetRotationX( float angle );
 	void SetRotationY( float angle ); //! FAIS LE
 	void SetRotationZ( float angle );
-	
+
+protected:
 	void UpdateWorldMatrixFromParent();
+	void UpdateLocalMatrixFromWorld();
     void UpdateChildren();
 };

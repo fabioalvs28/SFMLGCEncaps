@@ -1,4 +1,5 @@
 #pragma once
+#include "Define.h"
 #include "Vector.h"
 #include "Map.h"
 #include "List.h"
@@ -8,26 +9,28 @@ class Component;
 class GCScene;
 class GCSceneManager;
 
+// TODO dirtytag for already destroyed GameObjects (added to queue)
+// TODO self active / global active → SetActive() methods with a recursive flag
+
 
 
 class GCGameObject
 {
+friend class GCGameObjectTransform;
 friend class GCScene;
 friend class GCSceneManager;
-friend class GCGameObjectTransform;
 
 protected:
     GCGameObject( GCScene* pScene );
     ~GCGameObject() = default;
 
 public:
-    GCGameObject* Duplicate();
+    GCGameObject* Duplicate(); // Potential optimization: A DuplicateAtCenter() method which doesn't calculate the transform's matrix and instead places the new GameObject at the center of the parent's bounds with no rotation and scale
     void Destroy();
     
     void RemoveParent();
     GCGameObject* CreateChild();
     void AddChild( GCGameObject* pChild );
-    void RemoveChild( GCGameObject* pChild );
     void DestroyChildren();
     
     void AddTag( const char* tag );
@@ -37,9 +40,9 @@ public:
     
     void SetScene( GCScene* pScene );
     void SetParent( GCGameObject* pParent );
-    void SetActive( bool active );
-    void SetName( const char* name );
-    void SetLayer( int layer );
+    void SetActive( const bool active );
+    void SetName( const char const* name );
+    void SetLayer( const int layer );
     
     unsigned int GetID() const;
     GCScene* GetScene() const;
@@ -98,11 +101,10 @@ protected:
 template<class T>
 T* GCGameObject::AddComponent()
 {
-    if ( GetComponent<T>() != nullptr ) return nullptr;
-    T* component = new T();
-    component->m_pGameObject = this;
-    m_componentsList.Insert( T::GetIDStatic(), component);
-    return component;
+    ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a component to a GameObject that already has it" );
+    T* pComponent = new T( this );
+    m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    return pComponent;
 }
 
 ///////////////////////////////////////////////////////////
