@@ -265,9 +265,9 @@ protected:
     Script( GCGameObject* pGameObject ) : Component( pGameObject ) {};
     virtual ~Script() = default;
     
-    virtual void OnTriggerEnter( Collider* collider ) = 0;
-    virtual void OnTriggerStay( Collider* collider ) = 0;
-    virtual void OnTriggerExit( Collider* collider ) = 0;
+    virtual void OnTriggerEnter( Collider* collider ) {};
+    virtual void OnTriggerStay( Collider* collider ) {};
+    virtual void OnTriggerExit( Collider* collider ) {};
 
 protected:
     inline static int scriptCount = (1<<15)-1;
@@ -283,7 +283,7 @@ protected:
      \
     protected: \
         Script##CLASS_NAME() = default; \
-        ~Script##CLASS_NAME() {} \
+        ~Script##CLASS_NAME() = default; \
          \
         /*void Start() override; \
         void Update() override; \
