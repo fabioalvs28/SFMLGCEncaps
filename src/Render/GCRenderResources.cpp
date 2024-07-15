@@ -34,51 +34,53 @@ GCRenderResources::GCRenderResources()
 }
 
 GCRenderResources::~GCRenderResources() {
+
 	// Release all RTV resources
 	for (auto& rtvResource : m_lRenderTargets) {
-		SAFE_RELEASE(rtvResource->resource);
-		SAFE_DELETE(rtvResource);
+		SAFE_RELEASE(&rtvResource->resource);
+		SAFE_DELETE(&rtvResource);
 	}
 
 	// Release all DSV resources
 	for (auto& dsvResource : m_lDepthStencilView) {
-		SAFE_RELEASE(dsvResource->resource);
-		SAFE_DELETE(dsvResource);
+		SAFE_RELEASE(&dsvResource->resource);
+		SAFE_DELETE(&dsvResource);
 	}
 
 	// Release Post Processing Resources
-	SAFE_RELEASE(m_pPostProcessingRtv);
+	SAFE_RELEASE(&m_pPostProcessingRtv);
 
 	// Release Object/Layer ID Resources
-	SAFE_RELEASE(m_ObjectIdBufferRtv);
-	SAFE_RELEASE(m_ObjectIdDepthStencilBuffer);
+
+	SAFE_RELEASE(&m_ObjectIdBufferRtv);
+	SAFE_RELEASE(&m_ObjectIdDepthStencilBuffer);
 
 	// Release Swap Chain Buffers
 	for (int i = 0; i < SwapChainBufferCount; ++i) {
-		SAFE_RELEASE(m_SwapChainBuffer[i]);
+		SAFE_RELEASE(&m_SwapChainBuffer[i]);
 	}
 
 	// Release Depth Stencil Buffer
-	SAFE_RELEASE(m_DepthStencilBuffer);
+	SAFE_RELEASE(&m_DepthStencilBuffer);
 
 	// Release Descriptor Heaps
-	SAFE_RELEASE(m_pRtvHeap);
-	SAFE_RELEASE(m_pDsvHeap);
-	SAFE_RELEASE(m_pCbvSrvUavDescriptorHeap);
+	SAFE_RELEASE(&m_pRtvHeap);
+	SAFE_RELEASE(&m_pDsvHeap);
+	SAFE_RELEASE(&m_pCbvSrvUavDescriptorHeap);
 
 	// Release Command List and Allocator
-	SAFE_RELEASE(m_CommandList);
-	SAFE_RELEASE(m_DirectCmdListAlloc);
+	SAFE_RELEASE(&m_CommandList);
+	SAFE_RELEASE(&m_DirectCmdListAlloc);
 
 	// Release Command Queue
-	SAFE_RELEASE(m_CommandQueue);
+	SAFE_RELEASE(&m_CommandQueue);
 
 	// Release Fence
-	SAFE_RELEASE(m_Fence);
+	SAFE_RELEASE(&m_Fence);
 
 	// Release Device and Factory
-	SAFE_RELEASE(m_d3dDevice);
-	SAFE_RELEASE(m_dxgiFactory);
+	SAFE_RELEASE(&m_d3dDevice);
+	SAFE_RELEASE(&m_dxgiFactory);
 }
 
 void GCRenderResources::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** pDescriptorHeap)
@@ -141,7 +143,7 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, 
 	m_d3dDevice->CreateRenderTargetView(renderTargetTexture, &rtvDesc, rtvHeapHandle);
 
 	// Manager Rtv
-	GC_DESCRIPTOR_RESOURCE* descriptorResource = new GC_DESCRIPTOR_RESOURCE;
+	GC_DESCRIPTOR_RESOURCE* descriptorResource = new GC_DESCRIPTOR_RESOURCE();
 	descriptorResource->resource = renderTargetTexture;
 	descriptorResource->cpuHandle = rtvHeapHandle;
 	m_lRenderTargets.push_back(descriptorResource);

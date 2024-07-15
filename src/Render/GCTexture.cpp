@@ -11,8 +11,8 @@ GCTexture::~GCTexture()
 {
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 
-    SAFE_RELEASE(m_pTextureBuffer);
-    SAFE_RELEASE(m_pUploadTexture);
+    SAFE_RELEASE(&m_pTextureBuffer);
+    SAFE_RELEASE(&m_pUploadTexture);
 
     m_textureAddress = CD3DX12_GPU_DESCRIPTOR_HANDLE(D3D12_DEFAULT);
 }

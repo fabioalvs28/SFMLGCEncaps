@@ -203,7 +203,7 @@ public:
 	// Update ViewProj, use for Camera
 	bool UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
 	// Update world cb buffer with GCWORLDCB Struct
-	bool UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, float meshId = 0.0f);
+	bool UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId = 0.0f);
 	// Update world with custom struct
 	template<typename ShaderTypeConstantBuffer>
 	bool UpdateCustomCbPerObject(GCMaterial* pMaterial, const GCSHADERCB& objectData);

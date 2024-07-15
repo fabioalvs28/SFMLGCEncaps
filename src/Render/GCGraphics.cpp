@@ -17,37 +17,37 @@ GCGraphics::~GCGraphics()
 {
     for (auto shader : m_vShaders)
     {
-        SAFE_DELETE(shader);
+        SAFE_DELETE(&shader);
     }
     m_vShaders.clear();
 
     for (auto material : m_vMaterials)
     {
-        SAFE_DELETE(material);
+        SAFE_DELETE(&material);
     }
     m_vMaterials.clear();
 
     for (auto mesh : m_vMeshes)
     {
-        SAFE_DELETE(mesh);
+        SAFE_DELETE(&mesh);
     }
     m_vMeshes.clear();
 
     for (auto texture : m_lTextures)
     {
-        SAFE_DELETE(texture);
+        SAFE_DELETE(&texture);
     }
     m_lTextures.clear();
 
     for (auto buffer : m_pCbCameraInstances)
     {
-        SAFE_DELETE(buffer);
+        SAFE_DELETE(&buffer);
     }
     m_pCbCameraInstances.clear();
 
-    SAFE_DELETE(m_pRender);
-    SAFE_DELETE(m_pPrimitiveFactory);
-    SAFE_DELETE(m_pModelParserFactory);
+    SAFE_DELETE(&m_pRender);
+    SAFE_DELETE(&m_pPrimitiveFactory);
+    SAFE_DELETE(&m_pModelParserFactory);
 }
 
 bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
@@ -478,8 +478,19 @@ bool GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatr
     return true;
 }
 
+DirectX::XMFLOAT4X4 GCMATRIXToXMFLOAT4x4(const GCMATRIX& mat)
+{
+    DirectX::XMFLOAT4X4 result;
+    result._11 = mat._11; result._12 = mat._12; result._13 = mat._13; result._14 = mat._14;
+    result._21 = mat._21; result._22 = mat._22; result._23 = mat._23; result._24 = mat._24;
+    result._31 = mat._31; result._32 = mat._32; result._33 = mat._33; result._34 = mat._34;
+    result._41 = mat._41; result._42 = mat._42; result._43 = mat._43; result._44 = mat._44;
+    return result;
+}
+
+
 // Update per object constant buffer
-bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, float meshId)
+bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId)
 {
     if (CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
@@ -487,8 +498,11 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
         pMaterial->AddCbPerObject<GCWORLDCB>();
     }
+
+
+
     GCWORLDCB worldData;
-    worldData.world = worldMatrix;
+    worldData.world = GCMATRIXToXMFLOAT4x4(worldMatrix);
 
     worldData.objectId = meshId;
     // Update 

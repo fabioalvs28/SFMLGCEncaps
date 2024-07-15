@@ -178,6 +178,18 @@
 
 using namespace DirectX;
 
+GCMATRIX XMMATRIXToGCMATRIX(const DirectX::XMMATRIX& mat)
+{
+    GCMATRIX result;
+
+    result._11 = mat.r[0].m128_f32[0]; result._12 = mat.r[0].m128_f32[1]; result._13 = mat.r[0].m128_f32[2]; result._14 = mat.r[0].m128_f32[3];
+    result._21 = mat.r[1].m128_f32[0]; result._22 = mat.r[1].m128_f32[1]; result._23 = mat.r[1].m128_f32[2]; result._24 = mat.r[1].m128_f32[3];
+    result._31 = mat.r[2].m128_f32[0]; result._32 = mat.r[2].m128_f32[1]; result._33 = mat.r[2].m128_f32[2]; result._34 = mat.r[2].m128_f32[3];
+    result._41 = mat.r[3].m128_f32[0]; result._42 = mat.r[3].m128_f32[1]; result._43 = mat.r[3].m128_f32[2]; result._44 = mat.r[3].m128_f32[3];
+
+    return result;
+}
+
 
 XMVECTOR cameraPosition = XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
 XMVECTOR cameraTarget = XMVectorZero();
@@ -267,15 +279,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centr�
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sph�re d�plac�e dans le cube interne
 
-    XMFLOAT4X4 worldCubeOuter;
-    XMFLOAT4X4 worldCubeInner;
-    XMFLOAT4X4 worldCubeInner2;
-    XMFLOAT4X4 worldSphere;
+    GCMATRIX worldCubeInner = XMMATRIXToGCMATRIX(worldMatrixCubeInner);
 
-    XMStoreFloat4x4(&worldCubeOuter, worldMatrixCubeOuter);
-    XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInner);
-    XMStoreFloat4x4(&worldCubeInner2, worldMatrixCubeInner2);
-    XMStoreFloat4x4(&worldSphere, worldMatrixSphere);
+    //XMFLOAT4X4 worldCubeOuter;
+    //XMFLOAT4X4 worldCubeInner;
+    //XMFLOAT4X4 worldCubeInner2;
+    //XMFLOAT4X4 worldSphere;
+
+    //XMStoreFloat4x4(&worldCubeOuter, worldMatrixCubeOuter);
+    //XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInner);
+    //XMStoreFloat4x4(&worldCubeInner2, worldMatrixCubeInner2);
+    //XMStoreFloat4x4(&worldSphere, worldMatrixSphere);
 
     auto startTime = std::chrono::steady_clock::now();
 
@@ -289,10 +303,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
 
 
-        XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
+        //XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
 
 
-        XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInnerUpdated);
+        //XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInnerUpdated);
 
         // Gestion des entr�es utilisateur pour le d�placement de la cam�ra
         //if (window->IsKeyDown('Z')) {
@@ -343,17 +357,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-        graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter, 1.0f);
-        graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource,true);
+        //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter, 1.0f);
+        //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource,true);
 
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
 
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere, 3.0f);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere, 3.0f);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());

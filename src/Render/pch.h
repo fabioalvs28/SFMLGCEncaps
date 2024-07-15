@@ -7,6 +7,8 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 
+
+
 //#define WIN32_LEAN_AND_MEAN             // Exclure les en-têtes Windows rarement utilisés
 // Fichiers d'en-tête Windows
 #include <windows.h>
@@ -95,6 +97,8 @@ class Window;
 #include "./GCMeshBufferData.h"
 #include "GCPrimitiveIdEnum.h"
 
+#include "../core/framework.h"
+
 
 //
 #include "d3dx12.h"
@@ -103,7 +107,6 @@ class Window;
 #include "GCUploadBuffer.h"
 #include "GCRenderContext.h"
 #include "GCRenderResources.h"
-#include "Vectors.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"

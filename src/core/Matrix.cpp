@@ -266,3 +266,4 @@ void GCMATRIX::Scale(float x, float y, float z)
 	_22 = y;
 	_33 = z;
 }
+

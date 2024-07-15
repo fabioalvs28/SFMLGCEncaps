@@ -141,15 +141,15 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 
 // For Release Instance, used in Destructor of resources
 #define SAFE_RELEASE(p) \
-    if ((p) != nullptr) { \
-        (p)->Release(); \
-        (p) = nullptr; \
+    if ((*(p)) != nullptr) { \
+        (*(p))->Release(); \
+        (*(p)) = nullptr; \
     }
 
 #define SAFE_DELETE(p) \
-    if ((p) != nullptr) { \
-        delete (p); \
-        (p) = nullptr; \
+    if ((*(p)) != nullptr) { \
+        delete (*(p)); \
+        (*(p)) = nullptr; \
     }
 
 // Define flags

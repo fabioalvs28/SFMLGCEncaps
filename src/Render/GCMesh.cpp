@@ -65,14 +65,14 @@ GCMesh::~GCMesh()
 {
     if (m_pBufferGeometryData)
     {
-        SAFE_RELEASE(m_pBufferGeometryData->VertexBufferCPU);
-        SAFE_RELEASE(m_pBufferGeometryData->IndexBufferCPU);
+        SAFE_RELEASE(&m_pBufferGeometryData->VertexBufferCPU);
+        SAFE_RELEASE(&m_pBufferGeometryData->IndexBufferCPU);
 
-        SAFE_RELEASE(m_pBufferGeometryData->VertexBufferGPU);
-        SAFE_RELEASE(m_pBufferGeometryData->IndexBufferGPU);
+        SAFE_RELEASE(&m_pBufferGeometryData->VertexBufferGPU);
+        SAFE_RELEASE(&m_pBufferGeometryData->IndexBufferGPU);
 
-        SAFE_RELEASE(m_pBufferGeometryData->VertexBufferUploader);
-        SAFE_RELEASE(m_pBufferGeometryData->IndexBufferUploader);
+        SAFE_RELEASE(&m_pBufferGeometryData->VertexBufferUploader);
+        SAFE_RELEASE(&m_pBufferGeometryData->IndexBufferUploader);
 
         m_pBufferGeometryData->VertexByteStride = 0;
         m_pBufferGeometryData->VertexBufferByteSize = 0;
@@ -80,7 +80,7 @@ GCMesh::~GCMesh()
         m_pBufferGeometryData->IndexBufferByteSize = 0;
         m_pBufferGeometryData->IndexCount = 0;
 
-        SAFE_DELETE(m_pBufferGeometryData);
+        SAFE_DELETE(&m_pBufferGeometryData);
     }
 }
 
