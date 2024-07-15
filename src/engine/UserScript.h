@@ -16,3 +16,9 @@ public:
     void OnTriggerExit( Collider* collider ) override;
 
 CREATE_SCRIPT_END
+
+CREATE_SCRIPT_START( ExampleInherit, ScriptExample )
+
+
+
+CREATE_SCRIPT_END

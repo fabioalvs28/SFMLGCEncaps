@@ -5,6 +5,7 @@
 
 // TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
+// TODO Make sure IDs are handled differently
 
 class GCGameObject;
 
@@ -274,8 +275,8 @@ protected:
 
 };
 
-#define CREATE_SCRIPT_START( CLASS_NAME ) \
-    class Script##CLASS_NAME : public Script \
+#define CREATE_SCRIPT_START2( CLASS_NAME, INHERITANCE ) \
+    class Script##CLASS_NAME : public INHERITANCE \
     { \
     public: \
         static const int GetIDStatic() { return m_ID; } \
@@ -300,6 +301,25 @@ protected:
      \
     private:
 
+#define CREATE_SCRIPT_START1( CLASS_NAME ) CREATE_SCRIPT_START2( CLASS_NAME, Script )
+
 #define CREATE_SCRIPT_END };
+
+
+
+// ChatGPT Code
+
+// Helper macros to count arguments
+#define COUNT_ARGS_IMPL2(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+#define COUNT_ARGS_IMPL(args) COUNT_ARGS_IMPL2 args
+#define COUNT_ARGS(...) COUNT_ARGS_IMPL((__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
+
+// Helper macros to select the correct macro based on argument count
+#define CONCATE(a, b) a##b
+#define MACRO_OVERLOAD(name, count) CONCATE(name, count)
+
+// Main macro to select the correct PRINT macro based on the number of arguments
+#define CREATE_SCRIPT_START(...) MACRO_OVERLOAD(CREATE_SCRIPT_START, COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
+
 
 
