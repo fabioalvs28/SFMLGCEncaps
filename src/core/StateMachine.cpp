@@ -9,6 +9,7 @@ void GCStateMachine::ChangeState(GCState* newState, void* args)
 	if (m_pCurrentState)
 		m_pCurrentState->Exit();
 
+	m_pPreviousState = m_pCurrentState;
 	m_pCurrentState = newState;
 	m_pCurrentState->Enter(this, args);
 }
