@@ -1,7 +1,8 @@
 #pragma once
-#include "SceneManager.h"
 #include "PhysicManager.h"
+#include "UpdateManager.h"
 #include "EventManager.h"
+#include "SceneManager.h"
 
 class Component;
 class Collider;
@@ -25,7 +26,8 @@ public: void Init();
 public: void Update();
     
 protected:
-    GCSceneManager m_pSceneManager;
     GCPhysicManager m_pPhysicManager;
+    GCUpdateManager m_pUpdateManager;
     GCEventManager m_pEventManager;
+    GCSceneManager m_pSceneManager;
 };

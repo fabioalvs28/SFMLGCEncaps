@@ -22,30 +22,6 @@ GCScene::GCScene()
 	m_active = false;
 }
 
-////////////////////////////////////////////////////////////////
-/// @brief Updates the Scene and all its GameObjects.
-/// 
-/// @note It will also update the parent Scene if it has one.
-////////////////////////////////////////////////////////////////
-void GCScene::Update()
-{
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
-		pGameObjectNode->GetData()->Update();
-	if ( m_pParent != nullptr ) m_pParent->Update();
-}
-
-//////////////////////////////////////////////////////////////////////////////
-/// @brief Renders all its GameObjects that can be rendered.
-/// 
-/// @note It will also render the parent Scene's GameObjects if it has one.
-//////////////////////////////////////////////////////////////////////////////
-void GCScene::Render()
-{
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
-		pGameObjectNode->GetData()->Render();
-	if ( m_pParent != nullptr ) m_pParent->Render();
-}
-
 ////////////////////////////////////////////////////
 /// @brief Creates a new Scene.
 /// 
@@ -101,8 +77,7 @@ void GCScene::MoveGameObjectToScene( GCGameObject* pGameObject )
 {
 	if ( pGameObject->m_pScene == this ) return;
 	pGameObject->m_pScene->RemoveGameObjectFromScene( pGameObject );
-	m_gameObjectsList.PushBack( pGameObject );
-	pGameObject->m_pSceneNode = m_gameObjectsList.GetLastNode();
+	pGameObject->m_pSceneNode = m_gameObjectsList.PushBack( pGameObject );
 	pGameObject->m_pScene = this;
 	// todo Assert for the errors instead of returning nothing
 }
@@ -214,8 +189,7 @@ void GCScene::AddChild( GCScene* pChild )
         if ( pChild == pAncestor ) return;
 	
 	pChild->RemoveParent();
-	m_childrenList.PushBack( pChild );
-	pChild->m_pChildNode = m_childrenList.GetLastNode();
+	pChild->m_pChildNode = m_childrenList.PushBack( pChild );
 	pChild->m_pParent = this;
     // todo Assert for the errors instead of simply returning nothing
 }
