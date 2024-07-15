@@ -22,30 +22,6 @@ GCScene::GCScene()
 	m_active = false;
 }
 
-////////////////////////////////////////////////////////////////
-/// @brief Updates the Scene and all its GameObjects.
-/// 
-/// @note It will also update the parent Scene if it has one.
-////////////////////////////////////////////////////////////////
-void GCScene::Update()
-{
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
-		pGameObjectNode->GetData()->Update();
-	if ( m_pParent != nullptr ) m_pParent->Update();
-}
-
-//////////////////////////////////////////////////////////////////////////////
-/// @brief Renders all its GameObjects that can be rendered.
-/// 
-/// @note It will also render the parent Scene's GameObjects if it has one.
-//////////////////////////////////////////////////////////////////////////////
-void GCScene::Render()
-{
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
-		pGameObjectNode->GetData()->Render();
-	if ( m_pParent != nullptr ) m_pParent->Render();
-}
-
 ////////////////////////////////////////////////////
 /// @brief Creates a new Scene.
 /// 
@@ -99,12 +75,11 @@ GCGameObject* GCScene::CreateGameObject()
 //////////////////////////////////////////////////////////////////
 void GCScene::MoveGameObjectToScene( GCGameObject* pGameObject )
 {
-	if ( pGameObject->m_pScene == this ) return;
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to move a nullptr pGameObject to an other Scene" );
+	ASSERT( pGameObject->m_pScene != this, LOG_WARNING, "Trying to move a GameObject to the Scene it's already in" );
 	pGameObject->m_pScene->RemoveGameObjectFromScene( pGameObject );
-	m_gameObjectsList.PushBack( pGameObject );
-	pGameObject->m_pSceneNode = m_gameObjectsList.GetLastNode();
+	pGameObject->m_pSceneNode = m_gameObjectsList.PushBack( pGameObject );
 	pGameObject->m_pScene = this;
-	// todo Assert for the errors instead of returning nothing
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -116,11 +91,11 @@ void GCScene::MoveGameObjectToScene( GCGameObject* pGameObject )
 ///////////////////////////////////////////////////////////////////////////////////
 void GCScene::RemoveGameObjectFromScene( GCGameObject* pGameObject )
 {
-	if ( pGameObject->m_pScene != this ) return;
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to move a nullptr pGameObject to an other Scene" );
+	ASSERT( pGameObject->m_pScene == this, LOG_WARNING, "Trying to remove a GameObject from a Scene that doesn't contain it" );
     pGameObject->m_pSceneNode->Delete();
 	pGameObject->m_pSceneNode = nullptr;
 	pGameObject->m_pScene = nullptr;
-	// todo Assert for the errors instead of returning nothing
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -139,6 +114,7 @@ GCGameObject* GCScene::FindGameObjectByName( const char* name )
 		if ( pGameObject->m_name == name )
 			return pGameObject;
 	}
+	return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -157,6 +133,7 @@ GCGameObject* GCScene::FindGameObjectByID( int ID )
 		if ( pGameObject->m_ID == ID )
             return pGameObject;
 	}
+	return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -167,6 +144,7 @@ GCGameObject* GCScene::FindGameObjectByID( int ID )
 //////////////////////////////////////////////////////////////////////////////////
 void GCScene::DestroyGameObjects()
 {
+	ASSERT( m_gameObjectsList.GetFirstNode() != nullptr, LOG_WARNING, "Trying to destroy GameObjects from an empty Scene" );
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
 		pGameObjectNode->GetData()->Destroy();
 	m_gameObjectsList.Clear();
@@ -179,8 +157,10 @@ void GCScene::DestroyGameObjects()
 ////////////////////////////////////////////////////
 void GCScene::RemoveParent()
 {
-    if ( m_pParent == nullptr ) return;
-    m_pParent->RemoveChild( this );
+    ASSERT( m_pParent != nullptr, LOG_FATAL, "Trying to remove a Scene from a nullptr pParent" );
+    m_pChildNode->Delete();
+    m_pChildNode = nullptr;
+    m_pParent = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -208,33 +188,16 @@ GCScene* GCScene::CreateChild()
 //////////////////////////////////////////////////////////////////
 void GCScene::AddChild( GCScene* pChild )
 {
-	if ( pChild == this ) return;
-	if ( pChild->m_pParent == this ) return;
+	ASSERT( pChild != nullptr, LOG_FATAL, "Trying to add a nullptr pChild to the Scene" );
+	ASSERT( pChild != this, LOG_FATAL, "Trying to add a Scene as its own child" );
+	ASSERT( pChild->m_pParent != this, LOG_FATAL, "Trying to add to a parent Scene a child that is already his" );
     for ( GCScene* pAncestor = pChild->m_pParent; pAncestor != nullptr; pAncestor = pAncestor->m_pParent )
-        if ( pChild == pAncestor ) return;
+        ASSERT( pChild != pAncestor, LOG_FATAL, "Trying to add to a child Scene one of its ancestors (parents of parents...)" );
 	
-	pChild->RemoveParent();
-	m_childrenList.PushBack( pChild );
-	pChild->m_pChildNode = m_childrenList.GetLastNode();
+	if ( pChild->m_pParent != nullptr )
+		pChild->RemoveParent();
+	pChild->m_pChildNode = m_childrenList.PushBack( pChild );
 	pChild->m_pParent = this;
-    // todo Assert for the errors instead of simply returning nothing
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-/// @brief Removes a child from this Scene.
-/// 
-/// @param pChild A pointer to the child Scene to be removed.
-/// 
-/// @warning You can't remove a Scene that's not a direct child of this Scene.
-/////////////////////////////////////////////////////////////////////////////////
-void GCScene::RemoveChild( GCScene* pChild )
-{
-    if ( pChild->m_pParent != this ) return;
-    
-    pChild->m_pChildNode->Delete();
-    pChild->m_pChildNode = nullptr;
-    pChild->m_pParent = nullptr;
-    // todo Assert for the errors instead of simply returning nothing
 }
 
 ////////////////////////////////////////////////
@@ -244,6 +207,7 @@ void GCScene::RemoveChild( GCScene* pChild )
 ////////////////////////////////////////////////
 void GCScene::DestroyChildren()
 {
+	ASSERT( m_childrenList.GetFirstNode() != nullptr, LOG_WARNING, "Trying to destroy the children of an empty Scene" );
     for ( GCListNode<GCScene*>* pChildNode = m_childrenList.GetFirstNode(); pChildNode != nullptr; pChildNode = pChildNode->GetNext() )
         pChildNode->GetData()->Destroy();
     m_childrenList.Clear();
@@ -256,7 +220,11 @@ void GCScene::DestroyChildren()
 /// 
 /// @param pParent A pointer to the new parent Scene.
 ////////////////////////////////////////////////////////
-void GCScene::SetParent( GCScene* pParent ) { pParent->AddChild( this ); }
+void GCScene::SetParent( GCScene* pParent )
+{
+	ASSERT( pParent != nullptr, LOG_FATAL, "Trying to set a nullptr pParent to the Scene" );
+	pParent->AddChild( this );
+}
 
 
 

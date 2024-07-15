@@ -12,9 +12,6 @@ friend class GCSceneManager;
 protected:
 	GCScene();
 	virtual ~GCScene() = default;
-	
-	void Update();
-	void Render();
 
 public:
 	static GCScene* Create();
@@ -25,7 +22,6 @@ public:
 	void RemoveParent();
 	GCScene* CreateChild();
 	void AddChild( GCScene* pScene );
-	void RemoveChild( GCScene* pChild );
 	void DestroyChildren();
 	
 	GCGameObject* CreateGameObject();

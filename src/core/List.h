@@ -45,8 +45,8 @@ public:
     
     void Init();
     
-    void PushBack( const T& data );
-    void PushFront( const T& data );
+    GCListNode<T>* PushBack( const T& data );
+    GCListNode<T>* PushFront( const T& data );
     
     void Clear();
     
@@ -56,8 +56,8 @@ public:
     GCListNode<T>* GetLastNode() const;
 
 private:
-    GCListNode<T>* PushBefore( const T& data, const GCListNode<T>* pNode );
-    GCListNode<T>* PushAfter( const T& data, const GCListNode<T>* pNode );
+    GCListNode<T>* PushBefore( const T& data, GCListNode<T>* pNode );
+    GCListNode<T>* PushAfter( const T& data, GCListNode<T>* pNode );
     
     void RemoveNode( const GCListNode<T>* pNode );
     void DeleteNode( const GCListNode<T>* pNode );
@@ -197,7 +197,7 @@ void GCList<T>::Init()
 /// @param data The data to be added to the List.
 /////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-void GCList<T>::PushBack( const T& data )
+GCListNode<T>* GCList<T>::PushBack( const T& data )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
@@ -210,6 +210,7 @@ void GCList<T>::PushBack( const T& data )
     }
     m_pTail = pNewNode;
     if ( m_pHead == nullptr ) m_pHead = pNewNode;
+    return pNewNode;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +221,7 @@ void GCList<T>::PushBack( const T& data )
 /// @param data The data to be added to the List.
 /////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-void GCList<T>::PushFront( const T& data )
+GCListNode<T>* GCList<T>::PushFront( const T& data )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
@@ -233,6 +234,7 @@ void GCList<T>::PushFront( const T& data )
     pNewNode->m_pPrev = nullptr;
     m_pHead = pNewNode;
     if ( m_pTail == nullptr ) m_pTail = pNewNode;
+    return pNewNode;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -246,7 +248,7 @@ void GCList<T>::PushFront( const T& data )
 /// @return A pointer to the newly created ListNode.
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-GCListNode<T>* GCList<T>::PushBefore( const T& data, const GCListNode<T>* pNode )
+GCListNode<T>* GCList<T>::PushBefore( const T& data, GCListNode<T>* pNode )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
@@ -278,7 +280,7 @@ GCListNode<T>* GCList<T>::PushBefore( const T& data, const GCListNode<T>* pNode 
 /// @return A pointer to the newly created ListNode.
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-GCListNode<T>* GCList<T>::PushAfter( const T& data, const GCListNode<T>* pNode )
+GCListNode<T>* GCList<T>::PushAfter( const T& data, GCListNode<T>* pNode )
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;

@@ -1,32 +1,36 @@
 #pragma once
-#include "../core/framework.h"
+#include "Define.h"
+#include "Vector.h"
+#include "Map.h"
+#include "List.h"
+#include "GameObjectTransform.h"
 
 class Component;
 class GCScene;
 class GCSceneManager;
 
+// TODO dirtytag for already destroyed GameObjects (added to queue)
+// TODO self active / global active → SetActive() methods with a recursive flag
+
 
 
 class GCGameObject
 {
+friend class GCGameObjectTransform;
 friend class GCScene;
 friend class GCSceneManager;
 
 protected:
     GCGameObject( GCScene* pScene );
     ~GCGameObject() = default;
-    
-    void Update();
-    void Render();
 
 public:
-    GCGameObject* Duplicate();
+    GCGameObject* Duplicate(); // Potential optimization: A DuplicateAtCenter() method which doesn't calculate the transform's matrix and instead places the new GameObject at the center of the parent's bounds with no rotation and scale
     void Destroy();
     
     void RemoveParent();
     GCGameObject* CreateChild();
     void AddChild( GCGameObject* pChild );
-    void RemoveChild( GCGameObject* pChild );
     void DestroyChildren();
     
     void AddTag( const char* tag );
@@ -36,14 +40,14 @@ public:
     
     void SetScene( GCScene* pScene );
     void SetParent( GCGameObject* pParent );
-    void SetActive( bool active );
-    void SetName( const char* name );
-    void SetLayer( int layer );
+    void SetActive( const bool active );
+    void SetName( const char const* name );
+    void SetLayer( const int layer );
     
     unsigned int GetID() const;
     GCScene* GetScene() const;
     GCGameObject* GetParent() const;
-    GCList<GCGameObject*> GetChildren() const;
+    GCList<GCGameObject*>& GetChildren();
     bool IsActive() const;
     const char* GetName() const;
     const char* GetTag( int index ) const;
@@ -63,7 +67,7 @@ protected:
     void RemoveComponent( int type );
 
 public:
-    GCTransform m_transform;
+    GCGameObjectTransform m_transform;
 
 protected:
     static inline unsigned int s_gameObjectsCount = 0;
@@ -97,11 +101,10 @@ protected:
 template<class T>
 T* GCGameObject::AddComponent()
 {
-    if ( GetComponent<T>() != nullptr ) return nullptr;
-    T* component = new T();
-    component->SetGameObject( this );
-    m_componentsList.Insert( T::TYPE, component );
-    return component;
+    ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a component to a GameObject that already has it" );
+    T* pComponent = new T( this );
+    m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    return pComponent;
 }
 
 ///////////////////////////////////////////////////////////
@@ -113,7 +116,7 @@ template<class T>
 T* GCGameObject::GetComponent()
 {
     Component* component;
-    if ( m_componentsList.Find( T::TYPE, component ) == true )
+    if ( m_componentsList.Find( T::GetIDStatic(), component ) == true )
         return (T*) component;
     return nullptr;
 }

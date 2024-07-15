@@ -2,56 +2,51 @@
 #include "Components.h"
 
 #include "Log.h"
-
-#include "GC.h"
 #include "GameObject.h"
+#include "GC.h"
 
 
-Component::Component()
+
+Component::Component( GCGameObject* pGameObject )
 {
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "A nullptr pGameObject was given in the Component constructor" );
 	m_flags = 0;
 	m_active = true;
-	m_pGameObject = nullptr;
-
-	if (IsFlagSet(FIXED_UPDATE))
+	m_pGameObject = pGameObject;
+	
+	m_pUpdateNode = nullptr;
+	m_pPhysicsNode = nullptr;
+	m_pRenderNode = nullptr;
+	
+	if ( IsFlagSet( UPDATE ) )
 		;
 
-	if (IsFlagSet(RENDER))
-		;
-}
-
-Component::Component(int flags)
-{
-	m_flags = flags;
-	m_active = true;
-	m_pGameObject = nullptr;
-
-	if (IsFlagSet(UPDATE))
+	if ( IsFlagSet( FIXED_UPDATE ) )
 		;
 
-	if (IsFlagSet(FIXED_UPDATE))
-		;
-
-	if (IsFlagSet(RENDER))
+	if ( IsFlagSet( RENDER ) )
 		;
 }
+
+
 
 #pragma region Collider
-Collider::Collider()
-	: Component(FIXED_UPDATE | RENDER)
+Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
 {
 	m_trigger = false;
 	m_visible = false;
 	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
 }
-
-Collider::~Collider()
-{
-	GC::m_pActiveGameManager.m_pPhysicManager.UnregisterCollider(this);
-}
 #pragma endregion Collider
 
+
+
 #pragma region RigidBody
+RigidBody::RigidBody( GCGameObject* pGameObject ) : Component( pGameObject )
+{
+	m_velocity.SetZero();
+}
+
 void RigidBody::FixedUpdate()
 {
 	// Apply velocity
