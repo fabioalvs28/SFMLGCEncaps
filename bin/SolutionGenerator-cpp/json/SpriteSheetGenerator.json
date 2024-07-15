@@ -19,7 +19,7 @@
             "subsystem": "Console",
             "language_standard": "stdcpp20",
             "generate_debug_information": "true",
-            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Multimedia",
+            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Core;$(SolutionDir)..\\..\\src\\Multimedia",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         },
@@ -43,7 +43,7 @@
             "enable_comdat_folding": "true",
             "optimize_references": "true",
             "generate_debug_information": "true",
-            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Multimedia",
+            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Core;$(SolutionDir)..\\..\\src\\Multimedia",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         }
