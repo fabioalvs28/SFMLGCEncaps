@@ -12,11 +12,6 @@ enum DrawQuality {
 
 typedef unsigned char BYTE;
 
-typedef uint32_t COLORREF;
-#define RGB(r, g, b) ((COLORREF)(((uint8_t)(r) | ((uint16_t)((uint8_t)(g)) << 8)) | (((uint32_t)(uint8_t)(b)) << 16)))
-#define GetRValue(rgb) ((uint8_t)(rgb))
-#define GetGValue(rgb) ((uint8_t)(((uint16_t)(rgb)) >> 8))
-#define GetBValue(rgb) ((uint8_t)((rgb) >> 16))
 
 struct REC2 {
 	int x;
@@ -84,7 +79,7 @@ public:
 	// Copy constructor
 	virtual ~GCImage();
 	GCImage(const GCImage& img);
-	GCImage& operator=(GCSurface& surf);
+	//GCImage& operator=(GCSurface& surf);
 	GCImage& operator+=(GCImage& img);
 	GCImage& operator-=(GCImage& img);
 	GCImage* Address() { return this; }
@@ -182,13 +177,15 @@ public:
 	// Create Empty Image, w and h are the width and height, bpp is the bits per pixel (24 or 32)
 	void CreateEmptyImage(int w, int h, int bpp);
 
-	//void WritePixel(int x, int y, COLORREF color, int d = 0, int id = -1);
-	//void DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-	//void Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void WritePixel(int x, int y, COLORREF color, int d = 0, int id = -1);
+	void DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void DrawLineLow(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void DrawLineHigh(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void DrawRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void FillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void DrawCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void FillCircle(int x, int y, int radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+	void Fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 	//Flip the image, horz is the horizontal flag and vert is the vertical flag
 	bool Flip(bool horz = true, bool vert = false);
@@ -209,12 +206,6 @@ public:
 	//Solidify the image
 	bool Solidify();
 
-	//Copy the image, pImg is the image to copy, x and y are the position, xsrc and ysrc are the source position, w and h are the width and height
-	bool Copy(int x, int y, GCImage* pImg, int xsrc, int ysrc, int w = -1, int h = -1);
-	//Copy the image, pImg is the image to copy, x and y are the position and pRect is the rectangle to copy
-	bool Copy(int x, int y, GCImage* pImg, const REC2* pRect = nullptr);
-	//Blend the image, pImg is the image to blend, x and y are the position, xsrc and ysrc are the source position, wsrc and hsrc are the width and height
-	bool Blend(int x, int y, GCImage* pImg, int xsrc, int ysrc, int w = -1, int h = -1);
 	//Blend the image for Post Process, overlay is the overlay image, alpha is the alpha value
 	bool BlendSTD(const GCImage& overlay, float alpha);
 	//Blend the image for Pre Process, overlay is the overlay image, alpha is the alpha value
