@@ -456,7 +456,7 @@ bool GCImage::LoadJPG(BYTE* buffer, int size)
 	return true;
 }
 
-bool GCImage::Save(GCFile* path, int type, int* OutSize, int width, int height)
+bool GCImage::Save(GCFile* path, int type, int* pOutSize, int width, int height)
 {
 	if (path == nullptr)
 		return false;
@@ -464,13 +464,13 @@ bool GCImage::Save(GCFile* path, int type, int* OutSize, int width, int height)
 	switch (type)
 	{
 	case BMP:
-		return SaveBMP(path, OutSize);
+		return SaveBMP(path, pOutSize);
 		break;
 	case PNG:
-		return SavePNG(path, OutSize);
+		return SavePNG(path, pOutSize);
 		break;
 	//case JPG:
-	//	return SaveJPG(path, OutSize);
+	//	return SaveJPG(path, pOutSize);
 	//	break;
 	default:
 		return false;
@@ -478,10 +478,10 @@ bool GCImage::Save(GCFile* path, int type, int* OutSize, int width, int height)
 	}
 }
 
-bool GCImage::Save(cstr path, int type, int* OutSize)
+bool GCImage::Save(cstr path, int type, int* pOutSize)
 {
 	GCFile file(path, "wb");
-	return Save(&file, type, OutSize);
+	return Save(&file, type, pOutSize);
 }
 
 bool GCImage::SaveBMP(GCFile* pFile, int* pOutSize)
