@@ -1,21 +1,27 @@
 #pragma once
 
+struct GC_DESCRIPTOR_RESOURCE
+{
+	ID3D12Resource* resource;
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
+};
+
 class GCRenderResources {
 public:
-	
+
 	//Double RTV Resource For Final Render
 	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
 	//CPU Handle Address of the both
-	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize);}
+	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
 	//Render format
 	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
 
 	//Msaa
 	inline bool Get4xMsaaState() const { return m_4xMsaaState; }
 	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
-	
-	// CPU Handle address Depth Stencil Final Render
-	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewAddress() const { return m_pDsvHeap->GetCPUDescriptorHandleForHeapStart(); }
+
+	//CPU Handle address Depth Stencil Final Render
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewAddress() const { return m_DepthStencilBufferAddress; }
 	//It's format
 	inline DXGI_FORMAT GetDepthStencilFormat() const { return m_DepthStencilFormat; }
 
@@ -38,8 +44,13 @@ public:
 
 	inline Window* GetCurrentWindow() { return m_pWindow; }
 
+	inline UINT GetRenderWidth() const { return m_renderWidth; }
+	inline UINT GetRenderHeight() const { return m_renderHeight; }
+
+	// Setter 
+	inline void ResizeRender(int width, int height) { m_renderWidth = width;  m_renderHeight = height; }
 private:
-	friend class GCRender;
+	friend class GCRenderContext;
 
 	Window* m_pWindow;
 
@@ -59,7 +70,10 @@ private:
 	ID3D12GraphicsCommandList* m_CommandList;
 	IDXGISwapChain* m_SwapChain;
 	ID3D12Resource* m_SwapChainBuffer[SwapChainBufferCount];
+
 	ID3D12Resource* m_DepthStencilBuffer;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_DepthStencilBufferAddress;
+
 	ID3D12CommandQueue* m_CommandQueue;
 	ID3D12CommandAllocator* m_DirectCmdListAlloc;
 
@@ -86,8 +100,8 @@ private:
 	DXGI_FORMAT m_BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	//Msaa
-	bool      m_4xMsaaState = false;    // 4X MSAA enabled
-	UINT      m_4xMsaaQuality = 0;      // quality level of 4X MSAA
+	bool m_4xMsaaState = false;    // 4X MSAA enabled
+	UINT m_4xMsaaQuality = 0;      // quality level of 4X MSAA
 
 	//Screen
 	D3D12_VIEWPORT m_ScreenViewport;
@@ -102,71 +116,27 @@ private:
 	//Object / Layers Buffer Id Resources -> #TODO Change the norm for object id, layers id
 	ID3D12Resource* m_ObjectIdBufferRtv; //Rtv Buffer
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdBufferRtvAddress; //Cpu Handle Address
-	//#TODO Use the principal, in reading
+	//#TODO Use the principal dsv, in reading 
 	ID3D12Resource* m_ObjectIdDepthStencilBuffer; //Rtv Buffer
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdDepthStencilBufferAddress; //Cpu Handle Address
+
+	//Descriptor Heap Creation
+	void CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** ppDescriptorHeap);
+
+	//Rtv Manager
+	int m_rtvOffsetCount = 2;
+	//int m_rtvUseCount; // use count each frame to know if we need add
+	std::list<GC_DESCRIPTOR_RESOURCE*> m_lRenderTargets;
+	GC_DESCRIPTOR_RESOURCE* CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE, D3D12_CLEAR_VALUE* clearValue = nullptr);
+	GC_DESCRIPTOR_RESOURCE* CreateSwapchainRTV(ID3D12Resource* pResource);
+
+	//Srv Manager
+	int m_srvOffsetCount = 300;
+	std::list<CD3DX12_GPU_DESCRIPTOR_HANDLE> m_lShaderResourceView;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
+
+	//Dsv Manager
+	int m_dsvOffsetCount = 0;
+	std::list<GC_DESCRIPTOR_RESOURCE*> m_lDepthStencilView;
+	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags);
 };
-
-class GCRender
-{
-public:
-	GCRender();
-
-	bool Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics);
-	bool InitDirect3D();
-
-	void LogAdapters();
-	void LogAdapterOutputs(IDXGIAdapter* adapter);
-	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
-
-	void EnableDebugController();
-
-	void CreateCommandObjects();
-	void CreateRtvAndDsvDescriptorHeaps();
-	void CreateCbvSrvUavDescriptorHeaps();
-	void CreateSwapChain();
-
-	void CreatePostProcessingResources();
-
-	// Resize 
-	void ReleasePreviousResources();
-	void ResizeSwapChain();
-	void CreateRenderTargetViews();
-	void CreateDepthStencilBufferAndView();
-	void UpdateViewport();
-
-	// Draw Part
-	void ResetCommandList();
-	void ExecuteCommandList();
-	void CloseCommandList();
-
-	bool FlushCommandQueue();
-
-	void PerformPostProcessing();
-
-	bool PrepareDraw();
-	bool CompleteDraw();
-
-	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial);
-
-	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
-
-	// Camera & Light -> Temporarily
-	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
-	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
-
-	inline GCRenderResources* GetRenderResources() { return m_pGCRenderResources; }
-
-private:
-
-	GCRenderResources* m_pGCRenderResources;
-
-	// Post Processing Resources
-	GCShader* m_postProcessingShader;
-	// Object / Layers Buffer Id Resources
-	GCShader* m_objectBufferIdShader;
-};
-
-#ifndef ReleaseCom
-#define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }
-#endif

@@ -1,3 +1,5 @@
+#include "Utils.hlsl"
+
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld; // World matrix
@@ -24,10 +26,12 @@ struct VertexOut
 // Vertex shader
 VertexOut VS(VertexIn vin)
 {
+    float4x4 gWorldTransposed = TransposeMatrix(gWorld);
+    
     VertexOut vout;
 
     // Transform position to homogeneous clip space using gWorld, gView, and gProj matrices.
-    vout.PosH = mul(mul(mul(float4(vin.PosL, 1.0f), gWorld), gView), gProj);
+    vout.PosH = mul(mul(mul(float4(vin.PosL, 1.0f), gWorldTransposed), gView), gProj);
 
     // Pass vertex color to the pixel shader.
     vout.Color = vin.Color;
@@ -35,9 +39,18 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-// Pixel shader
-float4 PS(VertexOut pin) : SV_Target
+struct PSOutput
 {
+    float4 color1 : SV_Target0;
+    float4 color2 : SV_Target1;
+};
+
+// Pixel shader
+PSOutput PS(VertexOut pin) : SV_Target
+{
+    PSOutput output;
+    output.color1 = pin.Color;
+    output.color1 = pin.Color;
     // Color & Alpha
-    return pin.Color;
+    return output;
 }

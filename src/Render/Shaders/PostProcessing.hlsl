@@ -7,7 +7,7 @@ SamplerState g_sampler : register(s0); // Sampler lié au registre s0
 struct VSOutput
 {
     float4 PosH : SV_POSITION;
-    float2 UV : TEXCOORD; // Utilisation de TEXCOORD pour les coordonnées de texture (UV)
+    float2 UV : TEXCOORD; 
 };
 
 // Vertex Shader
@@ -15,7 +15,7 @@ VSOutput VS(float3 posL : POSITION, float2 uv : TEXCOORD)
 {
     VSOutput output;
     output.PosH = float4(posL, 1.0f);
-    output.UV = uv; // Assigner les coordonnées de texture (UV) à output.UV
+    output.UV = uv; 
     return output;
 }
 
@@ -24,7 +24,7 @@ float4 PS(VSOutput pin) : SV_Target
 {
     float w;
     float h;
-    const int BlurRadius = 30; // Rayon du flou gaussien (nombre d'échantillons de chaque côté du pixel central)
+    const int BlurRadius = 30; 
     static const float GaussianWeights[30] =
     {
         0.009259f, 0.012945f, 0.017284f, 0.022397f, 0.028401f,
@@ -37,10 +37,10 @@ float4 PS(VSOutput pin) : SV_Target
 
     g_texture.GetDimensions(w, h);
     
-    // Échantillonner la texture à partir des coordonnées UV
+
     float4 sampledColor = g_texture.Sample(g_sampler, pin.UV);
     
-    // Initialiser le accumulateur pour la couleur filtrée
+
     float4 filteredColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     // Échantillonner les pixels environnants selon le noyau de flou gaussien

@@ -1,5 +1,5 @@
-#ifndef RENDER_PCH_H
-#define RENDER_PCH_H
+#ifndef PCH_H
+#define PCH_H
 #pragma once
 
 #pragma comment(lib, "d3d12.lib")
@@ -60,7 +60,11 @@ enum GC_PRIMITIVE_ID;
 
 // Add William 
 class GCGraphicsLogger;
+enum GC_GRAPHICS_ERROR;
+
+struct GC_DESCRIPTOR_RESOURCE;
 //
+
 
 
 class GCGraphics;
@@ -69,7 +73,8 @@ class GCMesh;
 class GCModelParser;
 class GCModelParserObj;
 class GCPrimitiveFactory;
-class GCRender;
+class GCRenderContext;
+class GCRenderResources;
 class GCShader;
 class GCTexture;
 class GCTextureFactory;
@@ -96,7 +101,9 @@ class Window;
 #include "Window.h"
 #include "Macros.h"
 #include "GCUploadBuffer.h"
-#include "GCRender.h"
+#include "GCRenderContext.h"
+#include "GCRenderResources.h"
+#include "Vectors.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"
@@ -108,8 +115,9 @@ class Window;
 #include "GCTexture.h"
 #include "GCGraphics.h"
 #include "GCTextureFactory.h"
+#include "Timer.h"
 #include "GCUtils.h"
 
 
 
-#endif // RENDER_PCH_H
+#endif // PCH_H

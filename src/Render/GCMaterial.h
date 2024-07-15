@@ -5,7 +5,15 @@ public:
 	GCMaterial();
 	~GCMaterial();
 
-	bool Initialize(GCShader* pShader);
+	GC_GRAPHICS_ERROR Initialize(GCShader* pShader);
+	/**
+	*  Applies a texture to the material
+	 * @brief
+	 *
+	 *
+	 * @param Texture
+	 * @return True if the texture was set successfullyfalse otherwise.
+	 */
 	bool SetTexture(GCTexture* pTexture);
 
 	GCTexture* GetTexture() const { return m_pTexture; }
@@ -28,7 +36,7 @@ public:
 	void ResetCBCount() { m_iCount = 0; }
     int GetCount() const { return m_iCount; }
 private:
-	GCRender* m_pRender;
+	GCRenderContext* m_pRender;
 
 	int m_iCount = 0;
 
