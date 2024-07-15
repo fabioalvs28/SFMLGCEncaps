@@ -26,9 +26,6 @@ GCRenderManager::GCRenderManager()
 
     XMStoreFloat4x4(&m_storedProjectionMatrix, transposedProjectionMatrix);
     XMStoreFloat4x4(&m_storedViewMatrix, transposedViewMatrix);
-
-    m_componentList = std::vector<Component*>(0);
-
 }
 
 GCRenderManager::~GCRenderManager()
@@ -43,9 +40,9 @@ void GCRenderManager::Render() // Render : order by layer, and spriteRenderer be
 
     // Affichage : premier de la liste au prmeier plan.
 
-    for ( int i = 0 ; i < m_componentList.size() ; i ++ )
+    for (GCListNode<Component*>* componentNode = m_componentList.GetFirstNode(); componentNode != nullptr; componentNode = componentNode->GetNext())
     {
-        m_componentList[i]->Render();
+        componentNode->GetData()->Render();
     }
 
     m_pGraphics->EndFrame();
@@ -60,30 +57,41 @@ void GCRenderManager::CreateGeometry()
 
 void GCRenderManager::RegisterComponent(Component* component)
 {
-    if (m_componentList.size() == 0)
-    {
-        m_componentList.push_back(component); 
-        return;
-    }
 
-    m_componentList.push_back(component);
+    component->m_pRenderNode = m_componentList.PushBack(component);
     
-    ////if ( m_componentList.size() == 2 )
-    ////{
-    //    if ( m_componentList[0]->GetGameObject()->GetID() == component->GetGameObject()->GetID() )
-    //    {
-    //        if (m_componentList[0].)
-    //    }
-    ////    else if ( m_componentList[0]->GetGameObject()->GetLayer() >= m_componentList[1]->GetGameObject()->GetLayer() )
-    ////        m_componentList.push_back(component);
-    ////    else
-    ////        m_componentList.insert(0, component);
-    ////    return;
-    ////}
-    //
-    //while ( true )
+    //if (m_componentList.GetFirstNode() == nullptr)
     //{
-    //
+    //    component->m_pRenderNode = m_componentList.PushBack(component);
+    //    return; 
+    //}
+
+
+    //if ( m_componentList.GetFirstNode() == m_componentList.GetLastNode())
+    //{
+    //    if (m_componentList.GetFirstNode()->GetData()->GetGameObject()->GetLayer() <= m_componentList.GetLastNode()->GetData()->GetGameObject()->GetLayer()) 
+    //    {
+    //        m_componentList.PushBack(component);
+    //    }
+    //    else 
+    //    {
+    //        m_componentList.PushFront(component);
+    //    }
+    //    return;
+    //}
+
+    //for (GCListNode<Component*>* pComponent = m_componentList.GetFirstNode(); pComponent != nullptr; pComponent->GetNext())
+    //{
+    //    if (pComponent->GetData()->m_pGameObject->GetLayer() >= component->m_pGameObject->GetLayer())
+    //    {
+    //        component->m_pRenderNode = pComponent->PushBefore(component);
+    //        break;
+    //    }
+    //    else if (pComponent == m_componentList.GetLastNode())
+    //    {
+    //        component->m_pRenderNode = m_componentList.PushBack(component);
+    //    }
     //}
 }
+
 

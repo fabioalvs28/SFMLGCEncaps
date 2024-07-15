@@ -81,9 +81,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
     //test1->AddComponent<BoxCollider>();
+    test3->AddComponent<SpriteRenderer>();
     test2->AddComponent<SpriteRenderer>();
-    test3->AddComponent<BoxCollider>();
-    //test2->AddComponent<SpriteRenderer>();
+    test2->AddComponent<BoxCollider>();
 
     test1->m_transform.m_position.x = 2;
     test1->m_transform.m_position.y = 0;
@@ -99,7 +99,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     test3->m_transform.m_scale.x = 6;
     test3->m_transform.m_scale.y = 6;
     
-    //test2->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/caow.dds");
+    test2->GetComponent<BoxCollider>()->SetVisible(true);
+
+    test3->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/caow.dds");
     test2->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/Captain_Flameheart_Art.dds");
 
     //auto startTime = std::chrono::steady_clock::now();

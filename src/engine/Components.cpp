@@ -54,6 +54,13 @@ SpriteRenderer::SpriteRenderer() : Component(RENDER)
 
 }
 
+/////////////////////////////////////////////////
+/// @brief Set Sprite of a GameObject
+/// 
+/// @param texturePath path of the sprite file
+/// 
+/// @note The sprite must be in .dds 
+/////////////////////////////////////////////////
 void SpriteRenderer::SetSprite(std::string texturePath)
 {
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
@@ -71,10 +78,6 @@ void SpriteRenderer::SetSprite(std::string texturePath)
 	
 }
 
-void SpriteRenderer::SetColor()
-{
-//
-}
 
 void SpriteRenderer::Render()
 {
@@ -90,13 +93,12 @@ void SpriteRenderer::Render()
 
 }
 
-
 #pragma region Collider
 Collider::Collider() : Component( FIXED_UPDATE | RENDER )
 {
 	m_trigger = false;
 	m_visible = false;
-	//GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
+	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
 
 }
 
@@ -105,39 +107,45 @@ Collider::Collider() : Component( FIXED_UPDATE | RENDER )
 BoxCollider::BoxCollider()
 {
 
-	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
+	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
+	pGraphics->InitializeGraphicsResourcesStart();
+	m_pMesh = pGraphics->CreateMeshTexture(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
+	GCTexture* texture = pGraphics->CreateTexture("C:/Users/emaillard-salin/Desktop/BoxColliderSquare.dds").resource;
+	pGraphics->InitializeGraphicsResourcesEnd();
 
-	//pGraphics->InitializeGraphicsResourcesStart();
-	//m_pMesh = pGraphics->CreateMeshTexture(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
-	//GCTexture* texture = pGraphics->CreateTexture("C:/Users/emaillard-salin/Desktop/EmptySquare.dds").resource;
-	//pGraphics->InitializeGraphicsResourcesEnd();
-
-	//auto shaderTexture = pGraphics->CreateShaderTexture();
-	//auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
-	//m_pMaterial = mat.resource;
-	//m_pMaterial->SetTexture(texture);
+	auto shaderTexture = pGraphics->CreateShaderTexture();
+	auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
+	m_pMaterial = mat.resource;
+	m_pMaterial->SetTexture(texture);
 
 }
 
 
 void BoxCollider::Render()
 {
-	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
-	//XMMATRIX meshMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x + m_size.x , m_pGameObject->m_transform.m_scale.y + m_size.y , m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z);
+	if (m_visible == false)
+		return;
 
-	//XMFLOAT4X4 meshMatrix4X4;
-	//XMStoreFloat4x4(&meshMatrix4X4, meshMatrix);
+	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
-	//pGraphics->UpdateWorldConstantBuffer(m_pMaterial, meshMatrix4X4);
-	//pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
+	XMMATRIX meshMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x + m_size.x , m_pGameObject->m_transform.m_scale.y + m_size.y , m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z);
+
+	XMFLOAT4X4 meshMatrix4X4;
+	XMStoreFloat4x4(&meshMatrix4X4, meshMatrix);
+
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, meshMatrix4X4);
+	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
 }
 
 
 CircleCollider::CircleCollider()
 {
+	//if (m_visible == false)
+	//	return;
+
 	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
 
@@ -163,13 +171,10 @@ void CircleCollider::Render()
 	//pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 }
 
-
-
-
 #pragma region RigidBody
 void RigidBody::FixedUpdate()
 {
     // Apply velocity
-    //m_pGameObject->m_transform.Translate(m_velocity);        // TODO: Multiply by the fixed delta time
+    m_pGameObject->m_transform.Translate(m_velocity);        // TODO: Multiply by the fixed delta time
 }
 #pragma endregion RigidBody
