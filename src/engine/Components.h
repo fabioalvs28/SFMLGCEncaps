@@ -285,14 +285,14 @@ protected:
         Script##CLASS_NAME() = default; \
         ~Script##CLASS_NAME() {} \
          \
-        void Start() override {}; \
-        void Update() override {}; \
-        void FixedUpdate() override {}; \
-        void Destroy() override {} \
+        /*void Start() override; \
+        void Update() override; \
+        void FixedUpdate() override; \
+        void Destroy() override; \
          \
-        void OnTriggerEnter( Collider* collider ) override {}; \
-        void OnTriggerStay( Collider* collider ) override {}; \
-        void OnTriggerExit( Collider* collider ) override {}; \
+        void OnTriggerEnter( Collider* collider ) override; \
+        void OnTriggerStay( Collider* collider ) override; \
+        void OnTriggerExit( Collider* collider ) override;*/ \
      \
     protected: \
         inline static const int m_ID = ++Script::scriptCount; \

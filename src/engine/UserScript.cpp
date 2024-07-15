@@ -25,6 +25,11 @@ void ScriptExample::FixedUpdate()
     // YOUR CUSTOM FIXEDUPDATE CODE HERE;
 }
 
+void ScriptExample::Destroy()
+{
+    // YOUR CUSTOM DESTROY CODE HERE;
+}
+
 
 
 void ScriptExample::OnTriggerEnter( Collider* collider )
