@@ -45,9 +45,13 @@ SpriteRenderer::SpriteRenderer() : Component(RENDER)
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
+	m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
-	m_color = GCColor();
+
+	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
+	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
+
+
 }
 
 void SpriteRenderer::SetSprite(std::string texturePath)
@@ -55,6 +59,7 @@ void SpriteRenderer::SetSprite(std::string texturePath)
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
+	m_pMesh = pGraphics->CreateMeshTexture(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
 	GCTexture* texture = pGraphics->CreateTexture(texturePath).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
@@ -68,10 +73,7 @@ void SpriteRenderer::SetSprite(std::string texturePath)
 
 void SpriteRenderer::SetColor()
 {
-	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
-
-	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
-	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
+//
 }
 
 void SpriteRenderer::Render()
@@ -84,13 +86,9 @@ void SpriteRenderer::Render()
 	XMStoreFloat4x4(&worldMatrix4X4, worldMatrix);
 
 	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix4X4);
-	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial,true);
-}
+	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
-SpriteRenderer::~SpriteRenderer()
-{
 }
-
 
 
 #pragma region Collider

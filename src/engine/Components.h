@@ -77,7 +77,7 @@ public:
 
 public:
     SpriteRenderer();
-    ~SpriteRenderer() override; 
+    ~SpriteRenderer() override {};
     
     void Render() override;
     void Destroy() override {}
