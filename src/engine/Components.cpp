@@ -7,23 +7,40 @@
 
 
 
-Component::Component( GCGameObject* pGameObject )
+Component::Component()
 {
-	ASSERT( pGameObject != nullptr, LOG_FATAL, "A nullptr pGameObject was given in the Component constructor" );
-	m_flags = 0;
 	m_active = true;
-	m_pGameObject = pGameObject;
+	m_pGameObject = nullptr;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
 	m_pRenderNode = nullptr;
-	
+}
+
+
+
+void Component::RegisterToManagers()
+{
 	if ( IsFlagSet( UPDATE ) )
 		;
-
+	
 	if ( IsFlagSet( FIXED_UPDATE ) )
 		;
+	
+	if ( IsFlagSet( RENDER ) )
+		;
+}
 
+
+
+void Component::UnregisterFromManagers()
+{
+	if ( IsFlagSet( UPDATE ) )
+		;
+	
+	if ( IsFlagSet( FIXED_UPDATE ) )
+		;
+	
 	if ( IsFlagSet( RENDER ) )
 		;
 }
@@ -31,7 +48,7 @@ Component::Component( GCGameObject* pGameObject )
 
 
 #pragma region Collider
-Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
+Collider::Collider()
 {
 	m_trigger = false;
 	m_visible = false;
@@ -42,7 +59,7 @@ Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
 
 
 #pragma region RigidBody
-RigidBody::RigidBody( GCGameObject* pGameObject ) : Component( pGameObject )
+RigidBody::RigidBody()
 {
 	m_velocity.SetZero();
 }
