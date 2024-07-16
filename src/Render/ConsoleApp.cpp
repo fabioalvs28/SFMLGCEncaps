@@ -194,6 +194,20 @@
 
 using namespace DirectX;
 
+XMMATRIX CreateBillboardMatrix(XMVECTOR objectPosition, XMVECTOR cameraPosition, XMVECTOR cameraUp) {
+    XMVECTOR lookAt = XMVector3Normalize(cameraPosition - objectPosition);
+    XMVECTOR right = XMVector3Normalize(XMVector3Cross(cameraUp, lookAt));
+    XMVECTOR up = XMVector3Cross(lookAt, right);
+
+    XMMATRIX billboardMatrix = XMMatrixIdentity();
+    billboardMatrix.r[0] = right;
+    billboardMatrix.r[1] = up;
+    billboardMatrix.r[2] = lookAt;
+    billboardMatrix.r[3] = objectPosition;
+
+    return XMMatrixTranspose(billboardMatrix);
+}
+
 // D�finition des variables globales pour la cam�ra
 XMVECTOR cameraPosition = XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
 XMVECTOR cameraTarget = XMVectorZero();
@@ -228,13 +242,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     // Cr�ation des g�om�tries
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
-    auto geoCubeInner = graphics->CreateGeometryPrimitive(Cube, XMFLOAT4(Colors::Green));
+    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
     auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
-    
     // Chargement des shaders personnalis�s
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
-    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
+    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
 
     std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
     std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
@@ -249,18 +262,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->InitializeGraphicsResourcesStart();
 
     // Cr�ation des meshes
-    auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
+    //auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
     auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
     auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
-    
-    meshSphere.resource->InitializeParticleSystem(10);
+    //meshCubeInner.resource->InitializeParticleSystem(500, geoCubeInner.resource);
 
+    meshCubeInner.resource->AddGeometry(geoCubeInner.resource, XMFLOAT3(1.0f, 1.0f, 1.0f));
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
     auto texture = graphics->CreateTexture(texturePath);
     auto texture2 = graphics->CreateTexture(texturePath2);
 
     graphics->InitializeGraphicsResourcesEnd();
+
 
     // Cr�ation des mat�riaux
     auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
@@ -307,16 +321,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime).count();
         lastFrameTime = currentTime;
 
-        // Calculer la rotation du cube interne autour de l'axe Y
-        float rotationSpeed = 1.0f; // Vitesse de rotation en radians par seconde
-        float angle = rotationSpeed * elapsedTime;
-        XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
 
-        // Mettre � jour la matrice de transformation du cube interne
-        XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
+        //// Calculer la rotation du cube interne autour de l'axe Y
+        //float rotationSpeed = 1.0f; // Vitesse de rotation en radians par seconde
+        //float angle = rotationSpeed * elapsedTime;
+        //XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
 
-        // Extraire les donn�es de la matrice mise � jour dans une XMFLOAT4X4
-        XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
+        //// Mettre � jour la matrice de transformation du cube interne
+        //XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
+
+        //// Extraire les donn�es de la matrice mise � jour dans une XMFLOAT4X4
+        //XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
+
+        XMMATRIX worldMatrixCubeInnerUpdated = CreateBillboardMatrix(XMVectorSet(-4.0f, 5.0f, -2.0f, 1.0f), cameraPosition, cameraUp);
+        XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInnerUpdated);
+
 
          //Gestion des entr�es utilisateur pour le d�placement de la cam�ra
         if (window->IsKeyDown('Z')) {
@@ -337,7 +356,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         materialProperties.diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         materialProperties.specular = DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
         materialProperties.shininess = 1.0f;
-
         graphics->UpdateMaterialProperties(materialCubeOuter.resource, materialProperties);
 
         GCLIGHTSPROPERTIES lightData = {};
@@ -387,18 +405,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
         //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
 
+        //meshCubeInner.resource->RenderParticles(graphics, materialCubeInner.resource, worldMatrixCubeInner);
+
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource);
 
-        //meshSphere.resource->UpdateParticles(deltaTime);
-        //meshSphere.resource->RenderParticles(graphics, materialSphere.resource, worldMatrixSphere);
-
         graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
-
-
-        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
-        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());

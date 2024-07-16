@@ -23,20 +23,14 @@ public:
 
     int GetFlagEnabledBits() const { return m_flagEnabledBits; }
 
-    bool AddParticle(GCGeometry* pGeometry, DirectX::XMFLOAT3 position);
-
-    bool DeleteParticleAt(int index);
-
-    void InitializeParticleSystem(size_t maxParticles);
-    void UpdateParticles(float deltaTime);
-    void RenderParticles(GCGraphics* graphics, GCMaterial* material, DirectX::XMMATRIX viewProjMatrix);
+    void AddGeometry(GCGeometry* pGeometry, DirectX::XMFLOAT3 position);
 
 private:
 
     GCRender* m_pRender;
     GCMESHBUFFERDATA* m_pBufferGeometryData;
-
     int m_flagEnabledBits;
+    int m_geoAmount;
 
     // #TODO Put this in shader or Other place
     ID3D12Resource* CreateDefaultBuffer(
@@ -47,9 +41,9 @@ private:
         ID3D12Resource** uploadBuffer);
 
     // Particle System members
-    std::vector<GCPARTICLE> m_Particles;
-    ID3D12Resource* m_pParticleBufferGPU;
-    ID3D12Resource* m_pParticleBufferUploader;
+    //std::vector<GCPARTICLE> m_Particles;
+    //ID3D12Resource* m_pParticleBufferGPU;
+    //ID3D12Resource* m_pParticleBufferUploader;
 
 };
 

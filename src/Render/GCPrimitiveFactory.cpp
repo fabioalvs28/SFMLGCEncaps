@@ -24,9 +24,10 @@ GCPrimitiveFactory::~GCPrimitiveFactory()
 //    return normals;
 //}
 
-void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices)
+void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices, std::vector<DirectX::XMFLOAT3>& outNormals)
 {
     outVertices.clear();
+    outNormals.clear();
     outUvs.clear();
     outIndices.clear();
 
@@ -35,6 +36,7 @@ void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vect
 
     // Add center vertex
     outVertices.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+    outNormals.push_back(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f)); // Center normal
     outUvs.push_back(DirectX::XMFLOAT2(0.5f, 0.5f)); // Center UV
 
     // Add vertices around the circumference
@@ -43,6 +45,7 @@ void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vect
         float x = radius * std::cos(angle);
         float y = radius * std::sin(angle);
         outVertices.push_back(DirectX::XMFLOAT3(x, 0.0f, y));
+        outNormals.push_back(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f)); // Circumference normal
 
         // Map vertices to UV coordinates
         float u = (x / radius) * 0.5f + 0.5f;
@@ -52,7 +55,7 @@ void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vect
         angle += angleStep;
     }
 
-    // Add indices to form triangles with reversed normals
+    // Add indices to form triangles
     for (int i = 1; i < numSegments; ++i)
     {
         outIndices.push_back(0);        // Center vertex
@@ -64,7 +67,6 @@ void GCPrimitiveFactory::GenerateCircle(float radius, int numSegments, std::vect
     outIndices.push_back(numSegments);
     outIndices.push_back(1);
 }
-
 void GCPrimitiveFactory::GenerateSphere(float radius, int numSegments, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<DirectX::XMFLOAT2>& outUvs, std::vector<uint16_t>& outIndices, std::vector<DirectX::XMFLOAT3>& outNormals)
 {
     outVertices.clear();
@@ -311,10 +313,12 @@ void GCPrimitiveFactory::Initialize()
 {
     // Create circle vertices, uvs and indices
     std::vector<DirectX::XMFLOAT3> circleVertices;
+    std::vector<DirectX::XMFLOAT3> circleNormals;
     std::vector<DirectX::XMFLOAT2> circleUvs;
     std::vector<uint16_t> circleIndices;
 
-    GenerateCircle(0.5f, 32, circleVertices, circleUvs, circleIndices);
+
+    GenerateCircle(0.5f, 32, circleVertices, circleUvs, circleIndices, circleNormals);
 
     // Create sphere vertices, uvs and indices
     std::vector<DirectX::XMFLOAT3> sphereVertices;
@@ -382,7 +386,7 @@ void GCPrimitiveFactory::Initialize()
             {L"index", circleIndices},
             {L"pos", circleVertices},
             {L"uvs", circleUvs},
-            //{L"normals", GenerateNormal(circleIndices, circleVertices)}
+            {L"normals", circleNormals}
         },
         { //Sphere
             {L"index", sphereIndices},

@@ -5,7 +5,7 @@ ID3D12Resource* GCMesh::CreateDefaultBuffer(
     ID3D12GraphicsCommandList* cmdList,
     const void* initData,
     UINT64 byteSize,
-    ID3D12Resource** uploadBuffer) // Change the uploadBuffer to **uploadBuffer
+    ID3D12Resource** uploadBuffer) 
 {
     ID3D12Resource* defaultBuffer = nullptr;
 
@@ -71,9 +71,7 @@ GCMesh::GCMesh()
     m_pRender = nullptr;
     m_pBufferGeometryData = nullptr;
     m_flagEnabledBits = 0;
-
-    m_pParticleBufferGPU = nullptr;
-    m_pParticleBufferUploader = nullptr;
+    m_geoAmount = 0;
 }
 
 GCMesh::~GCMesh()
@@ -95,9 +93,6 @@ GCMesh::~GCMesh()
 
         SAFE_DELETE(m_pBufferGeometryData);
     }
-
-    SAFE_RELEASE(m_pParticleBufferGPU);
-    SAFE_RELEASE(m_pParticleBufferUploader);
 }
 
 bool GCMesh::Initialize(GCRender* pRender, GCGeometry* pGeometry, int& flagEnabledBits) 
@@ -173,100 +168,72 @@ void GCMesh::UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits) {
     m_pBufferGeometryData->IndexCount = static_cast<UINT>(pGeometry->indices.size());
 }
 
-//bool GCMesh::AddParticle(GCGeometry* pGeometry, DirectX::XMFLOAT3 pos)
-//{
-//    GCPARTICLE particle;
-//    particle.pParticleGeometry = pGeometry;
-//    particle.initPos = pos;
-//
-//    m_Particles.push_back(particle);
-//
-//    return true;
-//}
 
-//bool GCMesh::DeleteParticleAt(int index)
-//{
-//    m_Particles.erase(m_Particles.begin() + index);
-//
-//    return true;
-//}
-
-void GCMesh::InitializeParticleSystem(size_t maxParticles)
+void GCMesh::AddGeometry(GCGeometry* pGeometry, DirectX::XMFLOAT3 position)
 {
-    m_Particles.resize(maxParticles);
+    m_geoAmount += 1;
 
-    // Initialize particles with default values
-    for (auto& particle : m_Particles)
+    std::vector<float> vertexData;
+    size_t vertexSize = 0;
+    
+    // Manage offset bitize for reserve vector
+    if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION)) vertexSize += 3;
+    if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR)) vertexSize += 4;
+    if (HAS_FLAG(m_flagEnabledBits, HAS_UV)) vertexSize += 2;
+    if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL)) vertexSize += 3;
+    
+    vertexData.reserve(vertexData.size() + pGeometry->pos.size() * vertexSize * 2);
+    
+    for (size_t i = 0; i < pGeometry->pos.size(); ++i)
     {
-        particle.initPos = { static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f,
-                              static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f,
-                              static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f };
-
-        // Give each particle a random position and velocity for better visualization
-        particle.position = particle.initPos;
-
-        particle.velocity = { static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f,
-                              static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f,
-                              static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f };
-        particle.lifetime = 2.0f;
-        particle.age = 0.0f;
-    }
-
-    const UINT particleByteSize = static_cast<UINT>(m_Particles.size() * sizeof(GCPARTICLE));
-
-    // Check the return value of CreateDefaultBuffer to ensure buffer creation was successful
-    m_pParticleBufferGPU = CreateDefaultBuffer(m_pRender->Getmd3dDevice(), m_pRender->GetCommandList(), m_Particles.data(), particleByteSize, &m_pParticleBufferUploader);
-}
-
-void GCMesh::UpdateParticles(float deltaTime)
-{
-    for (auto& particle : m_Particles)
-    {
-        if (particle.age < particle.lifetime)
+        if (HAS_FLAG(m_flagEnabledBits, HAS_POSITION))
         {
-            // Update particle position based on velocity
-            particle.position.x += particle.velocity.x * deltaTime;
-            particle.position.y += particle.velocity.y * deltaTime;
-            particle.position.z += particle.velocity.z * deltaTime;
-
-            // Update age of the particle
-            particle.age += deltaTime;
+            vertexData.push_back(pGeometry->pos[i].x + position.x);
+            vertexData.push_back(pGeometry->pos[i].y + position.y);
+            vertexData.push_back(pGeometry->pos[i].z + position.z);
         }
-        else
+        if (HAS_FLAG(m_flagEnabledBits, HAS_COLOR))
         {
-            particle.age = 0;
-            particle.position = particle.initPos;
+            vertexData.push_back(pGeometry->color[i].x);
+            vertexData.push_back(pGeometry->color[i].y);
+            vertexData.push_back(pGeometry->color[i].z);
+            vertexData.push_back(pGeometry->color[i].w);
+        }
+        if (HAS_FLAG(m_flagEnabledBits, HAS_UV))
+        {
+            vertexData.push_back(pGeometry->uv[i].x);
+            vertexData.push_back(pGeometry->uv[i].y);
+        }
+        if (HAS_FLAG(m_flagEnabledBits, HAS_NORMAL))
+        {
+            vertexData.push_back(pGeometry->normals[i].x);
+            vertexData.push_back(pGeometry->normals[i].y);
+            vertexData.push_back(pGeometry->normals[i].z);
         }
     }
 
-    // Update GPU buffer with the new particle data
-    D3D12_SUBRESOURCE_DATA subResourceData = {};
-    subResourceData.pData = m_Particles.data();
-    subResourceData.RowPitch = static_cast<UINT>(m_Particles.size() * sizeof(GCPARTICLE));
-    subResourceData.SlicePitch = subResourceData.RowPitch;
+    const UINT vbByteSize = static_cast<UINT>(vertexData.size() * sizeof(float));
+    const UINT ibByteSize = static_cast<UINT>(pGeometry->indices.size() * sizeof(std::uint16_t));
 
-    // Use the command list to copy the updated data to the GPU buffer
-    CD3DX12_RESOURCE_BARRIER ResBarrier(CD3DX12_RESOURCE_BARRIER::Transition(m_pParticleBufferGPU, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST));
-    m_pRender->GetCommandList()->ResourceBarrier(1, &ResBarrier);
+    BYTE* mappedData = nullptr;
+    m_pBufferGeometryData->VertexBufferByteSize = vbByteSize;
 
-    UpdateSubresources<1>(m_pRender->GetCommandList(), m_pParticleBufferGPU, m_pParticleBufferUploader, 0, 0, 1, &subResourceData);
+    HRESULT hr = m_pBufferGeometryData->VertexBufferUploader->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
+    
+    memcpy(&mappedData[vertexSize * m_geoAmount * m_pBufferGeometryData->VertexBufferByteSize], vertexData.data(), sizeof(std::vector<float>*));
 
-    CD3DX12_RESOURCE_BARRIER ResBarrier2(CD3DX12_RESOURCE_BARRIER::Transition(m_pParticleBufferGPU, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
-    m_pRender->GetCommandList()->ResourceBarrier(1, &ResBarrier2);
-}
+    m_pBufferGeometryData->VertexBufferGPU = m_pBufferGeometryData->VertexBufferUploader;
 
-void GCMesh::RenderParticles(GCGraphics* graphics, GCMaterial* material, DirectX::XMMATRIX viewProjMatrix)
-{
-    for (const auto& particle : m_Particles) {
-        if (particle.age < particle.lifetime) {
-            DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(particle.position.x, particle.position.y, particle.position.z);
-            DirectX::XMMATRIX worldViewProjMatrix = worldMatrix * viewProjMatrix;
-            DirectX::XMFLOAT4X4 worldViewProj;
-            DirectX::XMStoreFloat4x4(&worldViewProj, XMMatrixTranspose(worldViewProjMatrix));
-            graphics->UpdateWorldConstantBuffer(material, worldViewProj);
-            graphics->GetRender()->DrawObject(this, material);
-        }
-    }
+    mappedData = nullptr;
+
+    m_pBufferGeometryData->IndexBufferByteSize = ibByteSize;
+
+    m_pBufferGeometryData->IndexBufferUploader->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
+
+    memcpy(&mappedData[pGeometry->indices.size() * m_geoAmount * m_pBufferGeometryData->IndexBufferByteSize], pGeometry->indices.data(), sizeof(std::vector<uint16_t>*));
+
+    m_pBufferGeometryData->IndexBufferGPU = m_pBufferGeometryData->IndexBufferUploader;
+
 }
 
 //bool GCMesh::UpdateGeometryData(GCGeometry* pNewGeometry, int& newFlagEnabledBits)

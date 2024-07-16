@@ -220,7 +220,6 @@ void GCRender::CreateRtvAndDsvDescriptorHeaps()
 	rtvHeapDesc.NodeMask = 0;
 	m_d3dDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap));
 
-
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
 	dsvHeapDesc.NumDescriptors = 1;
 	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
@@ -433,8 +432,6 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	D3D12_INDEX_BUFFER_VIEW indexBufferView = pMesh->GetBufferGeometryData()->IndexBufferView();
 	m_CommandList->IASetIndexBuffer(&indexBufferView);
 
-
-
 	//
 	pMaterial->UpdateTexture();
 	// Object
@@ -455,7 +452,6 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial)
 	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 	// Draw
 	m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
-
 
 	return true;
 }

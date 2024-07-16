@@ -16,7 +16,6 @@ GCMaterial::~GCMaterial()
     delete(m_pCbMaterialPropertiesInstance);
 }
 
-
 bool GCMaterial::Initialize(GCShader* pShader) 
 {
 	m_pShader = pShader;
@@ -36,6 +35,7 @@ bool GCMaterial::Initialize(GCShader* pShader)
 
     return true;
 }
+
 
 bool GCMaterial::SetTexture(GCTexture* pTexture) {
     m_pTexture = pTexture;
@@ -66,3 +66,4 @@ bool GCMaterial::UpdateTexture()
     }
     return false;
 }
+
