@@ -3,12 +3,12 @@
 bool CheckHResult(HRESULT hr, const std::string& msg);
 bool CheckFile(std::string fileName, std::string errorMessage, std::string successMessage);
 bool CheckExtension(std::string filePath, std::string fileExtension);
-void CompareShaderMeshFlags(GCMaterial* pMaterial, GCMesh* pMesh);
+bool CompareShaderMeshFlags(GCMaterial* pMaterial, GCMesh* pMesh);
 
 template <typename Iterator, typename Container>
 bool LogRemoveResource(Iterator it, const std::string& resourceName, Container& container)
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
     if (it == std::end(container))
     {
         std::wstring wideMessage = L"Resource " + std::wstring(resourceName.begin(), resourceName.end()) + L" not found, can't remove it\n";
@@ -31,11 +31,11 @@ bool CheckNull(T value)
 
 	if (value == nullptr)
 	{
-		return true;
+		return false;
 	}
 	else
 	{
-		return false;
+		return true;
 	}
 }
 
@@ -45,7 +45,7 @@ bool CheckNull(T value, Args ... args)
 
 	if (value == nullptr)
 	{
-		return true;
+		return false;
 	}
 	else 
 	{
@@ -57,7 +57,7 @@ bool CheckNull(T value, Args ... args)
 template<typename... Args>
 bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... args)
 {
-    GCGraphicsProfiler& profiler = GCGraphicsProfiler::GetInstance();
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
     do {
         bool allNotNull = true;
         const char* successMsgStr = successMsg;
@@ -78,17 +78,18 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
             profiler.LogInfo(msg);
             };
 
-        if (!(CheckNull(args...))) {
-            logInfo(successMsgStr);
-            return true;
-        }
-        else {
+        if (!CheckNull(args...)) {
             logWarning(warningMsgStr);
             return false;
+        }
+        else {
+            logInfo(successMsgStr);
+            return true;
         }
     } while (false);
 }
 
+// Debug Only ***
 
 // Variadic Check Ptr with 1 message Error 
 #ifdef _PROFILER
@@ -123,13 +124,6 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     true
 #endif
 
-#ifdef _PROFILER
-#define LOG_REMOVE_RESOURCE(it, resourceName, container) \
-    LogRemoveResource(it, resourceName, container)
-#else
-#define LOG_REMOVE_RESOURCE(it, resourceName, container) \
-    true
-#endif
 
 #ifdef _PROFILER
 #define COMPARE_SHADER_MESH_FLAGS(material, mesh) \
@@ -139,26 +133,43 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     true
 #endif
 
+// Release & Debug ***
+
+#define LOG_REMOVE_RESOURCE(it, resourceName, container) \
+    LogRemoveResource(it, resourceName, container)
+
+
 // For Release Instance, used in Destructor of resources
 #define SAFE_RELEASE(p) \
-    if ((p) != nullptr) { \
-        (p)->Release(); \
-        (p) = nullptr; \
+    if ((*(p)) != nullptr) { \
+        (*(p))->Release(); \
+        (*(p)) = nullptr; \
     }
 
 #define SAFE_DELETE(p) \
-    if ((p) != nullptr) { \
-        delete (p); \
-        (p) = nullptr; \
+    if ((*(p)) != nullptr) { \
+        delete (*(p)); \
+        (*(p)) = nullptr; \
     }
 
 // Define flags
-#define HAS_POSITION  0x01 // 00000001
-#define HAS_COLOR     0x02 // 00000010
-#define HAS_UV        0x04 // 00000100
-#define HAS_NORMAL    0x08 // 00001000
-#define HAS_TANGENT   0x10 // 00010000
-#define HAS_BINORMAL  0x20 // 00100000
+
+// Vertex Input Layout Flags
+#define VERTEX_POSITION  0x01 // 00000001
+#define VERTEX_COLOR     0x02 // 00000010
+#define VERTEX_UV        0x04 // 00000100
+#define VERTEX_NORMAL    0x08 // 00001000
+#define VERTEX_TANGENT   0x10 // 00010000
+#define VERTEX_BINORMAL  0x20 // 00100000
+
+// Root Parameter Flags
+#define ROOT_PARAMETER_CB0                      0x01 // 00000001
+#define ROOT_PARAMETER_CB1                      0x02 // 00000010
+#define ROOT_PARAMETER_CB2                      0x04 // 00000100
+#define ROOT_PARAMETER_CB3                      0x08 // 00001000
+#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1   0x10 // 00010000
+#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2   0x20 // 00100000
+
 
 // Check if a specific flag is set
 #define HAS_FLAG(flags, flag) (((flags) & (flag)) != 0)
@@ -169,14 +180,16 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 // Unset a specific flag
 #define UNSET_FLAG(flags, flag) ((flags) &= ~(flag))
 
-// Emplacement Root Parameter Index
-#define CBV_SLOT_CB0 0
-#define CBV_SLOT_CB1 1
-#define CBV_SLOT_CB2 2
-#define CBV_SLOT_CB3 3
-#define DESCRIPTOR_TABLE_SLOT_TEXTURE 4
+// Lights Type
+#define LIGHT_TYPE_DIRECTIONAL 0
+#define LIGHT_TYPE_SPOT 1
+#define LIGHT_TYPE_POINT 2
+
+// 
+#ifndef ReleaseCom
+#define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }
+#endif
 
 
-
-
-
+// Default Flag
+#define DEFAULT_ROOT_PARAMETER_FLAG 0b00111111 // All Flag

@@ -6,7 +6,9 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-#include "targetver.h"
+
+
+
 //#define WIN32_LEAN_AND_MEAN             // Exclure les en-têtes Windows rarement utilisés
 // Fichiers d'en-tête Windows
 #include <windows.h>
@@ -34,6 +36,7 @@
 #include <cassert>
 #include <iostream>
 
+
 #include <wrl.h>
 #include <dxgi1_4.h>
 #include <d3d12.h>
@@ -47,29 +50,23 @@
 #include <WindowsX.h>
 
 
-
-
-
-struct HLSLFile;
 struct GCGeometry;
-
 struct GCMESHBUFFERDATA;
-
-
-struct GCVERTEXCOLOR;
-struct GCVERTEXTEXTURE;
-
 
 
 struct GCSHADERCB;
 struct GCWORLDCB;
 struct GCVIEWPROJCB;
 
-
+enum GC_PRIMITIVE_ID;
 
 // Add William 
-class GCGraphicsProfiler;
+class GCGraphicsLogger;
+enum GC_GRAPHICS_ERROR;
+
+struct GC_DESCRIPTOR_RESOURCE;
 //
+
 
 
 class GCGraphics;
@@ -78,13 +75,13 @@ class GCMesh;
 class GCModelParser;
 class GCModelParserObj;
 class GCPrimitiveFactory;
-class GCRender;
+class GCRenderContext;
+class GCRenderResources;
 class GCShader;
 class GCTexture;
 class GCTextureFactory;
 class GCShaderUploadBufferBase; // 
 class GCUtils;
-//class GCShaderUploadBuffer; // 
 class MathHelper;
 class Timer;
 class Window;
@@ -95,35 +92,34 @@ class Window;
 
 
 // Add William 
-#include "./GCGraphicsProfiler.h"
-#include "./GCShaderCBStruct.h"
-#include "./GCShaderVertexStruct.h"
+#include "./GCGraphicsLogger.h"
+#include "./GCShaderConstantBufferStruct.h"
 #include "./GCMeshBufferData.h"
+#include "GCPrimitiveIdEnum.h"
+
+#include "../core/framework.h"
 
 
 //
 #include "d3dx12.h"
 #include "Window.h"
 #include "Macros.h"
-#include "UploadBuffer.h"
-#include "GCRender.h"
-#include "Vectors.h"
-//#include "GCRender.h"
+#include "GCUploadBuffer.h"
+#include "GCRenderContext.h"
+#include "GCRenderResources.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"
 #include "GCMaterial.h"
 #include "GCModelParser.h"
 #include "GCModelParserObj.h"
+
 #include "GCPrimitiveFactory.h"
 #include "GCTexture.h"
 #include "GCGraphics.h"
 #include "GCTextureFactory.h"
-#include "ShaderTypeEnum.h"
 #include "Timer.h"
 #include "GCUtils.h"
-
-#include "HLSLReader.h"
 
 
 

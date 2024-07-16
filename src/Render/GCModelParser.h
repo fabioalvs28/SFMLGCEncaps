@@ -17,7 +17,7 @@ public:
 	GCModelParser();
 	virtual ~GCModelParser();
 
-	bool BuildModel(std::string filePath, DirectX::XMFLOAT4 color, Extensions fileExtension, GCGeometry* pGeometry);
+	GC_GRAPHICS_ERROR BuildModel(std::string filePath, DirectX::XMFLOAT4 color, Extensions fileExtension, GCGeometry* pGeometry);
 
 	bool Parse(std::string filePath, Extensions fileExtension);
 
