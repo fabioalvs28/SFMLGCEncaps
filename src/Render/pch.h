@@ -50,6 +50,7 @@
 #include <WindowsX.h>
 
 
+
 struct GCGeometry;
 struct GCMESHBUFFERDATA;
 

@@ -18,37 +18,37 @@ GCGraphics::~GCGraphics()
 {
     for (auto shader : m_vShaders)
     {
-        SAFE_DELETE(&shader);
+        DELETE(shader);
     }
     m_vShaders.clear();
 
     for (auto material : m_vMaterials)
     {
-        SAFE_DELETE(&material);
+        DELETE(material);
     }
     m_vMaterials.clear();
 
     for (auto mesh : m_vMeshes)
     {
-        SAFE_DELETE(&mesh);
+        DELETE(mesh);
     }
     m_vMeshes.clear();
 
     for (auto texture : m_lTextures)
     {
-        SAFE_DELETE(&texture);
+        DELETE(texture);
     }
     m_lTextures.clear();
 
     for (auto buffer : m_pCbCameraInstances)
     {
-        SAFE_DELETE(&buffer);
+        DELETE(buffer);
     }
     m_pCbCameraInstances.clear();
 
-    SAFE_DELETE(&m_pRender);
-    SAFE_DELETE(&m_pPrimitiveFactory);
-    SAFE_DELETE(&m_pModelParserFactory);
+    DELETE(m_pRender);
+    DELETE(m_pPrimitiveFactory);
+    DELETE(m_pModelParserFactory);
 }
 
 bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)

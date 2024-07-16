@@ -37,11 +37,11 @@ GCShader::GCShader()
 
 GCShader::~GCShader()
 {
-	SAFE_RELEASE(&m_RootSignature);
-	SAFE_RELEASE(&m_pPsoAlpha);
-	SAFE_RELEASE(&m_pPsoNoAlpha);
-	SAFE_RELEASE(&m_vsByteCode);
-	SAFE_RELEASE(&m_psByteCode);
+	m_RootSignature->Release();
+	m_pPsoAlpha->Release();
+	m_pPsoNoAlpha->Release();
+	m_vsByteCode->Release();
+	m_psByteCode->Release();
 
 	m_InputLayout.clear();
 }

@@ -264,7 +264,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto meshCubeInner = graphics->CreateMeshColor(geoCubeInner.resource);
     auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
     //graphics->GetRender()->FlushCommandQueue();
-    //meshSphere.resource->TestUpdateANewGeometry(geoCubeInner.resource);
+    meshSphere.resource->UploadGeometryData(geoCubeInner.resource, flagsLightTexture);
 
     //meshCubeInner.resource->AddGeometry(geoCubeInner.resource, XMFLOAT3(1.0f, 1.0f, 1.0f));
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
@@ -377,11 +377,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter, 1.0f);
         //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource,true);
 
-        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
-        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
+        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
+        //graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
 
-        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere, 3.0f);
-        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner, 3.0f);
+        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
         //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
         //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);

@@ -84,6 +84,8 @@ namespace DirectX
         _In_z_ const wchar_t* szFileName,
         _Out_ ID3D12Resource** texture,
         _Out_ ID3D12Resource** textureUploadHeap,
+        int& m_width,
+        int& m_height,
         _In_ size_t maxsize = 0,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
     );
