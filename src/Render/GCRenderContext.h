@@ -83,10 +83,15 @@ public:
 	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	inline GCRenderResources* GetRenderResources() { return m_pGCRenderResources; }
+
+	inline void Set2DMode() { m_renderMode = 0; }
+	inline void Set3DMode() { m_renderMode = 1; }
 private:
 
 	bool m_isBasicPostProcessingActivated = false;
 	bool m_isPixelIDMappingActivated = false; 
+
+	int m_renderMode = 1; //2D or 3d
 
 	// Post Processing Resources
 	GCShader* m_postProcessingShader;

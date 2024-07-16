@@ -34,53 +34,39 @@ GCRenderResources::GCRenderResources()
 }
 
 GCRenderResources::~GCRenderResources() {
+	// Release Descriptor Heaps
+	m_pRtvHeap->Release();
+	m_pDsvHeap->Release();
+	m_pCbvSrvUavDescriptorHeap->Release();
 
 	// Release all RTV resources
 	for (auto& rtvResource : m_lRenderTargets) {
-		SAFE_RELEASE(&rtvResource->resource);
-		SAFE_DELETE(&rtvResource);
+		rtvResource->resource->Release();
 	}
 
 	// Release all DSV resources
 	for (auto& dsvResource : m_lDepthStencilView) {
-		SAFE_RELEASE(&dsvResource->resource);
-		SAFE_DELETE(&dsvResource);
+		dsvResource->resource->Release();
 	}
-
-	// Release Post Processing Resources
-	SAFE_RELEASE(&m_pPostProcessingRtv);
-
-	// Release Object/Layer ID Resources
-
-	SAFE_RELEASE(&m_ObjectIdBufferRtv);
-	SAFE_RELEASE(&m_ObjectIdDepthStencilBuffer);
 
 	// Release Swap Chain Buffers
 	for (int i = 0; i < SwapChainBufferCount; ++i) {
-		SAFE_RELEASE(&m_SwapChainBuffer[i]);
+		m_SwapChainBuffer[i]->Release();
 	}
 
-	// Release Depth Stencil Buffer
-	SAFE_RELEASE(&m_DepthStencilBuffer);
-
-	// Release Descriptor Heaps
-	SAFE_RELEASE(&m_pRtvHeap);
-	SAFE_RELEASE(&m_pDsvHeap);
-	SAFE_RELEASE(&m_pCbvSrvUavDescriptorHeap);
-
 	// Release Command List and Allocator
-	SAFE_RELEASE(&m_CommandList);
-	SAFE_RELEASE(&m_DirectCmdListAlloc);
+	m_CommandList->Release();
+	m_DirectCmdListAlloc->Release();
 
 	// Release Command Queue
-	SAFE_RELEASE(&m_CommandQueue);
+	m_CommandQueue->Release();
 
 	// Release Fence
-	SAFE_RELEASE(&m_Fence);
+	m_Fence->Release();
 
 	// Release Device and Factory
-	SAFE_RELEASE(&m_d3dDevice);
-	SAFE_RELEASE(&m_dxgiFactory);
+	m_d3dDevice->Release();
+	m_dxgiFactory->Release();
 }
 
 void GCRenderResources::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** pDescriptorHeap)

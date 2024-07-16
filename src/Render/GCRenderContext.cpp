@@ -11,11 +11,9 @@ GCRenderContext::GCRenderContext()
 }
 
 GCRenderContext::~GCRenderContext() {
-	SAFE_DELETE(&m_pGCRenderResources);
-	SAFE_DELETE(&m_pCbCurrentViewProjInstance);
-	SAFE_DELETE(&m_pCbLightPropertiesInstance);
-	SAFE_DELETE(&m_postProcessingShader);
-	SAFE_DELETE(&m_objectBufferIdShader);
+	DELETE(m_pGCRenderResources);
+	DELETE(m_postProcessingShader);
+	DELETE(m_objectBufferIdShader);
 }
 
 
@@ -366,8 +364,6 @@ bool GCRenderContext::PrepareDraw()
 		return false;
 	};
 
-
-
 	// Swap
 	CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &ResBar);
@@ -381,19 +377,27 @@ bool GCRenderContext::PrepareDraw()
 	//m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_ObjectIdBufferRtvAddress, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	//m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
+
 	D3D12_CPU_DESCRIPTOR_HANDLE basicRtv = m_pGCRenderResources->CurrentBackBufferViewAddress();
 	D3D12_CPU_DESCRIPTOR_HANDLE basicDsv = m_pGCRenderResources->GetDepthStencilViewAddress();
 
+	
+
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[2] = { basicRtv, m_pGCRenderResources->m_ObjectIdBufferRtvAddress };
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvs[2] = { basicDsv, m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress };
+
 	if (m_isPixelIDMappingActivated) {
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvs[2] = { basicRtv, m_pGCRenderResources->m_ObjectIdBufferRtvAddress };
-		D3D12_CPU_DESCRIPTOR_HANDLE dsvs[2] = { basicDsv, m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress };
 		m_pGCRenderResources->m_CommandList->OMSetRenderTargets(2, rtvs, FALSE, dsvs);
 	}
 	// Basic Render
 	else {
-
-		m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &basicRtv, FALSE, &basicDsv);
-		//m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &basicRtv, FALSE, nullptr);
+		if (m_renderMode == RENDER_MODE_2D) {
+			m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &basicRtv, FALSE, nullptr);
+		}
+		else {
+			m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &basicRtv, FALSE, &basicDsv);
+		}
+		
 	}
 	
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap };

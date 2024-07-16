@@ -10,11 +10,11 @@ GCMaterial::GCMaterial()
 
 GCMaterial::~GCMaterial()
 {
-    SAFE_DELETE(&m_pCbMaterialPropertiesInstance);
+    DELETE(m_pCbMaterialPropertiesInstance);
 
     for (auto* cb : m_pCbObjectInstances)
     {
-        SAFE_DELETE(&cb);
+        DELETE(cb);
     }
     m_pCbObjectInstances.clear();
 }
