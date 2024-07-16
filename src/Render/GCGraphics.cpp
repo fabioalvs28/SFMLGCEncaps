@@ -335,7 +335,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC
     return ResourceCreationResult<GCGeometry*>(true, pGeometry, errorState);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtensionType)
 {
     GCGeometry* pGeometry = new GCGeometry;
 
