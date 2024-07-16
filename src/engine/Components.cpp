@@ -9,33 +9,27 @@
 using namespace DirectX;
 
 
-Component::Component() { Init(); }
 
-Component::Component( int flags )
+Component::Component( GCGameObject* pGameObject )
 {
-    Init();
-    m_flags = flags;
-    
-    if ( IsFlagSet( UPDATE ) )
-        ;
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "A nullptr pGameObject was given in the Component constructor" );
+	m_flags = 0;
+	m_active = true;
+	m_pGameObject = pGameObject;
+	
+	m_pUpdateNode = nullptr;
+	m_pPhysicsNode = nullptr;
+	m_pRenderNode = nullptr;
+	
+	if ( IsFlagSet( UPDATE ) )
+		;
 
-    if ( IsFlagSet( FIXED_UPDATE ) )
-        ;
+	if ( IsFlagSet( FIXED_UPDATE ) )
+		;
 
-    if ( IsFlagSet( RENDER ) )
-			GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent(this);
-        ;
-}
-
-void Component::Init()
-{
-    m_flags = 0;
-    m_active = true;
-    m_pGameObject = nullptr;
-    
-    m_pUpdateNode = nullptr;
-    m_pPhysicsNode = nullptr;
-    m_pRenderNode = nullptr;
+	if ( IsFlagSet( RENDER ) )
+		GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent(this);
+		;
 }
 
 
@@ -94,7 +88,7 @@ void SpriteRenderer::Render()
 }
 
 #pragma region Collider
-Collider::Collider() : Component( FIXED_UPDATE | RENDER )
+Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
 {
 	m_trigger = false;
 	m_visible = false;
@@ -121,7 +115,6 @@ BoxCollider::BoxCollider()
 
 }
 
-
 void BoxCollider::Render()
 {
 
@@ -139,7 +132,6 @@ void BoxCollider::Render()
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
 }
-
 
 CircleCollider::CircleCollider()
 {
@@ -172,6 +164,11 @@ void CircleCollider::Render()
 }
 
 #pragma region RigidBody
+RigidBody::RigidBody( GCGameObject* pGameObject ) : Component( pGameObject )
+{
+	m_velocity.SetZero();
+}
+
 void RigidBody::FixedUpdate()
 {
     // Apply velocity
