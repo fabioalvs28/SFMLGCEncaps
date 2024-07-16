@@ -3,8 +3,9 @@
 using namespace DirectX;
 
 GCPrimitiveFactory::GCPrimitiveFactory() 
+	: m_pRender(nullptr)
 {
-	m_pRender = nullptr;
+    m_primitiveInfos.clear();
 }
 
 GCPrimitiveFactory::~GCPrimitiveFactory() 

@@ -85,8 +85,8 @@ public:
 	inline GCRenderResources* GetRenderResources() { return m_pGCRenderResources; }
 private:
 
-	bool m_isBasicPostProcessingActivated = false;
-	bool m_isPixelIDMappingActivated = false; 
+	bool m_isBasicPostProcessingActivated;
+	bool m_isPixelIDMappingActivated; 
 
 	// Post Processing Resources
 	GCShader* m_postProcessingShader;

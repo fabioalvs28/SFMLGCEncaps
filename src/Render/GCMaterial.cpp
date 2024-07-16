@@ -1,11 +1,16 @@
 #include "pch.h"
 
 GCMaterial::GCMaterial()
-    : m_pRender(nullptr),
+    : m_iCount(0),
+    
+    m_pRender(nullptr),
+    
     m_pShader(nullptr),
     m_pTexture(nullptr),
+    
     m_pCbMaterialPropertiesInstance(nullptr)
 {
+    m_pCbObjectInstances.clear();
 }
 
 GCMaterial::~GCMaterial()
@@ -18,7 +23,6 @@ GCMaterial::~GCMaterial()
     }
     m_pCbObjectInstances.clear();
 }
-
 
 GC_GRAPHICS_ERROR GCMaterial::Initialize(GCShader* pShader)
 {
@@ -38,7 +42,6 @@ GC_GRAPHICS_ERROR GCMaterial::Initialize(GCShader* pShader)
 
     return GCRENDER_SUCCESS_OK;
 }
-
 
 bool GCMaterial::SetTexture(GCTexture* pTexture) {
     m_pTexture = pTexture;

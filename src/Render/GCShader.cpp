@@ -1,18 +1,33 @@
 #include "pch.h"
 //test
-GCShader::GCShader() 
+GCShader::GCShader()
+	: m_RootSignature(nullptr),
+
+	m_pPsoAlpha(nullptr),
+	m_pPsoNoAlpha(nullptr),
+
+	m_vsByteCode(nullptr),
+	m_psByteCode(nullptr),
+
+	m_pRender(nullptr),
+
+	m_flagRootParameters(0),
+	m_flagEnabledBits(0),
+	m_cullMode(D3D12_CULL_MODE_NONE),
+
+	m_pRtt(nullptr),
+
+	m_rootParameter_ConstantBuffer_0(-1),
+	m_rootParameter_ConstantBuffer_1(-1),
+	m_rootParameter_ConstantBuffer_2(-1),
+	m_rootParameter_ConstantBuffer_3(-1),
+	m_rootParameter_DescriptorTable_1(-1),
+	m_rootParameter_DescriptorTable_2(-1)
+
 {
-	m_RootSignature = nullptr;
-	m_pPsoAlpha = nullptr;
-	m_pPsoNoAlpha = nullptr;
-	m_InputLayout.clear(); 
-	m_vsByteCode = nullptr;
-	m_psByteCode = nullptr;
-	m_vsCsoPath.clear();
 	m_psCsoPath.clear();
-	m_pRender = nullptr;
-	m_flagEnabledBits = 0;
-	m_cullMode = D3D12_CULL_MODE_NONE;
+	m_vsCsoPath.clear();
+	m_InputLayout.clear(); 
 
 	for (int i = 0; i < 4; ++i) {
 		m_rtvFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;

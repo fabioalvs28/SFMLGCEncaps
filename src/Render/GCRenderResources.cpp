@@ -5,31 +5,44 @@ GCRenderResources::GCRenderResources()
 	: m_pWindow(nullptr),
 	m_renderWidth(800), // Default width
 	m_renderHeight(600), // Default height
+	m_ScreenViewport(),
+
 	m_pGraphics(nullptr),
 	m_dxgiFactory(nullptr),
 	m_d3dDevice(nullptr),
-	m_CommandList(nullptr),
 	m_SwapChain(nullptr),
+	m_SwapChainBuffer(),
 	m_DepthStencilBuffer(nullptr),
+
+	m_CommandList(nullptr),
 	m_CommandQueue(nullptr),
 	m_DirectCmdListAlloc(nullptr),
+
 	m_Fence(nullptr),
 	m_CurrentFence(0),
+
 	m_pRtvHeap(nullptr),
 	m_pDsvHeap(nullptr),
 	m_pCbvSrvUavDescriptorHeap(nullptr),
-	m_rtvDescriptorSize(0),
-	m_dsvDescriptorSize(0),
-	m_cbvSrvUavDescriptorSize(0),
+
 	m_canResize(true),
+
 	m_CurrBackBuffer(0),
 	m_DepthStencilFormat(DXGI_FORMAT_D24_UNORM_S8_UINT),
 	m_BackBufferFormat(DXGI_FORMAT_R8G8B8A8_UNORM),
-	m_4xMsaaState(false),
-	m_4xMsaaQuality(0),
+
 	m_pPostProcessingRtv(nullptr),
 	m_ObjectIdBufferRtv(nullptr),
-	m_ObjectIdDepthStencilBuffer(nullptr)
+	m_ObjectIdDepthStencilBuffer(nullptr),
+
+	m_ScissorRect(),
+
+	m_4xMsaaQuality(0),
+	m_4xMsaaState(false),
+	
+	m_rtvDescriptorSize(0),
+	m_dsvDescriptorSize(0),
+	m_cbvSrvUavDescriptorSize(0)
 {
 }
 

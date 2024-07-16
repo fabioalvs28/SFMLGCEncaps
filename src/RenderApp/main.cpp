@@ -401,14 +401,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->Initialize(window, 1920, 1080);
     //graphics->Resize(1500, 800);
     int flagsLightColor = 0;
-    SET_FLAG(flagsLightColor, HAS_POSITION);
-    SET_FLAG(flagsLightColor, HAS_COLOR);
-    SET_FLAG(flagsLightColor, HAS_NORMAL);
+    SET_FLAG(flagsLightColor, VERTEX_POSITION);
+    SET_FLAG(flagsLightColor, VERTEX_COLOR);
+    SET_FLAG(flagsLightColor, VERTEX_NORMAL);
 
     int flagsLightTexture = 0;
-    SET_FLAG(flagsLightTexture, HAS_POSITION);
-    SET_FLAG(flagsLightTexture, HAS_UV);
-    SET_FLAG(flagsLightTexture, HAS_NORMAL);
+    SET_FLAG(flagsLightTexture, VERTEX_POSITION);
+    SET_FLAG(flagsLightTexture, VERTEX_UV);
+    SET_FLAG(flagsLightTexture, VERTEX_NORMAL);
 
     auto geometryPostProcessing = graphics->CreateGeometryPrimitive(Quad, DirectX::XMFLOAT4(DirectX::Colors::Yellow));
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
@@ -428,8 +428,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->InitializeGraphicsResourcesStart();
 
     int flags = 0;
-    SET_FLAG(flags, HAS_POSITION);
-    SET_FLAG(flags, HAS_UV);
+    SET_FLAG(flags, VERTEX_POSITION);
+    SET_FLAG(flags, VERTEX_UV);
 
 
     auto meshPostProcessing = graphics->CreateMeshCustom(geometryPostProcessing.resource, flags);

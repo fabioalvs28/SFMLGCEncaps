@@ -36,9 +36,9 @@ public:
 	void ResetCBCount() { m_iCount = 0; }
     int GetCount() const { return m_iCount; }
 private:
-	GCRenderContext* m_pRender;
+	int m_iCount;
 
-	int m_iCount = 0;
+	GCRenderContext* m_pRender;
 
 	GCShader* m_pShader;
 	GCTexture* m_pTexture;

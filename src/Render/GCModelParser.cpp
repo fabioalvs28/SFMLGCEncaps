@@ -1,7 +1,9 @@
 #include "pch.h"
 
 GCModelParser::GCModelParser()
+	: m_ParsedModel(nullptr)
 {
+	m_filePath.clear();
 }
 
 GCModelParser::~GCModelParser()

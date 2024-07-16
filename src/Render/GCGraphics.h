@@ -23,8 +23,6 @@ struct ResourceCreationResult {
 	GC_GRAPHICS_ERROR errorState = GCRENDER_ERROR_UNKNOWN;
 };
 
-
-
 class GCGraphics
 {
 public:
@@ -37,7 +35,7 @@ public:
 	 *
 	 * This function takes into account the window you want to use as well as sizes you want your render to be(not the window,the actual renderer screen).
 	 *
-	 * @param Window that'll be used.
+	 * @param Window that will be used.
 	 * @param render-Window's desired width(preferably 1920 or lower).
 	 * @param render-Window's desired height(preferably 1080 or lower).
 	 */

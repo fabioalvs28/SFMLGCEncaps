@@ -22,44 +22,12 @@ DirectX::XMFLOAT3 GCUtils::PixelToWorld(float x, float y, UINT windowWidth, UINT
 	return worldPos;
 }
 
-//GCVEC3 GCUtils::Xmfloat3ToGcvec3(const DirectX::XMFLOAT3& v1)
-//{
-//	GCVEC3 vec;
-//
-//	vec.x = v1.x;
-//	vec.y = v1.y;
-//	vec.z = v1.z;
-//
-//	return vec;
-//}
-//
-//DirectX::XMFLOAT3 GCUtils::Gcvec3oXmfloat3(const GCVEC3& v1)
-//{
-//	DirectX::XMFLOAT3 vec;
-//
-//	vec.x = v1.x;
-//	vec.y = v1.y;
-//	vec.z = v1.z;
-//
-//	return vec;
-//}
-//
-//
-//DirectX::XMFLOAT3 GCUtils::GetNormal(const GCVEC3& v1, const GCVEC3& v2, const GCVEC3& v3, bool inverse)
-//{
-//	GCVEC3 normal;
-//	GCVEC3 vA, vB;
-//	vA = v1 - v2;
-//	vB = v3 - v2;
-//
-//	GCVEC3::CrossProduct(vA, vB, normal);
-//	normal.Normalize();
-//
-//	DirectX::XMFLOAT3 norm;
-//
-//	norm.x = normal.x;
-//	norm.y = normal.y;
-//	norm.z = normal.z;
-//
-//	return norm;
-//}
+DirectX::XMFLOAT4X4 GCUtils::GCMATRIXToXMFLOAT4x4(const GCMATRIX& mat)
+{
+	DirectX::XMFLOAT4X4 result;
+	result._11 = mat._11; result._12 = mat._12; result._13 = mat._13; result._14 = mat._14;
+	result._21 = mat._21; result._22 = mat._22; result._23 = mat._23; result._24 = mat._24;
+	result._31 = mat._31; result._32 = mat._32; result._33 = mat._33; result._34 = mat._34;
+	result._41 = mat._41; result._42 = mat._42; result._43 = mat._43; result._44 = mat._44;
+	return result;
+}

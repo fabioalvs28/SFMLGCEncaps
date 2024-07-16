@@ -249,10 +249,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
     auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
 
-    std::string shaderFilePath3 = "../../../src/Render/Shaders/LightColor.hlsl";
-    std::string csoDestinationPath3 = "../../../src/Render/CsoCompiled/LightColor";
-    auto shaderParticle = graphics->CreateShaderCustom(shaderFilePath3, csoDestinationPath3, flagsColor, D3D12_CULL_MODE_NONE);
-
     auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
 
     graphics->InitializeGraphicsResourcesStart();
@@ -270,7 +266,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //graphics->GetRender()->FlushCommandQueue();
     //meshSphere.resource->TestUpdateANewGeometry(geoCubeInner.resource);
 
-    meshCubeInner.resource->AddGeometry(geoCubeInner.resource, XMFLOAT3(1.0f, 1.0f, 1.0f));
+    //meshCubeInner.resource->AddGeometry(geoCubeInner.resource, XMFLOAT3(1.0f, 1.0f, 1.0f));
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
     auto texture = graphics->CreateTexture(texturePath);
