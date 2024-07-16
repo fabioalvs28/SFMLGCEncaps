@@ -1,11 +1,14 @@
 #pragma once
 #include "Components.h"
 
+
+
 CREATE_SCRIPT_START( Example )
 
 public:
     void Say( const char* message );
-    
+
+protected:
     void Start() override;
     void Update() override;
     void FixedUpdate() override;
@@ -17,8 +20,7 @@ public:
 
 CREATE_SCRIPT_END
 
-CREATE_SCRIPT_START( ExampleInherit, ScriptExample )
 
 
-
+CREATE_SCRIPT_START( ExampleInherit, Example )
 CREATE_SCRIPT_END

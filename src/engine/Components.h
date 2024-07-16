@@ -286,9 +286,13 @@ protected:
 
 };
 
-#define CREATE_SCRIPT_START2( CLASS_NAME, INHERITANCE ) \
-    class Script##CLASS_NAME : public INHERITANCE \
+#define CSS2( CLASS_NAME, INHERITANCE ) \
+    class Script##CLASS_NAME : public Script##INHERITANCE \
     { \
+    friend class GCGameObject; \
+    friend class GCUpdateManager; \
+    friend class GCPhysicManager; \
+    friend class GCRenderManager; \
     public: \
         static const int GetIDStatic() { return m_ID; } \
         const int GetID() override { return m_ID; } \
@@ -308,11 +312,10 @@ protected:
      \
     protected: \
         inline static const int m_ID = ++Script::scriptCount; \
-        inline static int m_flags = UPDATE | FIXED_UPDATE; \
      \
     private:
 
-#define CREATE_SCRIPT_START1( CLASS_NAME ) CREATE_SCRIPT_START2( CLASS_NAME, Script )
+#define CSS1( CLASS_NAME ) CSS2( CLASS_NAME,  )
 
 #define CREATE_SCRIPT_END };
 
@@ -320,17 +323,11 @@ protected:
 
 // ChatGPT Code
 
-// Helper macros to count arguments
-#define COUNT_ARGS_IMPL2(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-#define COUNT_ARGS_IMPL(args) COUNT_ARGS_IMPL2 args
-#define COUNT_ARGS(...) COUNT_ARGS_IMPL((__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
+#define COUNT_ARGS_IMPL2( _1, _2, _3, _4, _5, _6, _7, _8, _9, N, ... ) N
+#define COUNT_ARGS_IMPL( ARGS ) COUNT_ARGS_IMPL2 ARGS
+#define COUNT_ARGS( ... ) COUNT_ARGS_IMPL( ( __VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 ) )
 
-// Helper macros to select the correct macro based on argument count
-#define CONCATE(a, b) a##b
-#define MACRO_OVERLOAD(name, count) CONCATE(name, count)
+#define CONCATE( A, B ) A##B
+#define MACRO_OVERLOAD( NAME, COUNT ) CONCATE( NAME, COUNT )
 
-// Main macro to select the correct PRINT macro based on the number of arguments
-#define CREATE_SCRIPT_START(...) MACRO_OVERLOAD(CREATE_SCRIPT_START, COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
-
-
-
+#define CREATE_SCRIPT_START( ... ) MACRO_OVERLOAD( CSS, COUNT_ARGS( __VA_ARGS__ ) )( __VA_ARGS__ )
