@@ -103,6 +103,7 @@ T* GCGameObject::AddComponent()
 {
     ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a component to a GameObject that already has it" );
     T* pComponent = new T( this );
+    pComponent->Init();
     m_componentsList.Insert( T::GetIDStatic(), pComponent );
     return pComponent;
 }

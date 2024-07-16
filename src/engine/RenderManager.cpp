@@ -58,40 +58,57 @@ void GCRenderManager::CreateGeometry()
 void GCRenderManager::RegisterComponent(Component* component)
 {
 
-    component->m_pRenderNode = m_componentList.PushBack(component);
+    //component->m_pRenderNode = m_componentList.PushBack(component);
     
-    //if (m_componentList.GetFirstNode() == nullptr)
-    //{
-    //    component->m_pRenderNode = m_componentList.PushBack(component);
-    //    return; 
-    //}
+    if (m_componentList.GetFirstNode() == nullptr)
+    {
+        component->m_pRenderNode = m_componentList.PushBack(component);
+        return; 
+    }
 
 
-    //if ( m_componentList.GetFirstNode() == m_componentList.GetLastNode())
-    //{
-    //    if (m_componentList.GetFirstNode()->GetData()->GetGameObject()->GetLayer() <= m_componentList.GetLastNode()->GetData()->GetGameObject()->GetLayer()) 
-    //    {
-    //        m_componentList.PushBack(component);
-    //    }
-    //    else 
-    //    {
-    //        m_componentList.PushFront(component);
-    //    }
-    //    return;
-    //}
+    if ( m_componentList.GetFirstNode() == m_componentList.GetLastNode())
+    {
+        if (m_componentList.GetFirstNode()->GetData()->GetGameObject()->GetLayer() <= component->GetGameObject()->GetLayer())
+        {
+            if (m_componentList.GetFirstNode()->GetData()->GetID() <= component->GetID())
+            {
+                m_componentList.PushBack(component);
+                return;
+            }
+            else
+            {
+                m_componentList.PushFront(component);
+                return;
+            }
+        }
+        else
+        {
+            m_componentList.PushFront(component);
+            return;
+        }
+    }
 
-    //for (GCListNode<Component*>* pComponent = m_componentList.GetFirstNode(); pComponent != nullptr; pComponent->GetNext())
-    //{
-    //    if (pComponent->GetData()->m_pGameObject->GetLayer() >= component->m_pGameObject->GetLayer())
-    //    {
-    //        component->m_pRenderNode = pComponent->PushBefore(component);
-    //        break;
-    //    }
-    //    else if (pComponent == m_componentList.GetLastNode())
-    //    {
-    //        component->m_pRenderNode = m_componentList.PushBack(component);
-    //    }
-    //}
+
+    for (GCListNode<Component*>* pComponent = m_componentList.GetFirstNode(); pComponent != nullptr; pComponent = pComponent->GetNext())
+    {
+        if (pComponent->GetData()->GetGameObject()->GetLayer() <= component->GetGameObject()->GetLayer())
+        {
+            if (pComponent->GetData()->GetID() <= component->GetID())
+            {
+                pComponent->PushAfter(component);
+                return;
+            }
+            else
+            {
+                pComponent->PushBefore(component);
+                return;
+            }
+        }
+    }
+
+    m_componentList.PushBack(component);
+
 }
 
 

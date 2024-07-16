@@ -13,28 +13,31 @@ using namespace DirectX;
 Component::Component( GCGameObject* pGameObject )
 {
 	ASSERT( pGameObject != nullptr, LOG_FATAL, "A nullptr pGameObject was given in the Component constructor" );
-	m_flags = 0;
 	m_active = true;
 	m_pGameObject = pGameObject;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
 	m_pRenderNode = nullptr;
-	
-	if ( IsFlagSet( UPDATE ) )
-		;
-
-	if ( IsFlagSet( FIXED_UPDATE ) )
-		;
-
-	if ( IsFlagSet( RENDER ) )
-		GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent(this);
-		;
 }
 
 
 
-SpriteRenderer::SpriteRenderer() : Component(RENDER)
+void Component::Init()
+{
+	if ( IsFlagSet( UPDATE ) == true )
+		;
+
+	if ( IsFlagSet( FIXED_UPDATE ) == true )
+		;
+
+	if ( IsFlagSet( RENDER ) == true )
+		GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent( this );
+}
+
+
+
+SpriteRenderer::SpriteRenderer(GCGameObject* pGameObject) : Component(pGameObject)
 {
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
 
@@ -98,7 +101,7 @@ Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
 
 #pragma endregion Collider
 
-BoxCollider::BoxCollider()
+BoxCollider::BoxCollider(GCGameObject* pGameObject) : Collider(pGameObject)
 {
 
 	GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
@@ -131,36 +134,6 @@ void BoxCollider::Render()
 	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, meshMatrix4X4);
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
-}
-
-CircleCollider::CircleCollider()
-{
-	//if (m_visible == false)
-	//	return;
-
-	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
-
-
-	//pGraphics->InitializeGraphicsResourcesStart();
-	//m_pMesh = pGraphics->CreateMeshColor(GC::m_pActiveGameManager.m_pRenderManager.m_pCircle).resource;
-	//pGraphics->InitializeGraphicsResourcesEnd();
-
-
-	//GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
-	//m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
-}
-
-void CircleCollider::Render()
-{
-	//GCGraphics* pGraphics = GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics;
-
-	//XMMATRIX worldMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x, m_pGameObject->m_transform.m_scale.y, m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z);
-
-	//XMFLOAT4X4 worldMatrix4X4;
-	//XMStoreFloat4x4(&worldMatrix4X4, worldMatrix);
-
-	//pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix4X4);
-	//pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 }
 
 #pragma region RigidBody

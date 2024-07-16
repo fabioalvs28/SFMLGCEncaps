@@ -42,17 +42,20 @@ protected:
     Component( GCGameObject* pGameObject );
     virtual ~Component() = default;
     
+    void Init();
+    
     virtual void Start() {}
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
     virtual void Destroy() {}
+    
+    virtual FLAGS GetFlags() = 0;
 
-    bool IsFlagSet( FLAGS flag ) { return ( m_flags & flag ) != 0; }
+    bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
 
 protected:
     inline static int componentCount = 0;
-	inline static int m_flags = 0;
     GCGameObject* m_pGameObject;
     bool m_active;
     
@@ -82,15 +85,16 @@ public:
     GCColor& GetColor() { return m_color; }
 
 protected:
-	SpriteRenderer( GCGameObject* pGameObject ) : Component( pGameObject ) {};
+	SpriteRenderer( GCGameObject* pGameObject );
     ~SpriteRenderer() override {}
 
-    void Render() override {}
+    void Render() override;
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return RENDER; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    inline static int m_flags = RENDER;
     GCColor m_color;
 
     GCMesh* m_pMesh;
@@ -120,7 +124,9 @@ public:
     bool IsVisible() { return m_visible; }
 
 protected:
-    inline static int m_flags = FIXED_UPDATE | RENDER;
+    FLAGS GetFlags() override { return FIXED_UPDATE | RENDER; }
+
+protected:
     bool m_trigger;
     bool m_visible;
 
@@ -147,7 +153,7 @@ public:
     void SetSize( GCVEC2 size ) { m_size = size; }
 
 protected:
-    BoxCollider( GCGameObject* pGameObject ) : Collider( pGameObject ) {};
+    BoxCollider(GCGameObject* pGameObject);
     ~BoxCollider() override {}
 
     void FixedUpdate() override {}
@@ -180,7 +186,7 @@ protected:
     ~CircleCollider() override {}
     
     void FixedUpdate() override {}
-    void Render() override;
+    void Render() override {}
     void Destroy() override {}
 
 protected:
@@ -209,10 +215,11 @@ protected:
     
     void FixedUpdate() override;
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return FIXED_UPDATE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    inline static int m_flags = FIXED_UPDATE;
     GCVEC3 m_velocity;
 
 };
@@ -235,10 +242,11 @@ protected:
     
     void Update() override {}
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return UPDATE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    inline static int m_flags = UPDATE;
 
 };
 
@@ -260,10 +268,11 @@ protected:
     
     void Update() override {}
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return UPDATE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    inline static int m_flags = UPDATE;
 
 };
 
@@ -283,6 +292,8 @@ protected:
     virtual void OnTriggerEnter( Collider* collider ) = 0;
     virtual void OnTriggerStay( Collider* collider ) = 0;
     virtual void OnTriggerExit( Collider* collider ) = 0;
+    
+    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
 
 protected:
     inline static int scriptCount = (1<<15)-1;
@@ -311,7 +322,6 @@ protected:
      \
     protected: \
         inline static const int m_ID = ++Script::scriptCount; \
-        inline static int m_flags = UPDATE | FIXED_UPDATE; \
      \
     private:
 
