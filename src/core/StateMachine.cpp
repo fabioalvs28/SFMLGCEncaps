@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "StateMachine.h"
-
+#include "State.h"
 
 GCStateMachine::GCStateMachine() : m_pCurrentState(nullptr) {}
 

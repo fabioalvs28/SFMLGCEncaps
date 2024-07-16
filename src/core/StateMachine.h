@@ -1,5 +1,5 @@
 #pragma once 
-#include "State.h"
+class GCState;
 
 class GCStateMachine
 {
