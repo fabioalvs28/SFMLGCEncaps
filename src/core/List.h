@@ -254,19 +254,17 @@ GCListNode<T>* GCList<T>::PushBefore( const T& data, GCListNode<T>* pNode )
     pNewNode->m_data = data;
     pNewNode->m_pList = this;
     
-    if ( pNode == m_pHead ) m_pHead = pNewNode;
+    if ( pNode == m_pHead )
+        m_pHead = pNewNode;
     else
     {
         pNode->m_pPrev->m_pNext = pNewNode;
         pNewNode->m_pPrev = pNode->m_pPrev;
     }
     
-    if ( pNode == m_pTail  ) m_pTail = pNewNode;
-    else
-    {
-        pNode->m_pNext->m_pPrev = pNewNode;
-        pNewNode->m_pNext = pNode;
-    }
+    pNewNode->m_pNext = pNode;
+    pNode->m_pPrev = pNewNode;
+    return pNewNode;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -286,19 +284,17 @@ GCListNode<T>* GCList<T>::PushAfter( const T& data, GCListNode<T>* pNode )
     pNewNode->m_data = data;
     pNewNode->m_pList = this;
     
-    if ( pNode == m_pHead ) m_pHead = pNewNode;
-    else
-    {
-        pNode->m_pPrev->m_pNext = pNewNode;
-        pNewNode->m_pPrev = pNode->m_pPrev;
-    }
-    
-    if ( pNode == m_pTail  ) m_pTail = pNewNode;
+    if ( pNode == m_pTail )
+        m_pTail = pNewNode;
     else
     {
         pNode->m_pNext->m_pPrev = pNewNode;
-        pNewNode->m_pNext = pNode;
+        pNewNode->m_pNext = pNode->m_pNext;
     }
+    
+    pNewNode->m_pPrev = pNode;
+    pNode->m_pNext = pNewNode;
+    return pNewNode;
 }
 
 

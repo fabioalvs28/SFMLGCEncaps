@@ -5,6 +5,7 @@ class Component;
 
 class GCUpdateManager
 {
+friend class Component;
 friend class GCGameManager;
 
 private:

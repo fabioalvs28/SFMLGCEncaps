@@ -69,7 +69,7 @@ GCGameObject* GCGameObject::Duplicate()
 void GCGameObject::Destroy()
 {
     DestroyChildren();
-    GC::m_pActiveGameManager.m_pSceneManager.AddGameObjectToDeleteQueue( this );
+    GC::GetActiveSceneManager()->AddGameObjectToDeleteQueue( this );
     // TODO prevent deleting a GameObject that is already in the "Deletion Queue"
 }
 

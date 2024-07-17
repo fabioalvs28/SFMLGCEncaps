@@ -7,42 +7,67 @@
 
 
 
-Component::Component( GCGameObject* pGameObject )
+Component::Component()
 {
-	ASSERT( pGameObject != nullptr, LOG_FATAL, "A nullptr pGameObject was given in the Component constructor" );
-	m_flags = 0;
 	m_active = true;
-	m_pGameObject = pGameObject;
+	m_pGameObject = nullptr;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
 	m_pRenderNode = nullptr;
-	
-	if ( IsFlagSet( UPDATE ) )
-		;
-
-	if ( IsFlagSet( FIXED_UPDATE ) )
-		;
-
-	if ( IsFlagSet( RENDER ) )
-		;
 }
 
 
 
-#pragma region Collider
-Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
+void Component::RegisterToManagers()
+{
+	if ( IsFlagSet( UPDATE ) )
+		GC::GetActiveUpdateManager()->RegisterComponent( this );
+	
+	if ( IsFlagSet( FIXED_UPDATE ) )
+		GC::GetActiveUpdateManager()->RegisterComponent( this );
+	
+	// if ( IsFlagSet( RENDER ) )
+	// 	Gc::GetActiveRenderManager()->RegisterComponent( this );
+}
+
+
+
+void Component::UnregisterFromManagers()
+{
+	if ( IsFlagSet( UPDATE ) )
+		m_pUpdateNode->Delete();
+	
+	if ( IsFlagSet( FIXED_UPDATE ) )
+		m_pPhysicsNode->Delete();
+	
+	if ( IsFlagSet( RENDER ) )
+		m_pRenderNode->Delete();
+}
+
+
+
+Collider::Collider()
 {
 	m_trigger = false;
 	m_visible = false;
-	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
 }
-#pragma endregion Collider
+
+void Collider::RegisterToManagers()
+{
+	Component::RegisterToManagers();
+	GC::GetActivePhysicManager()->RegisterCollider( this );
+}
+
+void Collider::UnregisterFromManagers()
+{
+	Component::UnregisterFromManagers();
+	m_pColliderNode->Delete();
+}
 
 
 
-#pragma region RigidBody
-RigidBody::RigidBody( GCGameObject* pGameObject ) : Component( pGameObject )
+RigidBody::RigidBody()
 {
 	m_velocity.SetZero();
 }
@@ -52,4 +77,3 @@ void RigidBody::FixedUpdate()
 	// Apply velocity
 	m_pGameObject->m_transform.Translate(m_velocity);		// TODO: Multiply by the fixed delta time
 }
-#pragma endregion RigidBody

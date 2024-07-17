@@ -5,6 +5,7 @@
 
 // TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
+// TODO Make sure IDs are handled differently
 
 class GCGameObject;
 
@@ -35,20 +36,23 @@ public:
     GCGameObject* GetGameObject() { return m_pGameObject; }
 
 protected:
-    Component( GCGameObject* pGameObject );
+    Component();
     virtual ~Component() = default;
+    
+    virtual void RegisterToManagers();
+    virtual void UnregisterFromManagers();
     
     virtual void Start() {}
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
     virtual void Destroy() {}
-
-    bool IsFlagSet( FLAGS flag ) { return ( m_flags & flag ) != 0; }
+    
+    virtual FLAGS GetFlags() = 0;
+    bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
 
 protected:
     inline static int componentCount = 0;
-	inline static int m_flags = 0;
     GCGameObject* m_pGameObject;
     bool m_active;
     
@@ -70,22 +74,23 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
-    void SetSprite() {};
+    void SetSprite() {}
     void SetColor( GCColor& color ) { m_color = color; }
     
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }
 
 protected:
-	SpriteRenderer( GCGameObject* pGameObject ) : Component( pGameObject ) {};
+	SpriteRenderer() {}
     ~SpriteRenderer() override {}
 
     void Render() override {}
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return RENDER; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    inline static int m_flags = RENDER;
     GCColor m_color;
 
 };
@@ -100,8 +105,11 @@ friend class GCPhysicManager;
 friend class GCRenderManager;
 
 public:
-    Collider( GCGameObject* pGameObject );
+    Collider();
     ~Collider() override {}
+    
+    void RegisterToManagers() override;
+    void UnregisterFromManagers() override;
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -110,9 +118,13 @@ public:
     bool IsVisible() { return m_visible; }
 
 protected:
-    inline static int m_flags = FIXED_UPDATE | RENDER;
+    FLAGS GetFlags() override { return FIXED_UPDATE | RENDER; }
+
+protected:
     bool m_trigger;
     bool m_visible;
+    
+    GCListNode<Collider*>* m_pColliderNode;
 
 };
 
@@ -132,7 +144,7 @@ public:
     void SetSize( GCVEC2 size ) { m_size = size; }
 
 protected:
-    BoxCollider( GCGameObject* pGameObject ) : Collider( pGameObject ) {};
+    BoxCollider() {}
     ~BoxCollider() override {}
 
     void FixedUpdate() override {}
@@ -161,7 +173,7 @@ public:
     void SetRadius( float radius ) { m_radius = radius; }
 
 protected:
-    CircleCollider( GCGameObject* pGameObject ) : Collider( pGameObject ) {};
+    CircleCollider() {}
     ~CircleCollider() override {}
     
     void FixedUpdate() override {}
@@ -189,15 +201,16 @@ public:
     void AddForce( GCVEC2 force ) {}
 
 protected:
-    RigidBody( GCGameObject* pGameObject );
+    RigidBody();
     ~RigidBody() override {}
     
     void FixedUpdate() override;
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return FIXED_UPDATE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    inline static int m_flags = FIXED_UPDATE;
     GCVEC3 m_velocity;
 
 };
@@ -215,15 +228,16 @@ public:
     const int GetID() override { return m_ID; }
 
 protected:
-	Animator( GCGameObject* pGameObject ) : Component( pGameObject ) {};
+	Animator() {}
     ~Animator() override {}
     
     void Update() override {}
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return UPDATE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    inline static int m_flags = UPDATE;
 
 };
 
@@ -240,15 +254,16 @@ public:
     const int GetID() override { return m_ID; }
 
 protected:
-	SoundMixer( GCGameObject* pGameObject ) : Component( pGameObject ) {};
+	SoundMixer() {}
     ~SoundMixer() override {}
     
     void Update() override {}
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return UPDATE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    inline static int m_flags = UPDATE;
 
 };
 
@@ -262,28 +277,34 @@ friend class GCPhysicManager;
 friend class GCRenderManager;
 
 protected:
-    Script( GCGameObject* pGameObject ) : Component( pGameObject ) {};
+    Script() {}
     virtual ~Script() = default;
     
-    virtual void OnTriggerEnter( Collider* collider ) = 0;
-    virtual void OnTriggerStay( Collider* collider ) = 0;
-    virtual void OnTriggerExit( Collider* collider ) = 0;
+    virtual void OnTriggerEnter( Collider* collider ) {}
+    virtual void OnTriggerStay( Collider* collider ) {}
+    virtual void OnTriggerExit( Collider* collider ) {}
+    
+    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
 
 protected:
     inline static int scriptCount = (1<<15)-1;
 
 };
 
-#define CREATE_SCRIPT_START( CLASS_NAME ) \
-    class Script##CLASS_NAME : public Script \
+#define CREATE_SCRIPT_INHERIT_START( CLASS_NAME, INHERITANCE ) \
+    class Script##CLASS_NAME : public Script##INHERITANCE \
     { \
+    friend class GCGameObject; \
+    friend class GCUpdateManager; \
+    friend class GCPhysicManager; \
+    friend class GCRenderManager; \
     public: \
         static const int GetIDStatic() { return m_ID; } \
         const int GetID() override { return m_ID; } \
      \
     protected: \
         Script##CLASS_NAME() = default; \
-        ~Script##CLASS_NAME() {} \
+        ~Script##CLASS_NAME() = default; \
          \
         /*void Start() override; \
         void Update() override; \
@@ -296,10 +317,9 @@ protected:
      \
     protected: \
         inline static const int m_ID = ++Script::scriptCount; \
-        inline static int m_flags = UPDATE | FIXED_UPDATE; \
      \
     private:
 
+#define CREATE_SCRIPT_START( CLASS_NAME ) CREATE_SCRIPT_INHERIT_START( CLASS_NAME,  )
+
 #define CREATE_SCRIPT_END };
-
-
