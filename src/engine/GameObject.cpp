@@ -29,7 +29,8 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_pParent = nullptr;
     
     m_created = false;
-    m_active = true;
+    m_globalActive = true;
+    m_selfActive = true;
     m_name = "GameObject";
     m_layer = 0;
 }
@@ -52,7 +53,8 @@ GCGameObject* GCGameObject::Duplicate()
         pChildNode->GetData()->Duplicate()->SetParent( pGameObject );
     
     pGameObject->m_name = m_name;
-    pGameObject->m_active = m_active;
+    pGameObject->m_globalActive = m_globalActive;
+    pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_tagsList = m_tagsList;
     pGameObject->m_layer = m_layer;
     pGameObject->m_componentsList = m_componentsList;
@@ -223,9 +225,16 @@ void GCGameObject::SetParent( GCGameObject* pParent )
 ///////////////////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::SetActive( const bool active )
 {
-    m_active = active;
+    m_selfActive = active;
     for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
-        pGameObjectNode->GetData()->SetActive( active );
+        pGameObjectNode->GetData()->SetGlobalActive( active );
+}
+
+void GCGameObject::SetGlobalActive( const bool active )
+{
+    m_globalActive = active;
+    for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
+        pGameObjectNode->GetData()->SetGlobalActive( active );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +281,7 @@ GCList<GCGameObject*>& GCGameObject::GetChildren() { return m_childrenList; }
 /////////////////////////////////////////////////////////////////////////////
 /// @return A boolean value indicating the active state of the GameObject.
 /////////////////////////////////////////////////////////////////////////////
-bool GCGameObject::IsActive() const { return m_active; }
+bool GCGameObject::IsActive() const { return m_globalActive && m_selfActive; }
 
 ////////////////////////////////////////////////////////////////////
 /// @return A string value indicating the name of the GameObject.

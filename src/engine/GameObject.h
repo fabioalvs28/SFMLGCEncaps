@@ -61,6 +61,7 @@ protected:
     void Destroy();
     
     void RemoveScene();
+    void SetGlobalActive( const bool active );
     
     void RemoveComponent( int type );
 
@@ -78,7 +79,8 @@ protected:
     GCList<GCGameObject*> m_childrenList;
     
     bool m_created;
-    bool m_active;
+    bool m_globalActive;
+    bool m_selfActive;
     const char* m_name;
     GCVector<const char*> m_tagsList;
     int m_layer;
