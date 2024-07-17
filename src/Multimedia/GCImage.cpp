@@ -348,7 +348,8 @@ bool GCImage::LoadBMP(const std::string& filename)
 	m_height = header.biHeight;
 	m_bitCount = header.biBitCount;
 	m_channels = m_bitCount / 8;
-	data.resize(m_width * m_height * m_channels);
+	m_size = m_width * m_height * m_channels;
+	data.resize(m_size);
 
 	if (fseek(file.file, header.bfOffBits, SEEK_SET) != 0) 
 	{
@@ -1084,8 +1085,9 @@ bool GCImage::Rotate(int angle)
 				std::memcpy(&tempData[targetIndex], &data[index], channels);
 			}
 		}
-		m_width = m_height;
+		int temp = m_height;
 		m_height = m_width;
+		m_width = temp;
 	}
 	else if (angle == 180)
 	{

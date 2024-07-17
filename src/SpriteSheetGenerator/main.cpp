@@ -24,13 +24,12 @@ struct Pos
     {
         return x == other.x && y == other.y;
     }
-
     int x;
     int y;
 };
 struct Emplacement
 {
-    Emplacement(int w, int h, Pos pos) : w(w), h(w), pos(pos) {};
+    Emplacement(int w, int h, Pos pos) : w(w), h(h), pos(pos) {};
     bool operator==(const Emplacement& other)
     {
         return w == other.w && h == other.h && pos == other.pos;
@@ -38,7 +37,6 @@ struct Emplacement
     int w;
     int h;
     Pos pos;
-
 };
 
 static int getSmallestSheetSize(int remainingSize)
@@ -96,7 +94,7 @@ static int number_of_files_in_directory(fs::path path)
 
 static bool sortBySpriteHeight(const Sprite& a, const Sprite& b)
 {
-    return (a.h < b.h);
+    return (a.h > b.h);
 }
 
 int main()
@@ -149,25 +147,25 @@ int main()
 
     std::vector<std::string> fileList;
     std::vector<Sprite> imageList;
+    std::vector<uint8_t> buffer;
     int totalSize = 0;
 
     //fileList = sorted_alphanumeric(os.listdir(importPath)); // Sort input maybe 1, 2, 3, 10 insead of 1, 10, 2, 3
 
     for (const auto& entry : fs::directory_iterator(importPath))
     {
-        if (entry.is_regular_file() && entry.path().extension() == ".png")
+        if (entry.is_regular_file() && entry.path().extension() == ".bmp")
         {
             std::string filename = entry.path().filename().string();
             data["spriteIndex"][filename] = "";
             GCFile imagefile = GCFile(entry.path().string().c_str(), "rb");
-
             GCImage image = GCImage(0, 0);
-            if (!image.Load(&imagefile, entry.file_size()))
+            
+            if (!image.LoadBMP(entry.path().string()))
             {
                 std::printf("Error opening image\n");
                 return 1;
             }
-
 
             int h = image.GetHeight();
             int w = image.GetWidth();
@@ -181,13 +179,13 @@ int main()
                 w = temp;
                 rotated = true;
             }
-            Sprite sprite = Sprite(image, w, h, rotated, filename);
-            imageList.emplace_back(sprite); //filename.split('.')[0];
+            Sprite sprite = Sprite(image, w, h, rotated, filename); //filename.split('.')[0]
+            imageList.emplace_back(sprite);
             totalSize += (w + padding * 2) * (h + padding * 2);
         }
     }
 
-    sort(imageList.begin(), imageList.end(), sortBySpriteHeight); // Doesn't work ?
+    sort(imageList.begin(), imageList.end(), sortBySpriteHeight);
 
     data["totalImageCount"] = imageList.size();
 
@@ -195,13 +193,14 @@ int main()
     bool completed = false;
     int textureIndex = 0;
     int startImageIndex = 0;
+    GCImage spritSheet;
 
     while (not completed)
     {
         completed = true;
         std::vector<Emplacement> remainingRows;
         std::vector<int> Ys = { 0 };
-        GCImage spritSheet = GCImage(spriteSheetSize, spriteSheetSize);
+        spritSheet = GCImage(spriteSheetSize, spriteSheetSize);
         json elem = {{"textureName", ""}, {"textureSize", spriteSheetSize}, {"imageCount", 0}, {"images", json::array()}};
         data["textures"].push_back(elem);
         int maxX = 0;
@@ -224,8 +223,9 @@ int main()
                     if (w <= emplacement.w and h <= emplacement.h)
                     {
                         //spritSheet.paste(image, (emplacement[2][0] + padding, emplacement[2][1] + padding))
+                        spritSheet.Copy(emplacement.pos.x + padding, emplacement.pos.y + padding, &image, 0, 0, w, h);
                         data["spriteIndex"][filename] = std::to_string((textureIndex, imageIndex));
-                        data["textures"][textureIndex]["imageCount"] += 1;
+                        data["textures"][textureIndex]["imageCount"] = data["textures"][textureIndex]["imageCount"] + 1;
                         data["textures"][textureIndex]["images"].push_back({ {"filename", filename},
                                                                              {"x", emplacement.pos.x + padding},
                                                                              {"y", emplacement.pos.y + padding},
@@ -266,7 +266,9 @@ int main()
                 if (spriteSheetSize == 4096)
                 {
                     std::string textureName = std::to_string(textureIndex) + ".png";
-                    //spritSheet.save(outputPath + textureName);
+                    std::string outfilePath = outputPath.string() + textureName;
+                    GCFile outfile = GCFile(outfilePath.c_str(), "wb");
+                    spritSheet.SavePNG(&outfile);
                     data["textures"][textureIndex]["textureName"] = textureName;
                     textureIndex++;
                     startImageIndex = imageIndex;
@@ -277,11 +279,12 @@ int main()
                 }
                 else
                     data["textures"].erase(data["textures"].size());
-                //spritSheet = Image.new(mode = "RGBA", size = (spriteSheetSize, spriteSheetSize));
+                spritSheet = GCImage(spriteSheetSize, spriteSheetSize);
                 break;
             }
 
-            //spritSheet.paste(image, (pos[0] + padding, pos[1] + padding));
+            //spritSheet.paste(image, (pos[0] + padding, pos[1] + padding))
+            spritSheet.Copy(pos.x + padding, pos.y + padding, &image, 0, 0, w, h);
             data["spriteIndex"][filename] = '(' + std::to_string(textureIndex) + ", " + std::to_string(imageIndex) + ')';
             data["textures"][textureIndex]["imageCount"] = data["textures"][textureIndex]["imageCount"] + 1;
             data["textures"][textureIndex]["images"].push_back({{"filename", filename},
@@ -300,8 +303,11 @@ int main()
 
 
     data["totalTextureCount"] = textureIndex + 1;
-    //spritSheet.save(outputPath + std::string(textureIndex) + ".png");
-    data["textures"][textureIndex]["textureName"] = std::to_string(textureIndex) + ".png";
+    std::string textureName = std::to_string(textureIndex) + ".png";
+    std::string outfilePath = outputPath.string() + textureName;
+    GCFile outfile = GCFile(outfilePath.c_str(), "wb");
+    spritSheet.SavePNG(&outfile);
+    data["textures"][textureIndex]["textureName"] = textureName;
 
     std::ofstream myfile;
     myfile.open(outputPath.string() + "spritSheetData.json");
