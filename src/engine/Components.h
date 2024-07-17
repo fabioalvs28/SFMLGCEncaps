@@ -291,7 +291,7 @@ protected:
 
 };
 
-#define CSS2( CLASS_NAME, INHERITANCE ) \
+#define CREATE_SCRIPT_INHERIT_START( CLASS_NAME, INHERITANCE ) \
     class Script##CLASS_NAME : public Script##INHERITANCE \
     { \
     friend class GCGameObject; \
@@ -320,19 +320,6 @@ protected:
      \
     private:
 
-#define CSS1( CLASS_NAME ) CSS2( CLASS_NAME,  )
+#define CREATE_SCRIPT_START( CLASS_NAME ) CREATE_SCRIPT_INHERIT_START( CLASS_NAME,  )
 
 #define CREATE_SCRIPT_END };
-
-
-
-// ChatGPT Code
-
-#define COUNT_ARGS_IMPL2( _1, _2, _3, _4, _5, _6, _7, _8, _9, N, ... ) N
-#define COUNT_ARGS_IMPL( ARGS ) COUNT_ARGS_IMPL2 ARGS
-#define COUNT_ARGS( ... ) COUNT_ARGS_IMPL( ( __VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 ) )
-
-#define CONCATE( A, B ) A##B
-#define MACRO_OVERLOAD( NAME, COUNT ) CONCATE( NAME, COUNT )
-
-#define CREATE_SCRIPT_START( ... ) MACRO_OVERLOAD( CSS, COUNT_ARGS( __VA_ARGS__ ) )( __VA_ARGS__ )
