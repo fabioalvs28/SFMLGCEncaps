@@ -273,6 +273,31 @@ protected:
 
 
 
+class Camera : public Component
+{
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+protected:
+    Camera() {}
+    ~Camera() override {}
+    
+    void Destroy() override {}
+    
+    FLAGS GetFlags() override { return NONE; }
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+
+};
+
+
+
 class Script : public Component
 {
 friend class GCGameObject;
