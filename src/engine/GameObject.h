@@ -5,10 +5,6 @@
 #include "List.h"
 #include "GameObjectTransform.h"
 
-class Component;
-class GCScene;
-class GCSceneManager;
-
 // TODO dirtytag for already destroyed GameObjects (added to queue)
 // TODO self active / global active → SetActive() methods with a recursive flag
 
@@ -19,6 +15,7 @@ class GCGameObject
 friend class GCGameObjectTransform;
 friend class GCScene;
 friend class GCSceneManager;
+friend class GC;
 
 protected:
     GCGameObject( GCScene* pScene );
@@ -26,7 +23,6 @@ protected:
 
 public:
     GCGameObject* Duplicate(); // Potential optimization: A DuplicateAtCenter() method which doesn't calculate the transform's matrix and instead places the new GameObject at the center of the parent's bounds with no rotation and scale
-    void Destroy();
     
     void RemoveParent();
     GCGameObject* CreateChild();
@@ -62,6 +58,8 @@ public:
     void ClearComponents();
 
 protected:
+    void Destroy();
+    
     void RemoveScene();
     
     void RemoveComponent( int type );

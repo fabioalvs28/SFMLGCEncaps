@@ -21,6 +21,9 @@ public:
     template <class MainScript>
     static GCGameManager* CreateGameManager();
     
+    static void Destroy( GCGameObject*& pGameObject );
+    static void Destroy( GCScene*& pScene );
+    
     static GCGameManager* GetActiveGameManager();
     
     static GCPhysicManager* GetActivePhysicManager();

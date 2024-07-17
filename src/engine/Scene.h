@@ -1,13 +1,11 @@
 #pragma once
 #include "List.h"
 
-class GCGameObject;
-class GCSceneManager;
-
 class GCScene
 {
 friend class GCGameObject;
 friend class GCSceneManager;
+friend class GC;
 
 protected:
 	GCScene();
@@ -17,7 +15,6 @@ public:
 	static GCScene* Create();
 	void Load();
 	void Unload();
-	void Destroy();
 	
 	void RemoveParent();
 	GCScene* CreateChild();
@@ -35,6 +32,8 @@ public:
 	GCScene* GetParent() const;
 
 protected:
+	void Destroy();
+	
 	void MoveGameObjectToScene( GCGameObject* pGameObject );
 	void RemoveGameObjectFromScene( GCGameObject* pGameObject );
 	void DestroyGameObject( GCGameObject* pGameObject );
