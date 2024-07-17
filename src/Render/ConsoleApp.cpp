@@ -212,7 +212,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     //graphics->GetRender()->ActiveBasicPostProcessing();
     //graphics->GetRender()->ActivePixelIDMapping();
-    graphics->GetRender()->ActiveDeferredLightPass();
+    //graphics->GetRender()->ActiveDeferredLightPass();
 
     int flagsLightColor = 0;
     SET_FLAG(flagsLightColor, VERTEX_POSITION);
@@ -232,8 +232,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
 
-    std::string shaderFilePath3 = "../../../src/Render/Shaders/colorDeferredLight.hlsl";
-    std::string csoDestinationPath3 = "../../../src/Render/CsoCompiled/colorDeferredLight";
+    std::string shaderFilePath3 = "../../../src/Render/Shaders/LightColor.hlsl";
+    std::string csoDestinationPath3 = "../../../src/Render/CsoCompiled/LightColor";
 
     auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath3, csoDestinationPath3, flagsLightColor);
 
@@ -287,6 +287,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sph�re d�plac�e dans le cube interne
 
     GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner);
+    GCMATRIX worldCubeInner2 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner2);
 
     //XMFLOAT4X4 worldCubeOuter;
     //XMFLOAT4X4 worldCubeInner;

@@ -104,6 +104,7 @@ private:
 	// Add passes Shaders
 	GCShader* m_pPostProcessingShader;
 	GCShader* m_pPixelIdMappingShader;
+	GCShader* m_pDeferredLightPassShader;
 
 	GCRenderResources* m_pGCRenderResources;
 };

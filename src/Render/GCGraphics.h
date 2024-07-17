@@ -180,7 +180,7 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix); //#TODO -> Have possibility to specify camera we want draw with
+	bool UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix); //#TODO -> Have possibility to specify camera we want draw with
 
 	/************************************************************************************************
 	* @brief Update one object data, using GCWORLDCB Struct, template for update object matrix, and object/layer id in for PixelIdMapping

@@ -212,8 +212,28 @@ void GCRenderContext::CreateDeferredLightPassResources() {
 
 	{
 		//Rtv for draw light pass
+		m_pGCRenderResources->m_pDeferredLightPassBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
 		//Shader light pass
+		m_pDeferredLightPassShader = new GCShader();
+		std::string shaderFilePath = "../../../src/Render/Shaders/DeferredLightPass.hlsl";
+		std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
+
+		int flags = 0;
+		SET_FLAG(flags, VERTEX_POSITION);
+		SET_FLAG(flags, VERTEX_UV);
+
+		int rootParametersFlag = 0;
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2);
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3);
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT4);
+		//
+
+		m_pDeferredLightPassShader->Initialize(this, shaderFilePath, csoDestinationPath, flags, D3D12_CULL_MODE_BACK, rootParametersFlag);
+		m_pDeferredLightPassShader->Load();
 	}
 }
 
@@ -442,19 +462,21 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 		// Update texture if material has texture
 		pMaterial->UpdateTexture();
 
+		int rootParameterFlag = pMaterial->GetShader()->GetFlagRootParameters();
+
 		// Update cb0, cb of object
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_0, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB0)) {
+			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_0, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
+		}
 
 		// Set cb object buffer on used
 		pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->m_isUsed = true;
 		pMaterial->IncrementCBCount();
 
 		// cb1, Camera
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_1, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
-		
-		int rootParameterFlag = pMaterial->GetShader()->GetFlagRootParameters();
-
-		
+		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB1)) {
+			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_1, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
+		}
 		// cb2, Material Properties
 		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB2)) 
 			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_2, pMaterial->GetCbMaterialPropertiesInstance()->Resource()->GetGPUVirtualAddress());
@@ -505,7 +527,47 @@ bool GCRenderContext::CompleteDraw()
 }
 
 void GCRenderContext::PerformDeferredLightPass() {
+	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &m_pGCRenderResources->m_pDeferredLightPassBufferRtv->cpuHandle, FALSE, nullptr);
 
+	// Root Sign / Pso
+	m_pGCRenderResources->m_CommandList->SetPipelineState(m_pDeferredLightPassShader->GetPso(true));
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(m_pDeferredLightPassShader->GetRootSign());
+
+	//deferred light pass entry texture (albedo, worldPosition, normal) linking to shader
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pAlbedoGBuffer->resource, m_pGCRenderResources->GetBackBufferFormat());
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_1, srvGpuHandle);
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pWorldPosGBuffer->resource, m_pGCRenderResources->GetBackBufferFormat());
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pNormalGBuffer->resource, m_pGCRenderResources->GetBackBufferFormat());
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_3, srvGpuHandle);
+
+	// Draw quad on deferred light pass rtv
+	GCMesh* theMesh = m_pGCRenderResources->m_pGraphics->GetMeshes()[0];
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = theMesh->GetBufferGeometryData()->VertexBufferView();
+	D3D12_INDEX_BUFFER_VIEW indexBufferView = theMesh->GetBufferGeometryData()->IndexBufferView();
+	m_pGCRenderResources->m_CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	m_pGCRenderResources->m_CommandList->IASetIndexBuffer(&indexBufferView);
+	m_pGCRenderResources->m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Set camera & lights entry
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_0, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_1, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
+
+	m_pGCRenderResources->m_CommandList->DrawIndexedInstanced(theMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
+
+	CD3DX12_RESOURCE_BARRIER RtToCopySrc = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pDeferredLightPassBufferRtv->resource, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToCopySrc);
+	CD3DX12_RESOURCE_BARRIER PixelShaderToCopyDst = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &PixelShaderToCopyDst);
+
+	// Copy On Final
+	m_pGCRenderResources->m_CommandList->CopyResource(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->m_pDeferredLightPassBufferRtv->resource);
+
+	//
+	CD3DX12_RESOURCE_BARRIER DstToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &DstToPresent);
+	CD3DX12_RESOURCE_BARRIER SrcToRt = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pDeferredLightPassBufferRtv->resource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &SrcToRt);
 }
 
 void GCRenderContext::PerformPostProcessing()
@@ -565,8 +627,6 @@ void GCRenderContext::PerformPostProcessing()
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &DstToPresent);
 	CD3DX12_RESOURCE_BARRIER SrcToRt = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv->resource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &SrcToRt);
-
-
 }
 
 void GCRenderContext::EnableDebugController()

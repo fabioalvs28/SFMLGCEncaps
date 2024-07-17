@@ -466,7 +466,7 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
 }
 
 // Update per camera constant buffer
-bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX projectionMatrix, GCMATRIX viewMatrix) 
+bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
     cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
@@ -489,6 +489,8 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
         pMaterial->AddCbPerObject<GCWORLDCB>();
     }
 
+
+
     GCWORLDCB worldData;
     worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
 
@@ -505,8 +507,8 @@ void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 }
 
 
-DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, GCMATRIX proj, GCMATRIX view) {
-    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pRender->GetRenderResources()->GetRenderWidth(), m_pRender->GetRenderResources()->GetRenderHeight(), GCUtils::GCMATRIXToXMFLOAT4x4(proj), GCUtils::GCMATRIXToXMFLOAT4x4(view));
+DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view) {
+    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pRender->GetRenderResources()->GetRenderWidth(), m_pRender->GetRenderResources()->GetRenderHeight(), proj, view);
 
     DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 

@@ -122,7 +122,8 @@ private:
 	// DSV for PIM -> #TODO Use the principal dsv, in reading 
 	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingDepthStencilBuffer; //Rtv Buffer
 
-	// Deffered Shading Light Resources
+	// Deferred Shading Light Resources
+	GC_DESCRIPTOR_RESOURCE* m_pDeferredLightPassBufferRtv;
 	GC_DESCRIPTOR_RESOURCE* m_pAlbedoGBuffer;
 	GC_DESCRIPTOR_RESOURCE* m_pWorldPosGBuffer;
 	GC_DESCRIPTOR_RESOURCE* m_pNormalGBuffer;

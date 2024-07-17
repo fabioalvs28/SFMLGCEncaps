@@ -1,9 +1,5 @@
 #include "Utils.hlsl"
 
-#define LIGHT_TYPE_DIRECTIONAL 0
-#define LIGHT_TYPE_SPOT 1
-#define LIGHT_TYPE_POINT 2
-
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld; // World matrix
@@ -24,21 +20,6 @@ cbuffer cbPerMaterial : register(b2)
     float4 cbPerMaterial_specular;
     float cbPerMaterial_shininess;
     float cbPerMaterial_padding3[3]; 
-};
-
-struct Light
-{
-    float3 cbPerLight_position;
-    float3 cbPerLight_direction;
-    float3 cbPerLight_color;
-    float cbPerLight_spotAngle;
-    int cbPerLight_lightType;
-    float cbPerLight_lightIntensity;
-};
-
-cbuffer cbPerLights : register(b3)
-{
-    Light lights[10];
 };
 
 struct VertexIn
@@ -102,12 +83,10 @@ PSOutput PS(VertexOut pin) : SV_Target
     
     output.color1 = finalColor;
     
-    //output.Albedo = float4(0.89f, 0.49f, 0.09f, 1.0f);
-    //output.WorldPos = float4(0.2f, 0.4f, 0.9f, 1.0f);
-    //output.Normal = float4(0.2f, 0.8f, 0.3f, 1.0f);
+    float3 remappedNormal = (pin.NormalW * 0.5) + 0.5;
     output.Albedo = float4(finalColor.rgb, finalColor.a);
     output.WorldPos = float4(pin.WorldPos, 1.0f);
-    output.Normal = float4(pin.NormalW, 1.0f);
+    output.Normal = float4(remappedNormal, 1.0f); // Normales remappées
     
     //float r = float(objectId % 256) / 255.0f;
     //output.color2 = float4(r, 0.0f, 0.0f, 1.0f);
