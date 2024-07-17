@@ -7,6 +7,8 @@
 #include "SceneManager.h"
 #include "GC.h"
 
+// TODO SetActive() also loops through the components
+
 
 
 //////////////////////////////////////////////////////////////////////////////

@@ -9,7 +9,8 @@
 
 Component::Component()
 {
-	m_active = true;
+	m_globalActive = true;
+	m_selfActive = true;
 	m_pGameObject = nullptr;
 	
 	m_pUpdateNode = nullptr;
@@ -47,11 +48,38 @@ void Component::UnregisterFromManagers()
 
 void Component::SetActive( bool active )
 {
-	m_active = active;
-	if ( active == true )
-		RegisterToManagers();
+	if ( IsActive() == true )
+	{
+		if ( active == false )
+		{
+			m_selfActive = active;
+	    	UnregisterFromManagers();
+		}
+	}
 	else
-	    UnregisterFromManagers();
+	{
+		m_selfActive = active;
+		if ( IsActive() == true )
+			RegisterToManagers();
+	}
+}
+
+void Component::SetGlobalActive( bool active )
+{
+	if ( IsActive() == true )
+	{
+		if ( active == false )
+		{
+			m_globalActive = active;
+	    	UnregisterFromManagers();
+		}
+	}
+	else
+	{
+		m_globalActive = active;
+		if ( IsActive() == true )
+			RegisterToManagers();
+	}
 }
 
 

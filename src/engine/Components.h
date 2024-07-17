@@ -31,8 +31,8 @@ friend class GCRenderManager;
 public:
     virtual const int GetID() = 0;
     
-    void SetActive( bool active ) { m_active = active; }
-    bool IsActive() { return m_active; }
+    void SetActive( bool active );
+    bool IsActive() { return m_globalActive && m_selfActive; }
 
     GCGameObject* GetGameObject() { return m_pGameObject; }
 
@@ -52,13 +52,13 @@ protected:
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
     
-    bool IsActive() { return m_active; }
-    void SetActive( bool active );
+    void SetGlobalActive( bool active );
 
 protected:
     inline static int componentCount = 0;
     GCGameObject* m_pGameObject;
-    bool m_active;
+    bool m_globalActive;
+    bool m_selfActive;
     
     GCListNode<Component*>* m_pUpdateNode;
     GCListNode<Component*>* m_pPhysicsNode;
