@@ -4,6 +4,8 @@
 #include "EventManager.h"
 #include "SceneManager.h"
 
+// TODO Script inside GameManager
+
 template <typename T>
 class GCListNode;
 

@@ -1,6 +1,8 @@
 #pragma once
 #include "List.h"
 
+// TODO Scripts in Scenes
+
 class GCScene
 {
 friend class GCGameObject;
