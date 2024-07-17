@@ -162,6 +162,8 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 #define ROOT_PARAMETER_CB3                      0x08 // 00001000
 #define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1   0x10 // 00010000
 #define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2   0x20 // 00100000
+#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3   0x40 // 01000000
+#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT4   0x80 // 10000000
 
 
 // Check if a specific flag is set

@@ -49,6 +49,9 @@ public:
 	int m_rootParameter_ConstantBuffer_3;
 	int m_rootParameter_DescriptorTable_1;
 	int m_rootParameter_DescriptorTable_2;
+	int m_rootParameter_DescriptorTable_3;
+	int m_rootParameter_DescriptorTable_4;
+
 private:
 	// Initialize var
 	D3D12_CULL_MODE m_cullMode;

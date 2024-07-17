@@ -4,16 +4,18 @@ GCRenderContext::GCRenderContext()
 	: m_pGCRenderResources(nullptr),
 	m_pCbCurrentViewProjInstance(nullptr),
 	m_pCbLightPropertiesInstance(nullptr),
-	m_postProcessingShader(nullptr),
-	m_objectBufferIdShader(nullptr),
+	m_pPostProcessingShader(nullptr),
+	m_pPixelIdMappingShader(nullptr),
 	m_isBasicPostProcessingActivated(false),
-	m_isPixelIDMappingActivated(false) {
+	m_isPixelIDMappingActivated(false),
+	m_isDeferredLightPassActivated(false)
+{
 }
 
 GCRenderContext::~GCRenderContext() {
 	DELETE(m_pGCRenderResources);
-	DELETE(m_postProcessingShader);
-	DELETE(m_objectBufferIdShader);
+	DELETE(m_pPostProcessingShader);
+	DELETE(m_pPixelIdMappingShader);
 }
 
 
@@ -108,6 +110,7 @@ bool GCRenderContext::InitDX12RenderPipeline()
 	//*
 
 	CreatePostProcessingResources();
+	CreateDeferredLightPassResources();
 
 	m_pGCRenderResources->m_canResize = true;
 
@@ -173,12 +176,10 @@ void GCRenderContext::CreateSwapChain()
 
 void GCRenderContext::CreatePostProcessingResources() {
 	{
-		GC_DESCRIPTOR_RESOURCE* rtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-		m_pGCRenderResources->m_pPostProcessingRtv = rtv->resource;
-		m_pGCRenderResources->m_pPostProcessingRtvAddress = rtv->cpuHandle;
+		m_pGCRenderResources->m_pPostProcessingRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
 		//Create Post Processing Shader
-		m_postProcessingShader = new GCShader();
+		m_pPostProcessingShader = new GCShader();
 		std::string shaderFilePath = "../../../src/Render/Shaders/PostProcessing.hlsl";
 		std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
 
@@ -191,27 +192,31 @@ void GCRenderContext::CreatePostProcessingResources() {
 		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2);
 		//
 
-		m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags, D3D12_CULL_MODE_BACK, rootParametersFlag);
-		m_postProcessingShader->Load();
+		m_pPostProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags, D3D12_CULL_MODE_BACK, rootParametersFlag);
+		m_pPostProcessingShader->Load();
 	}
 	
 	{
 		//Create RTV For Object Buffer Id For pass Mesh id to pixel, to apply them on a texture 
-		GC_DESCRIPTOR_RESOURCE* rtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-
-		m_pGCRenderResources->m_ObjectIdBufferRtv = rtv->resource;
-		m_pGCRenderResources->m_ObjectIdBufferRtvAddress = rtv->cpuHandle;
+		m_pGCRenderResources->m_pPixelIdMappingBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 	}
-	
+}
 
+void GCRenderContext::CreateDeferredLightPassResources() {
 	{
-		// GBuffer Creation
+		//GBuffer Creation
 		m_pGCRenderResources->m_pAlbedoGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 		m_pGCRenderResources->m_pWorldPosGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 		m_pGCRenderResources->m_pNormalGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 	}
 
+	{
+		//Rtv for draw light pass
+
+		//Shader light pass
+	}
 }
+
 
 void GCRenderContext::OnResize() 
 {
@@ -286,9 +291,7 @@ void GCRenderContext::CreateDepthStencilBufferAndView()
 	m_pGCRenderResources->m_DepthStencilBuffer = dsv1->resource;
 	m_pGCRenderResources->m_DepthStencilBufferAddress = dsv1->cpuHandle;
 
-	auto dsv2 = m_pGCRenderResources->CreateDepthStencilBufferAndView(DXGI_FORMAT_D24_UNORM_S8_UINT, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	m_pGCRenderResources->m_ObjectIdDepthStencilBuffer = dsv2->resource;
-	m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress = dsv2->cpuHandle;
+	m_pGCRenderResources->m_pPixelIdMappingDepthStencilBuffer = m_pGCRenderResources->CreateDepthStencilBufferAndView(DXGI_FORMAT_D24_UNORM_S8_UINT, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
 }
 
@@ -389,8 +392,8 @@ bool GCRenderContext::PrepareDraw()
 	{
 		// Pixel Id Mapping
 		if (m_isPixelIDMappingActivated) {
-			rtvs.push_back(m_pGCRenderResources->m_ObjectIdBufferRtvAddress);
-			dsvs.push_back(m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress);
+			rtvs.push_back(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->cpuHandle);
+			dsvs.push_back(m_pGCRenderResources->m_pPixelIdMappingDepthStencilBuffer->cpuHandle);
 		}
 	}
 	
@@ -470,9 +473,14 @@ bool GCRenderContext::CompleteDraw()
 {
 	if (m_isBasicPostProcessingActivated) PerformPostProcessing();
 	
+	if (m_isBasicPostProcessingActivated == false) {
+		CD3DX12_RESOURCE_BARRIER RtToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToPresent);
+	}
 
-	//CD3DX12_RESOURCE_BARRIER RtToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	//m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToPresent);
+	if (m_isDeferredLightPassActivated) {
+		PerformDeferredLightPass();
+	}
 
 	HRESULT hr = m_pGCRenderResources->m_CommandList->Close();
 	if (CHECK_HRESULT(hr, "Failed to close command list") == false) return false;
@@ -496,6 +504,10 @@ bool GCRenderContext::CompleteDraw()
 	return true;
 }
 
+void GCRenderContext::PerformDeferredLightPass() {
+
+}
+
 void GCRenderContext::PerformPostProcessing()
 {
 	// Intermediate Rtv - Common To RT
@@ -504,11 +516,11 @@ void GCRenderContext::PerformPostProcessing()
 
 	// Set Render target
 	//D3D12_CPU_DESCRIPTOR_HANDLE dsv = m_pGCRenderResources->GetDepthStencilViewAddress();
-	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &m_pGCRenderResources->m_pPostProcessingRtvAddress, FALSE, nullptr);
+	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &m_pGCRenderResources->m_pPostProcessingRtv->cpuHandle, FALSE, nullptr);
 
 	// Root Sign / Pso
-	m_pGCRenderResources->m_CommandList->SetPipelineState(m_postProcessingShader->GetPso(true));
-	m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(m_postProcessingShader->GetRootSign());
+	m_pGCRenderResources->m_CommandList->SetPipelineState(m_pPostProcessingShader->GetPso(true));
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(m_pPostProcessingShader->GetRootSign());
 
 	// CurrentBackBuffer() - RT To Pixel Shader Entry
 	CD3DX12_RESOURCE_BARRIER RtToPixelShader = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
@@ -516,7 +528,7 @@ void GCRenderContext::PerformPostProcessing()
 
 	//Post process texture linking to shader
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->GetBackBufferFormat());
-	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_postProcessingShader->m_rootParameter_DescriptorTable_1, srvGpuHandle);
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pPostProcessingShader->m_rootParameter_DescriptorTable_1, srvGpuHandle);
 
 	// Transition pour la texture d'Object ID (g_ObjectIdBuffer)
 	//CD3DX12_RESOURCE_BARRIER barrierToShaderResource2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_ObjectIdBufferRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
@@ -525,8 +537,8 @@ void GCRenderContext::PerformPostProcessing()
 	//Object/Layers BufferId Linking to shader
 	if (m_isPixelIDMappingActivated) 
 	{
-		srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_ObjectIdBufferRtv, m_pGCRenderResources->GetBackBufferFormat());
-		m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_postProcessingShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
+		srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->resource, m_pGCRenderResources->GetBackBufferFormat());
+		m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pPostProcessingShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
 	}
 
 	// Draw quad on post process rtv
@@ -540,18 +552,18 @@ void GCRenderContext::PerformPostProcessing()
 	//
 
 	// 
-	CD3DX12_RESOURCE_BARRIER RtToCopySrc = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	CD3DX12_RESOURCE_BARRIER RtToCopySrc = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv->resource, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToCopySrc);
 	CD3DX12_RESOURCE_BARRIER PixelShaderToCopyDst = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &PixelShaderToCopyDst);
 
 	// Copy On Final
-	m_pGCRenderResources->m_CommandList->CopyResource(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->m_pPostProcessingRtv);
+	m_pGCRenderResources->m_CommandList->CopyResource(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->m_pPostProcessingRtv->resource);
 
 	//
 	CD3DX12_RESOURCE_BARRIER DstToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &DstToPresent);
-	CD3DX12_RESOURCE_BARRIER SrcToRt = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	CD3DX12_RESOURCE_BARRIER SrcToRt = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv->resource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &SrcToRt);
 
 

@@ -19,6 +19,7 @@ public:
 	void CreateSwapChain();
 
 	void CreatePostProcessingResources();
+	void CreateDeferredLightPassResources();
 
 	// Resize 
 	void ReleasePreviousResources();
@@ -33,7 +34,11 @@ public:
 	bool CloseCommandList();
 
 	bool FlushCommandQueue();
+
+
 	void PerformPostProcessing();
+	void PerformDeferredLightPass();
+
 	/**
 	* Pre-Draw.
 	 * @brief
@@ -92,14 +97,13 @@ private:
 	bool m_isBasicPostProcessingActivated;
 	bool m_isPixelIDMappingActivated; 
 
-	bool m_isDeferredLightPassActivated = false;
+	bool m_isDeferredLightPassActivated;
 
 	int m_renderMode = 1; //2D or 3d
 
-	// Post Processing Resources
-	GCShader* m_postProcessingShader;
-	// Pixel Id Mapping Buffer Resources
-	GCShader* m_objectBufferIdShader;
+	// Add passes Shaders
+	GCShader* m_pPostProcessingShader;
+	GCShader* m_pPixelIdMappingShader;
 
 	GCRenderResources* m_pGCRenderResources;
 };

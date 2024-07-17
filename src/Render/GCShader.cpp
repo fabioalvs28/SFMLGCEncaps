@@ -153,6 +153,20 @@ void GCShader::RootSign()
 			srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
 			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable2);
 		}
+
+		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
+			m_rootParameter_DescriptorTable_3 = numParameters;
+			CD3DX12_DESCRIPTOR_RANGE srvTable3;
+			srvTable3.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable3);
+		}
+
+		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
+			m_rootParameter_DescriptorTable_4 = numParameters;
+			CD3DX12_DESCRIPTOR_RANGE srvTable4;
+			srvTable4.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable4);
+		}
 	}
 
 	rootSignDesc.Init(numParameters, slotRootParameter, 1, &staticSample, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
