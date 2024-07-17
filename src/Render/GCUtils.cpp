@@ -31,3 +31,15 @@ DirectX::XMFLOAT4X4 GCUtils::GCMATRIXToXMFLOAT4x4(const GCMATRIX& mat)
 	result._41 = mat._41; result._42 = mat._42; result._43 = mat._43; result._44 = mat._44;
 	return result;
 }
+
+GCMATRIX GCUtils::XMMATRIXToGCMATRIX(const DirectX::XMMATRIX& mat)
+{
+	GCMATRIX result;
+
+	result._11 = mat.r[0].m128_f32[0]; result._12 = mat.r[0].m128_f32[1]; result._13 = mat.r[0].m128_f32[2]; result._14 = mat.r[0].m128_f32[3];
+	result._21 = mat.r[1].m128_f32[0]; result._22 = mat.r[1].m128_f32[1]; result._23 = mat.r[1].m128_f32[2]; result._24 = mat.r[1].m128_f32[3];
+	result._31 = mat.r[2].m128_f32[0]; result._32 = mat.r[2].m128_f32[1]; result._33 = mat.r[2].m128_f32[2]; result._34 = mat.r[2].m128_f32[3];
+	result._41 = mat.r[3].m128_f32[0]; result._42 = mat.r[3].m128_f32[1]; result._43 = mat.r[3].m128_f32[2]; result._44 = mat.r[3].m128_f32[3];
+
+	return result;
+}

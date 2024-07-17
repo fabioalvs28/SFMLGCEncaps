@@ -193,19 +193,6 @@ XMMATRIX CreateBillboardMatrix(XMVECTOR objectPosition, XMVECTOR cameraPosition,
 }
 
 // D�finition des variables globales pour la cam�ra
-GCMATRIX XMMATRIXToGCMATRIX(const DirectX::XMMATRIX& mat)
-{
-    GCMATRIX result;
-
-    result._11 = mat.r[0].m128_f32[0]; result._12 = mat.r[0].m128_f32[1]; result._13 = mat.r[0].m128_f32[2]; result._14 = mat.r[0].m128_f32[3];
-    result._21 = mat.r[1].m128_f32[0]; result._22 = mat.r[1].m128_f32[1]; result._23 = mat.r[1].m128_f32[2]; result._24 = mat.r[1].m128_f32[3];
-    result._31 = mat.r[2].m128_f32[0]; result._32 = mat.r[2].m128_f32[1]; result._33 = mat.r[2].m128_f32[2]; result._34 = mat.r[2].m128_f32[3];
-    result._41 = mat.r[3].m128_f32[0]; result._42 = mat.r[3].m128_f32[1]; result._43 = mat.r[3].m128_f32[2]; result._44 = mat.r[3].m128_f32[3];
-
-    return result;
-}
-
-
 XMVECTOR cameraPosition = XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
 XMVECTOR cameraTarget = XMVectorZero();
 XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -274,7 +261,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     graphics->InitializeGraphicsResourcesEnd();
 
-
     // Cr�ation des mat�riaux
     auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
     //materialCubeOuter.resource->SetTexture(texture2.resource);
@@ -287,17 +273,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
     XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
     XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
-    XMFLOAT4X4 storedProjectionMatrix;
-    XMFLOAT4X4 storedViewMatrix;
-    XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
-    XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+    GCMATRIX storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
+    GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 
     XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
     XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, -4.0f, 3.0f); // Cube interne centr�
     XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centr�
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sph�re d�plac�e dans le cube interne
 
-    GCMATRIX worldCubeInner = XMMATRIXToGCMATRIX(worldMatrixCubeInner);
+    GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner);
 
     //XMFLOAT4X4 worldCubeOuter;
     //XMFLOAT4X4 worldCubeInner;

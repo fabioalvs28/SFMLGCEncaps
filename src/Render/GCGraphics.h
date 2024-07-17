@@ -108,7 +108,7 @@ public:
 	 *
 	 * @return world matrix of the object at said coordinates(pixelX/pixelY)
 	 */
-	DirectX::XMFLOAT4X4 ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
+	DirectX::XMFLOAT4X4 ToPixel(int pixelX, int pixelY, GCMATRIX proj, GCMATRIX view);
 	/**
 	 * Creates a material using a shader.
 	 * @brief
@@ -199,7 +199,7 @@ public:
 
 	void Resize(int width, int height);
 	// Update ViewProj, use for Camera
-	bool UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix);
+	bool UpdateViewProjConstantBuffer(GCMATRIX projectionMatrix, GCMATRIX viewMatrix);
 	// Update world cb buffer with GCWORLDCB Struct
 	bool UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId = 0.0f);
 	// Update world with custom struct
