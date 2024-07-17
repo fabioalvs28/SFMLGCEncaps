@@ -7,8 +7,6 @@
 #include "SceneManager.h"
 #include "GC.h"
 
-// TODO DESTROY( GameObject*& pGameObject ) -> also does pGameObject = nullptr
-
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -29,6 +27,7 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_pParent = nullptr;
     
     m_created = false;
+    m_deleted = false;
     m_globalActive = true;
     m_selfActive = true;
     m_name = "GameObject";
@@ -70,9 +69,10 @@ GCGameObject* GCGameObject::Duplicate()
 //////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::Destroy()
 {
+    ASSERT( m_deleted == false, LOG_FATAL, "Trying to destroy a GameObject that is already going to be destroyed in the next frame" );
+    m_deleted = true;
     DestroyChildren();
     GC::GetActiveSceneManager()->AddGameObjectToDeleteQueue( this );
-    // TODO prevent deleting a GameObject that is already in the "Deletion Queue"
 }
 
 

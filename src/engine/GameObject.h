@@ -5,9 +5,6 @@
 #include "List.h"
 #include "GameObjectTransform.h"
 
-// TODO dirtytag for already destroyed GameObjects (added to queue)
-// TODO self active / global active → SetActive() methods with a recursive flag
-
 
 
 class GCGameObject
@@ -79,6 +76,7 @@ protected:
     GCList<GCGameObject*> m_childrenList;
     
     bool m_created;
+    bool m_deleted;
     bool m_globalActive;
     bool m_selfActive;
     const char* m_name;
