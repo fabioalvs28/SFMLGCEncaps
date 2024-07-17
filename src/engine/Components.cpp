@@ -31,8 +31,6 @@ void Component::RegisterToManagers()
 	// 	Gc::GetActiveRenderManager()->RegisterComponent( this );
 }
 
-
-
 void Component::UnregisterFromManagers()
 {
 	if ( IsFlagSet( UPDATE ) )
@@ -43,6 +41,17 @@ void Component::UnregisterFromManagers()
 	
 	if ( IsFlagSet( RENDER ) )
 		m_pRenderNode->Delete();
+}
+
+
+
+void Component::SetActive( bool active )
+{
+	m_active = active;
+	if ( active == true )
+		RegisterToManagers();
+	else
+	    UnregisterFromManagers();
 }
 
 

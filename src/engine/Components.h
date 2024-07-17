@@ -13,6 +13,7 @@ class GCGameObject;
 
 enum FLAGS
 {
+    NONE            = 0,
 	UPDATE          = 1 << 0,
 	FIXED_UPDATE    = 1 << 1,
     RENDER          = 1 << 2,
@@ -50,6 +51,9 @@ protected:
     
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
+    
+    bool IsActive() { return m_active; }
+    void SetActive( bool active );
 
 protected:
     inline static int componentCount = 0;
