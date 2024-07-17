@@ -89,8 +89,8 @@ public:
 	inline void Set3DMode() { m_renderMode = 1; }
 private:
 
-	bool m_isBasicPostProcessingActivated = false;
-	bool m_isPixelIDMappingActivated = false; 
+	bool m_isBasicPostProcessingActivated;
+	bool m_isPixelIDMappingActivated; 
 
 	bool m_isDeferredLightPassActivated = false;
 

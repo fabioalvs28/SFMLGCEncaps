@@ -33,8 +33,8 @@ public:
 	* @brief Initializes graphics, This function takes into account the window you want to use as well as sizes you want your render to be(not the window,the actual renderer screen).
 	*
 	* @param[in] window               Window that'll be used.
-	* @param[in] renderWidth               
-	* @param[in] renderHeight               
+	* @param[in] renderWidth          Window's desired width(preferably 1920 or lower).
+	* @param[in] renderHeight         Window's desired height(preferably 1080 or lower).      
 	* 
 	* @return bool (success).
 	************************************************************************************************/

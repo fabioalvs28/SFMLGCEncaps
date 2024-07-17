@@ -40,15 +40,15 @@ public:
 	GCRenderContext* m_pRender;
 
 	//
-	ID3D12Resource* m_pRtt = nullptr;
+	ID3D12Resource* m_pRtt;
 
 	// Root parameter dynamic index
-	int m_rootParameter_ConstantBuffer_0 = -1;
-	int m_rootParameter_ConstantBuffer_1 = -1;
-	int m_rootParameter_ConstantBuffer_2 = -1;
-	int m_rootParameter_ConstantBuffer_3 = -1;
-	int m_rootParameter_DescriptorTable_1 = -1;
-	int m_rootParameter_DescriptorTable_2 = -1;
+	int m_rootParameter_ConstantBuffer_0;
+	int m_rootParameter_ConstantBuffer_1;
+	int m_rootParameter_ConstantBuffer_2;
+	int m_rootParameter_ConstantBuffer_3;
+	int m_rootParameter_DescriptorTable_1;
+	int m_rootParameter_DescriptorTable_2;
 private:
 	// Initialize var
 	D3D12_CULL_MODE m_cullMode;

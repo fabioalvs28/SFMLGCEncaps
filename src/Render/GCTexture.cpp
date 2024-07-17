@@ -1,10 +1,11 @@
 #include "pch.h"
 
 GCTexture::GCTexture()
+    : m_pTextureBuffer(nullptr),
+    m_pUploadTexture(nullptr),
+    m_cbvSrvUavDescriptorSize(0),
+    m_mipLevels(0)
 {
-    m_pTextureBuffer = nullptr;
-    m_pUploadTexture = nullptr;
-    m_cbvSrvUavDescriptorSize = 0;
 }
 
 GCTexture::~GCTexture()

@@ -178,6 +178,21 @@
 
 using namespace DirectX;
 
+XMMATRIX CreateBillboardMatrix(XMVECTOR objectPosition, XMVECTOR cameraPosition, XMVECTOR cameraUp) {
+    XMVECTOR lookAt = XMVector3Normalize(cameraPosition - objectPosition);
+    XMVECTOR right = XMVector3Normalize(XMVector3Cross(cameraUp, lookAt));
+    XMVECTOR up = XMVector3Cross(lookAt, right);
+
+    XMMATRIX billboardMatrix = XMMatrixIdentity();
+    billboardMatrix.r[0] = right;
+    billboardMatrix.r[1] = up;
+    billboardMatrix.r[2] = lookAt;
+    billboardMatrix.r[3] = objectPosition;
+
+    return XMMatrixTranspose(billboardMatrix);
+}
+
+// D�finition des variables globales pour la cam�ra
 GCMATRIX XMMATRIXToGCMATRIX(const DirectX::XMMATRIX& mat)
 {
     GCMATRIX result;
@@ -256,6 +271,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //graphics->GetRender()->FlushCommandQueue();
     meshSphere.resource->UploadGeometryData(geoCubeInner.resource, flagsLightTexture);
 
+    //meshCubeInner.resource->AddGeometry(geoCubeInner.resource, XMFLOAT3(1.0f, 1.0f, 1.0f));
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
     auto texture = graphics->CreateTexture(texturePath);
@@ -263,6 +279,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     graphics->InitializeGraphicsResourcesEnd();
 
+
+    // Cr�ation des mat�riaux
     auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
     //materialCubeOuter.resource->SetTexture(texture2.resource);
 
@@ -298,6 +316,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //XMStoreFloat4x4(&worldSphere, worldMatrixSphere);
 
     auto startTime = std::chrono::steady_clock::now();
+    auto lastFrameTime = startTime;
 
     while (true) {
         auto currentTime = std::chrono::steady_clock::now();
@@ -332,7 +351,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         materialProperties.diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         materialProperties.specular = DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
         materialProperties.shininess = 1.0f;
-
         graphics->UpdateMaterialProperties(materialCubeOuter.resource, materialProperties);
 
         GCLIGHTSPROPERTIES lightData = {};
@@ -358,7 +376,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         lightData.lights[0] = directionalLight;
 
         graphics->UpdateLights(lightData);
-
 
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
