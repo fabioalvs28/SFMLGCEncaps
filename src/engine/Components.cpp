@@ -22,13 +22,13 @@ Component::Component()
 void Component::RegisterToManagers()
 {
 	if ( IsFlagSet( UPDATE ) )
-		;
+		GC::GetActiveUpdateManager()->RegisterComponent( this );
 	
 	if ( IsFlagSet( FIXED_UPDATE ) )
-		;
+		GC::GetActiveUpdateManager()->RegisterComponent( this );
 	
-	if ( IsFlagSet( RENDER ) )
-		;
+	// if ( IsFlagSet( RENDER ) )
+	// 	Gc::GetActiveRenderManager()->RegisterComponent( this );
 }
 
 
@@ -36,29 +36,37 @@ void Component::RegisterToManagers()
 void Component::UnregisterFromManagers()
 {
 	if ( IsFlagSet( UPDATE ) )
-		;
+		m_pUpdateNode->Delete();
 	
 	if ( IsFlagSet( FIXED_UPDATE ) )
-		;
+		m_pPhysicsNode->Delete();
 	
 	if ( IsFlagSet( RENDER ) )
-		;
+		m_pRenderNode->Delete();
 }
 
 
 
-#pragma region Collider
 Collider::Collider()
 {
 	m_trigger = false;
 	m_visible = false;
+}
+
+void Collider::RegisterToManagers()
+{
+	Component::RegisterToManagers();
 	GC::GetActivePhysicManager()->RegisterCollider( this );
 }
-#pragma endregion Collider
+
+void Collider::UnregisterFromManagers()
+{
+	Component::UnregisterFromManagers();
+	m_pColliderNode->Delete();
+}
 
 
 
-#pragma region RigidBody
 RigidBody::RigidBody()
 {
 	m_velocity.SetZero();
@@ -69,4 +77,3 @@ void RigidBody::FixedUpdate()
 	// Apply velocity
 	m_pGameObject->m_transform.Translate(m_velocity);		// TODO: Multiply by the fixed delta time
 }
-#pragma endregion RigidBody

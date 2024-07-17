@@ -39,8 +39,8 @@ protected:
     Component();
     virtual ~Component() = default;
     
-    void RegisterToManagers();
-    void UnregisterFromManagers();
+    virtual void RegisterToManagers();
+    virtual void UnregisterFromManagers();
     
     virtual void Start() {}
     virtual void Update() {}
@@ -107,6 +107,9 @@ friend class GCRenderManager;
 public:
     Collider();
     ~Collider() override {}
+    
+    void RegisterToManagers() override;
+    void UnregisterFromManagers() override;
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -120,6 +123,8 @@ protected:
 protected:
     bool m_trigger;
     bool m_visible;
+    
+    GCListNode<Collider*>* m_pColliderNode;
 
 };
 
