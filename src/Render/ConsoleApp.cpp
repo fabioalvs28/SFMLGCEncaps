@@ -208,8 +208,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGraphics* graphics = new GCGraphics();
     graphics->Initialize(window, 1920, 1080);
 
-    graphics->GetRender()->ActiveBasicPostProcessing();
-    graphics->GetRender()->ActivePixelIDMapping();
+    //graphics->GetRender()->ActiveBasicPostProcessing();
+    //graphics->GetRender()->ActivePixelIDMapping();
+    graphics->GetRender()->ActiveDeferredLightPass();
 
     int flagsLightColor = 0;
     SET_FLAG(flagsLightColor, VERTEX_POSITION);
@@ -228,7 +229,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
-    auto shaderLightColor = graphics->CreateShaderColor();
+
+    std::string shaderFilePath3 = "../../../src/Render/Shaders/colorDeferredLight.hlsl";
+    std::string csoDestinationPath3 = "../../../src/Render/CsoCompiled/colorDeferredLight";
+
+    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath3, csoDestinationPath3, flagsLightColor);
 
     std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
     std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
@@ -246,7 +251,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     // Cr�ation des meshes
     auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
-    auto meshCubeInner = graphics->CreateMeshColor(geoCubeInner.resource);
+    auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
     auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
     //graphics->GetRender()->FlushCommandQueue();
     meshSphere.resource->UploadGeometryData(geoCubeInner.resource, flagsLightTexture);
@@ -276,10 +281,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
     XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, -4.0f, 3.0f); // Cube interne centr�
-    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-4.0f, 5.0f, -2.0f); // Cube interne centr�
+    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(3.0f, 3.0f, 3.0f) * XMMatrixTranslation(-6.0f, 5.0f, -2.0f); // Cube interne centr�
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sph�re d�plac�e dans le cube interne
 
     GCMATRIX worldCubeInner = XMMATRIXToGCMATRIX(worldMatrixCubeInner);
+    GCMATRIX worldCubeInner2 = XMMATRIXToGCMATRIX(worldMatrixCubeInner2);
 
     //XMFLOAT4X4 worldCubeOuter;
     //XMFLOAT4X4 worldCubeInner;
@@ -360,11 +366,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter, 1.0f);
         //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource,true);
 
-        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
-        //graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
+        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
+        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
 
-        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner, 3.0f);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2, 2.0f);
+        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource, true);
+
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner, 3.0f);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
         //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
         //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);

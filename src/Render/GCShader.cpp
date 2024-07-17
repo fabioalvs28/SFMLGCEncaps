@@ -14,7 +14,7 @@ GCShader::GCShader()
 	m_flagEnabledBits = 0;
 	m_cullMode = D3D12_CULL_MODE_NONE;
 
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 8; ++i) {
 		m_rtvFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
 }

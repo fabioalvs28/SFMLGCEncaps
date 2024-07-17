@@ -70,11 +70,8 @@ private:
 	int m_flagEnabledBits;
 	int m_flagRootParameters;
 
-
-
-
 	//Pso 
-	DXGI_FORMAT m_rtvFormats[4]; 
+	DXGI_FORMAT m_rtvFormats[8]; 
 };
 
 

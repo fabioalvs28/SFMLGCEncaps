@@ -3,7 +3,7 @@ enum GC_EXTENSIONS {
 	obj,
 };
 
-struct ModelInfos
+struct GC_MODELINFOS
 {
 	std::vector<std::vector<float>> coords;
 	std::vector<std::vector<uint16_t>> facesInfos;
@@ -23,6 +23,6 @@ public:
 
 protected:
 	std::string m_filePath;
-	ModelInfos* m_ParsedModel;
+	GC_MODELINFOS* m_ParsedModel;
 };
 

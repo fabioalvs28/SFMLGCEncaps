@@ -123,6 +123,11 @@ private:
 	ID3D12Resource* m_ObjectIdDepthStencilBuffer; //Rtv Buffer
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdDepthStencilBufferAddress; //Cpu Handle Address
 
+	// Deffered Shading Light Resources
+	GC_DESCRIPTOR_RESOURCE* m_pAlbedoGBuffer;
+	GC_DESCRIPTOR_RESOURCE* m_pWorldPosGBuffer;
+	GC_DESCRIPTOR_RESOURCE* m_pNormalGBuffer;
+
 	//Descriptor Heap Creation
 	void CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** ppDescriptorHeap);
 

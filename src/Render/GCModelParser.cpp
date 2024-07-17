@@ -8,22 +8,22 @@ GCModelParser::~GCModelParser()
 {
 }
 
-bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
+bool GCModelParser::Parse(std::string fileName, GC_EXTENSIONS fileExtension)
 {
 
 	switch (fileExtension)
 	{
 	case 0:
-		if (!CHECK_EXTENSION(fileName, "obj"))
-			return false;
+		if (CHECK_EXTENSION(fileName, "obj") == false) return false;
 
 		m_ParsedModel = dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
+
 		return true;
 	}
 	return false;
 }
 
-GC_GRAPHICS_ERROR GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Extensions fileExtension, GCGeometry* pGeometry)
+GC_GRAPHICS_ERROR GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtension, GCGeometry* pGeometry)
 {
 	if (CHECK_POINTERSNULL("Model geometry loaded successfully", "Model Geometry is empty", pGeometry) == false)
 		return GCRENDER_ERROR_POINTER_NULL;

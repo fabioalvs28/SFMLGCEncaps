@@ -34,7 +34,6 @@ public:
 
 	bool FlushCommandQueue();
 	void PerformPostProcessing();
-	void PerformPixelIdMapping(GCMesh* pMesh, bool alpha);
 	/**
 	* Pre-Draw.
 	 * @brief
@@ -74,9 +73,11 @@ public:
 
 	void ActiveBasicPostProcessing();
 	void ActivePixelIDMapping();
+	void ActiveDeferredLightPass();
 
 	void DesactiveBasicPostProcessing();
 	void DesactivePixelIDMapping();
+	void DesactiveDeferredLightPass();
 
 	// Camera & Light -> Temporarily
 	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
@@ -91,11 +92,13 @@ private:
 	bool m_isBasicPostProcessingActivated = false;
 	bool m_isPixelIDMappingActivated = false; 
 
+	bool m_isDeferredLightPassActivated = false;
+
 	int m_renderMode = 1; //2D or 3d
 
 	// Post Processing Resources
 	GCShader* m_postProcessingShader;
-	// Object / Layers Buffer Id Resources
+	// Pixel Id Mapping Buffer Resources
 	GCShader* m_objectBufferIdShader;
 
 	GCRenderResources* m_pGCRenderResources;

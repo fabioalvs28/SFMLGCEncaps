@@ -60,6 +60,7 @@ struct GCWORLDCB;
 struct GCVIEWPROJCB;
 
 enum GC_PRIMITIVE_ID;
+struct GC_MODELINFOS;
 
 // Add William 
 class GCGraphicsLogger;
