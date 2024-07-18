@@ -4,11 +4,11 @@
 // However, files listed here are ALL re-compiled if any one of them is updated between builds.
 // Do not add files here that you will be updating frequently as this negates the performance advantage.
 
-#ifndef PCH_H
-#define PCH_H
+#ifndef ENGINE_PCH_H
+#define ENGINE_PCH_H
 
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include "GCColor.h"
 
-#endif //PCH_H
+#endif //ENGINE_PCH_H

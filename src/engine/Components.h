@@ -1,7 +1,11 @@
 #pragma once
 #include "../core/framework.h"
+#include "../Render/pch.h"
+
 #include "GCColor.h"
 #include "Map.h"
+
+using namespace DirectX;
 
 // TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
@@ -78,17 +82,18 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
-    void SetSprite() {}
-    void SetColor( GCColor& color ) { m_color = color; }
+    
+    void SetSprite( std::string texturePath );
+    void SetColor(); 
     
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }
 
 protected:
-	SpriteRenderer() {}
+	SpriteRenderer();
     ~SpriteRenderer() override {}
 
-    void Render() override {}
+    void Render() override;
     void Destroy() override {}
     
     FLAGS GetFlags() override { return RENDER; }
@@ -96,6 +101,11 @@ protected:
 protected:
     inline static const int m_ID = ++Component::componentCount;
     GCColor m_color;
+
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
+
+    XMMATRIX* m_worldMatrix;
 
 };
 
@@ -130,6 +140,11 @@ protected:
     
     GCListNode<Collider*>* m_pColliderNode;
 
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
+
+    XMMATRIX* m_worldMatrix;
+
 };
 
 
@@ -148,11 +163,11 @@ public:
     void SetSize( GCVEC2 size ) { m_size = size; }
 
 protected:
-    BoxCollider() {}
+    BoxCollider();
     ~BoxCollider() override {}
 
     void FixedUpdate() override {}
-    void Render() override {}
+    void Render() override;
     void Destroy() override {}
 
 protected:

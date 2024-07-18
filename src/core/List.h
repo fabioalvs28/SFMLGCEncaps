@@ -248,7 +248,7 @@ GCListNode<T>* GCList<T>::PushFront( const T& data )
 /// @return A pointer to the newly created ListNode.
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-GCListNode<T>* GCList<T>::PushBefore( const T& data, GCListNode<T>* pNode )
+GCListNode<T>* GCList<T>::PushBefore(const T& data, GCListNode<T>* pNode)
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;
@@ -268,7 +268,7 @@ GCListNode<T>* GCList<T>::PushBefore( const T& data, GCListNode<T>* pNode )
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Creates a new ListNode with the given data before the given ListNode.
+/// @brief Creates a new ListNode with the given data after the given ListNode.
 /// 
 /// @tparam T The type that is stored in the List.
 /// 
@@ -278,7 +278,7 @@ GCListNode<T>* GCList<T>::PushBefore( const T& data, GCListNode<T>* pNode )
 /// @return A pointer to the newly created ListNode.
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-GCListNode<T>* GCList<T>::PushAfter( const T& data, GCListNode<T>* pNode )
+GCListNode<T>* GCList<T>::PushAfter(const T& data, GCListNode<T>* pNode)
 {
     GCListNode<T>* pNewNode = new GCListNode<T>();
     pNewNode->m_data = data;

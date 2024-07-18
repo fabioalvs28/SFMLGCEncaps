@@ -30,7 +30,7 @@ public:
     static GCUpdateManager* GetActiveUpdateManager();
     static GCEventManager* GetActiveEventManager();
     static GCSceneManager* GetActiveSceneManager();
-    // static GCRenderManager* GetActiveRenderManager();
+    static GCRenderManager* GetActiveRenderManager();
 
 private:
     inline static GCList<GCGameManager*> m_pGameManagersList = GCList<GCGameManager*>();
@@ -44,7 +44,6 @@ template <class MainScript>
 GCGameManager* GC::CreateGameManager()
 {
     GCGameManager* pGameManager = new GCGameManager();
-    pGameManager->Init();
     pGameManager->m_pNode = m_pGameManagersList.PushBack( pGameManager );
     if ( m_pActiveGameManager == nullptr )
         m_pActiveGameManager = pGameManager;

@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "Components.h"
-
 #include "Log.h"
-#include "GameObject.h"
 #include "GC.h"
+#include "GameObject.h"
+#include "../Render/pch.h"
+
+using namespace DirectX;
 
 
 
@@ -28,8 +30,8 @@ void Component::RegisterToManagers()
 	if ( IsFlagSet( FIXED_UPDATE ) )
 		GC::GetActiveUpdateManager()->RegisterComponent( this );
 	
-	// if ( IsFlagSet( RENDER ) )
-	// 	Gc::GetActiveRenderManager()->RegisterComponent( this );
+	if ( IsFlagSet( RENDER ) )
+	 	GC::GetActiveRenderManager()->RegisterComponent( this );
 }
 
 void Component::UnregisterFromManagers()
@@ -84,11 +86,75 @@ void Component::SetGlobalActive( bool active )
 
 
 
+
+
+
+SpriteRenderer::SpriteRenderer()
+{
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+
+	pGraphics->InitializeGraphicsResourcesStart();
+	m_pMesh = pGraphics->CreateMeshColor(GC::GetActiveRenderManager()->m_pPlane).resource;
+	pGraphics->InitializeGraphicsResourcesEnd();
+
+	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
+	m_pMaterial = pGraphics->CreateMaterial(shaderColor).resource;
+}
+
+
+
+/////////////////////////////////////////////////
+/// @brief Set Sprite of a GameObject
+/// 
+/// @param texturePath path of the sprite file
+/// 
+/// @note The sprite must be in .dds 
+/////////////////////////////////////////////////
+void SpriteRenderer::SetSprite(std::string texturePath)
+{
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+
+	pGraphics->InitializeGraphicsResourcesStart();
+	m_pMesh = pGraphics->CreateMeshTexture(GC::GetActiveRenderManager()->m_pPlane).resource;
+	GCTexture* texture = pGraphics->CreateTexture( std::string("../../../src/Textures/") + texturePath).resource;
+	pGraphics->InitializeGraphicsResourcesEnd();
+
+	auto shaderTexture = pGraphics->CreateShaderTexture();
+	auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
+	m_pMaterial = mat.resource;
+	m_pMaterial->SetTexture(texture);
+
+	
+}
+
+
+
+void SpriteRenderer::Render()
+{
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+
+	XMMATRIX worldMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x, m_pGameObject->m_transform.m_scale.y, m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z); 
+
+	XMFLOAT4X4 worldMatrix4X4;
+	XMStoreFloat4x4(&worldMatrix4X4, worldMatrix);
+
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix4X4);
+	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
+
+}
+
+
+
+
+
+
 Collider::Collider()
 {
 	m_trigger = false;
 	m_visible = false;
 }
+
+
 
 void Collider::RegisterToManagers()
 {
@@ -104,10 +170,56 @@ void Collider::UnregisterFromManagers()
 
 
 
+
+
+
+BoxCollider::BoxCollider()
+{
+
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+
+	pGraphics->InitializeGraphicsResourcesStart();
+	m_pMesh = pGraphics->CreateMeshTexture(GC::GetActiveRenderManager()->m_pPlane).resource;
+	GCTexture* texture = pGraphics->CreateTexture("../../../src/Textures/BoxColliderSquare.dds").resource;
+	pGraphics->InitializeGraphicsResourcesEnd();
+
+	auto shaderTexture = pGraphics->CreateShaderTexture();
+	auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
+	m_pMaterial = mat.resource;
+	m_pMaterial->SetTexture(texture);
+
+}
+
+
+
+void BoxCollider::Render()
+{
+	if (m_visible == false)
+		return;
+
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+
+	XMMATRIX meshMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x + m_size.x , m_pGameObject->m_transform.m_scale.y + m_size.y , m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z);
+
+	XMFLOAT4X4 meshMatrix4X4;
+	XMStoreFloat4x4(&meshMatrix4X4, meshMatrix);
+
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, meshMatrix4X4);
+	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
+
+}
+
+
+
+
+
+
 RigidBody::RigidBody()
 {
 	m_velocity.SetZero();
 }
+
+
 
 void RigidBody::FixedUpdate()
 {

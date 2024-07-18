@@ -1,8 +1,10 @@
 #pragma once
 #include "PhysicManager.h"
+#include "RenderManager.h"
 #include "UpdateManager.h"
 #include "EventManager.h"
 #include "SceneManager.h"
+#include "RenderManager.h"
 
 // TODO Script inside GameManager
 
@@ -13,14 +15,14 @@ class GCGameManager
 {
 friend class GC;
 
+public:
+    void Run() {};
+
 protected:
-    GCGameManager() = default;
-    virtual ~GCGameManager() = default;
+    GCGameManager();
+    ~GCGameManager() = default;
     
-public: void Init();
 public: void Update();
-    void Init();
-    void Update();
     
     void SetActiveGameManager();
     
@@ -30,4 +32,5 @@ protected:
     GCUpdateManager m_pUpdateManager;
     GCEventManager m_pEventManager;
     GCSceneManager m_pSceneManager;
+    GCRenderManager m_pRenderManager;
 };
