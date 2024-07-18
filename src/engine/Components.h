@@ -13,6 +13,7 @@ class GCGameObject;
 
 enum FLAGS
 {
+    NONE            = 0,
 	UPDATE          = 1 << 0,
 	FIXED_UPDATE    = 1 << 1,
     RENDER          = 1 << 2,
@@ -30,8 +31,8 @@ friend class GCRenderManager;
 public:
     virtual const int GetID() = 0;
     
-    void SetActive( bool active ) { m_active = active; }
-    bool IsActive() { return m_active; }
+    void SetActive( bool active );
+    bool IsActive() { return m_globalActive && m_selfActive; }
 
     GCGameObject* GetGameObject() { return m_pGameObject; }
 
@@ -50,11 +51,14 @@ protected:
     
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
+    
+    void SetGlobalActive( bool active );
 
 protected:
     inline static int componentCount = 0;
     GCGameObject* m_pGameObject;
-    bool m_active;
+    bool m_globalActive;
+    bool m_selfActive;
     
     GCListNode<Component*>* m_pUpdateNode;
     GCListNode<Component*>* m_pPhysicsNode;
@@ -261,6 +265,31 @@ protected:
     void Destroy() override {}
     
     FLAGS GetFlags() override { return UPDATE; }
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+
+};
+
+
+
+class Camera : public Component
+{
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+protected:
+    Camera() {}
+    ~Camera() override {}
+    
+    void Destroy() override {}
+    
+    FLAGS GetFlags() override { return NONE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;

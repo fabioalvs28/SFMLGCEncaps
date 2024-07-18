@@ -1,6 +1,7 @@
 #pragma once
-
 #include "Components.h"
+
+// TODO Turn every methods into private methods
 
 class GCGameObject;
 

@@ -4,6 +4,11 @@
 #include "EventManager.h"
 #include "SceneManager.h"
 
+// TODO Script inside GameManager
+
+template <typename T>
+class GCListNode;
+
 class GCGameManager 
 {
 friend class GC;
@@ -14,8 +19,13 @@ protected:
     
 public: void Init();
 public: void Update();
+    void Init();
+    void Update();
+    
+    void SetActiveGameManager();
     
 protected:
+    GCListNode<GCGameManager*>* m_pNode;
     GCPhysicManager m_pPhysicManager;
     GCUpdateManager m_pUpdateManager;
     GCEventManager m_pEventManager;

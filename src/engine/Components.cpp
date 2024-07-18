@@ -9,7 +9,8 @@
 
 Component::Component()
 {
-	m_active = true;
+	m_globalActive = true;
+	m_selfActive = true;
 	m_pGameObject = nullptr;
 	
 	m_pUpdateNode = nullptr;
@@ -31,8 +32,6 @@ void Component::RegisterToManagers()
 	// 	Gc::GetActiveRenderManager()->RegisterComponent( this );
 }
 
-
-
 void Component::UnregisterFromManagers()
 {
 	if ( IsFlagSet( UPDATE ) )
@@ -43,6 +42,44 @@ void Component::UnregisterFromManagers()
 	
 	if ( IsFlagSet( RENDER ) )
 		m_pRenderNode->Delete();
+}
+
+
+
+void Component::SetActive( bool active )
+{
+	if ( IsActive() == true )
+	{
+		if ( active == false )
+		{
+			m_selfActive = active;
+	    	UnregisterFromManagers();
+		}
+	}
+	else
+	{
+		m_selfActive = active;
+		if ( IsActive() == true )
+			RegisterToManagers();
+	}
+}
+
+void Component::SetGlobalActive( bool active )
+{
+	if ( IsActive() == true )
+	{
+		if ( active == false )
+		{
+			m_globalActive = active;
+	    	UnregisterFromManagers();
+		}
+	}
+	else
+	{
+		m_globalActive = active;
+		if ( IsActive() == true )
+			RegisterToManagers();
+	}
 }
 
 
