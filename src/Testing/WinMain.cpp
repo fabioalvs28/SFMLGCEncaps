@@ -54,9 +54,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     GC::m_pActiveGameManager.Init();
 
-    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
-    profiler.InitializeConsole();
-
     Window* window = new Window(hInstance);
     window->Initialize();
 
