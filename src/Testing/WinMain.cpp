@@ -103,8 +103,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     test2->GetComponent<BoxCollider>()->SetVisible(true);
     test3->GetComponent<BoxCollider>()->SetVisible(true);
 
-    test3->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/caow.dds");
-    test2->GetComponent<SpriteRenderer>()->SetSprite("C:/Users/emaillard-salin/Desktop/Captain_Flameheart_Art.dds");
+    test3->GetComponent<SpriteRenderer>()->SetSprite("../Render/Textures/caow.dds");
+    test2->GetComponent<SpriteRenderer>()->SetSprite("../Render/Textures/Captain_Flameheart_Art.dds");
 
 
     //auto startTime = std::chrono::steady_clock::now();

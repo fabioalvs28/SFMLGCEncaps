@@ -166,7 +166,7 @@ BoxCollider::BoxCollider(GCGameObject* pGameObject) : Collider(pGameObject)
 
 	pGraphics->InitializeGraphicsResourcesStart();
 	m_pMesh = pGraphics->CreateMeshTexture(GC::m_pActiveGameManager.m_pRenderManager.m_pPlane).resource;
-	GCTexture* texture = pGraphics->CreateTexture("C:/Users/emaillard-salin/Desktop/BoxColliderSquare.dds").resource;
+	GCTexture* texture = pGraphics->CreateTexture("../Render/Textures/BoxColliderSquare.dds").resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 	auto shaderTexture = pGraphics->CreateShaderTexture();
