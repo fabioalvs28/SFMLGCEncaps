@@ -91,14 +91,17 @@ void GCRenderManager::RegisterComponent(Component* component)
             component->m_pRenderNode = pComponent->PushAfter( component );
             return;
         }
-        if ( pComponent->GetData()->GetGameObject()->GetLayer() == component->GetGameObject()->GetLayer() && pComponent->GetData()->GetID() <= component->GetID() )
+        if (pComponent->GetData()->GetGameObject()->GetLayer() == component->GetGameObject()->GetLayer())
         {
-            component->m_pRenderNode = pComponent->PushAfter( component );
-            return;
+            if (pComponent->GetData()->GetID() <= component->GetID())
+            {
+                component->m_pRenderNode = pComponent->PushAfter(component);
+                return;
+            }
         }
     }
 
-    m_componentList.PushBack( component );
+    m_componentList.PushFront( component );
 
 }
 
