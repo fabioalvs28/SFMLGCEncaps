@@ -9,6 +9,7 @@ using namespace DirectX;
 
 // TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
+// TODO Make sure IDs are handled differently
 
 class GCGameObject;
 
@@ -39,10 +40,11 @@ public:
     GCGameObject* GetGameObject() { return m_pGameObject; }
 
 protected:
-    Component( GCGameObject* pGameObject );
+    Component();
     virtual ~Component() = default;
     
-    void Init();
+    virtual void RegisterToManagers();
+    virtual void UnregisterFromManagers();
     
     virtual void Start() {}
     virtual void Update() {}
@@ -51,7 +53,6 @@ protected:
     virtual void Destroy() {}
     
     virtual FLAGS GetFlags() = 0;
-
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
 
 protected:
@@ -85,7 +86,7 @@ public:
     GCColor& GetColor() { return m_color; }
 
 protected:
-	SpriteRenderer( GCGameObject* pGameObject );
+	SpriteRenderer() {}
     ~SpriteRenderer() override {}
 
     void Render() override;
@@ -114,8 +115,11 @@ friend class GCPhysicManager;
 friend class GCRenderManager;
 
 public:
-    Collider( GCGameObject* pGameObject );
+    Collider();
     ~Collider() override {}
+    
+    void RegisterToManagers() override;
+    void UnregisterFromManagers() override;
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -129,6 +133,8 @@ protected:
 protected:
     bool m_trigger;
     bool m_visible;
+    
+    GCListNode<Collider*>* m_pColliderNode;
 
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
@@ -153,7 +159,7 @@ public:
     void SetSize( GCVEC2 size ) { m_size = size; }
 
 protected:
-    BoxCollider(GCGameObject* pGameObject);
+    BoxCollider() {}
     ~BoxCollider() override {}
 
     void FixedUpdate() override {}
@@ -182,7 +188,7 @@ public:
     void SetRadius( float radius ) { m_radius = radius; }
 
 protected:
-    CircleCollider( GCGameObject* pGameObject ) : Collider( pGameObject ) {};
+    CircleCollider() {}
     ~CircleCollider() override {}
     
     void FixedUpdate() override {}
@@ -210,7 +216,7 @@ public:
     void AddForce( GCVEC2 force ) {}
 
 protected:
-    RigidBody( GCGameObject* pGameObject );
+    RigidBody();
     ~RigidBody() override {}
     
     void FixedUpdate() override;
@@ -237,7 +243,7 @@ public:
     const int GetID() override { return m_ID; }
 
 protected:
-	Animator( GCGameObject* pGameObject ) : Component( pGameObject ) {};
+	Animator() {}
     ~Animator() override {}
     
     void Update() override {}
@@ -263,7 +269,7 @@ public:
     const int GetID() override { return m_ID; }
 
 protected:
-	SoundMixer( GCGameObject* pGameObject ) : Component( pGameObject ) {};
+	SoundMixer() {}
     ~SoundMixer() override {}
     
     void Update() override {}
@@ -286,12 +292,12 @@ friend class GCPhysicManager;
 friend class GCRenderManager;
 
 protected:
-    Script( GCGameObject* pGameObject ) : Component( pGameObject ) {};
+    Script() {}
     virtual ~Script() = default;
     
-    virtual void OnTriggerEnter( Collider* collider ) = 0;
-    virtual void OnTriggerStay( Collider* collider ) = 0;
-    virtual void OnTriggerExit( Collider* collider ) = 0;
+    virtual void OnTriggerEnter( Collider* collider ) {}
+    virtual void OnTriggerStay( Collider* collider ) {}
+    virtual void OnTriggerExit( Collider* collider ) {}
     
     FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
 
@@ -300,16 +306,20 @@ protected:
 
 };
 
-#define CREATE_SCRIPT_START( CLASS_NAME ) \
-    class Script##CLASS_NAME : public Script \
+#define CREATE_SCRIPT_INHERIT_START( CLASS_NAME, INHERITANCE ) \
+    class Script##CLASS_NAME : public Script##INHERITANCE \
     { \
+    friend class GCGameObject; \
+    friend class GCUpdateManager; \
+    friend class GCPhysicManager; \
+    friend class GCRenderManager; \
     public: \
         static const int GetIDStatic() { return m_ID; } \
         const int GetID() override { return m_ID; } \
      \
     protected: \
         Script##CLASS_NAME() = default; \
-        ~Script##CLASS_NAME() {} \
+        ~Script##CLASS_NAME() = default; \
          \
         /*void Start() override; \
         void Update() override; \
@@ -325,6 +335,6 @@ protected:
      \
     private:
 
+#define CREATE_SCRIPT_START( CLASS_NAME ) CREATE_SCRIPT_INHERIT_START( CLASS_NAME,  )
+
 #define CREATE_SCRIPT_END };
-
-

@@ -102,8 +102,9 @@ template<class T>
 T* GCGameObject::AddComponent()
 {
     ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a component to a GameObject that already has it" );
-    T* pComponent = new T( this );
-    pComponent->Init();
+    T* pComponent = new T();
+    pComponent->m_pGameObject = this;
+    pComponent->RegisterToManagers();
     m_componentsList.Insert( T::GetIDStatic(), pComponent );
     return pComponent;
 }

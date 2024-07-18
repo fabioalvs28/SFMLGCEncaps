@@ -10,11 +10,10 @@ using namespace DirectX;
 
 
 
-Component::Component( GCGameObject* pGameObject )
+Component::Component()
 {
-	ASSERT( pGameObject != nullptr, LOG_FATAL, "A nullptr pGameObject was given in the Component constructor" );
 	m_active = true;
-	m_pGameObject = pGameObject;
+	m_pGameObject = nullptr;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
@@ -23,18 +22,31 @@ Component::Component( GCGameObject* pGameObject )
 
 
 
-void Component::Init()
+void Component::RegisterToManagers()
 {
-	if ( IsFlagSet( UPDATE ) == true )
-		;
-
-	if ( IsFlagSet( FIXED_UPDATE ) == true )
-		;
-
-	if ( IsFlagSet( RENDER ) == true )
-		GC::m_pActiveGameManager.m_pRenderManager.RegisterComponent( this );
+	if ( IsFlagSet( UPDATE ) )
+		GC::GetActiveUpdateManager()->RegisterComponent( this );
+	
+	if ( IsFlagSet( FIXED_UPDATE ) )
+		GC::GetActiveUpdateManager()->RegisterComponent( this );
+	
+	if ( IsFlagSet( RENDER ) )
+	 	GC::GetActiveRenderManager()->RegisterComponent( this );
 }
 
+
+
+void Component::UnregisterFromManagers()
+{
+	if ( IsFlagSet( UPDATE ) )
+		m_pUpdateNode->Delete();
+	
+	if ( IsFlagSet( FIXED_UPDATE ) )
+		m_pPhysicsNode->Delete();
+	
+	if ( IsFlagSet( RENDER ) )
+		m_pRenderNode->Delete();
+}
 
 
 SpriteRenderer::SpriteRenderer(GCGameObject* pGameObject) : Component(pGameObject)
@@ -90,16 +102,25 @@ void SpriteRenderer::Render()
 
 }
 
-#pragma region Collider
-Collider::Collider( GCGameObject* pGameObject ) : Component( pGameObject )
+
+
+Collider::Collider()
 {
 	m_trigger = false;
 	m_visible = false;
-	GC::m_pActiveGameManager.m_pPhysicManager.RegisterCollider(this);
-
 }
 
-#pragma endregion Collider
+void Collider::RegisterToManagers()
+{
+	Component::RegisterToManagers();
+	GC::GetActivePhysicManager()->RegisterCollider( this );
+}
+
+void Collider::UnregisterFromManagers()
+{
+	Component::UnregisterFromManagers();
+	m_pColliderNode->Delete();
+}
 
 BoxCollider::BoxCollider(GCGameObject* pGameObject) : Collider(pGameObject)
 {
@@ -136,15 +157,13 @@ void BoxCollider::Render()
 
 }
 
-#pragma region RigidBody
-RigidBody::RigidBody( GCGameObject* pGameObject ) : Component( pGameObject )
+RigidBody::RigidBody()
 {
 	m_velocity.SetZero();
 }
 
 void RigidBody::FixedUpdate()
 {
-    // Apply velocity
-    m_pGameObject->m_transform.Translate(m_velocity);        // TODO: Multiply by the fixed delta time
+	// Apply velocity
+	m_pGameObject->m_transform.Translate(m_velocity);		// TODO: Multiply by the fixed delta time
 }
-#pragma endregion RigidBody

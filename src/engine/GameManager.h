@@ -5,21 +5,9 @@
 #include "EventManager.h"
 #include "SceneManager.h"
 
-class Component;
-class Collider;
-class GCGameObject;
-class GCScene;
-class GC;
-
-class GCGameManager
+class GCGameManager 
 {
-    friend class SpriteRenderer;
-    friend class Collider;
-    friend class GCGameObject;
-    friend class GCScene;
-    friend class GC;
-    friend class BoxCollider;
-    friend class CircleCollider;
+friend class GC;
 
 protected:
     GCGameManager() = default;

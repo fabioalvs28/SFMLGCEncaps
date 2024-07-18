@@ -1,27 +1,30 @@
 #pragma once
 #include "GameManager.h"
 
-class Component;
-class Collider;
-class GCGameObject;
-class GCScene;
+class GCGameManager;
 class GCPhysicManager;
-class Window;
+class GCUpdateManager;
+class GCEventManager;
+class GCSceneManager;
+class GCRenderManager;
 
 class GC
 {
-friend class Collider;
-friend class Component;
-friend class GCGameObject;
-friend class GCScene;
-friend class GCPhysicManager;
-friend class Window;
 
 private:
     GC() = delete;
     ~GC() = delete;
 
+public:
+    static GCGameManager* GetActiveGameManager();
+    
+    static GCPhysicManager* GetActivePhysicManager();
+    static GCUpdateManager* GetActiveUpdateManager();
+    static GCEventManager* GetActiveEventManager();
+    static GCSceneManager* GetActiveSceneManager();
+    // static GCRenderManager* GetActiveRenderManager();
+
 private:
-public: static inline GCGameManager m_pActiveGameManager = GCGameManager();
+    inline static GCGameManager* m_pActiveGameManager = new GCGameManager(); //! To Change after the Game has been implemented
 
 };
