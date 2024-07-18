@@ -64,6 +64,11 @@ void GCTransform::UpdateVectorsFromQuaternion()
 
 void GCTransform::UpdateMatrix()
 {
+	// m_matrix = m_rotationMatrix * m_scaleMatrix * m_translationMatrix;
+	// m_rotationWorldMatrix = m_rotationWorldMatrixParent * m_rotationMatrix
+	// m_scaleWorldMatrix = m_scaleWorldMatrixParent * m_scaleMatrix
+	// m_translationWorldMatrix = m_translationWorldMatrixParent * m_translationMatrix
+	// m_worldMatrix = m_rotationWorldMatrix * m_scaleWorldMatrix * m_translationWorldMatrix;
 	m_matrix.SetIdentity();
 	m_matrix._11 = m_right.x;
 	m_matrix._12 = m_right.y;
@@ -91,7 +96,6 @@ void GCTransform::Rotate(float yaw, float pitch, float roll)
 	qRoll.FromAxisAngle(m_direction, roll);
 
 	GCQUATERNION qResult = qRoll;
-
 	qResult *= qPitch;
 	qResult *= qYaw;
 
