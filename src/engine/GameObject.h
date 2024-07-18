@@ -68,6 +68,7 @@ protected:
     void RemoveComponent( int type );
 
     void RegisterComponentToRender( Component* pComponent );
+    void UnregisterComponentFromRender(GCListNode<Component*>* pComponent);
     void Render();
 
 public:

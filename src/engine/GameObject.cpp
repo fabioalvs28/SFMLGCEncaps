@@ -366,3 +366,10 @@ void GCGameObject::RegisterComponentToRender( Component* pComponent )
 
     m_renderComponentList.PushFront(pComponent);
 }
+
+void GCGameObject::UnregisterComponentFromRender( GCListNode<Component*>* pComponent )
+{
+    pComponent->Delete();
+    if (m_renderComponentList.GetFirstNode() == nullptr)
+        m_pRenderNode->Delete();
+}

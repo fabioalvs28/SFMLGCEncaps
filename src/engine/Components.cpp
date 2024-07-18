@@ -42,8 +42,8 @@ void Component::UnregisterFromManagers()
 	if ( IsFlagSet( FIXED_UPDATE ) )
 		m_pPhysicsNode->Delete();
 	
-	if ( IsFlagSet( RENDER ) )
-		m_pRenderNode->Delete();
+	if (IsFlagSet(RENDER))
+		m_pGameObject->UnregisterComponentFromRender( m_pRenderNode ); 
 }
 
 
