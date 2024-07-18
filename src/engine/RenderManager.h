@@ -8,12 +8,12 @@ class GCRenderManager
 {
     friend class GCGameObject;
 private:
-    GCList<Component*> m_componentList;
+    GCList<GCGameObject*> m_gameObjectList;
 public:
     GCRenderManager();
     ~GCRenderManager();
 
-    void RegisterComponent(Component* pComponent);
+    void RegisterGameObject(GCGameObject* pGameObject);
 
     void CreateGeometry();
 

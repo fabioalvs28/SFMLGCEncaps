@@ -79,8 +79,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGameObject* test2 = pScene->CreateGameObject();
     GCGameObject* test3 = pScene->CreateGameObject();
 
-    test3->SetLayer(3);
-    test2->SetLayer(4);
+    test3->SetLayer(10);
+    test2->SetLayer(40);
 
     //test1->AddComponent<BoxCollider>();
     test2->AddComponent<BoxCollider>();

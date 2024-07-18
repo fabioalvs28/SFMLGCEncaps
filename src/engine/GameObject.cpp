@@ -323,3 +323,46 @@ void GCGameObject::ClearComponents()
     for ( auto it : m_componentsList )
         RemoveComponent( it.second->GetID() );
 }
+
+
+void GCGameObject::Render()
+{
+    for (GCListNode<Component*>* pComponentNode = m_renderComponentList.GetFirstNode(); pComponentNode != nullptr ; pComponentNode = pComponentNode->GetNext() )
+    {
+        pComponentNode->GetData()->Render();
+    }
+}
+
+void GCGameObject::RegisterComponentToRender( Component* pComponent )
+{
+
+    GCListNode<Component*>* pFirstNode = m_renderComponentList.GetFirstNode();
+
+    if (pFirstNode == nullptr )
+    {
+        GC::GetActiveRenderManager()->RegisterGameObject(this);
+        pComponent->m_pRenderNode = m_renderComponentList.PushBack(pComponent);
+        return;
+    }
+
+    if (pFirstNode == m_renderComponentList.GetLastNode())
+    {
+        if (pFirstNode->GetData()->GetLayer() < pComponent->GetLayer())
+        {
+            m_renderComponentList.PushBack(pComponent);
+            return;
+        }
+    }
+
+
+    for (GCListNode<Component*>* pComponentNode = m_renderComponentList.GetLastNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetPrevious())
+    {
+        if (pComponentNode->GetData()->GetLayer() <= pComponent->GetLayer())
+        {
+            pComponent->m_pRenderNode = pComponentNode->PushAfter(pComponent);
+            return;
+        }
+    }
+
+    m_renderComponentList.PushFront(pComponent);
+}

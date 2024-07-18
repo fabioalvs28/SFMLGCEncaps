@@ -31,7 +31,7 @@ void Component::RegisterToManagers()
 		GC::GetActiveUpdateManager()->RegisterComponent( this );
 	
 	if ( IsFlagSet( RENDER ) )
-	 	GC::GetActiveRenderManager()->RegisterComponent( this );
+		m_pGameObject->RegisterComponentToRender(this);
 }
 
 void Component::UnregisterFromManagers()

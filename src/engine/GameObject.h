@@ -15,7 +15,9 @@ class GCGameObject
 friend class GCGameObjectTransform;
 friend class GCScene;
 friend class GCSceneManager;
+friend class GCRenderManager;
 friend class GC;
+friend class Component;
 
 protected:
     GCGameObject( GCScene* pScene );
@@ -59,11 +61,14 @@ public:
 
 protected:
     void Destroy();
-    
+
     void RemoveScene();
     void SetGlobalActive( const bool active );
     
     void RemoveComponent( int type );
+
+    void RegisterComponentToRender( Component* pComponent );
+    void Render();
 
 public:
     GCGameObjectTransform m_transform;
@@ -74,6 +79,9 @@ protected:
     GCListNode<GCGameObject*>* m_pSceneNode;
     GCListNode<GCGameObject*>* m_pChildNode;
     
+    GCListNode<GCGameObject*>* m_pRenderNode;
+    GCList<Component*> m_renderComponentList;
+
     GCScene* m_pScene;
     GCGameObject* m_pParent;
     GCList<GCGameObject*> m_childrenList;
