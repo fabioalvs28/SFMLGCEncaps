@@ -7,10 +7,6 @@
 
 class Component;
 class GCScene;
-class GCSceneManager;
-
-// TODO dirtytag for already destroyed GameObjects (added to queue)
-// TODO self active / global active → SetActive() methods with a recursive flag
 
 
 
@@ -19,6 +15,7 @@ class GCGameObject
 friend class GCGameObjectTransform;
 friend class GCScene;
 friend class GCSceneManager;
+friend class GC;
 
 protected:
     GCGameObject( GCScene* pScene );
@@ -26,7 +23,6 @@ protected:
 
 public:
     GCGameObject* Duplicate(); // Potential optimization: A DuplicateAtCenter() method which doesn't calculate the transform's matrix and instead places the new GameObject at the center of the parent's bounds with no rotation and scale
-    void Destroy();
     
     void RemoveParent();
     GCGameObject* CreateChild();
@@ -62,7 +58,10 @@ public:
     void ClearComponents();
 
 protected:
+    void Destroy();
+    
     void RemoveScene();
+    void SetGlobalActive( const bool active );
     
     void RemoveComponent( int type );
 
@@ -80,7 +79,9 @@ protected:
     GCList<GCGameObject*> m_childrenList;
     
     bool m_created;
-    bool m_active;
+    bool m_deleted;
+    bool m_globalActive;
+    bool m_selfActive;
     const char* m_name;
     GCVector<const char*> m_tagsList;
     int m_layer;

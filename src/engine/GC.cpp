@@ -1,6 +1,23 @@
 #include "pch.h"
 #include "GC.h"
 
+#include "GameObject.h"
+#include "Scene.h"
+
+
+
+void GC::Destroy( GCGameObject*& pGameObject )
+{
+    pGameObject->Destroy();
+    pGameObject = nullptr;
+}
+
+void GC::Destroy( GCScene*& pScene )
+{
+    pScene->Destroy();
+    pScene = nullptr;
+}
+
 
 
 GCGameManager* GC::GetActiveGameManager()

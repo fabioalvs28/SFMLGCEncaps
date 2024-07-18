@@ -12,7 +12,8 @@ using namespace DirectX;
 
 Component::Component()
 {
-	m_active = true;
+	m_globalActive = true;
+	m_selfActive = true;
 	m_pGameObject = nullptr;
 	
 	m_pUpdateNode = nullptr;
@@ -33,8 +34,6 @@ void Component::RegisterToManagers()
 	if ( IsFlagSet( RENDER ) )
 	 	GC::GetActiveRenderManager()->RegisterComponent( this );
 }
-
-
 
 void Component::UnregisterFromManagers()
 {
@@ -100,6 +99,44 @@ void SpriteRenderer::Render()
 	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix4X4);
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
+}
+
+
+
+void Component::SetActive( bool active )
+{
+	if ( IsActive() == true )
+	{
+		if ( active == false )
+		{
+			m_selfActive = active;
+	    	UnregisterFromManagers();
+		}
+	}
+	else
+	{
+		m_selfActive = active;
+		if ( IsActive() == true )
+			RegisterToManagers();
+	}
+}
+
+void Component::SetGlobalActive( bool active )
+{
+	if ( IsActive() == true )
+	{
+		if ( active == false )
+		{
+			m_globalActive = active;
+	    	UnregisterFromManagers();
+		}
+	}
+	else
+	{
+		m_globalActive = active;
+		if ( IsActive() == true )
+			RegisterToManagers();
+	}
 }
 
 
