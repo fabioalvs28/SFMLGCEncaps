@@ -214,12 +214,113 @@ void GCRender::CreateCbvSrvUavDescriptorHeaps()
 	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	cbvHeapDesc.NodeMask = 0;
-	m_pGCRenderResources->m_d3dDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap));
+	HRESULT hr = m_pGCRenderResources->m_d3dDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap));
+	if (FAILED(hr))
+	{
+		// Handle descriptor heap creation failure
+		MessageBoxA(nullptr, "Failed to create CBV/SRV/UAV descriptor heap", "Error", MB_OK);
+		return;
+	}
+
+	//// Define the resource description for BlurImageBuffer
+	//D3D12_RESOURCE_DESC textureDesc = {};
+	//textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	//textureDesc.Alignment = 0;
+	//textureDesc.Width = 1920; // Width of the texture
+	//textureDesc.Height = 1080; // Height of the texture
+	//textureDesc.DepthOrArraySize = 1;
+	//textureDesc.MipLevels = 1;
+	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // Example format, choose appropriate format for your data
+	//textureDesc.SampleDesc.Count = 1;
+	//textureDesc.SampleDesc.Quality = 0;
+	//textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	//textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS; // Allow UAV
+
+	//// Define heap properties for BlurImageBuffer
+	//D3D12_HEAP_PROPERTIES heapProps = {};
+	//heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	//// Initial state of the resource for BlurImageBuffer
+	//D3D12_RESOURCE_STATES initState = D3D12_RESOURCE_STATE_COMMON;
+
+	//// Clear value (nullptr for non-render targets)
+	//D3D12_CLEAR_VALUE* clearValue = nullptr;
+
+	//// Create the BlurImageBuffer resource
+	//hr = m_pGCRenderResources->m_d3dDevice->CreateCommittedResource(
+	//	&heapProps,
+	//	D3D12_HEAP_FLAG_NONE,
+	//	&textureDesc,
+	//	initState,
+	//	clearValue,
+	//	IID_PPV_ARGS(&m_pGCRenderResources->m_BlurImageBuffer)
+	//);
+
+	//if (FAILED(hr))
+	//{
+	//	// Handle resource creation failure for BlurImageBuffer
+	//	MessageBoxA(nullptr, "Failed to create BlurImageBuffer", "Error", MB_OK);
+	//	return;
+	//}
+
+	//// Define the resource description for BrightImageBuffer
+	//D3D12_RESOURCE_DESC textureDesc2 = textureDesc; // Reuse the same descriptor but different resource
+
+	//// Create the BrightImageBuffer resource
+	//hr = m_pGCRenderResources->m_d3dDevice->CreateCommittedResource(
+	//	&heapProps,
+	//	D3D12_HEAP_FLAG_NONE,
+	//	&textureDesc2,
+	//	initState,
+	//	clearValue,
+	//	IID_PPV_ARGS(&m_pGCRenderResources->m_BrightImageBuffer)
+	//);
+
+	//if (FAILED(hr))
+	//{
+	//	// Handle resource creation failure for BrightImageBuffer
+	//	MessageBoxA(nullptr, "Failed to create BrightImageBuffer", "Error", MB_OK);
+	//	return;
+	//}
+
+	//// Create SRV and UAV for BlurImageBuffer
+	//D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	//D3D12_CPU_DESCRIPTOR_HANDLE uavHandle = srvHandle;
+	//UINT descriptorSize = m_pGCRenderResources->m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	//// Create SRV for BlurImageBuffer
+	//D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	//srvDesc.Format = textureDesc.Format;
+	//srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	//srvDesc.Texture2D.MostDetailedMip = 0;
+	//srvDesc.Texture2D.MipLevels = 1;
+	//srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//m_pGCRenderResources->m_d3dDevice->CreateShaderResourceView(m_pGCRenderResources->m_BlurImageBuffer, &srvDesc, srvHandle);
+
+	//// Create UAV for BlurImageBuffer
+	//uavHandle.ptr += descriptorSize; // Offset to the next descriptor slot
+	//D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	//uavDesc.Format = textureDesc.Format;
+	//uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+	//uavDesc.Texture2D.MipSlice = 0;
+	//m_pGCRenderResources->m_d3dDevice->CreateUnorderedAccessView(m_pGCRenderResources->m_BlurImageBuffer, nullptr, &uavDesc, uavHandle);
+
+	//// Create SRV and UAV for BrightImageBuffer
+	//srvHandle.ptr += descriptorSize * 2; // Offset to the next descriptor slot after UAV
+	//uavHandle = srvHandle; // Reset UAV handle to the new SRV handle position
+
+	//// Create SRV for BrightImageBuffer
+	//m_pGCRenderResources->m_d3dDevice->CreateShaderResourceView(m_pGCRenderResources->m_BrightImageBuffer, &srvDesc, srvHandle);
+
+	//// Create UAV for BrightImageBuffer
+	//uavHandle.ptr += descriptorSize;
+	//m_pGCRenderResources->m_d3dDevice->CreateUnorderedAccessView(m_pGCRenderResources->m_BrightImageBuffer, nullptr, &uavDesc, uavHandle);
+
 }
 
 void GCRender::CreateRtvAndDsvDescriptorHeaps()
 {
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;	
 	rtvHeapDesc.NumDescriptors = m_pGCRenderResources->SwapChainBufferCount + 2;
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
@@ -241,10 +342,20 @@ void GCRender::CreatePostProcessingResources() {
 
 	// Create A post Processing Shader
 	m_postProcessingShader = new GCShader();
-
-	std::string shaderFilePath = "../../../src/Render/Shaders/PostProcessing.hlsl";
-	std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
-
+	m_brightShader = new GCComputeShader();
+	m_blurShader = new GCComputeShader();
+	m_combineShader = new GCComputeShader();
+	m_testShader = new GCComputeShader();
+	std::string shaderFilePath = "../../../src/RenderApp/Shaders/PostProcessing.hlsl";
+	std::string csoDestinationPath = "../../../src/RenderApp/CsoCompiled/PostProcessing";
+	std::string shaderFilePath1 = "../../../src/RenderApp/Shaders/BrightExtract.hlsl";
+	std::string csoDestinationPath1 = "../../../src/RenderApp/CsoCompiled/BrightExtract";
+	std::string shaderFilePath2 = "../../../src/RenderApp/Shaders/Blur.hlsl";
+	std::string csoDestinationPath2 = "../../../src/RenderApp/CsoCompiled/Blur";
+	std::string shaderFilePath3 = "../../../src/RenderApp/Shaders/Combine.hlsl";
+	std::string csoDestinationPath3 = "../../../src/RenderApp/CsoCompiled/Combine";
+	std::string shaderFilePath4 = "../../../src/RenderApp/Shaders/test.hlsl";
+	std::string csoDestinationPath4 = "../../../src/RenderApp/CsoCompiled/test";
 	int flags = 0;
 	SET_FLAG(flags, VERTEX_POSITION);
 	SET_FLAG(flags, VERTEX_UV);
@@ -252,20 +363,30 @@ void GCRender::CreatePostProcessingResources() {
 	m_postProcessingShader->Initialize(this, shaderFilePath, csoDestinationPath, flags);
 	m_postProcessingShader->Load();
 
+	m_brightShader->Initialize(this, shaderFilePath1, csoDestinationPath1, flags);
+	//m_brightShader->Load();
 
+	m_blurShader->Initialize(this, shaderFilePath2, csoDestinationPath2, flags);
+	//m_blurShader->Load();
+
+	m_combineShader->Initialize(this, shaderFilePath3, csoDestinationPath3, flags);
+	//m_combineShader->Load();
+
+	m_testShader->Initialize(this, shaderFilePath4, csoDestinationPath4, flags);
+	m_testShader->Load();
 
 	// Create RTV For Object Buffer Id For pass Mesh id to pixel, to apply them on a texture 
-	m_pGCRenderResources->m_ObjectIdBufferRtv = m_pGCRenderResources->CreateRTT(false);
+	//m_pGCRenderResources->m_ObjectIdBufferRtv = m_pGCRenderResources->CreateRTT(false);
 
 	//// Create Object buffer Id Shader 
 	int flags2 = 0;
 	SET_FLAG(flags2, VERTEX_POSITION);
 
 	m_objectBufferIdShader = new GCShader();
-	std::string shaderFilePath2 = "../../../src/Render/Shaders/ObjectBufferId.hlsl";
-	std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/ObjectBufferId";
+	std::string shaderFilePath5 = "../../../src/RenderApp/Shaders/ObjectBufferId.hlsl";
+	std::string csoDestinationPath5 = "../../../src/RenderApp/CsoCompiled/ObjectBufferId";
 
-	m_objectBufferIdShader->Initialize(this, shaderFilePath2, csoDestinationPath2, flags2);
+	m_objectBufferIdShader->Initialize(this, shaderFilePath5, csoDestinationPath5, flags2);
 	m_objectBufferIdShader->Load();
 	
 }
@@ -332,8 +453,8 @@ void GCRender::CreateRenderTargetViews()
 		m_pGCRenderResources->m_SwapChain->GetBuffer(i, IID_PPV_ARGS(&m_pGCRenderResources->m_SwapChainBuffer[i]));
 		m_pGCRenderResources->m_d3dDevice->CreateRenderTargetView(m_pGCRenderResources->m_SwapChainBuffer[i], nullptr, rtvHeapHandle);
 		rtvHeapHandle.Offset(1, m_pGCRenderResources->m_rtvDescriptorSize);
+		m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_SwapChainBuffer[i], DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
-
 	//ID3D12Resource* renderTargetTexture = nullptr;
 
 	//// Define the texture description
@@ -504,14 +625,14 @@ bool GCRender::PrepareDraw()
 	CD3DX12_RESOURCE_BARRIER ResBar(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &ResBar);
 
-	CD3DX12_RESOURCE_BARRIER CommonToRT(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_ObjectIdBufferRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET));
-	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &CommonToRT);
+	//CD3DX12_RESOURCE_BARRIER CommonToRT(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_ObjectIdBufferRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET));
+	//m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &CommonToRT);
 
 
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_ObjectIdBufferRtvAddress, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	//m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_ObjectIdBufferRtvAddress, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	/*m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);*/
 
 
@@ -638,33 +759,90 @@ bool GCRender::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha)
 
 	return true;
 }
-
-// #TODO RESTRUCTURE RENDER -> GCRenderContext GCRenderResources -> Compute Shader
-
-void GCRender::PerformPostProcessing()
+void GCRender::PerformPostProcessing3()
 {
+	CD3DX12_RESOURCE_BARRIER barrierToUAV = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->m_pPostProcessingRtv,
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToUAV);
+
+	// Transition CurrentBackBuffer to PIXEL_SHADER_RESOURCE for read
+	CD3DX12_RESOURCE_BARRIER barrierToShaderResource = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToShaderResource);
+
+	// Set up compute shader
+	m_pGCRenderResources->m_CommandList->SetPipelineState(m_testShader->GetPso());
+	m_pGCRenderResources->m_CommandList->SetComputeRootSignature(m_testShader->GetRootSign());
+
+	// Set descriptor tables for compute shader
+	auto srvGpuHandleIter = m_pGCRenderResources->m_lShaderResourceView.begin();
+	std::advance(srvGpuHandleIter, m_pGCRenderResources->GetCurrBackBuffer());
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandleInput = *srvGpuHandleIter;
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(0, srvGpuHandleInput); // Input texture
+
+	// Create a UAV descriptor handle for the output texture (PostProcessingRtv)
+	CD3DX12_GPU_DESCRIPTOR_HANDLE uavGpuHandleOutput(
+		m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		m_pGCRenderResources->SwapChainBufferCount, // Assuming UAVs start right after SRVs
+		m_pGCRenderResources->m_cbvSrvUavDescriptorSize
+	);
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(1, uavGpuHandleOutput); // Output texture
+
+	// Dispatch compute shader
+	m_pGCRenderResources->m_CommandList->Dispatch(
+		(m_pGCRenderResources->GetRenderWidth() + 15) / 16,
+		(m_pGCRenderResources->GetRenderHeight() + 15) / 16,
+		1
+	);
+
+	// Transition PostProcessingRtv to COPY_SOURCE for read
+	CD3DX12_RESOURCE_BARRIER barrierToUAV2 = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->m_pPostProcessingRtv,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_COPY_SOURCE
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToUAV2);
+
+	// Transition CurrentBackBuffer to COPY_DEST for write
+	CD3DX12_RESOURCE_BARRIER barrierToCopyFromBackBuffer2 = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_COPY_DEST
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToCopyFromBackBuffer2);
+
+	// Copy m_pPostProcessingRtv to CurrentBackBuffer
+	m_pGCRenderResources->m_CommandList->CopyResource(
+		m_pGCRenderResources->CurrentBackBuffer(),
+		m_pGCRenderResources->m_pPostProcessingRtv
+	);
+}
+// #TODO RESTRUCTURE RENDER -> GCRenderContext GCRenderResources -> Compute Shader
+void GCRender::PerformPostProcessing2(){
 	// Transition pour le rendu sur m_pPostProcessingRtv
 	CD3DX12_RESOURCE_BARRIER barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToRT);
-
+	CD3DX12_CPU_DESCRIPTOR_HANDLE test2 = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pGCRenderResources->m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), 3, m_pGCRenderResources->m_rtvDescriptorSize);
 	// Set Render target
 	D3D12_CPU_DESCRIPTOR_HANDLE dsv = m_pGCRenderResources->GetDepthStencilViewAddress();
-	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &m_pGCRenderResources->m_pPostProcessingRtvAddress, FALSE, &dsv);
-
+	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &test2, FALSE, &dsv);
 	// Root Sign / Pso
 	m_pGCRenderResources->m_CommandList->SetPipelineState(m_postProcessingShader->GetPso(true));
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(m_postProcessingShader->GetRootSign());
 	CD3DX12_CPU_DESCRIPTOR_HANDLE test = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pGCRenderResources->m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), 2, m_pGCRenderResources->m_rtvDescriptorSize);
 	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &test, FALSE, &dsv);
-
 	// Root Sign / Pso
 	m_pGCRenderResources->m_CommandList->SetPipelineState(m_postProcessingShader->GetPso(true));
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(m_postProcessingShader->GetRootSign());
-
 	// Transition pour la texture de post-processing (g_Texture)
 	CD3DX12_RESOURCE_BARRIER barrierToShaderResource = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToShaderResource);
-
 	// Post process texture linking to shader
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = m_pGCRenderResources->GetBackBufferFormat();
@@ -672,18 +850,15 @@ void GCRender::PerformPostProcessing()
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-
 	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle(m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 	srvCpuHandle.Offset(90, m_pGCRenderResources->m_cbvSrvUavDescriptorSize);
 	m_pGCRenderResources->m_d3dDevice->CreateShaderResourceView(m_pGCRenderResources->CurrentBackBuffer(), &srvDesc, srvCpuHandle);
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 	srvGpuHandle.Offset(90, m_pGCRenderResources->m_cbvSrvUavDescriptorSize);
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE, srvGpuHandle);
-
 	// Transition pour la texture d'Object ID (g_ObjectIdBuffer)
 	CD3DX12_RESOURCE_BARRIER barrierToShaderResource2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_ObjectIdBufferRtv, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToShaderResource2);
-
 	// Object / Layers buffer id Linking to shader
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2 = {};
 	srvDesc2.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -691,7 +866,6 @@ void GCRender::PerformPostProcessing()
 	srvDesc2.Texture2D.MostDetailedMip = 0;
 	srvDesc2.Texture2D.MipLevels = 1;
 	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-
 	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle2(m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 	srvCpuHandle2.Offset(150, m_pGCRenderResources->m_cbvSrvUavDescriptorSize);
 	m_pGCRenderResources->m_d3dDevice->CreateShaderResourceView(m_pGCRenderResources->m_ObjectIdBufferRtv, &srvDesc2, srvCpuHandle2);
@@ -699,7 +873,6 @@ void GCRender::PerformPostProcessing()
 	srvGpuHandle2.Offset(150, m_pGCRenderResources->m_cbvSrvUavDescriptorSize);
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(DESCRIPTOR_TABLE_SLOT_TEXTURE2, srvGpuHandle2);
 	//
-
 	// Draw quad on post process rtv
 	GCMesh* theMesh = m_pGCRenderResources->m_pGraphics->GetMeshes()[0];
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = theMesh->GetBufferGeometryData()->VertexBufferView();
@@ -709,41 +882,202 @@ void GCRender::PerformPostProcessing()
 	m_pGCRenderResources->m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_pGCRenderResources->m_CommandList->DrawIndexedInstanced(theMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 	//
-
 	// Transitions pour la copie finale
 	CD3DX12_RESOURCE_BARRIER barrierToCopySource2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToCopySource2);
 	CD3DX12_RESOURCE_BARRIER barrierToCopyDest2 = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToCopyDest2);
-
 	// Copie de m_pPostProcessingRtv sur le rendu final
 	m_pGCRenderResources->m_CommandList->CopyResource(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->m_pPostProcessingRtv);
 }
+void GCRender::PerformPostProcessing()
+{
 
+	// Transition m_pPostProcessingRtv to RENDER_TARGET state
+	CD3DX12_RESOURCE_BARRIER barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->m_pPostProcessingRtv,
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToRT);
+
+	// Transition CurrentBackBuffer to PIXEL_SHADER_RESOURCE state
+	CD3DX12_RESOURCE_BARRIER barrierToShaderResource = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToShaderResource);
+
+	// Bright extraction using compute shader
+	m_pGCRenderResources->m_CommandList->SetPipelineState(m_brightShader->GetPso());
+	m_pGCRenderResources->m_CommandList->SetComputeRootSignature(m_brightShader->GetRootSign());
+
+	// Set constants if needed (example)
+	UINT blurRadius = 5;
+	m_pGCRenderResources->m_CommandList->SetComputeRoot32BitConstants(0, 1, &blurRadius, 0);
+
+	// Set descriptor tables for bright shader
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandleBright(
+		m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		90,
+		m_pGCRenderResources->m_cbvSrvUavDescriptorSize
+	);
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(1, srvGpuHandleBright);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE uavGpuHandleBright(
+		m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		150,
+		m_pGCRenderResources->m_cbvSrvUavDescriptorSize
+	);
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(2, uavGpuHandleBright);
+
+	// Dispatch bright extraction compute shader
+	m_pGCRenderResources->m_CommandList->Dispatch(
+		(m_pGCRenderResources->GetRenderWidth() + 15) / 16,
+		(m_pGCRenderResources->GetRenderHeight() + 15) / 16,
+		1
+	);
+
+	// Transition for blur shader
+	CD3DX12_RESOURCE_BARRIER barrierToUAVBlur = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->m_BrightImageBuffer,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToUAVBlur);
+
+	// Blur bright areas using compute shader
+	m_pGCRenderResources->m_CommandList->SetPipelineState(m_blurShader->GetPso());
+	m_pGCRenderResources->m_CommandList->SetComputeRootSignature(m_blurShader->GetRootSign());
+
+	// Set descriptor tables for blur shader
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandleBlur(
+		m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		150,
+		m_pGCRenderResources->m_cbvSrvUavDescriptorSize
+	);
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(1, srvGpuHandleBlur);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE uavGpuHandleBlur(
+		m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		200,
+		m_pGCRenderResources->m_cbvSrvUavDescriptorSize
+	);
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(2, uavGpuHandleBlur);
+
+	// Dispatch blur compute shader
+	m_pGCRenderResources->m_CommandList->Dispatch(
+		(m_pGCRenderResources->GetRenderWidth() + 15) / 16,
+		(m_pGCRenderResources->GetRenderHeight() + 15) / 16,
+		1
+	);
+
+	// Transition for combine shader
+	CD3DX12_RESOURCE_BARRIER barrierToUAVCombine = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->m_BlurImageBuffer,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToUAVCombine);
+
+	// Combine blurred bright areas with the original image using compute shader
+	m_pGCRenderResources->m_CommandList->SetPipelineState(m_combineShader->GetPso());
+	m_pGCRenderResources->m_CommandList->SetComputeRootSignature(m_combineShader->GetRootSign());
+
+	// Set descriptor tables for combine shader
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandleCombine(
+		m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		90,
+		m_pGCRenderResources->m_cbvSrvUavDescriptorSize
+	);
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(1, srvGpuHandleCombine); // OriginalImage
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandleBlurCombine(
+		m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		200,
+		m_pGCRenderResources->m_cbvSrvUavDescriptorSize
+	);
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(2, srvGpuHandleBlurCombine); // BlurredImage
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE uavGpuHandleOutput(
+		m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		250,
+		m_pGCRenderResources->m_cbvSrvUavDescriptorSize
+	);
+	m_pGCRenderResources->m_CommandList->SetComputeRootDescriptorTable(3, uavGpuHandleOutput); // OutputImage
+
+	// Dispatch combine compute shader
+	m_pGCRenderResources->m_CommandList->Dispatch(
+		(m_pGCRenderResources->GetRenderWidth() + 15) / 16,
+		(m_pGCRenderResources->GetRenderHeight() + 15) / 16,
+		1
+	);
+
+	// Barrier: Transition for the final copy
+	CD3DX12_RESOURCE_BARRIER barrierToCopySource = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->m_pPostProcessingRtv,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_COPY_SOURCE
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToCopySource);
+
+	CD3DX12_RESOURCE_BARRIER barrierToCopyDest = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_COPY_DEST
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &barrierToCopyDest);
+
+	// Copy m_pPostProcessingRtv to the final render target
+	m_pGCRenderResources->m_CommandList->CopyResource(
+		m_pGCRenderResources->CurrentBackBuffer(),
+		m_pGCRenderResources->m_pPostProcessingRtv
+	);
+
+}
+
+	//CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+	//m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &ResBar2);
 
 //Always needs to be called right after drawing!!!
 bool GCRender::CompleteDraw()
 {
-    //PerformPostProcessing();
+	PerformPostProcessing3();
 
-	CD3DX12_RESOURCE_BARRIER ResBar2(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+	CD3DX12_RESOURCE_BARRIER ResBar2 = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_PRESENT
+	);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &ResBar2);
 
+	CD3DX12_RESOURCE_BARRIER ResBar3 = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_pGCRenderResources->m_pPostProcessingRtv,
+		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATE_PRESENT
+	);
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &ResBar3);
+
+	// Close the command list
 	HRESULT hr = m_pGCRenderResources->m_CommandList->Close();
 	if (!CHECK_HRESULT(hr, "Failed to close command list"))
 		return false;
 
-
+	// Execute the command list
 	ID3D12CommandList* cmdsLists[] = { m_pGCRenderResources->m_CommandList };
 	m_pGCRenderResources->m_CommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
+	// Present the swap chain
 	hr = m_pGCRenderResources->m_SwapChain->Present(0, 0);
 	if (!CHECK_HRESULT(hr, "Failed to present swap chain")) {
 		return false;
 	}
 
+	// Update the current back buffer index
 	m_pGCRenderResources->m_CurrBackBuffer = (m_pGCRenderResources->m_CurrBackBuffer + 1) % m_pGCRenderResources->SwapChainBufferCount;
 
+	// Flush the command queue
 	FlushCommandQueue();
 
 	return true;
@@ -777,18 +1111,19 @@ ID3D12Resource* GCRenderResources::CreateRTT(bool isStateRenderTarget)
 {
 	if(isStateRenderTarget)
 	{
-		ID3D12Resource* renderTargetTexture = nullptr;
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), 2 + testCount, m_rtvDescriptorSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), 2 + testCount, m_cbvSrvUavDescriptorSize);
+
 		// Define the texture description
 		D3D12_RESOURCE_DESC textureDesc = {};
 		textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-		textureDesc.Width = m_pWindow->GetClientWidth(); // Example width
-		textureDesc.Height = m_pWindow->GetClientHeight(); // Example height
+		textureDesc.Width = GetRenderWidth();
+		textureDesc.Height = GetRenderHeight();
 		textureDesc.DepthOrArraySize = 1;
 		textureDesc.MipLevels = 1;
 		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		textureDesc.SampleDesc.Count = 1;
-		textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+		textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
 		// Define the clear value
 		D3D12_CLEAR_VALUE clearValue = {};
 		clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -796,24 +1131,49 @@ ID3D12Resource* GCRenderResources::CreateRTT(bool isStateRenderTarget)
 		clearValue.Color[1] = 0.0f;
 		clearValue.Color[2] = 0.0f;
 		clearValue.Color[3] = 1.0f;
+
 		// Create the render target texture
-		CD3DX12_HEAP_PROPERTIES test2 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+		CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_DEFAULT);
+		ID3D12Resource* renderTargetTexture = nullptr;
 		HRESULT hr = m_d3dDevice->CreateCommittedResource(
-			&test2,
+			&heapProperties,
 			D3D12_HEAP_FLAG_NONE,
 			&textureDesc,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			&clearValue,
+			D3D12_RESOURCE_STATE_COMMON, // Initial state can be COMMON
+			nullptr,
 			IID_PPV_ARGS(&renderTargetTexture)
 		);
 		if (FAILED(hr)) {
 			// Handle error
 			MessageBoxA(nullptr, "Failed to create render target texture", "Error", MB_OK);
+			return nullptr;
 		}
-		m_d3dDevice->CreateRenderTargetView(renderTargetTexture, nullptr, rtvHeapHandle);
-		rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
+
+		// Create the shader resource view (SRV)
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = 1;
+		m_d3dDevice->CreateShaderResourceView(renderTargetTexture,
+			&srvDesc, rtvHeapHandle);
+		rtvHeapHandle.Offset(1, m_rtvDescriptorSize); // Move to the next descriptor
+
+		// Create the unordered access view (UAV)
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+		uavDesc.Texture2D.MipSlice = 0;
+		m_d3dDevice->CreateUnorderedAccessView(renderTargetTexture,
+			nullptr, &uavDesc, rtvHeapHandle);
+		rtvHeapHandle.Offset(1, m_cbvSrvUavDescriptorSize); // Move to the next descriptor
+
+		// Store the created render target texture
 		m_renderTargets.push_back(renderTargetTexture);
+
 		testCount += 1;
+
 		return renderTargetTexture;
 	}
 	else {
@@ -860,4 +1220,33 @@ void GCRenderResources::DeleteRenderTarget(ID3D12Resource* pRenderTarget) {
 		}
 		m_renderTargets.erase(it);
 	}
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle(m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	srvCpuHandle.Offset(m_srvOffsetCount, m_cbvSrvUavDescriptorSize);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	srvGpuHandle.Offset(m_srvOffsetCount, m_cbvSrvUavDescriptorSize);
+
+	m_d3dDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
+
+
+	GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
+	profiler.LogWarning("Offset srv count : " + std::to_string(m_srvOffsetCount));
+
+	//m_lShaderResourceView.push_back(srvGpuHandle);
+	m_lShaderResourceView.push_back(srvGpuHandle);
+
+	m_srvOffsetCount++;
+
+	return srvGpuHandle;
 }

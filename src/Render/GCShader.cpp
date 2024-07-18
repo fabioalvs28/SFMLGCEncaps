@@ -343,3 +343,248 @@ GC_GRAPHICS_ERROR GCShader::Load() {
 void GCShader::SetRenderTarget(ID3D12Resource* rtt) {
 	m_pRtt = rtt;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GCComputeShader::GCComputeShader()
+	: m_RootSignature(nullptr), m_PSO(nullptr), m_csByteCode(nullptr), m_pRender(nullptr), m_flagEnabledBits(0), m_cullMode(D3D12_CULL_MODE_NONE)
+{
+	m_InputLayout.clear();
+	m_csCsoPath.clear();
+	ZeroMemory(&psoDesc, sizeof(psoDesc));
+}
+
+GCComputeShader::~GCComputeShader()
+{
+	SAFE_RELEASE(m_RootSignature);
+	SAFE_RELEASE(m_PSO);
+	SAFE_RELEASE(m_csByteCode);
+	m_InputLayout.clear();
+}
+
+GC_GRAPHICS_ERROR GCComputeShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
+{
+	if (!pRender) return GCRENDER_ERROR_POINTER_NULL;
+
+	std::ifstream fileCheck(filePath);
+	if (!fileCheck.good())
+	{
+		return GCRENDER_ERROR_SHADER_CREATION_FAILED;
+	}
+
+	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());
+	m_csCsoPath = baseCsoPath + L"CS.cso";
+
+	m_cullMode = cullMode;
+	m_pRender = pRender;
+	m_flagEnabledBits = flagEnabledBits;
+
+	PreCompile(filePath, csoDestinationPath);
+
+	return GCRENDER_SUCCESS_OK;
+}
+
+void GCComputeShader::CompileShader()
+{
+	m_csByteCode = LoadShaderFromFile(m_csCsoPath);
+	if (!m_csByteCode)
+	{
+		throw std::runtime_error("Failed to load compute shader bytecode.");
+	}
+}
+
+void GCComputeShader::RootSign()
+{
+	// Descriptor table for SRV (Texture2D<float4>)
+	CD3DX12_DESCRIPTOR_RANGE srvTable;
+	srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // OriginalImage
+
+	// Descriptor table for UAV (RWTexture2D<float4>)
+	CD3DX12_DESCRIPTOR_RANGE uavTable;
+	uavTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0); // OutputImage
+
+	// Define root parameters
+	CD3DX12_ROOT_PARAMETER slotRootParameter[2]; // Only 2 parameters: SRV and UAV
+	slotRootParameter[0].InitAsDescriptorTable(1, &srvTable); // SRV for OriginalImage
+	slotRootParameter[1].InitAsDescriptorTable(1, &uavTable); // UAV for OutputImage
+
+	// Create a root signature descriptor
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	// Serialize the root signature
+	ID3DBlob* serializedRootSig = nullptr;
+	ID3DBlob* errorBlob = nullptr;
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
+	if (FAILED(hr))
+	{
+		if (errorBlob != nullptr)
+		{
+			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+			errorBlob->Release();
+		}
+		if (serializedRootSig != nullptr)
+		{
+			serializedRootSig->Release();
+		}
+		throw std::runtime_error("Failed to serialize root signature.");
+	}
+
+	// Create the root signature
+	hr = m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(
+		0,
+		serializedRootSig->GetBufferPointer(),
+		serializedRootSig->GetBufferSize(),
+		IID_PPV_ARGS(&m_RootSignature)
+	);
+	if (FAILED(hr))
+	{
+		throw std::runtime_error("Failed to create root signature.");
+	}
+
+	// Release the serialized root signature blob
+	if (serializedRootSig != nullptr)
+	{
+		serializedRootSig->Release();
+	}
+}
+
+
+
+
+
+
+void GCComputeShader::Pso()
+{
+	psoDesc = {};
+	psoDesc.pRootSignature = m_RootSignature;
+	psoDesc.CS.pShaderBytecode = reinterpret_cast<BYTE*>(m_csByteCode->GetBufferPointer());
+	psoDesc.CS.BytecodeLength = m_csByteCode->GetBufferSize();
+
+	HRESULT hr = m_pRender->GetRenderResources()->Getmd3dDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&m_PSO));
+	if (FAILED(hr))
+	{
+		throw std::runtime_error("Failed to create compute pipeline state object.");
+	}
+}
+
+ID3D12RootSignature* GCComputeShader::GetRootSign()
+{
+	return m_RootSignature;
+}
+
+ID3D12PipelineState* GCComputeShader::GetPso()
+{
+	return m_PSO;
+}
+
+ID3DBlob* GCComputeShader::GetmcsByteCode()
+{
+	return m_csByteCode;
+}
+
+ID3DBlob* GCComputeShader::CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint, const std::string& target)
+{
+	UINT compileFlags = 0;
+#if defined(DEBUG) || defined(_DEBUG)  
+	compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+	HRESULT hr = S_OK;
+
+	ID3DBlob* byteCode = nullptr;
+	ID3DBlob* errors;
+	hr = D3DCompileFromFile(filename.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), compileFlags, 0, &byteCode, &errors);
+
+	if (errors != nullptr)
+	{
+		OutputDebugStringA((char*)errors->GetBufferPointer());
+	}
+
+	return byteCode;
+}
+
+void GCComputeShader::SaveShaderToFile(ID3DBlob* shaderBlob, const std::wstring& filename)
+{
+	std::ofstream file(filename, std::ios::binary);
+	if (!file.is_open())
+	{
+		throw std::runtime_error("Failed to open file for writing");
+	}
+	file.write(static_cast<const char*>(shaderBlob->GetBufferPointer()), shaderBlob->GetBufferSize());
+	file.close();
+}
+
+ID3DBlob* GCComputeShader::LoadShaderFromFile(const std::wstring& filename)
+{
+	std::ifstream file(filename, std::ios::binary | std::ios::ate);
+	if (!file.is_open())
+	{
+		throw std::runtime_error("Failed to open file for reading");
+	}
+	std::streamsize size = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	ID3DBlob* shaderBlob = nullptr;
+	HRESULT hr = D3DCreateBlob(size, &shaderBlob);
+	if (FAILED(hr))
+	{
+		throw std::runtime_error("Failed to create shader blob");
+	}
+
+	if (!file.read(static_cast<char*>(shaderBlob->GetBufferPointer()), size))
+	{
+		shaderBlob->Release();
+		throw std::runtime_error("Failed to read file");
+	}
+
+	return shaderBlob;
+}
+
+void GCComputeShader::PreCompile(const std::string& filePath, const std::string& csoDestinationPath)
+{
+	std::wstring wideFilePath(filePath.begin(), filePath.end());
+	std::wstring wideCsoDestinationPath(csoDestinationPath.begin(), csoDestinationPath.end());
+
+	ID3DBlob* csByteCode = CompileShaderBase(wideFilePath, nullptr, "CSMain", "cs_5_0");
+	SaveShaderToFile(csByteCode, wideCsoDestinationPath + L"CS.cso");
+	csByteCode->Release();
+}
+
+GC_GRAPHICS_ERROR GCComputeShader::Load()
+{
+	CompileShader();
+	RootSign();
+	Pso();
+
+	if (!m_RootSignature || !m_PSO || !m_csByteCode)
+	{
+		return GCRENDER_ERROR_POINTER_NULL;
+	}
+
+	return GCRENDER_SUCCESS_OK;
+}

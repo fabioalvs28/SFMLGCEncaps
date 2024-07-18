@@ -7,6 +7,8 @@ public:
 	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
 	//CPU Handle Address of the both
 	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize);}
+
+	inline int GetCurrBackBuffer() const { return m_CurrBackBuffer; }
 	//Render format
 	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
 
@@ -48,10 +50,13 @@ public:
 
 	// Res Creation
 	ID3D12Resource* CreateRTT(bool test);
-
+	//Srv Manager
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
 private:
 	friend class GCRender;
 
+	int m_srvOffsetCount = 0;
+	std::list<CD3DX12_GPU_DESCRIPTOR_HANDLE> m_lShaderResourceView;
 	Window* m_pWindow;
 
 	//Swap chain size
@@ -118,9 +123,11 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdDepthStencilBufferAddress; //Cpu Handle Address
 
 
+
 	// Gianni 
 	int testCount = 0;
-
+	ID3D12Resource* m_BlurImageBuffer;
+	ID3D12Resource* m_BrightImageBuffer;
 	std::vector<ID3D12Resource*> m_renderTargets;
 
 	void DeleteRenderTarget(ID3D12Resource* pRenderTarget);
@@ -162,6 +169,8 @@ public:
 
 	bool FlushCommandQueue();
 	void PerformPostProcessing();
+	void PerformPostProcessing2();
+	void PerformPostProcessing3();
 	/**
 	* Pre-Draw.
 	 * @brief
@@ -212,6 +221,10 @@ private:
 
 	// Post Processing Resources
 	GCShader* m_postProcessingShader;
+	GCComputeShader* m_brightShader;
+	GCComputeShader* m_blurShader;
+	GCComputeShader* m_combineShader;
+	GCComputeShader* m_testShader;
 	// Object / Layers Buffer Id Resources
 	GCShader* m_objectBufferIdShader;
 

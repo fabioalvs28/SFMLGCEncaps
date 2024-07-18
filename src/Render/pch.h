@@ -73,6 +73,7 @@ class GCModelParserObj;
 class GCPrimitiveFactory;
 class GCRender;
 class GCShader;
+class GCComputeShader;
 class GCTexture;
 class GCTextureFactory;
 class GCShaderUploadBufferBase; // 
