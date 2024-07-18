@@ -35,5 +35,5 @@ GCEventManager* GC::GetActiveEventManager()
 GCSceneManager* GC::GetActiveSceneManager()
 { return &m_pActiveGameManager->m_pSceneManager; }
 
-// GCRenderManager* GC::GetActiveRenderManager()
-// { return &m_pActiveGameManager->m_pRenderManager; }
+GCRenderManager* GC::GetActiveRenderManager()
+{ return &m_pActiveGameManager->m_pRenderManager; }

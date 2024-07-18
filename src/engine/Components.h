@@ -90,7 +90,7 @@ public:
     GCColor& GetColor() { return m_color; }
 
 protected:
-	SpriteRenderer() {}
+	SpriteRenderer();
     ~SpriteRenderer() override {}
 
     void Render() override;
@@ -163,7 +163,7 @@ public:
     void SetSize( GCVEC2 size ) { m_size = size; }
 
 protected:
-    BoxCollider() {}
+    BoxCollider();
     ~BoxCollider() override {}
 
     void FixedUpdate() override {}

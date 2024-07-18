@@ -28,6 +28,10 @@
 #include "Log.h"
 
 
+CREATE_SCRIPT_START( Example )
+CREATE_SCRIPT_END
+
+
 //void CreateConsole()
 //{
 //    AllocConsole();
@@ -52,14 +56,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 {
     // Initialisation des ressources graphiques
 
-    GC::m_pActiveGameManager.Init();
+    GCGameManager* pGameManager = GC::CreateGameManager<ScriptExample>();
 
     Window* window = new Window(hInstance);
     window->Initialize();
 
-    GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics->Initialize(window, 1920, 1080);
-
-    GC::m_pActiveGameManager.m_pRenderManager.CreateGeometry();
+    GC::GetActiveRenderManager()->m_pGraphics->Initialize(window, 1920, 1080);
+    GC::GetActiveRenderManager()->CreateGeometry();
 
     //int flagsLightColor = 0;
     //SET_FLAG(flagsLightColor, HAS_POSITION);
@@ -77,7 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGameObject* test3 = pScene->CreateGameObject();
 
     test3->SetLayer(3);
-    test2->SetLayer(1);
+    test2->SetLayer(4);
 
     //test1->AddComponent<BoxCollider>();
     test2->AddComponent<BoxCollider>();
@@ -103,8 +106,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     test2->GetComponent<BoxCollider>()->SetVisible(true);
     test3->GetComponent<BoxCollider>()->SetVisible(true);
 
-    test3->GetComponent<SpriteRenderer>()->SetSprite("../Render/Textures/caow.dds");
-    test2->GetComponent<SpriteRenderer>()->SetSprite("../Render/Textures/Captain_Flameheart_Art.dds");
+    test3->GetComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    test2->GetComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
 
 
     //auto startTime = std::chrono::steady_clock::now();
@@ -155,7 +158,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         //////graphics->UpdateLights(lightData);
 
-        GC::m_pActiveGameManager.m_pRenderManager.Render();
+        pGameManager->Update();
 
         //// Dessiner la sphère interne
         //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
@@ -165,7 +168,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
         //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
-        window->Run(GC::m_pActiveGameManager.m_pRenderManager.m_pGraphics->GetRender());
+        window->Run(GC::GetActiveRenderManager()->m_pGraphics->GetRender());
     }
 
     return 0;

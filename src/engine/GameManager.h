@@ -4,6 +4,7 @@
 #include "UpdateManager.h"
 #include "EventManager.h"
 #include "SceneManager.h"
+#include "RenderManager.h"
 
 // TODO Script inside GameManager
 
@@ -14,14 +15,14 @@ class GCGameManager
 {
 friend class GC;
 
-protected:
-    GCGameManager() = default;
-    virtual ~GCGameManager() = default;
+public:
+    void Run() {};
 
-public: void Init();
+protected:
+    GCGameManager();
+    ~GCGameManager() = default;
+    
 public: void Update();
-    void Init();
-    void Update();
     
     void SetActiveGameManager();
     
@@ -31,8 +32,5 @@ protected:
     GCUpdateManager m_pUpdateManager;
     GCEventManager m_pEventManager;
     GCSceneManager m_pSceneManager;
-
-public : 
-
     GCRenderManager m_pRenderManager;
 };
