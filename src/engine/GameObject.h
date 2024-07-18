@@ -5,6 +5,9 @@
 #include "List.h"
 #include "GameObjectTransform.h"
 
+class Component;
+class GCScene;
+
 
 
 class GCGameObject
