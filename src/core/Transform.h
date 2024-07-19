@@ -15,7 +15,6 @@ struct GCTransform
 	GCVEC3 m_right;
 
 	GCMATRIX m_matrix;
-	GCMATRIX m_worldMatrix;
 
 	GCTransform();
 	~GCTransform() {};
