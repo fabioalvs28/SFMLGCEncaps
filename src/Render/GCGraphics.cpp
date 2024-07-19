@@ -1,11 +1,12 @@
 #include "pch.h"
 
 GCGraphics::GCGraphics()
+    : m_pRender(nullptr),
+    m_pPrimitiveFactory(nullptr),
+    m_pModelParserFactory(nullptr),
+    m_pCbLightPropertiesInstance(nullptr)
 {
-    m_pRender = nullptr;
-    m_pPrimitiveFactory = nullptr;
-    m_pModelParserFactory = nullptr;
-
+    m_lTextureActiveFlags.clear();
     m_lTextures.clear();
     m_vShaders.clear();
     m_vMaterials.clear();
@@ -17,37 +18,37 @@ GCGraphics::~GCGraphics()
 {
     for (auto shader : m_vShaders)
     {
-        SAFE_DELETE(shader);
+        DELETE(shader);
     }
     m_vShaders.clear();
 
     for (auto material : m_vMaterials)
     {
-        SAFE_DELETE(material);
+        DELETE(material);
     }
     m_vMaterials.clear();
 
     for (auto mesh : m_vMeshes)
     {
-        SAFE_DELETE(mesh);
+        DELETE(mesh);
     }
     m_vMeshes.clear();
 
     for (auto texture : m_lTextures)
     {
-        SAFE_DELETE(texture);
+        DELETE(texture);
     }
     m_lTextures.clear();
 
     for (auto buffer : m_pCbCameraInstances)
     {
-        SAFE_DELETE(buffer);
+        DELETE(buffer);
     }
     m_pCbCameraInstances.clear();
 
-    SAFE_DELETE(m_pRender);
-    SAFE_DELETE(m_pPrimitiveFactory);
-    SAFE_DELETE(m_pModelParserFactory);
+    DELETE(m_pRender);
+    DELETE(m_pPrimitiveFactory);
+    DELETE(m_pModelParserFactory);
 }
 
 bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
@@ -335,7 +336,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC
     return ResourceCreationResult<GCGeometry*>(true, pGeometry, errorState);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtensionType)
 {
     GCGeometry* pGeometry = new GCGeometry;
 
@@ -465,11 +466,11 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
 }
 
 // Update per camera constant buffer
-bool GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) 
+bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
-    cameraData.view = viewMatrix;
-    cameraData.proj = projectionMatrix;
+    cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
+    cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
 
     UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
 
@@ -479,7 +480,7 @@ bool GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatr
 }
 
 // Update per object constant buffer
-bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, float meshId)
+bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId)
 {
     if (CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
@@ -487,8 +488,11 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
         pMaterial->AddCbPerObject<GCWORLDCB>();
     }
+
+
+
     GCWORLDCB worldData;
-    worldData.world = worldMatrix;
+    worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
 
     worldData.objectId = meshId;
     // Update 
