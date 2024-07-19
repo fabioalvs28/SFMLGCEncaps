@@ -1,6 +1,15 @@
 #pragma once
 #include "pch.h"
 
+
+//Core Log Macros
+#define LogCoreTrace(...) Logger::GetCoreLogger().Trace(__VA_ARGS__)
+#define LogCoreDebug(...) Logger::GetCoreLogger().Debug(__VA_ARGS__)
+#define LogCoreInfo(...) Logger::GetCoreLogger().Info(__VA_ARGS__)
+#define LogCoreWarn(...) Logger::GetCoreLogger().Warn(__VA_ARGS__)
+#define LogCoreError(...) Logger::GetCoreLogger().Error(__VA_ARGS__)
+
+
 //Engine Log Macros
 #define LogEngineTrace(...) Logger::GetEngineLogger().Trace(__VA_ARGS__)
 #define LogEngineDebug(...) Logger::GetEngineLogger().Debug(__VA_ARGS__)

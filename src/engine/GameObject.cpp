@@ -30,10 +30,14 @@ GCGameObject::GCGameObject( GCScene* pScene )
     
     m_created = false;
     m_deleted = false;
+    
     m_globalActive = true;
     m_selfActive = true;
+    
     m_name = "GameObject";
     m_layer = 0;
+    
+    m_transform.m_pGameObject = this;
 }
 
 /////////////////////////////////////////////////////////
