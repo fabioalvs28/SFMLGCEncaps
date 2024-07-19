@@ -48,41 +48,52 @@ void Component::UnregisterFromManagers()
 
 
 
-void Component::SetActive( bool active )
+void Component::Activate()
 {
-	if ( IsActive() == true )
+	if ( m_selfActive == false )
 	{
-		if ( active == false )
-		{
-			m_selfActive = false;
-	    	UnregisterFromManagers();
-		}
-	}
-	else
-	{
-		ASSERT( m_selfActive != active, LOG_WARNING, "Trying to SetActive() a Component with the same active state that it was already in." );
-		m_selfActive = active;
-		if ( IsActive() == true )
+		m_selfActive = true;
+		if ( m_globalActive == true )
 			RegisterToManagers();
 	}
 }
 
-void Component::SetGlobalActive( bool active )
+void Component::Deactivate()
 {
-	if ( IsActive() == true )
+	if ( m_selfActive == true )
 	{
-		if ( active == false )
-		{
-			m_globalActive = active;
-	    	UnregisterFromManagers();
-		}
+		m_selfActive = false;
+		if ( m_globalActive == true )
+			UnregisterFromManagers();
 	}
-	else
+}
+
+void Component::ActivateGlobal()
+{
+	if ( m_globalActive == false )
 	{
-		m_globalActive = active;
-		if ( IsActive() == true )
+		m_globalActive = true;
+		if ( m_selfActive == true )
 			RegisterToManagers();
 	}
+}
+
+void Component::DeactivateGlobal()
+{
+	if ( m_globalActive == true )
+	{
+		m_globalActive = false;
+		if ( m_selfActive == true )
+			UnregisterFromManagers();
+	}
+}
+
+void Component::SetActive( bool active )
+{
+	if ( active == true )
+		Activate();
+	else
+	    Deactivate();
 }
 
 

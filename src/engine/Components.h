@@ -35,6 +35,8 @@ friend class GCRenderManager;
 public:
     virtual const int GetID() = 0;
     
+    void Activate();
+    void Deactivate();
     void SetActive( bool active );
     bool IsActive() { return m_globalActive && m_selfActive; }
 
@@ -56,7 +58,8 @@ protected:
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
     
-    void SetGlobalActive( bool active );
+    void ActivateGlobal();
+    void DeactivateGlobal();
 
 protected:
     inline static int componentCount = 0;

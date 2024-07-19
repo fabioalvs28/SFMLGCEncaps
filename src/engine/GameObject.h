@@ -34,6 +34,9 @@ public:
     void RemoveTag( const char* tag );
     void RemoveTags();
     
+    void Activate();
+    void Deactivate();
+    
     void SetScene( GCScene* pScene );
     void SetParent( GCGameObject* pParent );
     void SetActive( const bool active );
@@ -62,8 +65,10 @@ protected:
     
     void RemoveTag( int index );
     
+    void ActivateGlobal();
+    void DeactivateGlobal();
+    
     void RemoveScene();
-    void SetGlobalActive( const bool active );
     
     void RemoveComponent( int ID );
     template <class T>

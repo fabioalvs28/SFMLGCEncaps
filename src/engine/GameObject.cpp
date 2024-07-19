@@ -195,6 +195,63 @@ void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
 
 
 
+void GCGameObject::Activate()
+{
+    if ( IsActive() == false )
+    {
+        m_selfActive = true;
+        m_globalActive = true;
+        for ( auto it : m_componentsList )
+            it.second->ActivateGlobal();
+        for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
+            pGameObjectNode->GetData()->ActivateGlobal();
+    }
+}
+
+void GCGameObject::Deactivate()
+{
+    if ( m_selfActive == true )
+    {
+        m_selfActive = false;
+        if ( m_globalActive == true )
+        {
+            for ( auto it : m_componentsList )
+                it.second->DeactivateGlobal();
+            for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
+                pGameObjectNode->GetData()->DeactivateGlobal();
+        }
+    }
+}
+
+void GCGameObject::ActivateGlobal()
+{
+    if ( m_globalActive == false )
+    {
+        m_globalActive = true;
+        if ( m_selfActive == true )
+        {
+            for ( auto it : m_componentsList )
+                it.second->ActivateGlobal();
+            for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
+                pGameObjectNode->GetData()->ActivateGlobal();
+        }
+    }
+}
+
+void GCGameObject::DeactivateGlobal()
+{
+    if ( m_globalActive == true )
+    {
+        m_globalActive = false;
+        for ( auto it : m_componentsList )
+            it.second->DeactivateGlobal();
+        for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
+            pGameObjectNode->GetData()->DeactivateGlobal();
+    }
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Changes the Scene of the GameObject.
 /// 
@@ -237,55 +294,10 @@ void GCGameObject::SetParent( GCGameObject* pParent ) //? Why this method ?
 ///////////////////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::SetActive( const bool active ) //todo If the active argument is true, it should also change the global active state.
 {
-    if ( IsActive() == true )
-    {
-        if ( active == false )
-        {
-            m_selfActive = false;
-            for ( auto it : m_componentsList )
-                it.second->SetGlobalActive( false );
-            for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
-                pGameObjectNode->GetData()->SetGlobalActive( false );
-        }
-    }
+    if ( active == true )
+        Activate();
     else
-    {
-        ASSERT( m_selfActive != active, LOG_WARNING, "Trying to SetActive() a GameObject with the same active state that is was already in" );
-        m_selfActive = active;
-        if ( IsActive() == true )
-        {
-            for ( auto it : m_componentsList )
-                it.second->SetGlobalActive( true );
-            for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
-                pGameObjectNode->GetData()->SetGlobalActive( true );
-        }
-    }
-}
-
-void GCGameObject::SetGlobalActive( const bool active ) //? Probably gonna remove this method and replace it with ActivateGlobal() & DeactivateGlobal() ?
-{
-    if ( IsActive() == true )
-    {
-        if ( active == false )
-        {
-            m_globalActive = false;
-            for ( auto it : m_componentsList )
-                it.second->SetGlobalActive( false );
-            for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
-                pGameObjectNode->GetData()->SetGlobalActive( false );
-        }
-    }
-    else
-    {
-        m_globalActive = active;
-        if ( IsActive() == true )
-        {
-            for ( auto it : m_componentsList )
-                it.second->SetGlobalActive( true );
-            for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
-                pGameObjectNode->GetData()->SetGlobalActive( true );
-        }
-    }
+        Deactivate();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
