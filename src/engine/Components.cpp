@@ -54,12 +54,13 @@ void Component::SetActive( bool active )
 	{
 		if ( active == false )
 		{
-			m_selfActive = active;
+			m_selfActive = false;
 	    	UnregisterFromManagers();
 		}
 	}
 	else
 	{
+		ASSERT( m_selfActive != active, LOG_WARNING, "Trying to SetActive() a Component with the same active state that it was already in." );
 		m_selfActive = active;
 		if ( IsActive() == true )
 			RegisterToManagers();
