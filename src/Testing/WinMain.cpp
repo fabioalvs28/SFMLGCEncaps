@@ -1,10 +1,13 @@
-#include "pch.h"
+﻿#include "pch.h"
+//
+//
 
+//
 #include <iostream>
-// #include <Windows.h>
-// #include "Window.h"
-// #include "EventSystem.h"
-// #include "Log.h"
+ #include <Windows.h>
+ #include "Window.h"
+ //#include "EventSystem.h"
+ #include "Log.h"
 #include "Vectors.h"
 #include "GCColor.h"
 #include "Quaternion.h"
@@ -16,216 +19,322 @@
 #include "SceneManager.h"
 #include "GameManager.h"
 #include "GC.h"
-#include "SFML/Graphics.hpp"
+#include "RenderManager.h"
+#include "Components.h"
+#include "InputManager.h"
+//#include "SFML/Graphics.hpp"
 
 #include "PhysicManager.h"
 #include "Log.h"
 
 
+CREATE_SCRIPT_START( Example )
+CREATE_SCRIPT_END
 
 
-int main()
+//void CreateConsole()
+//{
+//    AllocConsole();
+//    FILE* fp;
+//    freopen_s(&fp, "CONOUT$", "w", stdout);
+//    freopen_s(&fp, "CONOUT$", "w", stderr);
+//    freopen_s(&fp, "CONIN$", "r", stdin);
+//}
+
+#include "../render/pch.h"
+
+using namespace DirectX;
+
+// Définition des variables globales pour la caméra
+XMVECTOR cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
+XMVECTOR cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-	sf::RenderWindow window(sf::VideoMode(960, 540), "SFML window");
+    // Initialisation des ressources graphiques
+
+    GCGameManager* pGameManager = GC::CreateGameManager<ScriptExample>();
+
+    Window* window = new Window(hInstance);
+    window->Initialize();
+
+    GC::GetActiveRenderManager()->m_pGraphics->Initialize(window, 1920, 1080);
+    GC::GetActiveRenderManager()->CreateGeometry();
+
+    //int flagsLightColor = 0;
+    //SET_FLAG(flagsLightColor, HAS_POSITION);
+    //SET_FLAG(flagsLightColor, HAS_COLOR);
+    //SET_FLAG(flagsLightColor, HAS_NORMAL);
+
+    //int flagsLightTexture = 0;
+    //SET_FLAG(flagsLightTexture, HAS_POSITION);
+    //SET_FLAG(flagsLightTexture, HAS_UV);
+    //SET_FLAG(flagsLightTexture, HAS_NORMAL);
+
+    GCScene* pScene = GCScene::Create();
+    GCGameObject* test1 = pScene->CreateGameObject();
+    GCGameObject* test2 = pScene->CreateGameObject();
+    GCGameObject* test3 = pScene->CreateGameObject();
+
+    test3->SetLayer(3);
+    test2->SetLayer(4);
+
+    //test1->AddComponent<BoxCollider>();
+    test2->AddComponent<BoxCollider>();
+    test2->AddComponent<SpriteRenderer>();
+
+    test3->AddComponent<BoxCollider>();
+    test3->AddComponent<SpriteRenderer>();
+
+    test1->m_transform.m_position.x = 2;
+    test1->m_transform.m_position.y = 0;
+
+    
+    test2->m_transform.m_position.x = 6;
+    test2->m_transform.m_position.y = 0;
+    test2->m_transform.m_scale.x = 2;
+    test2->m_transform.m_scale.y = 4;
+
+    test3->m_transform.m_position.x = 7.3f;
+    test3->m_transform.m_position.y = -2;
+    test3->m_transform.m_scale.x = 6;
+    test3->m_transform.m_scale.y = 6;
+    
+    test2->GetComponent<BoxCollider>()->SetVisible(true);
+    test3->GetComponent<BoxCollider>()->SetVisible(true);
+
+    test3->GetComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    test2->GetComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
 
 
-	sf::Texture marioTexture;
-	if (!marioTexture.loadFromFile("Circle.png")) return EXIT_FAILURE;
-	sf::Sprite marioSprite(marioTexture);
-	//marioSprite.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
-	
-	//sf::CircleShape marioCircle(marioTexture.getSize().x / 2);
-	////marioCircle.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
-	//marioCircle.setFillColor(sf::Color::Transparent);
-	//marioCircle.setOutlineColor(sf::Color::Red);
-	//marioCircle.setOutlineThickness(1.f);
-	
-	sf::RectangleShape marioBox(sf::Vector2f(marioTexture.getSize().x, marioTexture.getSize().y));
-	//marioBox.setOrigin(sf::Vector2f(marioTexture.getSize().x / 2, marioTexture.getSize().y / 2));
-	marioBox.setFillColor(sf::Color::Transparent);
-	marioBox.setOutlineColor(sf::Color::Red);
-	marioBox.setOutlineThickness(1.f);
+    //auto startTime = std::chrono::steady_clock::now();
 
-	sf::Texture luigiTexture;
-	if (!luigiTexture.loadFromFile("Circle.png")) return EXIT_FAILURE;
-	sf::Sprite luigiSprite(luigiTexture);
-	//luigiSprite.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
-	sf::CircleShape luigiCircle(luigiTexture.getSize().x / 2);
-	//luigiCircle.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
-	luigiCircle.setFillColor(sf::Color::Transparent);
-	luigiCircle.setOutlineColor(sf::Color::Green);
-	luigiCircle.setOutlineThickness(1.f);
-	//sf::RectangleShape luigiBox(sf::Vector2f(luigiTexture.getSize().x, luigiTexture.getSize().y));
-	////luigiBox.setOrigin(sf::Vector2f(luigiTexture.getSize().x / 2, luigiTexture.getSize().y / 2));
-	//luigiBox.setFillColor(sf::Color::Transparent);
-	//luigiBox.setOutlineColor(sf::Color::Green);
-	//luigiBox.setOutlineThickness(1.f);
+    while (true) {
+        /*auto currentTime = std::chrono::steady_clock::now();
+        float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
 
-	sf::Texture goombaTexture;
-	if (!goombaTexture.loadFromFile("Goomba.png")) return EXIT_FAILURE;
-	sf::Sprite goombaSprite(goombaTexture);
-	//goombaSprite.setOrigin(sf::Vector2f(goombaTexture.getSize().x / 2, goombaTexture.getSize().y / 2));
-	sf::RectangleShape goombaBox(sf::Vector2f(goombaTexture.getSize().x, goombaTexture.getSize().y));
-	//goombaBox.setOrigin(sf::Vector2f(goombaTexture.getSize().x / 2, goombaTexture.getSize().y / 2));
-	goombaBox.setFillColor(sf::Color::Transparent);
-	goombaBox.setOutlineColor(sf::Color::Red);
-	goombaBox.setOutlineThickness(1.f);
+        float rotationSpeed = 1.0f;
+        float angle = rotationSpeed * elapsedTime;
+        XMMATRIX rotationMatrix = XMMatrixRotationY(angle);*/
+
+        // Mettre à jour la matrice de transformation du cube interne
+        //XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
+
+        //// Extraire les données de la matrice mise à jour dans une XMFLOAT4X4
+        //XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
 
 
+        
+
+        //// Dessiner le cube externe
+        //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
+        //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
 
 
-	GCScene* pTest1Scene = GCScene::Create();
+        //////GCLIGHTSPROPERTIES lightData = {};
 
-	GCGameObject* pMario = pTest1Scene->CreateGameObject();
-	pMario->SetName("Mario");
-	pMario->AddTag("Bros Brother");
-	pMario->AddComponent<BoxCollider>()->SetSize({ static_cast<float>(marioTexture.getSize().x), static_cast<float>(marioTexture.getSize().y) });
-	//pMario->AddComponent<CircleCollider>()->SetRadius(marioTexture.getSize().x / 2);
+        //////GCLIGHT light2;
+        //////light2.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Position en 2D (x, y, 0)
+        //////light2.direction = DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f); // Direction vers le bas en 2D
+        //////light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+        //////light2.spotAngle = 10.0f; // Angle du spot si applicable
+        //////light2.lightIntensity = 3.2f;
+        //////light2.lightType = 1; // Type de lumière ponctuelle
 
-	GCGameObject* pLuigi = pTest1Scene->CreateGameObject();
-	pLuigi->SetName("Luigi");
-	pLuigi->AddTag("Bros Brother");
-	//pLuigi->AddComponent<BoxCollider>()->SetSize({ static_cast<float>(luigiTexture.getSize().x), static_cast<float>(luigiTexture.getSize().y) });
-	pLuigi->AddComponent<CircleCollider>()->SetRadius(luigiTexture.getSize().x / 2);
-
-	GCGameObject* pGoomba = nullptr;
-
-	GCGameObject* pSelected = pLuigi;
-
-	
-	// They should be registered to the physic manager to work
-	//pMario->AddComponent<BoxCollider>();
-	//pLuigi->AddComponent<BoxCollider>();
-
-	float angle = 0;
-
-	for (int framesSinceStart = 0; window.isOpen(); framesSinceStart++)
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-			if (event.type == sf::Event::Closed)
-				window.close();
-
-		window.clear();
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::V))
-		{
-			if (pMario == nullptr || pLuigi == nullptr)
-				continue;
-
-			//LogGameDebug(GCPhysic::CheckBox2DvsBox2D(*pMario->GetComponent<BoxCollider>(), *pLuigi->GetComponent<BoxCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
-			//LogGameDebug(GCPhysic::CheckCirclevsCircle(*pMario->GetComponent<CircleCollider>(), *pLuigi->GetComponent<CircleCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
-			LogGameDebug(GCPhysic::CheckBox2DvsCircle(*pMario->GetComponent<BoxCollider>(), *pLuigi->GetComponent<CircleCollider>()) ? "Collision\n\n\n\n" : "No collision\n\n\n\n");
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
-		{
-			if (pMario == nullptr)
-			{
-				pMario = pTest1Scene->CreateGameObject();
-				pMario->SetName("Mario");
-				pMario->AddTag("Bros Brother");
-
-				pMario->AddComponent<BoxCollider>();
-			}
-			pSelected = pMario;
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-		{
-			if (pLuigi == nullptr)
-			{
-				pLuigi = pTest1Scene->CreateGameObject();
-				pLuigi->SetName("Luigi");
-				pLuigi->AddTag("Bros Brother");
-
-				pLuigi->AddComponent<BoxCollider>();
-			}
-			pSelected = pLuigi;
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
-		{
-			if (pGoomba == nullptr)
-			{
-				pGoomba = pTest1Scene->CreateGameObject();
-				pGoomba->SetName("Goomba");
-				pGoomba->AddTag("Enemy");
-			}
-			pSelected = pGoomba;
-		}
+        //////GCLIGHT pointLight;
+        //////pointLight.position = DirectX::XMFLOAT3(6.0f, 1.0f, 0.0f); // Position en 2D (x, y, 0)
+        //////pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Direction vers le bas en 2D
+        //////pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+        //////pointLight.spotAngle = 0.0f; // Angle du spot si applicable
+        //////pointLight.lightIntensity = 2.4f;
+        //////pointLight.lightType = 2; // Type de lumière ponctuelle
 
 
+        //////lightData.lights[1] = pointLight;
+        //////lightData.lights[0] = light2;
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) pSelected->m_transform.m_position += GCVEC3::Up() * 0.03f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) pSelected->m_transform.m_position += GCVEC3::Down() * 0.03f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) pSelected->m_transform.m_position += GCVEC3::Left() * 0.03f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) pSelected->m_transform.m_position += GCVEC3::Right() * 0.03f;
+        //////graphics->UpdateLights(lightData);
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) pSelected->m_transform.Scale(GCVEC3::One() * 1.01f);
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) pSelected->m_transform.Scale(GCVEC3::One() * 0.99f);
+        pGameManager->Update();
 
-		marioBox.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, pMario->m_transform.m_position.y));
-		luigiCircle.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, pLuigi->m_transform.m_position.y));
-		//goombaBox.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, pGoomba->m_transform.m_position.y));
+        //// Dessiner la sphère interne
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-			pSelected->m_transform.Rotate(0, 0, 0.2f * (PI / 100.f));
-			angle += 0.2f;
-			std::cout << "Rotation A: {" << pSelected->m_transform.m_rotation.x << " ; " << pSelected->m_transform.m_rotation.y << " ; " << pSelected->m_transform.m_rotation.z << "}" << std::endl;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-		{
-			pSelected->m_transform.Rotate(0, 0, -0.2f * (PI / 100.f));
-			angle -= 0.2f;
-		}
+        //// Dessiner le deuxième cube interne (worldCubeInner2) avec la matrice mise à jour
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
 
+        window->Run(GC::GetActiveRenderManager()->m_pGraphics->GetRender());
+    }
 
-
-
-		if (pMario != nullptr)
-		{
-			//std::cout << "{" << (int)pMario->m_transform.m_rotation.x << " ; " << (int)pMario->m_transform.m_rotation.y << " ; " << (int)pMario->m_transform.m_rotation.z << "}" << std::endl;
-			marioSprite.setPosition(sf::Vector2f(pMario->m_transform.m_position.x, pMario->m_transform.m_position.y));
-			marioSprite.setScale(sf::Vector2f(pMario->m_transform.m_scale.x, pMario->m_transform.m_scale.y));
-
-			marioSprite.setRotation(angle);
-			window.draw(marioSprite);
-			window.draw(marioBox);
-			//window.draw(marioCircle);
-		}
-
-		if (pLuigi != nullptr)
-		{
-			luigiSprite.setPosition(sf::Vector2f(pLuigi->m_transform.m_position.x, -pLuigi->m_transform.m_position.y));
-			luigiSprite.setScale(sf::Vector2f(pLuigi->m_transform.m_scale.x, pLuigi->m_transform.m_scale.y));
-			window.draw(luigiSprite);
-			//window.draw(luigiBox);
-			window.draw(luigiCircle);
-		}
-
-		if (pGoomba != nullptr)
-		{
-			goombaSprite.setPosition(sf::Vector2f(pGoomba->m_transform.m_position.x, -pGoomba->m_transform.m_position.y));
-			goombaSprite.setScale(sf::Vector2f(pGoomba->m_transform.m_scale.x, pGoomba->m_transform.m_scale.y));
-			window.draw(goombaSprite);
-			window.draw(goombaBox);
-		}
-
-
-
-
-		GC::m_pActiveGameManager.Update();
-		window.display();
-	}
-
-	return EXIT_SUCCESS;
-
-	/*LogEngineDebug("Engine Debug");
-	LogEngineError("Engine Error");
-	LogEngineWarn("Engine Warn");
-	LogEngineInfo("Engine Info");
-	LogEngineTrace("Engine Trace");
-	LogGameDebug("Game Debug");*/
+    return 0;
 }
+
+//int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
+//    // Initialisation des ressources graphiques
+//    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
+//    profiler.InitializeConsole();
+//
+//    Window* window = new Window(hInstance);
+//    window->Initialize();
+//
+//    GCGraphics* graphics = new GCGraphics();
+//    graphics->Initialize(window, 1920, 1080);
+//
+//    int flagsLightColor = 0;
+//    SET_FLAG(flagsLightColor, HAS_POSITION);
+//    SET_FLAG(flagsLightColor, HAS_COLOR);
+//    SET_FLAG(flagsLightColor, HAS_NORMAL);
+//
+//    int flagsLightTexture = 0;
+//    SET_FLAG(flagsLightTexture, HAS_POSITION);
+//    SET_FLAG(flagsLightTexture, HAS_UV);
+//    SET_FLAG(flagsLightTexture, HAS_NORMAL);
+//
+//
+//    // Création des géométries
+//    auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
+//    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
+//    auto geoCubeInner3 = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red));
+//    auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
+//
+//    // Chargement des shaders personnalisés
+//    std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
+//    std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
+//    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
+//
+//    std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
+//    std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
+//    auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
+//
+//    auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
+//
+//    graphics->InitializeGraphicsResourcesStart();
+//
+//    auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
+//    auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
+//    auto meshCubeInner3 = graphics->CreateMeshCustom(geoCubeInner3.resource, flagsLightColor);
+//    auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
+//
+//    std::string texturePath = "../../../src/Render/Textures/texture.dds";
+//    std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
+//    auto texture = graphics->CreateTexture(texturePath);
+//    auto texture2 = graphics->CreateTexture(texturePath2);
+//
+//    graphics->InitializeGraphicsResourcesEnd();
+//
+//    auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
+//    //materialCubeOuter.resource->SetTexture(texture2.resource);
+//
+//    auto materialCubeInner = graphics->CreateMaterial(shaderLightColor.resource);
+//    auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
+//    materialSphere.resource->SetTexture(texture.resource);
+//
+//    float viewWidth = 20.0f;
+//    float viewHeight = 20.0f;
+//    XMMATRIX projectionMatrix = XMMatrixOrthographicLH(viewWidth, viewHeight, 1.0f, 1000.0f);
+//    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
+//    XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
+//    XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
+//    XMFLOAT4X4 storedProjectionMatrix;
+//    XMFLOAT4X4 storedViewMatrix;
+//    XMStoreFloat4x4(&storedProjectionMatrix, transposedProjectionMatrix);
+//    XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
+//
+//    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
+//    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(-0.0f, 0.0f, -1.0f); // Cube interne centré
+//    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, 2.0f, -1.0f); // Cube interne centré
+//    XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); // Cube interne centré
+//    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
+//
+//    XMFLOAT4X4 worldCubeOuter;
+//    XMFLOAT4X4 worldCubeInner;
+//    XMFLOAT4X4 worldCubeInner2;
+//    XMFLOAT4X4 worldCubeInner3;
+//    XMFLOAT4X4 worldSphere;
+//
+//    XMStoreFloat4x4(&worldCubeOuter, XMMatrixTranspose(worldMatrixCubeOuter));
+//    XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInner));
+//    XMStoreFloat4x4(&worldCubeInner2, XMMatrixTranspose(worldMatrixCubeInner2));
+//    XMStoreFloat4x4(&worldCubeInner3, XMMatrixTranspose(worldMatrixCubeInner3));
+//    XMStoreFloat4x4(&worldSphere, XMMatrixTranspose(worldMatrixSphere));
+//
+//    auto startTime = std::chrono::steady_clock::now();
+//
+//    while (true) {
+//        auto currentTime = std::chrono::steady_clock::now();
+//        float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
+//
+//        float rotationSpeed = 1.0f;
+//        float angle = rotationSpeed * elapsedTime;
+//        XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
+//
+//        // Mettre à jour la matrice de transformation du cube interne
+//        //XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
+//
+//        //// Extraire les données de la matrice mise à jour dans une XMFLOAT4X4
+//        //XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
+//
+//
+//        graphics->StartFrame();
+//        graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+//
+//        //// Dessiner le cube externe
+//        //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
+//        //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
+//
+//
+//        GCLIGHTSPROPERTIES lightData = {};
+//
+//        GCLIGHT light2;
+//        light2.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Position en 2D (x, y, 0)
+//        light2.direction = DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f); // Direction vers le bas en 2D
+//        light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+//        light2.spotAngle = 10.0f; // Angle du spot si applicable
+//        light2.lightIntensity = 3.2f;
+//        light2.lightType = 1; // Type de lumière ponctuelle
+//
+//        GCLIGHT pointLight;
+//        pointLight.position = DirectX::XMFLOAT3(6.0f, 1.0f, 0.0f); // Position en 2D (x, y, 0)
+//        pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Direction vers le bas en 2D
+//        pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+//        pointLight.spotAngle = 0.0f; // Angle du spot si applicable
+//        pointLight.lightIntensity = 2.4f;
+//        pointLight.lightType = 2; // Type de lumière ponctuelle
+//
+//
+//        lightData.lights[1] = pointLight;
+//        lightData.lights[0] = light2;
+//
+//        graphics->UpdateLights(lightData);
+//
+//
+//
+//        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2);
+//        graphics->GetRender()->DrawObject(meshCubeInner3.resource, materialCubeInner.resource);
+//
+//        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner3);
+//        graphics->GetRender()->DrawObject(meshCubeInner3.resource, materialCubeInner.resource);
+//
+//
+//        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
+//        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource);
+//
+//        //// Dessiner la sphère interne
+//        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
+//        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
+//
+//        //// Dessiner le deuxième cube interne (worldCubeInner2) avec la matrice mise à jour
+//        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
+//        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
+//
+//        graphics->EndFrame();
+//        window->Run(graphics->GetRender());
+//    }
+//
+//    return 0;
+//}
