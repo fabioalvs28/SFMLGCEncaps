@@ -1,31 +1,26 @@
 #pragma once
 #include "List.h"
 
-class GCGameObject;
-class GCSceneManager;
+// TODO Scripts in Scenes
 
 class GCScene
 {
 friend class GCGameObject;
 friend class GCSceneManager;
+friend class GC;
 
 protected:
 	GCScene();
 	virtual ~GCScene() = default;
-	
-	void Update();
-	void Render();
 
 public:
 	static GCScene* Create();
 	void Load();
 	void Unload();
-	void Destroy();
 	
 	void RemoveParent();
 	GCScene* CreateChild();
 	void AddChild( GCScene* pScene );
-	void RemoveChild( GCScene* pChild );
 	void DestroyChildren();
 	
 	GCGameObject* CreateGameObject();
@@ -39,6 +34,8 @@ public:
 	GCScene* GetParent() const;
 
 protected:
+	void Destroy();
+	
 	void MoveGameObjectToScene( GCGameObject* pGameObject );
 	void RemoveGameObjectFromScene( GCGameObject* pGameObject );
 	void DestroyGameObject( GCGameObject* pGameObject );

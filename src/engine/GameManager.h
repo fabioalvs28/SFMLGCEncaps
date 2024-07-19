@@ -1,30 +1,36 @@
 #pragma once
-#include "SceneManager.h"
-#include "InputManager.h"
 #include "PhysicManager.h"
+#include "RenderManager.h"
+#include "UpdateManager.h"
+#include "EventManager.h"
+#include "SceneManager.h"
+#include "RenderManager.h"
 
-class Collider;
-class GCGameObject;
-class GCScene;
-class GC;
+// TODO Script inside GameManager
+
+template <typename T>
+class GCListNode;
 
 class GCGameManager 
 {
-friend class Collider;
-friend class GCGameObject;
-friend class GCScene;
 friend class GC;
 
+public:
+    void Run() {};
+
 protected:
-    GCGameManager() = default;
-    virtual ~GCGameManager() = default;
+    GCGameManager();
+    ~GCGameManager() = default;
     
-public: void Init();
 public: void Update();
     
+    void SetActiveGameManager();
+    
 protected:
-    GCSceneManager m_pSceneManager;
-    //GCInputManager m_pInputManager;
+    GCListNode<GCGameManager*>* m_pNode;
     GCPhysicManager m_pPhysicManager;
+    GCUpdateManager m_pUpdateManager;
     GCEventManager m_pEventManager;
+    GCSceneManager m_pSceneManager;
+    GCRenderManager m_pRenderManager;
 };

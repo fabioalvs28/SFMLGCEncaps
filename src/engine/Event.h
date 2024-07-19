@@ -141,37 +141,42 @@ private:
 
 #pragma region KeyEvent
 
+typedef unsigned char BYTE;
+
 class GCKeyEvent : public GCEvent
 {
 public:
-	GCKeyEvent(int id) : keyID(id) {}
+	GCKeyEvent(int id, BYTE state) : keyID(id), keyState(state) {}
 
 protected:
 	int keyID;
+	BYTE keyState;
 };
 
 class GCKeyPressedEvent : public GCKeyEvent
 {
 public:
-    GCKeyPressedEvent(int id) : GCKeyEvent(id) {};
+    GCKeyPressedEvent(int id, BYTE state) : GCKeyEvent(id, state) {};
 	
-    static GCEventType GetStaticType() { return GCEventType::KeyInput; }
+    static GCEventType GetStaticType() { return GCEventType::KeyPressed; }
     GCEventType GetEventType() const override { return GetStaticType(); }
     const char* GetName() const override { return "KeyPressedEvent"; }
 
     int GetKeyID() const { return keyID; }
+	BYTE GetKeyState() const { return keyState; }
 };
 
-class GCKeyReleased : public GCKeyEvent
+class GCKeyReleasedEvent : public GCKeyEvent
 {
 public:
-    GCKeyReleased(int id) : GCKeyEvent(id) {};
+    GCKeyReleasedEvent(int id, BYTE state) : GCKeyEvent(id, state) {};
 
-    static GCEventType GetStaticType() { return GCEventType::KeyInput; }
+    static GCEventType GetStaticType() { return GCEventType::KeyReleased; }
     GCEventType GetEventType() const override { return GetStaticType(); }
     const char* GetName() const override { return "KeyReleased"; }
 
     int GetKeyID() const { return keyID; }
+	BYTE GetKeyState() const { return keyState; }
 };
 #pragma endregion
 

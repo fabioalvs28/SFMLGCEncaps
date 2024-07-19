@@ -9,15 +9,10 @@
 
 
 
-///////////////////////////////////////
-/// @brief Updates the active Scene.
-///////////////////////////////////////
-void GCSceneManager::Update() { m_pActiveScene->Update(); }
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief Creates the GameObjects in the "Creation Queue" and Destroys the GameObjects in the "Deletion Queue".
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void GCSceneManager::NewDelete()
+void GCSceneManager::Update()
 {
 	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToCreateList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
 		CreateGameObject( pGameObjectNode->GetData() );
@@ -27,11 +22,6 @@ void GCSceneManager::NewDelete()
 		DestroyGameObject( pGameObjectNode->GetData() );
 	m_gameObjectsToDeleteList.Clear();
 }
-
-///////////////////////////////////////
-/// @brief Renders the active Scene.
-///////////////////////////////////////
-void GCSceneManager::Render() { m_pActiveScene->Render(); }
 
 
 
@@ -43,15 +33,17 @@ void GCSceneManager::Render() { m_pActiveScene->Render(); }
 GCScene* GCSceneManager::CreateScene()
 {
 	GCScene* pScene = new GCScene();
-    m_scenesList.PushBack( pScene );
-	pScene->m_pNode = m_scenesList.GetLastNode();
-	if ( m_pActiveScene == nullptr ) SetActiveScene( pScene );
+    pScene->m_pNode = m_scenesList.PushBack( pScene );
+	if ( m_pActiveScene == nullptr )
+		SetActiveScene( pScene );
 	return pScene;
 }
 
 void GCSceneManager::SetActiveScene( GCScene* pScene )
 {
-	if ( m_pActiveScene != nullptr ) m_pActiveScene->m_active = false;
+	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to set a nullptr pScene as the active Scene" );
+	if ( m_pActiveScene != nullptr )
+		m_pActiveScene->m_active = false;
     m_pActiveScene = pScene;
     m_pActiveScene->m_active = true;
 }
@@ -63,9 +55,13 @@ void GCSceneManager::SetActiveScene( GCScene* pScene )
 /////////////////////////////////////////////////////////
 void GCSceneManager::LoadScene( GCScene* pScene )
 {
-	if ( pScene->m_pLoadedNode != nullptr ) return;
-	m_loadedScenesList.PushBack( pScene );
-	pScene->m_pLoadedNode = m_loadedScenesList.GetLastNode();
+	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to load a nullptr pScene" );
+	if ( pScene->m_pLoadedNode != nullptr )
+	{
+		ASSERT( false, LOG_WARNING, "Trying to load an already loaded Scene" );
+		return;
+	}
+	pScene->m_pLoadedNode = m_loadedScenesList.PushBack( pScene );
 }
 
 ///////////////////////////////////////////////////////////
@@ -75,9 +71,9 @@ void GCSceneManager::LoadScene( GCScene* pScene )
 ///////////////////////////////////////////////////////////
 void GCSceneManager::UnloadScene( GCScene* pScene )
 {
-	GCListNode<GCScene*>* pLoadedNode = pScene->m_pLoadedNode;
-	if ( pLoadedNode == nullptr ) return;
-	pLoadedNode->Delete();
+	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to unload a nullptr pScene" );
+	ASSERT( pScene->m_pLoadedNode != nullptr, LOG_FATAL, "Trying to unload a Scene that isn't loaded" );
+	pScene->m_pLoadedNode->Delete();
 	pScene->m_pLoadedNode = nullptr;
 }
 
@@ -90,6 +86,7 @@ void GCSceneManager::UnloadScene( GCScene* pScene )
 ////////////////////////////////////////////////////////////
 void GCSceneManager::DestroyScene( GCScene* pScene )
 {
+	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to destroy a nullptr pScene" );
 	UnloadScene( pScene );
 	pScene->m_pNode->Delete();
 	pScene->RemoveParent();
@@ -105,9 +102,9 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 ////////////////////////////////////////////////////////////////////
 void GCSceneManager::CreateGameObject( GCGameObject* pGameObject )
 {
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to create a nullptr pGameObject (SceneManager)" );
 	GCScene* pScene = pGameObject->m_pScene;
-	pScene->m_gameObjectsList.PushBack( pGameObject );
-	pGameObject->m_pSceneNode = pScene->m_gameObjectsList.GetLastNode();
+	pGameObject->m_pSceneNode = pScene->m_gameObjectsList.PushBack( pGameObject );
 	pGameObject->m_created = true;
 }
 
@@ -120,8 +117,10 @@ void GCSceneManager::CreateGameObject( GCGameObject* pGameObject )
 //////////////////////////////////////////////////////////////////////
 void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 {
+	ASSERT( pGameObject!= nullptr, LOG_FATAL, "Trying to destroy a nullptr pGameObject (SceneManager)" );
 	pGameObject->RemoveScene();
-	pGameObject->RemoveParent();
+	if ( pGameObject->m_pParent != nullptr )
+		pGameObject->RemoveParent();
 	pGameObject->ClearComponents();
 	delete pGameObject;
 }
@@ -133,11 +132,19 @@ void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 /// 
 /// @param pGameObject A pointer to the GameObject to be added to the queue.
 ///////////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject ) { m_gameObjectsToDeleteList.PushBack( pGameObject ); }
+void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject )
+{
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to add a nullptr pGameObject to the Deletion Queue" );
+	m_gameObjectsToDeleteList.PushBack( pGameObject );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Adds the GameObject to the "Creation Queue".
 /// 
 /// @param pGameObject A pointer to the GameObject to be added to the queue.
 ///////////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddGameObjectToCreateQueue( GCGameObject* pGameObject ) { m_gameObjectsToCreateList.PushBack( pGameObject ); }
+void GCSceneManager::AddGameObjectToCreateQueue( GCGameObject* pGameObject )
+{
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to add a nullptr pGameObject to the Creation Queue" );
+	m_gameObjectsToCreateList.PushBack( pGameObject );
+}

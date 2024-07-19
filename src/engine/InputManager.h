@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <functional>
 #include "../core/framework.h"
-#include "EventSystem.h"
+#include "EventManager.h"
 
 
 class GCControllerInputManager;
@@ -11,18 +11,22 @@ class GCEventManager;
 
 class GCInputManager
 {
-    GCVector<GCVector<std::function<void(GCEvent&)>>> callbacks;
 
     friend class GCGameManager;
 
 public:
 
-    GCInputManager();
+    GCInputManager() = default;
 
     virtual void Update() {} ;
 
-    virtual int GetStateSize() { return 0; }
-    virtual int GetIDSize() { return 0; }
+    virtual int GetStateSize() const = 0;
+    virtual int GetIDSize() const = 0;
+    
+protected:
+    void InitializeCallbacks();
+    std::vector<std::vector<std::function<void(GCEvent&)>>> callbacks;
+    GCEventManager* m_eventManager = nullptr;
 };
 
 
@@ -34,6 +38,8 @@ class GCKeyboardInputManager : public GCInputManager
 public:
 
     GCKeyboardInputManager();
+
+    void Update();
 
     bool IsKeyPressed(int keyID);
 
@@ -85,24 +91,66 @@ public:
         KEYSTATECOUNT
     };
 
-    int GetIDSize() override
-    {
-        return KeyboardID::KEYIDCOUNT;
-    };
+    int GetIDSize() const override { return KeyboardID::KEYIDCOUNT; };
 
-    int GetStateSize() override
+    int GetStateSize() const override { return KeyboardState::KEYSTATECOUNT; };
+
+    void SubscriEvent(GCEventManager* eventmanager);
+
+    /// <summary>
+    /// Bind a function to a specific key and key state
+    /// </summary>
+    /// <param name="keyId">Key ID</param>
+    /// <param name="state">Key State</param>
+    /// <param name="func">The function can be generic</param>
+    template<typename Func>
+    void BindAction(int keyId, BYTE state, Func&& func)
     {
-        return KeyboardState::KEYSTATECOUNT;
-    };
+        auto callback = [func](GCEvent&) { func(); };
+        callbacks[state][keyId] = callback;
+    }
+
+    /// <summary>
+    /// Unbind a function based on key ID and key state
+    /// the function should be a member function
+    /// </summary>
+    /// <param name="keyId">Key ID</param>
+    /// <param name="state">Key State</param>
+    /// <param name="func">member function</param>
+    template<typename Func>
+    void UnbindAction(int keyId, BYTE state, Func&& func)
+    {
+        auto callback = [func](GCEvent&) { func(); };
+        auto& stateCallbacks = callbacks[state];
+
+        auto it = std::find_if(stateCallbacks.begin(), stateCallbacks.end(),
+            [&](const std::function<void(GCEvent&)>& storedCallback) 
+            {
+                return storedCallback.target_type() == callback.target_type();
+            });
+
+        if (it != stateCallbacks.end()) {
+            stateCallbacks.erase(it);
+        }
+    }
+
+    /// <summary>
+    /// Unbind a function based on key ID and key state
+    /// Unbind for lambda function
+    /// KeyID and KeyState can access by the class name
+    /// </summary>
+    /// <param name="keyID">Key ID</param>
+    /// <param name="keyState">Key State</param>
+    void UnbindAction(int keyID, BYTE keyState);
 
 private:
-
-    void Update();
-
-    std::vector<BYTE> m_keyState;
-
     void SendEvent(int index, BYTE state);
 
+    void OnKeyPressed(GCKeyPressedEvent& ev);
+    void OnKeyReleased(GCKeyReleasedEvent& ev);
+
+private:
+    std::vector<BYTE> m_keyState;
 };
 
 
@@ -147,15 +195,10 @@ private:
 
     void Update();
 
-    int GetIDSize() override
-    {
-        return MouseID::MOUSEIDCOUNT;
-    };
+    int GetIDSize() const override { return MouseID::MOUSEIDCOUNT; };
 
-    int GetStateSize() override
-    {
-        return MouseState::MOUSESTATECOUNT;
-    };
+    int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
+    
 
     GCVector<BYTE> m_buttonState;
 
@@ -170,6 +213,7 @@ class GCControllerManager : public GCInputManager
 public: 
 
     GCControllerManager();
+    ~GCControllerManager();
     void GetConnectedControllers();
     void Update();
 
@@ -206,17 +250,9 @@ public:
         CONTROLLERSTATECOUNT
     };
 
-    int GetIDSize() override
-    {
-        return ControllerID::CONTROLLERIDCOUNT;
-    };
+    int GetIDSize() const override { return ControllerID::CONTROLLERIDCOUNT; };
 
-    int GetStateSize() override
-    {
-        return ControllerState::CONTROLLERSTATECOUNT;
-    };
-
-
+    int GetStateSize() const override { return ControllerState::CONTROLLERSTATECOUNT; };
 
     void UpdateController();
 

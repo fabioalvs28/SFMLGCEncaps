@@ -25,6 +25,12 @@ public:
 		LOG_FATAL
 	};
 
+	static Logger& GetCoreLogger()
+	{
+		static Logger coreLogger("Core: ");
+		return coreLogger;
+	}
+
 	static Logger& GetEngineLogger()
 	{
 		static Logger engineLogger("Engine: ");
@@ -36,6 +42,7 @@ public:
 		static Logger gameLogger("Game: ");
 		return gameLogger;
 	}
+
 
 	void SetLogPriority(LogPriority priority) { m_logPriority = priority; };
 	const LogPriority GetLogPriority() const { return m_logPriority; };

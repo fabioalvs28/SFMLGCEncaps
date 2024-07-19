@@ -14,86 +14,49 @@ GCPhysicManager::~GCPhysicManager()
 {
 }
 
+void GCPhysicManager::RegisterComponent(Component* component)
+{
+	m_components.PushBack(component);
+}
+
 void GCPhysicManager::RegisterCollider(Collider* collider)
 {
 	m_colliders.PushBack(collider);
 }
 
-void GCPhysicManager::UnregisterCollider(Collider* collider)
-{
-	m_colliders.Remove(m_colliders.GetIndex(collider));
-}
-
 void GCPhysicManager::Update()
 {
-	// Update rigidbodies
-	for (RigidBody* rigidbody : m_rigidbodies)
-		rigidbody->Update();
+	for (GCListNode<Component*>* pComponentNode = m_components.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext())
+		pComponentNode->GetData()->FixedUpdate();
 
-	for (int i = 0; i < m_colliders.GetSize(); i++) {
-		for (int j = i + 1; j < m_colliders.GetSize(); j++) {
-			if (!CheckCollision(*m_colliders.Get(i), *m_colliders.Get(j)))
+	for (GCListNode<Collider*>* pColliderNode = m_colliders.GetFirstNode(); pColliderNode != nullptr; pColliderNode = pColliderNode->GetNext())
+	{
+		for (GCListNode<Collider*>* pNextColliderNode = pColliderNode->GetNext(); pNextColliderNode != nullptr; pNextColliderNode = pNextColliderNode->GetNext())
+		{
+			if (!CheckCollision(*pColliderNode->GetData(), *pNextColliderNode->GetData()))
 				continue;
 
 			// Resolve collision
 			LogEngineDebug("Collision detected");
 		}
 	}
-	//for (Collider* collider : m_colliders)
-	//{
-	//	for (Collider* checkCollider : m_colliders)
-	//	{
-	//		if (&collider == &checkCollider)
-	//			continue;
-
-	//		/*std::string temp = "FIRST IS: ";
-	//		if (Animator::TYPE == BoxCollider::TYPE) {
-	//			temp += "Box";
-	//		}
-	//		else if (collider->GetType() == CircleCollider::TYPE) {
-	//			temp += "Circle";
-	//		}
-	//		else {
-	//			temp += "Invalid";
-	//		}
-	//		LogEngineDebug(temp.c_str());
-
-	//		temp = "SECOND IS: ";
-	//		if (Animator::TYPE == BoxCollider::TYPE) {
-	//			temp += "Box";
-	//		}
-	//		else if (checkCollider->GetType() == CircleCollider::TYPE) {
-	//			temp += "Circle";
-	//		}
-	//		else {
-	//			temp += "Invalid";
-	//		}
-	//		LogEngineDebug(temp.c_str());*/
-
-	//		if (!CheckCollision(*collider, *checkCollider))
-	//			continue;
-
-	//		// Resolve collision
-	//		//LogEngineDebug("Collision detected");
-	//	}
-	//}
 }
 
 bool GCPhysicManager::CheckCollision(Collider& collider1, Collider& collider2)
 {
-	switch (collider1.GetType())
+	switch (collider1.GetID())
 	{
 	case 2:
-		if (collider2.GetType() == 2)
+		if (collider2.GetID() == 2)
 			return GCPhysic::CheckBox2DvsBox2D(collider1, collider2);
-		else if (collider2.GetType() == 3)
+		else if (collider2.GetID() == 3)
 			return GCPhysic::CheckBox2DvsCircle(collider1, collider2);
 		break;
 
 	case 3:
-		if (collider2.GetType() == 2)
+		if (collider2.GetID() == 2)
 			return GCPhysic::CheckBox2DvsCircle(collider2, collider1);
-		else if (collider2.GetType() == 3)
+		else if (collider2.GetID() == 3)
 			return GCPhysic::CheckCirclevsCircle(collider1, collider2);
 		break;
 	default:

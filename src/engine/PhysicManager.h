@@ -1,6 +1,7 @@
 #pragma once
-
 #include "Components.h"
+
+// TODO Turn every methods into private methods
 
 class GCGameObject;
 
@@ -9,14 +10,22 @@ class GCPhysicManager
 friend class GCGameObject;
 
 private:
-	GCVector<RigidBody*> m_rigidbodies;
-	GCVector<Collider*> m_colliders;
+	/*
+	 * Components that need to be fixed updated
+	 */
+	GCList<Component*> m_components;
+
+	/*
+	 * Colliders that need to be checked for collision
+	 */
+	GCList<Collider*> m_colliders;
 public:
 	GCPhysicManager();
 	~GCPhysicManager();
 
-	void RegisterCollider(Collider* collider);
-	void UnregisterCollider(Collider* collider);
+	void RegisterComponent(Component* pComponent);
+
+	void RegisterCollider(Collider* pCollider);
 
 	void Update();
 
