@@ -96,7 +96,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     test1->m_transform.SetPosition(GCVEC3(2, 0, 0));
     
     test2->m_transform.SetPosition(GCVEC3(1, 0, 0));
-    test2->m_transform.SetScale(GCVEC3(12, 1, 1));
+    test2->m_transform.SetScale(GCVEC3(2, 1, 1));
 
     test3->m_transform.SetPosition(GCVEC3(0, -5, 0));
     test3->m_transform.SetScale(GCVEC3(1, 1, 1));
@@ -110,11 +110,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     
     while (true) {
         
-        //test3->m_transform.Translate(GCVEC3(-0.02f, 0, 0));
-        //test3bis->m_transform.Translate(GCVEC3(-0.02f, 0, 0));
-        test3->m_transform.Scale(GCVEC3(1.0001f, 1, 1));
+        test3->m_transform.Translate(GCVEC3(-0.02f, 0, 0));
         counter++;
-        if (counter >= 500) test3->m_transform.Rotate(0, 0, 0.1f);
+        if (counter >= 200) test3bis->AddChild(test2);
         
         using namespace std;
         cout << counter << endl;
