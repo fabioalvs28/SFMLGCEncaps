@@ -68,6 +68,15 @@ GCGameObject* GCScene::CreateGameObject()
 	return pGameObject;
 }
 
+GCGameObject* GCScene::CreateGameObject( GCGameObject* pParent )
+{
+	GCGameObject* pGameObject = new GCGameObject( this );
+	pGameObject->m_pParent = pParent;
+	pGameObject->m_pChildNode = pParent->m_childrenList.PushBack( pGameObject );
+	GC::GetActiveSceneManager()->AddGameObjectToCreateQueue( pGameObject );
+	return pGameObject;
+}
+
 //////////////////////////////////////////////////////////////////
 /// @brief Moves the GameObject to this Scene.
 /// 

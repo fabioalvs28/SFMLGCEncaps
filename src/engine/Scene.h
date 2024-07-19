@@ -24,7 +24,7 @@ public:
 	void DestroyChildren();
 	
 	GCGameObject* CreateGameObject();
-	static GCGameObject* DuplicateGameObject( GCGameObject* pGameObject );
+	GCGameObject* CreateGameObject( GCGameObject* pParent );
 	GCGameObject* FindGameObjectByName( const char* name );
 	GCGameObject* FindGameObjectByID( int ID );
 	void DestroyGameObjects();
@@ -38,7 +38,6 @@ protected:
 	
 	void MoveGameObjectToScene( GCGameObject* pGameObject );
 	void RemoveGameObjectFromScene( GCGameObject* pGameObject );
-	void DestroyGameObject( GCGameObject* pGameObject );
 
 protected:
 	GCListNode<GCScene*>* m_pNode;
