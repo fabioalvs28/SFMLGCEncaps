@@ -73,6 +73,7 @@ GCGameObject* GCScene::CreateGameObject( GCGameObject* pParent )
 	GCGameObject* pGameObject = new GCGameObject( this );
 	pGameObject->m_pParent = pParent;
 	pGameObject->m_pChildNode = pParent->m_childrenList.PushBack( pGameObject );
+	pGameObject->m_globalActive = pParent->IsActive();
 	GC::GetActiveSceneManager()->AddGameObjectToCreateQueue( pGameObject );
 	return pGameObject;
 }

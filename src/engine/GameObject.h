@@ -23,6 +23,7 @@ protected:
 
 public:
     GCGameObject* Duplicate();
+    GCGameObject* Duplicate( GCGameObject* pParent );
     
     void RemoveParent();
     GCGameObject* CreateChild();
@@ -48,11 +49,11 @@ public:
     const char* GetTag( int index ) const;
     int GetLayer() const;
     
-    template<class T>
+    template <class T>
     T* AddComponent();
-    template<class T>
+    template <class T>
     T* GetComponent();
-    template<class T>
+    template <class T>
     void RemoveComponent();
     void ClearComponents();
 
@@ -65,6 +66,9 @@ protected:
     void SetGlobalActive( const bool active );
     
     void RemoveComponent( int ID );
+    template <class T>
+    T* DuplicateComponent( GCGameObject* pGameObject );
+    void DuplicateComponent( unsigned int ID, GCGameObject* pGameObject );
 
 public:
     GCGameObjectTransform m_transform; // The transform that contains the GameObject's position, scale and rotation.
@@ -102,13 +106,16 @@ protected:
 /// 
 /// @return A pointer to the newly created Component.
 ////////////////////////////////////////////////////////
-template<class T>
+template <class T>
 T* GCGameObject::AddComponent()
 {
     ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a Component to a GameObject that already has it" );
     T* pComponent = new T();
     pComponent->m_pGameObject = this;
-    pComponent->RegisterToManagers();
+    bool gameObjectActive = IsActive();
+    pComponent->m_globalActive = gameObjectActive;
+    if ( gameObjectActive == true )
+        pComponent->RegisterToManagers();
     m_componentsList.Insert( T::GetIDStatic(), pComponent );
     return pComponent;
 }
@@ -118,7 +125,7 @@ T* GCGameObject::AddComponent()
 /// 
 /// @return A pointer to the searched Component.
 /////////////////////////////////////////////////////
-template<class T>
+template <class T>
 T* GCGameObject::GetComponent()
 {
     Component* pComponent;
@@ -132,5 +139,44 @@ T* GCGameObject::GetComponent()
 /// 
 /// @tparam T The class of the Component to remove.
 //////////////////////////////////////////////////////
-template<class T>
-void GCGameObject::RemoveComponent() { RemoveComponent( T::TYPE ); }
+template <class T>
+void GCGameObject::RemoveComponent() { RemoveComponent( T::GetIDStatic() ); }
+
+template <class T>
+T* GCGameObject::DuplicateComponent( GCGameObject* pGameObject )
+{
+    ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to duplicate a Component in a nullptr pGameObject" );
+    T* pComponent = new T();
+    *pComponent = *GetComponent<T>();
+    pComponent->m_pGameObject = pGameObject;
+    bool gameObjectActive = pGameObject->IsActive();
+    pComponent->m_globalActive = gameObjectActive;
+    if ( gameObjectActive == true )
+        pComponent->RegisterToManagers();
+    pGameObject->m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    return pComponent;
+}
+
+void GCGameObject::DuplicateComponent( unsigned int ID, GCGameObject* pGameObject ) //! Find a solution to automatically create the good one
+{
+    if ( ID == SpriteRenderer::GetIDStatic() )
+        DuplicateComponent<SpriteRenderer>( pGameObject );
+    
+    else if ( ID == BoxCollider::GetIDStatic() )
+        DuplicateComponent<BoxCollider>( pGameObject );
+    
+    else if ( ID == CircleCollider::GetIDStatic() )
+        DuplicateComponent<CircleCollider>( pGameObject );
+    
+    else if ( ID == RigidBody::GetIDStatic() )
+        DuplicateComponent<RigidBody>( pGameObject );
+    
+    else if ( ID == Animator::GetIDStatic() )
+        DuplicateComponent<Animator>( pGameObject );
+    
+    else if ( ID == SoundMixer::GetIDStatic() )
+        DuplicateComponent<SoundMixer>( pGameObject );
+    
+    else if ( ID == Camera::GetIDStatic() )
+        DuplicateComponent<Camera>( pGameObject );
+}

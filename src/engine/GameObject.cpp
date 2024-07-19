@@ -7,7 +7,6 @@
 #include "SceneManager.h"
 #include "GC.h"
 
-//todo Activate() and Deactivate()
 //todo HasTag( const char* tag )
 
 
@@ -42,23 +41,43 @@ GCGameObject::GCGameObject( GCScene* pScene )
 }
 
 GCGameObject* GCGameObject::Duplicate()
-//info This could be optimized by having a separate Duplicate( GCGameObject* pParent ) method.
-//info This could be optimized by adding a DuplicateAtCenter() method which doesn't calculate the transform's matrix and instead places the new GameObject at the center of the parent's bounds with no rotation and scale.
 {
+    if ( m_pParent != nullptr )
+        this->Duplicate( m_pParent ); //info This does not duplicate the m_pParent !
+    
     GCGameObject* pGameObject = m_pScene->CreateGameObject();
     
-    if ( m_pParent != nullptr )
-        m_pParent->AddChild( pGameObject );
-    
     for ( GCListNode<GCGameObject*>* pChildNode = m_childrenList.GetFirstNode(); pChildNode != nullptr; pChildNode = pChildNode->GetNext() )
-        pChildNode->GetData()->Duplicate()->SetParent( pGameObject );
+        pChildNode->GetData()->Duplicate( pGameObject );
     
-    pGameObject->m_name = m_name;
+    pGameObject->m_transform = m_transform;
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
+    pGameObject->m_name = m_name;
     pGameObject->m_tagsList = m_tagsList; // TODO Change this
     pGameObject->m_layer = m_layer;
-    pGameObject->m_componentsList = m_componentsList; // TODO Change this
+    for ( auto it : m_componentsList )
+        DuplicateComponent( it.second->GetID(), pGameObject );
+    
+    return pGameObject;
+}
+
+GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
+{
+    ASSERT( pParent != nullptr, LOG_FATAL, "Trying to duplicate a GameObject in a nullptr pParent" );
+    GCGameObject* pGameObject = pParent->CreateChild();
+    
+    for ( GCListNode<GCGameObject*>* pChildNode = m_childrenList.GetFirstNode(); pChildNode != nullptr; pChildNode = pChildNode->GetNext() )
+        pChildNode->GetData()->Duplicate( pGameObject );
+    
+    pGameObject->m_transform = m_transform;
+    pGameObject->m_globalActive = m_globalActive;
+    pGameObject->m_selfActive = m_selfActive;
+    pGameObject->m_name = m_name;
+    pGameObject->m_tagsList = m_tagsList; // TODO Change this
+    pGameObject->m_layer = m_layer;
+    for ( auto it : m_componentsList )
+        DuplicateComponent( it.second->GetID(), pGameObject );
     
     return pGameObject;
 }
@@ -97,12 +116,8 @@ void GCGameObject::RemoveParent()
 /// 
 /// @return A pointer to the newly created child.
 /////////////////////////////////////////////////////////////////////
-GCGameObject* GCGameObject::CreateChild() //info This could be optimized by having a separate constructor for creating a GameObject with an already set Parent.
-{
-    GCGameObject* pChild = m_pScene->CreateGameObject();
-    AddChild( pChild );
-    return pChild;
-}
+GCGameObject* GCGameObject::CreateChild()
+{ return m_pScene->CreateGameObject( this ); }
 
 ////////////////////////////////////////////////////////////////////////
 /// @brief Adds an existing GameObject as a child of this GameObject.
@@ -124,6 +139,7 @@ void GCGameObject::AddChild( GCGameObject* pChild )
     
     pChild->m_pParent = this;
     pChild->m_pChildNode = m_childrenList.PushBack( pChild );
+    pChild->m_globalActive = IsActive();
     pChild->m_transform.UpdateLocalMatrixFromWorld();
 }
 
