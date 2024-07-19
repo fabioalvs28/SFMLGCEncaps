@@ -213,6 +213,7 @@ class GCControllerManager : public GCInputManager
 public: 
 
     GCControllerManager();
+    ~GCControllerManager();
     void GetConnectedControllers();
     void Update();
 

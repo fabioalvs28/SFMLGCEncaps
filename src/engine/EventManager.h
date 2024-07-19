@@ -8,6 +8,8 @@
 #include "../core/Queue.h"
 #include "InputManager.h"
 
+// TODO Turn every methods into private methods
+
 class GCInputManager;
 class GCKeyboardInputManager;
 

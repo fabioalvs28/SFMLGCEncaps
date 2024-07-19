@@ -27,17 +27,17 @@ GCScene::GCScene()
 /// 
 /// @return A pointer to the newly created Scene.
 ////////////////////////////////////////////////////
-GCScene* GCScene::Create() { return GC::m_pActiveGameManager.m_pSceneManager.CreateScene(); }
+GCScene* GCScene::Create() { return GC::GetActiveSceneManager()->CreateScene(); }
 
 //////////////////////////////
 /// @brief Loads the Scene.
 //////////////////////////////
-void GCScene::Load() { GC::m_pActiveGameManager.m_pSceneManager.LoadScene( this ); }
+void GCScene::Load() { GC::GetActiveSceneManager()->LoadScene( this ); }
 
 ////////////////////////////////
 /// @brief Unloads the Scene.
 ////////////////////////////////
-void GCScene::Unload() { GC::m_pActiveGameManager.m_pSceneManager.UnloadScene( this ); }
+void GCScene::Unload() { GC::GetActiveSceneManager()->UnloadScene( this ); }
 
 /////////////////////////////////////////////////////////////////////////////
 /// @brief Adds the Scene to the "Deletion Queue".
@@ -47,7 +47,7 @@ void GCScene::Unload() { GC::m_pActiveGameManager.m_pSceneManager.UnloadScene( t
 /////////////////////////////////////////////////////////////////////////////
 void GCScene::Destroy()
 {
-	GC::m_pActiveGameManager.m_pSceneManager.DestroyScene( this );
+	GC::GetActiveSceneManager()->DestroyScene( this );
 	DestroyGameObjects(); //? Maybe there will be an issue with destroying every GameObjects including the childs who are already destroyed by their parents.
 	DestroyChildren();
 }
@@ -64,7 +64,7 @@ void GCScene::Destroy()
 GCGameObject* GCScene::CreateGameObject()
 {
 	GCGameObject* pGameObject = new GCGameObject( this );
-	GC::m_pActiveGameManager.m_pSceneManager.AddGameObjectToCreateQueue( pGameObject );
+	GC::GetActiveSceneManager()->AddGameObjectToCreateQueue( pGameObject );
 	return pGameObject;
 }
 
@@ -170,7 +170,7 @@ void GCScene::RemoveParent()
 ///////////////////////////////////////////////////////////////////////
 GCScene* GCScene::CreateChild()
 {
-	GCScene* pChild = GC::m_pActiveGameManager.m_pSceneManager.CreateScene();
+	GCScene* pChild = GC::GetActiveSceneManager()->CreateScene();
 	AddChild( pChild );
 	return pChild;
 }
