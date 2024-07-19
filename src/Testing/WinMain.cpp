@@ -76,43 +76,57 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     GCScene* pScene = GCScene::Create();
     GCGameObject* test1 = pScene->CreateGameObject();
-    GCGameObject* test2 = pScene->CreateGameObject();
     GCGameObject* test3 = pScene->CreateGameObject();
+    GCGameObject* test3bis = pScene->CreateGameObject();
+    GCGameObject* test2 = test3->CreateChild();
 
     test3->SetLayer(3);
     test2->SetLayer(4);
 
     //test1->AddComponent<BoxCollider>();
-    test2->AddComponent<BoxCollider>();
-    test2->AddComponent<SpriteRenderer>();
+    test2->AddComponent<BoxCollider>()->SetVisible(true);
+    test2->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
 
-    test3->AddComponent<BoxCollider>();
-    test3->AddComponent<SpriteRenderer>();
+    test3->AddComponent<BoxCollider>()->SetVisible(true);
+    test3->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
 
-    test1->m_transform.m_position.x = 2;
-    test1->m_transform.m_position.y = 0;
+    test3bis->AddComponent<BoxCollider>()->SetVisible(true);
+    test3bis->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
 
+    test1->m_transform.SetPosition(GCVEC3(2, 0, 0));
     
-    test2->m_transform.m_position.x = 6;
-    test2->m_transform.m_position.y = 0;
-    test2->m_transform.m_scale.x = 2;
-    test2->m_transform.m_scale.y = 4;
+    test2->m_transform.SetPosition(GCVEC3(1, 0, 0));
+    test2->m_transform.SetScale(GCVEC3(2, 1, 1));
 
-    test3->m_transform.m_position.x = 7.3f;
-    test3->m_transform.m_position.y = -2;
-    test3->m_transform.m_scale.x = 6;
-    test3->m_transform.m_scale.y = 6;
-    
-    test2->GetComponent<BoxCollider>()->SetVisible(true);
-    test3->GetComponent<BoxCollider>()->SetVisible(true);
+    test3->m_transform.SetPosition(GCVEC3(0, -5, 0));
+    test3->m_transform.SetScale(GCVEC3(1, 1, 1));
 
-    test3->GetComponent<SpriteRenderer>()->SetSprite("caow.dds");
-    test2->GetComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
-
+    test3bis->m_transform.SetPosition(GCVEC3(0, -6, 0));
+    test3bis->m_transform.SetScale(GCVEC3(4, 1, 1));
 
     //auto startTime = std::chrono::steady_clock::now();
-
+    
+    int counter = 0;
+    
     while (true) {
+        
+        test3->m_transform.Translate(GCVEC3(-0.02f, 0, 0));
+        counter++;
+        if (counter >= 200) test3bis->AddChild(test2);
+        
+        using namespace std;
+        cout << counter << endl;
+        //cout << "Parent" << endl;
+        //cout << test3->m_transform.m_worldMatrix._11 << " " << test3->m_transform.m_worldMatrix._12 << " " << test3->m_transform.m_worldMatrix._13 << " " << test3->m_transform.m_worldMatrix._14 << endl;
+        //cout << test3->m_transform.m_worldMatrix._21 << " " << test3->m_transform.m_worldMatrix._22 << " " << test3->m_transform.m_worldMatrix._23 << " " << test3->m_transform.m_worldMatrix._24 << endl;
+        //cout << test3->m_transform.m_worldMatrix._31 << " " << test3->m_transform.m_worldMatrix._32 << " " << test3->m_transform.m_worldMatrix._33 << " " << test3->m_transform.m_worldMatrix._34 << endl;
+        //cout << test3->m_transform.m_worldMatrix._41 << " " << test3->m_transform.m_worldMatrix._42 << " " << test3->m_transform.m_worldMatrix._43 << " " << test3->m_transform.m_worldMatrix._44 << endl;
+        //cout << "Enfant" << endl;
+        //cout << test2->m_transform.m_matrix._11 << " " << test2->m_transform.m_matrix._12 << " " << test2->m_transform.m_matrix._13 << " " << test2->m_transform.m_matrix._14 << endl;
+        //cout << test2->m_transform.m_matrix._21 << " " << test2->m_transform.m_matrix._22 << " " << test2->m_transform.m_matrix._23 << " " << test2->m_transform.m_matrix._24 << endl;
+        //cout << test2->m_transform.m_matrix._31 << " " << test2->m_transform.m_matrix._32 << " " << test2->m_transform.m_matrix._33 << " " << test2->m_transform.m_matrix._34 << endl;
+        //cout << test2->m_transform.m_matrix._41 << " " << test2->m_transform.m_matrix._42 << " " << test2->m_transform.m_matrix._43 << " " << test2->m_transform.m_matrix._44 << endl;
+        
         /*auto currentTime = std::chrono::steady_clock::now();
         float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
 

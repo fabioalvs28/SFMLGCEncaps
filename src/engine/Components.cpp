@@ -119,8 +119,8 @@ void SpriteRenderer::SetSprite(std::string texturePath)
 	GCTexture* texture = pGraphics->CreateTexture( std::string("../../../src/Textures/") + texturePath).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
-	auto shaderTexture = pGraphics->CreateShaderTexture();
-	auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
+	ResourceCreationResult<GCShader*> shaderTexture = pGraphics->CreateShaderTexture();
+	ResourceCreationResult<GCMaterial*> mat = pGraphics->CreateMaterial(shaderTexture.resource);
 	m_pMaterial = mat.resource;
 	m_pMaterial->SetTexture(texture);
 
@@ -133,12 +133,29 @@ void SpriteRenderer::Render()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
-	XMMATRIX worldMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x, m_pGameObject->m_transform.m_scale.y, m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z); 
+	XMFLOAT4X4 worldMatrix;
+	
+	worldMatrix._11 = m_pGameObject->m_transform.m_worldMatrix._11;
+	worldMatrix._12 = m_pGameObject->m_transform.m_worldMatrix._12;
+	worldMatrix._13 = m_pGameObject->m_transform.m_worldMatrix._13;
+	worldMatrix._14 = m_pGameObject->m_transform.m_worldMatrix._14;
+	
+	worldMatrix._21 = m_pGameObject->m_transform.m_worldMatrix._21;
+	worldMatrix._22 = m_pGameObject->m_transform.m_worldMatrix._22;
+	worldMatrix._23 = m_pGameObject->m_transform.m_worldMatrix._23;
+	worldMatrix._24 = m_pGameObject->m_transform.m_worldMatrix._24;
+	
+	worldMatrix._31 = m_pGameObject->m_transform.m_worldMatrix._31;
+	worldMatrix._32 = m_pGameObject->m_transform.m_worldMatrix._32;
+	worldMatrix._33 = m_pGameObject->m_transform.m_worldMatrix._33;
+	worldMatrix._34 = m_pGameObject->m_transform.m_worldMatrix._34;
+	
+	worldMatrix._41 = m_pGameObject->m_transform.m_worldMatrix._41;
+	worldMatrix._42 = m_pGameObject->m_transform.m_worldMatrix._42;
+	worldMatrix._43 = m_pGameObject->m_transform.m_worldMatrix._43;
+	worldMatrix._44 = m_pGameObject->m_transform.m_worldMatrix._44;
 
-	XMFLOAT4X4 worldMatrix4X4;
-	XMStoreFloat4x4(&worldMatrix4X4, worldMatrix);
-
-	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix4X4);
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix);
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
 }

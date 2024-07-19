@@ -80,8 +80,10 @@ protected:
     
     bool m_created;
     bool m_deleted;
+    
     bool m_globalActive;
     bool m_selfActive;
+    
     const char* m_name;
     GCVector<const char*> m_tagsList;
     int m_layer;
