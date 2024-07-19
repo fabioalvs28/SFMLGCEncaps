@@ -67,6 +67,7 @@ class GCGraphicsLogger;
 enum GC_GRAPHICS_ERROR;
 
 struct GC_DESCRIPTOR_RESOURCE;
+struct SBMaterialDSL;
 //
 
 

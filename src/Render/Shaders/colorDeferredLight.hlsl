@@ -4,22 +4,13 @@ cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld; // World matrix
     float objectId;
+    float materialId;
 };
 
 cbuffer cbPerCamera : register(b1)
 {
     float4x4 gView;
     float4x4 gProj;
-};
-
-cbuffer cbPerMaterial : register(b2)
-{
-    float4 cbPerMaterial_ambientLightColor;
-    float4 cbPerMaterial_ambient;
-    float4 cbPerMaterial_diffuse;
-    float4 cbPerMaterial_specular;
-    float cbPerMaterial_shininess;
-    float cbPerMaterial_padding3[3]; 
 };
 
 struct VertexIn
@@ -65,8 +56,7 @@ VertexOut VS(VertexIn vin)
 struct PSOutput
 {
     float4 color1 : SV_Target0;
-    //float4 color2 : SV_Target1; #TOTHINK pas d'object id sinon decalage
-    
+    float4 color2 : SV_Target1; 
     float4 Albedo : SV_Target2; // G-Buffer: Albedo
     float4 WorldPos : SV_Target3; // G-Buffer: World Position
     float4 Normal : SV_Target4; // G-Buffer: Normal
@@ -83,13 +73,21 @@ PSOutput PS(VertexOut pin) : SV_Target
     
     output.color1 = finalColor;
     
+    float r = float(objectId % 256) / 255.0f;
+    float g = float(materialId % 256) / 255.0f;
+    output.color2 = float4(r, g, 0.0f, 1.0f);
+    
     float3 remappedNormal = (pin.NormalW * 0.5) + 0.5;
     output.Albedo = float4(finalColor.rgb, finalColor.a);
     output.WorldPos = float4(pin.WorldPos, 1.0f);
-    output.Normal = float4(remappedNormal, 1.0f); // Normales remappées
+    output.Normal = float4(remappedNormal, 1.0f);
     
-    //float r = float(objectId % 256) / 255.0f;
-    //output.color2 = float4(r, 0.0f, 0.0f, 1.0f);
+    
+    //output.Albedo = float4(0.6f, 0.5f, 1.0f, 1.0f);
+    //output.WorldPos = float4(0.3f, 0.8f, 0.0f, 1.0f);
+    //output.Normal = float4(1.0f, 0.5f, 0.0f, 1.0f); // Normales remappées
+    
+
     
     return output;
 }

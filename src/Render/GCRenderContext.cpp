@@ -205,9 +205,9 @@ void GCRenderContext::CreatePostProcessingResources() {
 void GCRenderContext::CreateDeferredLightPassResources() {
 	{
 		//GBuffer Creation
-		m_pGCRenderResources->m_pAlbedoGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-		m_pGCRenderResources->m_pWorldPosGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-		m_pGCRenderResources->m_pNormalGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pGCRenderResources->m_pAlbedoGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->m_rgbaFormat, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pGCRenderResources->m_pWorldPosGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->m_rgbaFormat, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pGCRenderResources->m_pNormalGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->m_rgbaFormat, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 	}
 
 	{
@@ -226,6 +226,7 @@ void GCRenderContext::CreateDeferredLightPassResources() {
 		int rootParametersFlag = 0;
 		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
 		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB2);
 		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
 		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2);
 		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3);
@@ -235,6 +236,8 @@ void GCRenderContext::CreateDeferredLightPassResources() {
 		m_pDeferredLightPassShader->Initialize(this, shaderFilePath, csoDestinationPath, flags, D3D12_CULL_MODE_BACK, rootParametersFlag);
 		m_pDeferredLightPassShader->Load();
 	}
+
+	m_uploadBuffer = std::make_unique<GCUploadBuffer<SBMaterialDSL>>(m_pGCRenderResources->m_d3dDevice, 100, true);
 }
 
 
@@ -388,8 +391,12 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	//m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_ObjectIdBufferRtvAddress, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	//m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_pPixelIdMappingDepthStencilBuffer->cpuHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvs;
@@ -430,9 +437,7 @@ bool GCRenderContext::PrepareDraw()
 	}
 
 	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(rtvs.size(), rtvs.data(), FALSE, dsvs.data());
-	
 
-	
 	
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap };
 	m_pGCRenderResources->m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -488,6 +493,25 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 		m_pGCRenderResources->m_CommandList->DrawIndexedInstanced(pMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 	}
 
+	// Structured Buffer Send to Deferred Shader
+	SBMaterialDSL newMaterial;
+	newMaterial.ambientLightColor = pMaterial->ambientLightColor;
+	newMaterial.ambient = pMaterial->ambient;
+	newMaterial.diffuse = pMaterial->diffuse;
+	newMaterial.specular = pMaterial->specular;
+	newMaterial.shininess = pMaterial->shininess;
+	newMaterial.materialId = pMaterial->m_materialId;
+
+	for (const auto& material : materialsUsedInFrame)
+	{
+		if (material.materialId == newMaterial.materialId)
+		{
+			// Meterial already in array
+			return true;
+		}
+	}
+	materialsUsedInFrame.push_back(newMaterial);
+
 	return true;
 }
 
@@ -534,12 +558,14 @@ void GCRenderContext::PerformDeferredLightPass() {
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(m_pDeferredLightPassShader->GetRootSign());
 
 	//deferred light pass entry texture (albedo, worldPosition, normal) linking to shader
-	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pAlbedoGBuffer->resource, m_pGCRenderResources->GetBackBufferFormat());
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->resource, m_pGCRenderResources->GetBackBufferFormat());
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_1, srvGpuHandle);
-	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pWorldPosGBuffer->resource, m_pGCRenderResources->GetBackBufferFormat());
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pAlbedoGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
-	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pNormalGBuffer->resource, m_pGCRenderResources->GetBackBufferFormat());
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pWorldPosGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_3, srvGpuHandle);
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pNormalGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_4, srvGpuHandle);
 
 	// Draw quad on deferred light pass rtv
 	GCMesh* theMesh = m_pGCRenderResources->m_pGraphics->GetMeshes()[0];
@@ -552,6 +578,14 @@ void GCRenderContext::PerformDeferredLightPass() {
 	// Set camera & lights entry
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_0, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_1, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
+	// Send Materials array used in frame -> #TODO same for World Pos?
+	size_t count = materialsUsedInFrame.size();
+	for (size_t i = 0; i < count; ++i)
+	{
+		m_uploadBuffer->CopyData(static_cast<int>(i), &materialsUsedInFrame[i], sizeof(SBMaterialDSL));
+	}
+
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_2, m_uploadBuffer->Resource()->GetGPUVirtualAddress());
 
 	m_pGCRenderResources->m_CommandList->DrawIndexedInstanced(theMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 

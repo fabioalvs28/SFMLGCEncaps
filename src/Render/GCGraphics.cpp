@@ -83,6 +83,8 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 
 bool GCGraphics::StartFrame()
 {
+    m_pRender->materialsUsedInFrame.clear();
+
     for (auto& material : m_vMaterials)
     {
         for (auto& cbObject : material->GetCbObjectInstance())
@@ -363,6 +365,7 @@ ResourceCreationResult<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pShader
     if (errorState != 0)
         return ResourceCreationResult<GCMaterial*>(false, nullptr, errorState);
 
+    material->m_materialId = m_vMaterials.size();
     m_vMaterials.push_back(material);
 
     return ResourceCreationResult<GCMaterial*>(true, material, errorState);
@@ -489,12 +492,11 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
         pMaterial->AddCbPerObject<GCWORLDCB>();
     }
 
-
-
     GCWORLDCB worldData;
     worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
+    worldData.objectId = 1;
+    worldData.materialId = 1;
 
-    worldData.objectId = meshId;
     // Update 
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 
@@ -528,6 +530,12 @@ bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPE
     if (CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
 
+    pMaterial->ambientLightColor = objectData.ambientLightColor;
+    pMaterial->ambient = objectData.ambient;
+    pMaterial->diffuse = objectData.diffuse;
+    pMaterial->specular = objectData.specular;
+    pMaterial->shininess = objectData.shininess;
+
     UpdateConstantBuffer(objectData, pMaterial->GetCbMaterialPropertiesInstance());
     return true;
 }
@@ -543,6 +551,12 @@ bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOA
     materialData.diffuse = diffuse;
     materialData.specular = specular;
     materialData.shininess = shininess;
+
+    pMaterial->ambientLightColor = ambientLightColor;
+    pMaterial->ambient = ambient;
+    pMaterial->diffuse = diffuse;
+    pMaterial->specular = specular;
+    pMaterial->shininess = shininess;
 
     UpdateConstantBuffer(materialData, pMaterial->GetCbMaterialPropertiesInstance());
     return true;

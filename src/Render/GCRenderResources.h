@@ -101,6 +101,7 @@ private:
 	//Format
 	DXGI_FORMAT m_DepthStencilFormat;
 	DXGI_FORMAT m_BackBufferFormat;
+	DXGI_FORMAT m_rgbaFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
 	//Msaa
 	bool m_4xMsaaState;    // 4X MSAA enabled
@@ -112,7 +113,6 @@ private:
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
 
-
 	////////////////////////*///////////////////////
 	
 	//Post Processing Resources
@@ -123,12 +123,12 @@ private:
 	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingDepthStencilBuffer; //Rtv Buffer
 
 	// Deferred Shading Light Resources
+	GCUploadBufferBase* m_materialsStructuredBuffer;
+
 	GC_DESCRIPTOR_RESOURCE* m_pDeferredLightPassBufferRtv;
 	GC_DESCRIPTOR_RESOURCE* m_pAlbedoGBuffer;
 	GC_DESCRIPTOR_RESOURCE* m_pWorldPosGBuffer;
 	GC_DESCRIPTOR_RESOURCE* m_pNormalGBuffer;
-
-
 
 	////////////////////////*///////////////////////
 

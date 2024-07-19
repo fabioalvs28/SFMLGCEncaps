@@ -101,7 +101,7 @@ void GCShader::CompileShader()
 
 void GCShader::RootSign()
 {
-	CD3DX12_ROOT_PARAMETER slotRootParameter[6]; // Max parameters for a shader
+	CD3DX12_ROOT_PARAMETER slotRootParameter[8]; // Max parameters for a shader
 
 	UINT numParameters = 0; // Dynamic param attribution
 
@@ -205,6 +205,8 @@ void GCShader::Pso()
 	psoDescNoAlpha.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDescNoAlpha.RasterizerState.CullMode = m_cullMode;
 
+	int rtvSize = sizeof(m_rtvFormats) / sizeof(DXGI_FORMAT);
+
 	// Customize the blend state for transparency
 	CD3DX12_BLEND_DESC blendDesc1(D3D12_DEFAULT);
 	blendDesc1.RenderTarget[0].BlendEnable = TRUE;
@@ -226,10 +228,28 @@ void GCShader::Pso()
 	blendDesc2.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc2.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
+	for (UINT i = 1; i < rtvSize; ++i) {
+		blendDesc1.RenderTarget[i].BlendEnable = FALSE; // Disable blending
+		blendDesc1.RenderTarget[i].SrcBlend = D3D12_BLEND_ONE;
+		blendDesc1.RenderTarget[i].DestBlend = D3D12_BLEND_ZERO;
+		blendDesc1.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc1.RenderTarget[i].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc1.RenderTarget[i].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc1.RenderTarget[i].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc1.RenderTarget[i].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc2.RenderTarget[i].BlendEnable = FALSE; // Disable blending
+		blendDesc2.RenderTarget[i].SrcBlend = D3D12_BLEND_ONE;
+		blendDesc2.RenderTarget[i].DestBlend = D3D12_BLEND_ZERO;
+		blendDesc2.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc2.RenderTarget[i].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc2.RenderTarget[i].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc2.RenderTarget[i].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc2.RenderTarget[i].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	}
+	
+
 	psoDescAlpha.BlendState = blendDesc1;
 	psoDescNoAlpha.BlendState = blendDesc2;
-
-	int rtvSize = sizeof(m_rtvFormats) / sizeof(DXGI_FORMAT);
 
 	psoDescAlpha.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // #TOTHINK Phenomene etrange dans l'ordre de priorité
 	psoDescAlpha.SampleMask = UINT_MAX;

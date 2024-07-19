@@ -96,15 +96,27 @@ protected:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_pUpload;
     BYTE* m_data;
     UINT m_elementByteSize;
+    bool m_isConstantBuffer;
+
+    UINT CalcConstantBufferByteSize(UINT byteSize)
+    {
+        return (byteSize + 255) & ~255;
+    }
 };
 
 template<typename T>
 class GCUploadBuffer : public GCUploadBufferBase
 {
 public:
-    GCUploadBuffer(ID3D12Device* device, UINT elementCount)
+    GCUploadBuffer(ID3D12Device* device, UINT elementCount, bool isConstantBuffer)
     {
+        m_isConstantBuffer = isConstantBuffer;
         m_elementByteSize = sizeof(T);
+
+        if (isConstantBuffer)
+        {
+            m_elementByteSize = CalcConstantBufferByteSize(sizeof(T));
+        }
 
         CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_elementByteSize * elementCount);
         CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -121,7 +133,8 @@ public:
     }
 
     void CopyData(int elementIndex, const void* data, size_t dataSize) override {
-        //assert(dataSize == m_elementByteSize && "Data size must match element size.");
         memcpy(&m_data[elementIndex * m_elementByteSize], data, dataSize);
     }
 };
+
+

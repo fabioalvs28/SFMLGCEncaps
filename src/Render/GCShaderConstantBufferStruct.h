@@ -7,6 +7,7 @@ struct GCWORLDCB : GCSHADERCB
 {
     DirectX::XMFLOAT4X4 world; 
     float objectId;
+    float materialId;
 };
 
 struct GCVIEWPROJCB : GCSHADERCB
