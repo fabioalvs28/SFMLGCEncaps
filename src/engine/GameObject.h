@@ -4,8 +4,8 @@
 #include "Map.h"
 #include "List.h"
 #include "GameObjectTransform.h"
+#include "Components.h"
 
-class Component;
 class GCScene;
 
 
