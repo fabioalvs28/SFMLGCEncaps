@@ -368,7 +368,7 @@ bool GCImage::LoadBMP(const std::string& filename)
 		}
 		std::memcpy(&data[(m_height - 1 - y) * m_width * m_channels], rowData.data(), m_width * m_channels);
 	}
-
+	file.Close();
 	return true;
 }
 
