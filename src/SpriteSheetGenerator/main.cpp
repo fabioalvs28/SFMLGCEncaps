@@ -158,7 +158,6 @@ int main()
         {
             std::string filename = entry.path().filename().string();
             data["spriteIndex"][filename] = "";
-            GCFile imagefile = GCFile(entry.path().string().c_str(), "rb");
             GCImage image = GCImage(0, 0);
             
             if (!image.LoadBMP(entry.path().string()))

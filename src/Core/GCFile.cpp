@@ -10,6 +10,7 @@ GCFile::GCFile(const char* filename, const char* mode)
 	if (file)
 	{
 		this->filename = filename;
+		this->mode = mode;
 	}
 	else
 	{
