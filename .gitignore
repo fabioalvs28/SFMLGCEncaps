@@ -4,3 +4,5 @@
 /ide
 .vscode
 .drawio
+/bin/SpriteSheetGenerator-py/output
+/bin/SpriteSheetGenerator-py/randomImage

@@ -1,1 +1,1 @@
-python randomImageGen.py -o randomImage -n 1024 -w 10 -W 100 -h 10 -H 100
+python randomImageGen.py -o randomImage -n 1024 -w 10 -W 100 -h 10 -H 100 -format bmp
