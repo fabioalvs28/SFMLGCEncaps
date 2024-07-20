@@ -8,7 +8,7 @@
     "configuration": [
         {
             "name": "Debug|x64",
-            "type": "Application",
+            "type": "StaticLibrary",
             "use_debug_libraries": "true",
             "platform_toolset": "v143",
             "character_set": "Unicode",
@@ -27,7 +27,7 @@
         },
         {
             "name": "Release|x64",
-            "type": "Application",
+            "type": "StaticLibrary",
             "use_debug_libraries": "false",
             "platform_toolset": "v143",
             "whole_program_optimization": "true",
