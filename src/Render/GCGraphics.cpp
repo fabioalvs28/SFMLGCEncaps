@@ -494,8 +494,8 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
 
     GCWORLDCB worldData;
     worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
-    worldData.objectId = 1;
-    worldData.materialId = 1;
+    worldData.objectId = meshId;
+    worldData.materialId = pMaterial->m_materialId;
 
     // Update 
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
@@ -509,7 +509,7 @@ void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 }
 
 
-DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view) {
+DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4& proj, DirectX::XMFLOAT4X4& view) {
     DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pRender->GetRenderResources()->GetRenderWidth(), m_pRender->GetRenderResources()->GetRenderHeight(), proj, view);
 
     DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
@@ -525,7 +525,7 @@ void GCGraphics::Resize(int width, int height) {
     m_pRender->OnResize();
 }
 
-bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData)
+bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES& objectData)
 {
     if (CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
@@ -540,7 +540,7 @@ bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPE
     return true;
 }
 
-bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4 ambientLightColor, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, float shininess)
+bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4& ambientLightColor, DirectX::XMFLOAT4& ambient, DirectX::XMFLOAT4& diffuse, DirectX::XMFLOAT4& specular, float shininess)
 {
     if (CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;

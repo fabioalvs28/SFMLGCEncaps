@@ -243,6 +243,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //materialCubeOuter.resource->SetTexture(texture2.resource);
 
     auto materialCubeInner = graphics->CreateMaterial(shaderLightColor.resource);
+    auto materialCubeInner2 = graphics->CreateMaterial(shaderLightColor.resource);
     auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
     materialSphere.resource->SetTexture(texture.resource);
 
@@ -254,8 +255,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 
     XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
-    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, -4.0f, 3.0f); // Cube interne centr�
-    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(3.0f, 3.0f, 3.0f) * XMMatrixTranslation(-6.0f, 5.0f, -2.0f); // Cube interne centr�
+    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f); // Cube interne centr�
+    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-6.0f, 0.0f, 0.0f); // Cube interne centr�
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sph�re d�plac�e dans le cube interne
 
     GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner);
@@ -303,11 +304,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         GCMATERIALPROPERTIES materialProperties;
         materialProperties.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-        materialProperties.ambient = DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+        materialProperties.ambient = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
         materialProperties.diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         materialProperties.specular = DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
         materialProperties.shininess = 128.0f;
         graphics->UpdateMaterialProperties(materialCubeInner.resource, materialProperties);
+
+        GCMATERIALPROPERTIES materialProperties2;
+        materialProperties2.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        materialProperties2.ambient = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
+        materialProperties2.diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        materialProperties2.specular = DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+        materialProperties2.shininess = 128.0f;
+        graphics->UpdateMaterialProperties(materialCubeInner2.resource, materialProperties2);
 
         GCLIGHTSPROPERTIES lightData = {};
 
@@ -344,6 +353,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource, true);
+
+        graphics->UpdateWorldConstantBuffer(materialCubeInner2.resource, worldCubeInner, 2.0f);
+        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner2.resource, true);
 
         //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner, 3.0f);
         //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);

@@ -225,7 +225,7 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4 ambientLightColor, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, float shininess);
+	bool UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4& ambientLightColor, DirectX::XMFLOAT4& ambient, DirectX::XMFLOAT4& diffuse, DirectX::XMFLOAT4& specular, float shininess);
 
 	/************************************************************************************************
 	* @brief Same function as above but with GCMATERIALPROPERTIES data object already completed, without args
@@ -237,7 +237,7 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData);
+	bool UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES& objectData);
 	
 	/************************************************************************************************
 	* @brief Update lights (basic light system), 10 maximum
@@ -260,7 +260,7 @@ public:
 	*
 	* @return world matrix of the object at said coordinates(pixelX/pixelY)
 	************************************************************************************************/
-	DirectX::XMFLOAT4X4 ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
+	DirectX::XMFLOAT4X4 ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4& proj, DirectX::XMFLOAT4X4& view);
 
 	/************************************************************************************************
 	* @brief Remove the shader resource in ShaderManager, for Release resource, to avoid performance problems, if shader is not used

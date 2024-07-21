@@ -502,14 +502,14 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 	newMaterial.shininess = pMaterial->shininess;
 	newMaterial.materialId = pMaterial->m_materialId;
 
-	for (const auto& material : materialsUsedInFrame)
-	{
-		if (material.materialId == newMaterial.materialId)
-		{
-			// Meterial already in array
-			return true;
-		}
-	}
+	//for (const auto& material : materialsUsedInFrame)
+	//{
+	//	if (material.materialId == newMaterial.materialId)
+	//	{
+	//		// Meterial already in array
+	//		return true;
+	//	}
+	//}
 	materialsUsedInFrame.push_back(newMaterial);
 
 	return true;
@@ -584,6 +584,10 @@ void GCRenderContext::PerformDeferredLightPass() {
 	{
 		m_uploadBuffer->CopyData(static_cast<int>(i), &materialsUsedInFrame[i], sizeof(SBMaterialDSL));
 	}
+
+	//size_t count = materialsUsedInFrame.size();
+	//m_uploadBuffer->CopyData(0, materialsUsedInFrame.data(), sizeof(SBMaterialDSL) * count);
+	// #TODO FAIRE EN SORTE DE POUVOIR UPDATE TOUT LES MATERIALS DU VECTOR
 
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_2, m_uploadBuffer->Resource()->GetGPUVirtualAddress());
 
