@@ -116,7 +116,6 @@ int SpriteSheetGenerator::Packer()
             GCImage image = GCImage(0, 0); 
             if (entry.path().extension() == ".bmp")
             {
-
                 if (!image.LoadBMP(entry.path().string()))
                 {
                     std::printf("Error opening image\n");
@@ -127,7 +126,7 @@ int SpriteSheetGenerator::Packer()
             if (entry.path().extension() == ".png")
             {
                 GCFile imageFile = GCFile(entry.path().string().c_str(), "rb");
-                std::vector<UI8> buffer;
+                std::vector<uint8_t> buffer(imageFile.size);
                 if (!imageFile.Read(buffer, imageFile.size))
                 {
                     std::printf("Error opening image\n");

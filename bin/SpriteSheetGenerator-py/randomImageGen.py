@@ -31,6 +31,8 @@ def main(outputPath, imageCount, minWidth, maxWidth, minHeight, maxHeight, forma
         base = Image.new(mode="RGBA", size=(w, h), color=(0, 0, 0))
         base.paste(img, (1, 1))
         base.save(outputPath + "\\" + str(x + 1) + "." + format)
+        base.close()
+        img.close()
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:

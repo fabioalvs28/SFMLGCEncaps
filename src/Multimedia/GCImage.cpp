@@ -376,16 +376,18 @@ bool GCImage::LoadPNG(BYTE* buffer, int size)
 {
 	if (buffer == nullptr || size <= 0)
 	{
+		Close();
 		return false;
 	}
-	Close();
-	
+
 	lodepng::State state;
-	UI32 pngWidth, pngHeight;
+	UI32 pngWidth = 0;
+	UI32 pngHeight = 0;
 	if (lodepng_inspect(&pngWidth, &pngHeight, &state, buffer, size))
 	{
 		return false;
 	}
+
 	switch (state.info_png.color.colortype)
 	{
 	case LCT_RGBA:
@@ -414,7 +416,6 @@ bool GCImage::LoadPNG(BYTE* buffer, int size)
 	m_bits = m_width * m_height;
 	m_channels = m_bitCount / 8;
 	return true;
-
 }
 
 bool GCImage::LoadJPG(BYTE* buffer, int size)
