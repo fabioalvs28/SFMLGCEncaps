@@ -57,7 +57,7 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_tagsList = m_tagsList; // TODO Change this
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
-        DuplicateComponent( it.second->GetID(), pGameObject );
+        ;
     
     return pGameObject;
 }
@@ -77,7 +77,7 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
     pGameObject->m_tagsList = m_tagsList; // TODO Change this
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
-        DuplicateComponent( it.second->GetID(), pGameObject );
+        ;
     
     return pGameObject;
 }
