@@ -53,7 +53,7 @@ void Component::Activate()
 	if ( m_selfActive == false )
 	{
 		m_selfActive = true;
-		if ( m_globalActive == true )
+		if ( m_globalActive == true && m_pGameObject->m_created == true )
 			RegisterToManagers();
 	}
 }
@@ -63,7 +63,7 @@ void Component::Deactivate()
 	if ( m_selfActive == true )
 	{
 		m_selfActive = false;
-		if ( m_globalActive == true )
+		if ( m_globalActive == true && m_pGameObject->m_created == true )
 			UnregisterFromManagers();
 	}
 }
@@ -73,7 +73,7 @@ void Component::ActivateGlobal()
 	if ( m_globalActive == false )
 	{
 		m_globalActive = true;
-		if ( m_selfActive == true )
+		if ( m_selfActive == true && m_pGameObject->m_created == true )
 			RegisterToManagers();
 	}
 }
@@ -83,7 +83,7 @@ void Component::DeactivateGlobal()
 	if ( m_globalActive == true )
 	{
 		m_globalActive = false;
-		if ( m_selfActive == true )
+		if ( m_selfActive == true && m_pGameObject->m_created == true )
 			UnregisterFromManagers();
 	}
 }

@@ -13,6 +13,7 @@ class GCScene;
 class GCGameObject
 {
 friend class GCGameObjectTransform;
+friend class Component;
 friend class GCScene;
 friend class GCSceneManager;
 friend class GC;
