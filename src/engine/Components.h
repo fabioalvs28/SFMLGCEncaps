@@ -30,6 +30,7 @@ class Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -79,6 +80,7 @@ class SpriteRenderer : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -118,6 +120,7 @@ class Collider : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 
@@ -156,6 +159,7 @@ class BoxCollider : public Collider
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -185,6 +189,7 @@ class CircleCollider : public Collider
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -214,6 +219,7 @@ class RigidBody : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -243,6 +249,7 @@ class Animator : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -269,6 +276,7 @@ class SoundMixer : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -295,6 +303,7 @@ class Camera : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -320,6 +329,7 @@ class Script : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 
@@ -343,6 +353,7 @@ protected:
     { \
     friend class GCGameObject; \
     friend class GCUpdateManager; \
+    friend class GCSceneManager; \
     friend class GCPhysicManager; \
     friend class GCRenderManager; \
     public: \

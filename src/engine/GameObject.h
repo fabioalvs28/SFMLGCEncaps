@@ -119,7 +119,7 @@ T* GCGameObject::AddComponent()
     pComponent->m_pGameObject = this;
     bool gameObjectActive = IsActive();
     pComponent->m_globalActive = gameObjectActive;
-    if ( gameObjectActive == true )
+    if ( gameObjectActive == true && m_created == true )
         pComponent->RegisterToManagers();
     m_componentsList.Insert( T::GetIDStatic(), pComponent );
     return pComponent;

@@ -64,6 +64,7 @@ void GCScene::Destroy()
 GCGameObject* GCScene::CreateGameObject()
 {
 	GCGameObject* pGameObject = new GCGameObject( this );
+	pGameObject->m_pSceneNode = m_gameObjectsList.PushBack( pGameObject );
 	GC::GetActiveSceneManager()->AddGameObjectToCreateQueue( pGameObject );
 	return pGameObject;
 }

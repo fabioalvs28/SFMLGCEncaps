@@ -90,7 +90,7 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
 //////////////////////////////////////////////////////////////////////
 void GCGameObject::Destroy()
 {
-    ASSERT( m_deleted == false, LOG_FATAL, "Trying to destroy a GameObject that is already going to be destroyed in the next frame" ); //! There is will an issue with the Scene.Destroy() ! Maybe add a protected GameObject.DestroyNonRecursive()
+    ASSERT( m_deleted == false, LOG_FATAL, "Trying to destroy a GameObject that is already going to be destroyed in the next frame" );
     m_deleted = true;
     DestroyChildren();
     GC::GetActiveSceneManager()->AddGameObjectToDeleteQueue( this );
@@ -108,6 +108,7 @@ void GCGameObject::RemoveParent()
     m_pChildNode->Delete();
     m_pChildNode = nullptr;
     m_pParent = nullptr;
+    m_pSceneNode = m_pScene->m_gameObjectsList.PushBack( this );
     m_transform.UpdateLocalMatrixFromWorld();
 }
 
@@ -139,6 +140,8 @@ void GCGameObject::AddChild( GCGameObject* pChild )
     
     pChild->m_pParent = this;
     pChild->m_pChildNode = m_childrenList.PushBack( pChild );
+    pChild->m_pSceneNode->Delete();
+    pChild->m_pSceneNode = nullptr;
     pChild->m_globalActive = IsActive();
     pChild->m_transform.UpdateLocalMatrixFromWorld();
 }
