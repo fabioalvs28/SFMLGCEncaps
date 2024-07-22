@@ -58,13 +58,10 @@ bool SpriteSheetGenerator::sortBySpriteHeight(const Sprite& a, const Sprite& b)
     return (a.h > b.h);
 }
 
-
-SpriteSheetGenerator::SpriteSheetGenerator()
-{
-}
-
 int SpriteSheetGenerator::Packer()
 {
+    bool saveAsBMP = true;
+
     json data = json::parse(R"({})");
     data["totalImageCount"] = 0;
     data["totalTextureCount"] = 0;
@@ -227,7 +224,10 @@ int SpriteSheetGenerator::Packer()
                     std::string textureName = std::to_string(textureIndex) + ".png";
                     std::string outfilePath = m_outputPath.string() + textureName;
                     GCFile outfile = GCFile(outfilePath.c_str(), "wb");
-                    spritSheet.SavePNG(&outfile);
+                    if (saveAsBMP)
+                        spritSheet.SaveBMP(&outfile);
+                    else
+                        spritSheet.SavePNG(&outfile);
                     data["textures"][textureIndex]["textureName"] = textureName;
                     textureIndex++;
                     startImageIndex = imageIndex;
@@ -262,10 +262,17 @@ int SpriteSheetGenerator::Packer()
 
 
     data["totalTextureCount"] = textureIndex + 1;
-    std::string textureName = std::to_string(textureIndex) + ".bmp";
+    std::string textureName;
+    if (saveAsBMP)
+        textureName = std::to_string(textureIndex) + ".bmp";
+    else
+        textureName = std::to_string(textureIndex) + ".png";
     std::string outfilePath = m_outputPath.string() + textureName;
     GCFile outfile = GCFile(outfilePath.c_str(), "wb");
-    spritSheet.SaveBMP(&outfile);
+    if (saveAsBMP)
+        spritSheet.SaveBMP(&outfile);
+    else
+        spritSheet.SavePNG(&outfile);
     data["textures"][textureIndex]["textureName"] = textureName;
 
     std::ofstream myfile;

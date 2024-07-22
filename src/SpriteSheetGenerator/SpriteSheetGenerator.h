@@ -54,7 +54,7 @@ class SpriteSheetGenerator
     static bool sortBySpriteHeight(const Sprite& a, const Sprite& b);
 
 public:
-    SpriteSheetGenerator();
+    SpriteSheetGenerator() {};
     int Packer();
 
     void setInputPath(fs::path inputPath) { m_importPath = inputPath; }
