@@ -208,132 +208,13 @@ void GCRender::CreateSwapChain()
 
 void GCRender::CreateCbvSrvUavDescriptorHeaps()
 {
-	// Create CBV / SRV / UAV descriptor heap
-	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-	cbvHeapDesc.NumDescriptors = 1000;
-	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	cbvHeapDesc.NodeMask = 0;
-	HRESULT hr = m_pGCRenderResources->m_d3dDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap));
-	if (FAILED(hr))
-	{
-		// Handle descriptor heap creation failure
-		MessageBoxA(nullptr, "Failed to create CBV/SRV/UAV descriptor heap", "Error", MB_OK);
-		return;
-	}
-
-	//// Define the resource description for BlurImageBuffer
-	//D3D12_RESOURCE_DESC textureDesc = {};
-	//textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	//textureDesc.Alignment = 0;
-	//textureDesc.Width = 1920; // Width of the texture
-	//textureDesc.Height = 1080; // Height of the texture
-	//textureDesc.DepthOrArraySize = 1;
-	//textureDesc.MipLevels = 1;
-	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // Example format, choose appropriate format for your data
-	//textureDesc.SampleDesc.Count = 1;
-	//textureDesc.SampleDesc.Quality = 0;
-	//textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	//textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS; // Allow UAV
-
-	//// Define heap properties for BlurImageBuffer
-	//D3D12_HEAP_PROPERTIES heapProps = {};
-	//heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
-
-	//// Initial state of the resource for BlurImageBuffer
-	//D3D12_RESOURCE_STATES initState = D3D12_RESOURCE_STATE_COMMON;
-
-	//// Clear value (nullptr for non-render targets)
-	//D3D12_CLEAR_VALUE* clearValue = nullptr;
-
-	//// Create the BlurImageBuffer resource
-	//hr = m_pGCRenderResources->m_d3dDevice->CreateCommittedResource(
-	//	&heapProps,
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&textureDesc,
-	//	initState,
-	//	clearValue,
-	//	IID_PPV_ARGS(&m_pGCRenderResources->m_BlurImageBuffer)
-	//);
-
-	//if (FAILED(hr))
-	//{
-	//	// Handle resource creation failure for BlurImageBuffer
-	//	MessageBoxA(nullptr, "Failed to create BlurImageBuffer", "Error", MB_OK);
-	//	return;
-	//}
-
-	//// Define the resource description for BrightImageBuffer
-	//D3D12_RESOURCE_DESC textureDesc2 = textureDesc; // Reuse the same descriptor but different resource
-
-	//// Create the BrightImageBuffer resource
-	//hr = m_pGCRenderResources->m_d3dDevice->CreateCommittedResource(
-	//	&heapProps,
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&textureDesc2,
-	//	initState,
-	//	clearValue,
-	//	IID_PPV_ARGS(&m_pGCRenderResources->m_BrightImageBuffer)
-	//);
-
-	//if (FAILED(hr))
-	//{
-	//	// Handle resource creation failure for BrightImageBuffer
-	//	MessageBoxA(nullptr, "Failed to create BrightImageBuffer", "Error", MB_OK);
-	//	return;
-	//}
-
-	//// Create SRV and UAV for BlurImageBuffer
-	//D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	//D3D12_CPU_DESCRIPTOR_HANDLE uavHandle = srvHandle;
-	//UINT descriptorSize = m_pGCRenderResources->m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	//// Create SRV for BlurImageBuffer
-	//D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	//srvDesc.Format = textureDesc.Format;
-	//srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//srvDesc.Texture2D.MostDetailedMip = 0;
-	//srvDesc.Texture2D.MipLevels = 1;
-	//srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//m_pGCRenderResources->m_d3dDevice->CreateShaderResourceView(m_pGCRenderResources->m_BlurImageBuffer, &srvDesc, srvHandle);
-
-	//// Create UAV for BlurImageBuffer
-	//uavHandle.ptr += descriptorSize; // Offset to the next descriptor slot
-	//D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-	//uavDesc.Format = textureDesc.Format;
-	//uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-	//uavDesc.Texture2D.MipSlice = 0;
-	//m_pGCRenderResources->m_d3dDevice->CreateUnorderedAccessView(m_pGCRenderResources->m_BlurImageBuffer, nullptr, &uavDesc, uavHandle);
-
-	//// Create SRV and UAV for BrightImageBuffer
-	//srvHandle.ptr += descriptorSize * 2; // Offset to the next descriptor slot after UAV
-	//uavHandle = srvHandle; // Reset UAV handle to the new SRV handle position
-
-	//// Create SRV for BrightImageBuffer
-	//m_pGCRenderResources->m_d3dDevice->CreateShaderResourceView(m_pGCRenderResources->m_BrightImageBuffer, &srvDesc, srvHandle);
-
-	//// Create UAV for BrightImageBuffer
-	//uavHandle.ptr += descriptorSize;
-	//m_pGCRenderResources->m_d3dDevice->CreateUnorderedAccessView(m_pGCRenderResources->m_BrightImageBuffer, nullptr, &uavDesc, uavHandle);
-
+	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1000, true, &m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap);
 }
 
 void GCRender::CreateRtvAndDsvDescriptorHeaps()
 {
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;	
-	rtvHeapDesc.NumDescriptors = m_pGCRenderResources->SwapChainBufferCount + 2;
-	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	rtvHeapDesc.NodeMask = 0;
-	m_pGCRenderResources->m_d3dDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_pGCRenderResources->m_pRtvHeap));
-
-
-	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
-	dsvHeapDesc.NumDescriptors = 2;
-	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	dsvHeapDesc.NodeMask = 0;
-	m_pGCRenderResources->m_d3dDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_pGCRenderResources->m_pDsvHeap));
+	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_pGCRenderResources->SwapChainBufferCount + 2,false, &m_pGCRenderResources->m_pRtvHeap);
+	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV,2,false, &m_pGCRenderResources->m_pDsvHeap);
 }
 
 void GCRender::CreatePostProcessingResources() {
@@ -409,7 +290,10 @@ void GCRender::OnResize()
 	ReleasePreviousResources();
 	ResizeSwapChain();
 	CreateRenderTargetViews();
-	CreateDepthStencilBufferAndView();
+	m_pGCRenderResources->CreateDepthStencilBufferAndView(m_pGCRenderResources->m_DepthStencilFormat, D3D12_RESOURCE_STATE_COMMON);
+	auto depthStencilView = m_pGCRenderResources->m_lDepthStencilView.front();
+	CD3DX12_RESOURCE_BARRIER CommonToDepthWrite(CD3DX12_RESOURCE_BARRIER::Transition(depthStencilView->resource, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &CommonToDepthWrite);
 
 	CloseCommandList();
 	ExecuteCommandList();
@@ -455,104 +339,6 @@ void GCRender::CreateRenderTargetViews()
 		rtvHeapHandle.Offset(1, m_pGCRenderResources->m_rtvDescriptorSize);
 		m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_SwapChainBuffer[i], DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
-	//ID3D12Resource* renderTargetTexture = nullptr;
-
-	//// Define the texture description
-	//D3D12_RESOURCE_DESC textureDesc = {};
-	//textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	//textureDesc.Width = 1024; // Example width
-	//textureDesc.Height = 1024; // Example height
-	//textureDesc.DepthOrArraySize = 1;
-	//textureDesc.MipLevels = 1;
-	//textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	//textureDesc.SampleDesc.Count = 1;
-	//textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-
-	//// Define the clear value
-	//D3D12_CLEAR_VALUE clearValue = {};
-	//clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	//clearValue.Color[0] = 0.0f;
-	//clearValue.Color[1] = 0.0f;
-	//clearValue.Color[2] = 0.0f;
-	//clearValue.Color[3] = 1.0f;
-
-	//// Create the render target texture
-	//CD3DX12_HEAP_PROPERTIES test = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	//HRESULT hr = m_d3dDevice->CreateCommittedResource(
-	//	&test,
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&textureDesc,
-	//	D3D12_RESOURCE_STATE_RENDER_TARGET,
-	//	&clearValue,
-	//	IID_PPV_ARGS(&renderTargetTexture)
-	//);
-	//if (FAILED(hr)) {
-	//	// Handle error
-	//	MessageBoxA(nullptr, "Failed to create render target texture", "Error", MB_OK);
-	//	return ;
-	//}
-
-	//m_d3dDevice->CreateRenderTargetView(renderTargetTexture, nullptr, rtvHeapHandle);
-	//rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
-}
-
-void GCRender::CreateDepthStencilBufferAndView()
-{
-	D3D12_RESOURCE_DESC depthStencilDesc = {};
-	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	depthStencilDesc.Alignment = 0;
-	depthStencilDesc.Width = m_pGCRenderResources->m_pWindow->GetClientWidth();
-	depthStencilDesc.Height = m_pGCRenderResources->m_pWindow->GetClientHeight();
-	depthStencilDesc.DepthOrArraySize = 1;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.Format = m_pGCRenderResources->m_DepthStencilFormat;
-	depthStencilDesc.SampleDesc.Count = m_pGCRenderResources->m_4xMsaaState ? 4 : 1;
-	depthStencilDesc.SampleDesc.Quality = m_pGCRenderResources->m_4xMsaaState ? (m_pGCRenderResources->m_4xMsaaQuality - 1) : 0;
-	depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-
-	D3D12_CLEAR_VALUE optClear = {};
-	optClear.Format = m_pGCRenderResources->m_DepthStencilFormat;
-	optClear.DepthStencil.Depth = 1.0f;
-	optClear.DepthStencil.Stencil = 0;
-
-	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
-	m_pGCRenderResources->m_d3dDevice->CreateCommittedResource(
-		&heapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&depthStencilDesc,
-		D3D12_RESOURCE_STATE_COMMON,
-		&optClear,
-		IID_PPV_ARGS(&m_pGCRenderResources->m_DepthStencilBuffer)
-	);
-
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	dsvDesc.Format = m_pGCRenderResources->m_DepthStencilFormat;
-	dsvDesc.Texture2D.MipSlice = 0;
-	m_pGCRenderResources->m_d3dDevice->CreateDepthStencilView(m_pGCRenderResources->m_DepthStencilBuffer, &dsvDesc, m_pGCRenderResources->GetDepthStencilViewAddress());
-
-	CD3DX12_RESOURCE_BARRIER CommonToDepthWrite(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_DepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
-	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &CommonToDepthWrite);
-
-	// Second depth stencil for Mesh buffer id 
-	m_pGCRenderResources->m_d3dDevice->CreateCommittedResource(
-		&heapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&depthStencilDesc,
-		D3D12_RESOURCE_STATE_COMMON,
-		&optClear,
-		IID_PPV_ARGS(&m_pGCRenderResources->m_ObjectIdDepthStencilBuffer)
-	);
-
-
-	m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pGCRenderResources->m_pDsvHeap->GetCPUDescriptorHandleForHeapStart());
-	m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress.Offset(1, m_pGCRenderResources->m_dsvDescriptorSize);
-	m_pGCRenderResources->m_d3dDevice->CreateDepthStencilView(m_pGCRenderResources->m_ObjectIdDepthStencilBuffer, &dsvDesc, m_pGCRenderResources->m_ObjectIdDepthStencilBufferAddress);
-
-	CD3DX12_RESOURCE_BARRIER CommonToDepthWrite2(CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_ObjectIdDepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
-	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &CommonToDepthWrite2);
 }
 
 void GCRender::UpdateViewport() 
@@ -1249,4 +1035,127 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateSrvWithTexture(ID3D12Reso
 	m_srvOffsetCount++;
 
 	return srvGpuHandle;
+}
+
+void GCRenderResources::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** pDescriptorHeap)
+{
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+	heapDesc.Type = type;
+	heapDesc.NumDescriptors = numDescriptors;
+	heapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	heapDesc.NodeMask = 0;
+
+	HRESULT hr = m_d3dDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(pDescriptorHeap));
+}
+
+GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags, D3D12_CLEAR_VALUE* clearValue)
+{
+	//Handle Cpu
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_rtvOffsetCount, m_rtvDescriptorSize);
+	rtvHeapHandle.Offset(m_rtvOffsetCount, m_rtvDescriptorSize);
+
+	D3D12_RESOURCE_DESC textureDesc = {};
+	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	textureDesc.Width = m_renderWidth;
+	textureDesc.Height = m_renderHeight;
+	textureDesc.DepthOrArraySize = 1;
+	textureDesc.MipLevels = 1;
+	textureDesc.Format = format;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+
+	D3D12_CLEAR_VALUE defaultClearValue = {};
+	defaultClearValue.Format = format;
+	defaultClearValue.Color[0] = 0.0f;
+	defaultClearValue.Color[1] = 0.0f;
+	defaultClearValue.Color[2] = 0.0f;
+	defaultClearValue.Color[3] = 1.0f;
+
+	// Use the provided clear value or the default one
+	D3D12_CLEAR_VALUE* actualClearValue = clearValue ? clearValue : &defaultClearValue;
+
+	CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	ID3D12Resource* renderTargetTexture = nullptr;
+	HRESULT hr = m_d3dDevice->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		actualClearValue,
+		IID_PPV_ARGS(&renderTargetTexture)
+	);
+
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+	rtvDesc.Format = format;
+	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	rtvDesc.Texture2D.MipSlice = 0;
+	rtvDesc.Texture2D.PlaneSlice = 0;
+
+	m_d3dDevice->CreateRenderTargetView(renderTargetTexture, &rtvDesc, rtvHeapHandle);
+
+	// Manager Rtv
+	GC_DESCRIPTOR_RESOURCE* descriptorResource = new GC_DESCRIPTOR_RESOURCE();
+	descriptorResource->resource = renderTargetTexture;
+	descriptorResource->cpuHandle = rtvHeapHandle;
+	m_lRenderTargets.push_back(descriptorResource);
+
+	m_rtvOffsetCount++;
+
+	return descriptorResource;
+}
+
+GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags)
+{
+	HRESULT hr;
+
+	D3D12_RESOURCE_DESC depthStencilDesc = {};
+	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	depthStencilDesc.Alignment = 0;
+	depthStencilDesc.Width = m_renderWidth;
+	depthStencilDesc.Height = m_renderHeight;
+	depthStencilDesc.DepthOrArraySize = 1;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.Format = depthStencilFormat;
+	depthStencilDesc.SampleDesc.Count = m_4xMsaaState ? 4 : 1;
+	depthStencilDesc.SampleDesc.Quality = m_4xMsaaState ? (m_4xMsaaQuality - 1) : 0;
+	depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	D3D12_CLEAR_VALUE optClear = {};
+	optClear.Format = depthStencilFormat;
+	optClear.DepthStencil.Depth = 1.0f;
+	optClear.DepthStencil.Stencil = 0;
+
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+	ID3D12Resource* depthStencilBuffer = nullptr;
+	hr = m_d3dDevice->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&depthStencilDesc,
+		resourceFlags,
+		&optClear,
+		IID_PPV_ARGS(&depthStencilBuffer)
+	);
+	CHECK_HRESULT(hr, "Dsv Bad Init");
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Format = depthStencilFormat;
+	dsvDesc.Texture2D.MipSlice = 0;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_pDsvHeap->GetCPUDescriptorHandleForHeapStart());
+	dsvHandle.Offset(m_dsvOffsetCount, m_dsvDescriptorSize);
+
+	m_d3dDevice->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, dsvHandle);
+
+	GC_DESCRIPTOR_RESOURCE* dsv = new GC_DESCRIPTOR_RESOURCE{ depthStencilBuffer, dsvHandle };
+
+	m_dsvOffsetCount++;
+	m_lDepthStencilView.push_back(dsv);
+
+	return dsv;
 }

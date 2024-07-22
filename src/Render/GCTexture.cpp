@@ -37,7 +37,7 @@ GC_GRAPHICS_ERROR GCTexture::Initialize(const std::string& filePath, GCGraphics*
     }
     //Heap
     CD3DX12_CPU_DESCRIPTOR_HANDLE handleDescriptor(pGraphics->GetRender()->GetRenderResources()->GetCbvSrvUavSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
-    handleDescriptor.Offset(textureOffset + 3, m_cbvSrvUavDescriptorSize);
+    handleDescriptor.Offset(textureOffset, m_cbvSrvUavDescriptorSize);
 
     //Desc texture
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -53,7 +53,7 @@ GC_GRAPHICS_ERROR GCTexture::Initialize(const std::string& filePath, GCGraphics*
     pGraphics->GetRender()->GetRenderResources()->Getmd3dDevice()->CreateShaderResourceView(m_pTextureBuffer, &srvDesc, handleDescriptor);
 
     m_textureAddress = CD3DX12_GPU_DESCRIPTOR_HANDLE(pGraphics->GetRender()->GetRenderResources()->GetCbvSrvUavSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart());
-    m_textureAddress.Offset(textureOffset + 3, m_cbvSrvUavDescriptorSize);
+    m_textureAddress.Offset(textureOffset, m_cbvSrvUavDescriptorSize);
 
     if (!CHECK_POINTERSNULL("Texture buffers are not null", "Texture buffers are null", m_pTextureBuffer, m_pUploadTexture))
         return GCRENDER_ERROR_POINTER_NULL;

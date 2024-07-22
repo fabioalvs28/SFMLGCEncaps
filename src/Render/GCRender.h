@@ -1,5 +1,9 @@
 #pragma once
-
+struct GC_DESCRIPTOR_RESOURCE
+{
+	ID3D12Resource* resource;
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
+};
 class GCRenderResources {
 public:
 	
@@ -52,10 +56,22 @@ public:
 	ID3D12Resource* CreateRTT(bool test);
 	//Srv Manager
 	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
+	//Descriptor Heap Creation
+	void CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** ppDescriptorHeap);
+
+	//Rtv Managerq
+	int m_rtvOffsetCount = 2;
+	std::list<GC_DESCRIPTOR_RESOURCE*> m_lRenderTargets;
+	GC_DESCRIPTOR_RESOURCE* CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE, D3D12_CLEAR_VALUE* clearValue = nullptr);
+
+	//Dsv Manager
+	int m_dsvOffsetCount = 0;
+	std::list<GC_DESCRIPTOR_RESOURCE*> m_lDepthStencilView;
+	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags);
 private:
 	friend class GCRender;
 
-	int m_srvOffsetCount = 0;
+	int m_srvOffsetCount = 300;
 	std::list<CD3DX12_GPU_DESCRIPTOR_HANDLE> m_lShaderResourceView;
 	Window* m_pWindow;
 
@@ -159,7 +175,6 @@ public:
 	void ReleasePreviousResources();
 	void ResizeSwapChain();
 	void CreateRenderTargetViews();
-	void CreateDepthStencilBufferAndView();
 	void UpdateViewport();
 
 	// Draw Part
