@@ -85,8 +85,8 @@ public:
     const int GetID() override { return m_ID; }
     
     
-    void SetSprite( std::string texturePath );
-    void SetColor(); 
+    void SetSprite( std::string fileName);
+    void SetColor() {};
     
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }

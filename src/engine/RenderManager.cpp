@@ -1,5 +1,5 @@
 #include "pch.h"
-
+#include "../core/framework.h"
 #include "RenderManager.h"
 #include "GC.h"
 #include "GameObject.h"
@@ -23,9 +23,9 @@ GCRenderManager::GCRenderManager()
     XMMATRIX viewMatrix = XMMatrixLookAtLH(m_cameraPosition, m_cameraTarget, m_cameraUp);
     XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
     XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
-
-    XMStoreFloat4x4(&m_storedProjectionMatrix, transposedProjectionMatrix);
-    XMStoreFloat4x4(&m_storedViewMatrix, transposedViewMatrix);
+    
+    m_storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
+    m_storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 }
 
 GCRenderManager::~GCRenderManager()

@@ -85,13 +85,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     //test1->AddComponent<BoxCollider>();
     test2->AddComponent<BoxCollider>()->SetVisible(true);
-    test2->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
+    test2->AddComponent<SpriteRenderer>()->SetSprite("ahah.dds");
 
     test3->AddComponent<BoxCollider>()->SetVisible(true);
-    test3->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    test3->AddComponent<SpriteRenderer>()->SetSprite("ahah.dds");
 
     test3bis->AddComponent<BoxCollider>()->SetVisible(true);
-    test3bis->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    test3bis->AddComponent<SpriteRenderer>()->SetSprite("ahah.dds");
 
     test1->m_transform.SetPosition(GCVEC3(2, 0, 0));
     

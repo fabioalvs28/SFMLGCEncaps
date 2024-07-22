@@ -18,37 +18,37 @@ GCGraphics::~GCGraphics()
 {
     for (auto shader : m_vShaders)
     {
-        DELETE(shader);
+        SAFE_DELETE(shader);
     }
     m_vShaders.clear();
 
     for (auto material : m_vMaterials)
     {
-        DELETE(material);
+        SAFE_DELETE(material);
     }
     m_vMaterials.clear();
 
     for (auto mesh : m_vMeshes)
     {
-        DELETE(mesh);
+        SAFE_DELETE(mesh);
     }
     m_vMeshes.clear();
 
     for (auto texture : m_lTextures)
     {
-        DELETE(texture);
+        SAFE_DELETE(texture);
     }
     m_lTextures.clear();
 
     for (auto buffer : m_pCbCameraInstances)
     {
-        DELETE(buffer);
+        SAFE_DELETE(buffer);
     }
     m_pCbCameraInstances.clear();
 
-    DELETE(m_pRender);
-    DELETE(m_pPrimitiveFactory);
-    DELETE(m_pModelParserFactory);
+    SAFE_DELETE(m_pRender);
+    SAFE_DELETE(m_pPrimitiveFactory);
+    SAFE_DELETE(m_pModelParserFactory);
 }
 
 bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
@@ -336,7 +336,7 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC
     return ResourceCreationResult<GCGeometry*>(true, pGeometry, errorState);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtensionType)
+ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType)
 {
     GCGeometry* pGeometry = new GCGeometry;
 
