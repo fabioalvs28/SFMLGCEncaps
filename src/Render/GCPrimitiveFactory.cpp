@@ -214,40 +214,60 @@ void GCPrimitiveFactory::GenerateCube(std::vector<DirectX::XMFLOAT3>& vertices,
     }
 }
 
-void GCPrimitiveFactory::GeneratePlaneBorder(float width, float height, float borderWidth, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<uint16_t>& outIndices)
+void GCPrimitiveFactory::GeneratePlaneBorders(std::vector<DirectX::XMFLOAT3>& vertices,
+    std::vector<uint16_t>& indices,
+    std::vector<DirectX::XMFLOAT2>& uvs,
+    std::vector<DirectX::XMFLOAT3>& normals)
 {
-    outVertices.clear();
-    outIndices.clear();
+    // Define vertices for the border of the plane
+    DirectX::XMFLOAT3 positions[12] = {
+        // Plane vertices (inner rectangle)
+        { -0.5f,  0.0f, -0.5f }, // 0 (Bottom-left)
+        {  0.5f,  0.0f, -0.5f }, // 1 (Bottom-right)
+        {  0.5f,  0.0f,  0.5f }, // 2 (Top-right)
+        { -0.5f,  0.0f,  0.5f }, // 3 (Top-left)
 
-    // Outer vertices (clockwise)
-    outVertices.push_back(DirectX::XMFLOAT3(-width / 2 - borderWidth, -height / 2 - borderWidth, 0.0f)); // Bottom-left outer
-    outVertices.push_back(DirectX::XMFLOAT3(-width / 2 - borderWidth, height / 2 + borderWidth, 0.0f)); // Top-left outer
-    outVertices.push_back(DirectX::XMFLOAT3(width / 2 + borderWidth, height / 2 + borderWidth, 0.0f)); // Top-right outer
-    outVertices.push_back(DirectX::XMFLOAT3(width / 2 + borderWidth, -height / 2 - borderWidth, 0.0f)); // Bottom-right outer
+        // Border vertices (outer rectangle, slightly offset)
+        { -0.55f, 0.0f, -0.55f }, // 4 (Outer bottom-left)
+        {  0.55f, 0.0f, -0.55f }, // 5 (Outer bottom-right)
+        {  0.55f, 0.0f,  0.55f }, // 6 (Outer top-right)
+        { -0.55f, 0.0f,  0.55f }  // 7 (Outer top-left)
+    };
 
-    // Inner vertices (clockwise)
-    outVertices.push_back(DirectX::XMFLOAT3(-width / 2, -height / 2, 0.0f)); // Bottom-left inner
-    outVertices.push_back(DirectX::XMFLOAT3(-width / 2, height / 2, 0.0f)); // Top-left inner
-    outVertices.push_back(DirectX::XMFLOAT3(width / 2, height / 2, 0.0f)); // Top-right inner
-    outVertices.push_back(DirectX::XMFLOAT3(width / 2, -height / 2, 0.0f)); // Bottom-right inner
+    // Define indices for triangles forming the border
+    uint16_t borderIndices[24] = {
+        // Bottom border (outer rectangle)
+        4, 5, 1, 4, 1, 0,
+        // Right border (outer rectangle)
+        5, 6, 2, 5, 2, 1,
+        // Top border (outer rectangle)
+        6, 7, 3, 6, 3, 2,
+        // Left border (outer rectangle)
+        7, 4, 0, 7, 0, 3
+    };
 
-    // Indices for the border (two triangles for each side of the border)
-    // Bottom border
-    outIndices.push_back(0); outIndices.push_back(4); outIndices.push_back(7);
-    outIndices.push_back(0); outIndices.push_back(7); outIndices.push_back(3);
+    // Define UVs for each border vertex (12 vertices)
+    DirectX::XMFLOAT2 borderUVs[12] = {
+        // Plane UVs
+        { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f },
+        // Border UVs (same as plane UVs for simplicity)
+        { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
+    };
 
-    // Left border
-    outIndices.push_back(0); outIndices.push_back(1); outIndices.push_back(5);
-    outIndices.push_back(0); outIndices.push_back(5); outIndices.push_back(4);
+    // Define normals for each vertex (12 vertices)
+    DirectX::XMFLOAT3 borderNormals[12] = {
+        { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f },
+        { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }
+    };
 
-    // Top border
-    outIndices.push_back(1); outIndices.push_back(2); outIndices.push_back(6);
-    outIndices.push_back(1); outIndices.push_back(6); outIndices.push_back(5);
-
-    // Right border
-    outIndices.push_back(2); outIndices.push_back(3); outIndices.push_back(7);
-    outIndices.push_back(2); outIndices.push_back(7); outIndices.push_back(6);
+    // Copy vertices, indices, UVs, and normals into the provided vectors
+    vertices.assign(positions, positions + 12);
+    indices.assign(borderIndices, borderIndices + 24);
+    uvs.assign(borderUVs, borderUVs + 12);
+    normals.assign(borderNormals, borderNormals + 12);
 }
+
+
 
 void GCPrimitiveFactory::GenerateCubeSkybox(std::vector<DirectX::XMFLOAT3>& vertices,
     std::vector<uint16_t>& indices,
@@ -366,6 +386,13 @@ bool GCPrimitiveFactory::Initialize()
 
     GenerateCube(cubeVertices, cubeIndices, cubeUvs, cubeNormals);
 
+    std::vector<DirectX::XMFLOAT3> planeBordersVertices;
+    std::vector<DirectX::XMFLOAT2> planeBordersUvs;
+    std::vector<uint16_t> planeBordersIndices;
+    std::vector<DirectX::XMFLOAT3> planeBordersNormals;
+
+    GeneratePlaneBorders(planeBordersVertices, planeBordersIndices, planeBordersUvs, planeBordersNormals);
+
     std::vector<DirectX::XMFLOAT3> cubeSkyboxVertices;
     std::vector<DirectX::XMFLOAT2> cubeSkyboxUvs;
     std::vector<uint16_t> cubeSkyboxIndices;
@@ -447,10 +474,10 @@ bool GCPrimitiveFactory::Initialize()
             }},
         },
         { //Plane Border
-            {L"index", sphereIndices},
-            {L"pos", sphereVertices},
-            {L"uvs", sphereUvs},
-            {L"normals", sphereNormals},
+            {L"index", planeBordersIndices},
+            {L"pos", planeBordersVertices},
+            {L"uvs", planeBordersUvs},
+            {L"normals", planeBordersNormals},
         }
     };
 

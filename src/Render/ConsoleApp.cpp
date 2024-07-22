@@ -240,7 +240,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //meshSphere.resource->UploadGeometryData(geoCubeInner.resource, flagsLightTexture);
 
     GCParticleSystem* particleSystem = new GCParticleSystem();
-    particleSystem->InitializeRandom(50000, true, meshSphere.resource);
+    particleSystem->InitializeRandom(1, true, meshSphere.resource);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
@@ -313,8 +313,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         //transposedViewMatrix = XMMatrixTranspose(viewMatrix);
         //XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
 
-        XMMATRIX worldMatrixCubeInnerUpdated = GCUtils::CreateBillboardMatrix(XMVectorSet(-4.0f, 8.0f, -4.0f, 1.0f), cameraPosition, cameraUp);
-        worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(XMMatrixTranspose(worldMatrixCubeInnerUpdated));
+        /*XMMATRIX worldMatrixCubeInnerUpdated = GCUtils::CreateBillboardMatrix(XMVectorSet(-4.0f, 8.0f, -4.0f, 1.0f), cameraPosition, cameraUp);
+        worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(XMMatrixTranspose(worldMatrixCubeInnerUpdated));*/
 
         GCMATERIALPROPERTIES materialProperties;
         materialProperties.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -341,7 +341,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         pointLight.spotAngle = 0.0f; // Angle du spot si applicable
         pointLight.lightIntensity = 20.4f;
         pointLight.lightType = LIGHT_TYPE_POINT; // Type de lumière ponctuelle
-
 
         lightData.lights[1] = pointLight;
         lightData.lights[0] = directionalLight;
