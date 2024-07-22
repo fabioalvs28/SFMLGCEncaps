@@ -54,10 +54,12 @@
 struct GCGeometry;
 struct GCMESHBUFFERDATA;
 
-
+// Basic Shading Pass
 struct GCSHADERCB;
 struct GCWORLDCB;
 struct GCVIEWPROJCB;
+// DSL Pass
+struct GC_MATERIAL_DSL;
 
 enum GC_PRIMITIVE_ID;
 struct GC_MODELINFOS;
@@ -67,7 +69,6 @@ class GCGraphicsLogger;
 enum GC_GRAPHICS_ERROR;
 
 struct GC_DESCRIPTOR_RESOURCE;
-struct SBMaterialDSL;
 //
 
 

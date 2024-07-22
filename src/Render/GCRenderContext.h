@@ -1,17 +1,6 @@
 #pragma once
 
 
-// SB Structured Buffer, Deferred Shading Light
-struct SBMaterialDSL : GCSHADERCB
-{
-	DirectX::XMFLOAT4 ambientLightColor;
-	DirectX::XMFLOAT4 ambient;
-	DirectX::XMFLOAT4 diffuse;
-	DirectX::XMFLOAT4 specular;
-	float shininess;
-	float materialId;
-};
-
 class GCRenderContext
 {
 public:
@@ -97,8 +86,7 @@ public:
 	void DesactiveDeferredLightPass();
 
 	// StructuredBuffer
-	std::unique_ptr<GCUploadBuffer<SBMaterialDSL>> m_uploadBuffer;
-	void UpdateMaterialsSB(GCUploadBufferBase* materialsStructuredBuffer, ID3D12GraphicsCommandList* commandList, const std::vector<SBMaterialDSL>& materialsUsedInFrame);
+	std::unique_ptr<GCUploadBuffer<GC_MATERIAL_DSL>> m_uploadBuffer;
 
 	// Camera & Light -> Temporarily
 	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
@@ -110,7 +98,7 @@ public:
 	inline void Set3DMode() { m_renderMode = 1; }
 
 	// Structured Buffer Send to Deferred Shader
-	std::vector<SBMaterialDSL> materialsUsedInFrame;
+	std::vector<GC_MATERIAL_DSL> materialsUsedInFrame;
 private:
 
 	bool m_isBasicPostProcessingActivated;

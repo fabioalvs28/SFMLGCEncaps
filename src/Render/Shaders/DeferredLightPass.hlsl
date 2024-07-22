@@ -5,6 +5,8 @@
 #define LIGHT_TYPE_POINT 2
 
 #define MAX_MATERIALS 100
+#define MAX_LIGHTS 100
+
 
 struct Light
 {
@@ -47,7 +49,7 @@ cbuffer cbPerCamera : register(b0)
 
 cbuffer cbPerLights : register(b1)
 {
-    Light lights[10];
+    Light lights[MAX_LIGHTS];
 };
 
 cbuffer MaterialBuffer : register(b2) 

@@ -237,7 +237,7 @@ void GCRenderContext::CreateDeferredLightPassResources() {
 		m_pDeferredLightPassShader->Load();
 	}
 
-	m_uploadBuffer = std::make_unique<GCUploadBuffer<SBMaterialDSL>>(m_pGCRenderResources->m_d3dDevice, 100, true);
+	m_uploadBuffer = std::make_unique<GCUploadBuffer<GC_MATERIAL_DSL>>(m_pGCRenderResources->m_d3dDevice, 100, true);
 }
 
 
@@ -494,7 +494,7 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 	}
 
 	// Structured Buffer Send to Deferred Shader
-	SBMaterialDSL newMaterial;
+	GC_MATERIAL_DSL newMaterial;
 	newMaterial.ambientLightColor = pMaterial->ambientLightColor;
 	newMaterial.ambient = pMaterial->ambient;
 	newMaterial.diffuse = pMaterial->diffuse;
@@ -579,14 +579,14 @@ void GCRenderContext::PerformDeferredLightPass() {
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_0, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_1, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
 	// Send Materials array used in frame -> #TODO same for World Pos?
-	size_t count = materialsUsedInFrame.size();
-	for (size_t i = 0; i < count; ++i)
-	{
-		m_uploadBuffer->CopyData(static_cast<int>(i), &materialsUsedInFrame[i], sizeof(SBMaterialDSL));
-	}
-
 	//size_t count = materialsUsedInFrame.size();
-	//m_uploadBuffer->CopyData(0, materialsUsedInFrame.data(), sizeof(SBMaterialDSL) * count);
+	//for (size_t i = 0; i < count; ++i)
+	//{
+	//	m_uploadBuffer->CopyData(static_cast<int>(i), &materialsUsedInFrame[i], sizeof(SBMaterialDSL));
+	//}
+
+	size_t count = materialsUsedInFrame.size();
+	m_uploadBuffer->CopyData(0, materialsUsedInFrame.data(), sizeof(GC_MATERIAL_DSL) * count); 
 	// #TODO FAIRE EN SORTE DE POUVOIR UPDATE TOUT LES MATERIALS DU VECTOR
 
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_2, m_uploadBuffer->Resource()->GetGPUVirtualAddress());

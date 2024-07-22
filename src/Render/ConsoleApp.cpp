@@ -312,10 +312,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         GCMATERIALPROPERTIES materialProperties2;
         materialProperties2.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-        materialProperties2.ambient = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
+        materialProperties2.ambient = DirectX::XMFLOAT4(0.9f, 0.9f, 0.4f, 1.0f);
         materialProperties2.diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         materialProperties2.specular = DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-        materialProperties2.shininess = 128.0f;
+        materialProperties2.shininess = 12.0f;
         graphics->UpdateMaterialProperties(materialCubeInner2.resource, materialProperties2);
 
         GCLIGHTSPROPERTIES lightData = {};
