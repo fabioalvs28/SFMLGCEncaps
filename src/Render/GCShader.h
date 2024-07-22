@@ -83,7 +83,7 @@ public:
 	GCComputeShader();
 	~GCComputeShader();
 
-	GC_GRAPHICS_ERROR Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK);
+	GC_GRAPHICS_ERROR Initialize(GCRenderContext* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK);
 	void CompileShader();
 	void RootSign();
 	void Pso();
@@ -104,7 +104,7 @@ private:
 	ID3DBlob* m_csByteCode;
 	std::wstring m_csCsoPath;
 	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc;
-	GCRender* m_pRender;
+	GCRenderContext* m_pRender;
 	int m_flagEnabledBits;
 	D3D12_CULL_MODE m_cullMode;
 };

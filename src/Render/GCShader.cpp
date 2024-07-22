@@ -424,13 +424,13 @@ GCComputeShader::GCComputeShader()
 
 GCComputeShader::~GCComputeShader()
 {
-	SAFE_RELEASE(m_RootSignature);
-	SAFE_RELEASE(m_PSO);
-	SAFE_RELEASE(m_csByteCode);
+	m_RootSignature->Release();
+	m_PSO->Release();
+	m_csByteCode->Release();
 	m_InputLayout.clear();
 }
 
-GC_GRAPHICS_ERROR GCComputeShader::Initialize(GCRender* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
+GC_GRAPHICS_ERROR GCComputeShader::Initialize(GCRenderContext* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode)
 {
 	if (!pRender) return GCRENDER_ERROR_POINTER_NULL;
 
@@ -630,3 +630,4 @@ GC_GRAPHICS_ERROR GCComputeShader::Load()
 	}
 
 	return GCRENDER_SUCCESS_OK;
+}

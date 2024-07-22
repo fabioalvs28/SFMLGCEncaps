@@ -18,7 +18,7 @@ public:
 	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
 	//Render format
 	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
-
+	inline int GetCurrBackBuffer() const { return m_CurrBackBuffer; }
 	//Msaa
 	inline bool Get4xMsaaState() const { return m_4xMsaaState; }
 	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
@@ -49,7 +49,6 @@ public:
 
 	inline UINT GetRenderWidth() const { return m_renderWidth; }
 	inline UINT GetRenderHeight() const { return m_renderHeight; }
-
 	// Setter 
 	inline void ResizeRender(int width, int height) { m_renderWidth = width;  m_renderHeight = height; }
 private:
@@ -149,4 +148,11 @@ private:
 	int m_dsvOffsetCount = 0;
 	std::list<GC_DESCRIPTOR_RESOURCE*> m_lDepthStencilView;
 	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags);
+	
+	void CreateUAV(ID3D12Resource* textureResource);
+
+	GCShader* m_postProcessingShader;
+	GCComputeShader* m_postProcessingShaderCS;
+	// Object / Layers Buffer Id Resources
+	GCShader* m_objectBufferIdShader;
 };

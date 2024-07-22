@@ -49,6 +49,7 @@ public:
 
 
 	void PerformPostProcessing();
+	void PerformPostProcessingCS();
 	void PerformDeferredLightPass();
 
 	/**
@@ -89,10 +90,12 @@ public:
 
 
 	void ActiveBasicPostProcessing();
+	void ActiveCSPostProcessing();
 	void ActivePixelIDMapping();
 	void ActiveDeferredLightPass();
 
 	void DesactiveBasicPostProcessing();
+	void DesactiveCSPostProcessing();
 	void DesactivePixelIDMapping();
 	void DesactiveDeferredLightPass();
 
@@ -114,6 +117,7 @@ public:
 private:
 
 	bool m_isBasicPostProcessingActivated;
+	bool m_isCSPostProcessingActivated;
 	bool m_isPixelIDMappingActivated; 
 
 	bool m_isDeferredLightPassActivated;
