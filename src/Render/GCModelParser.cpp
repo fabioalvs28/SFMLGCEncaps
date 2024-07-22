@@ -1,38 +1,41 @@
 #include "pch.h"
 
 GCModelParser::GCModelParser()
+	: m_ParsedModel(nullptr)
 {
+	m_filePath.clear();
 }
 
 GCModelParser::~GCModelParser()
 {
 }
 
-bool GCModelParser::Parse(std::string fileName, Extensions fileExtension)
+bool GCModelParser::Parse(std::string fileName, GC_EXTENSIONS fileExtension)
 {
 
 	switch (fileExtension)
 	{
 	case 0:
-		if (!CHECK_EXTENSION(fileName, "obj"))
-			return false;
+		if (CHECK_EXTENSION(fileName, "obj") == false) return false;
 
 		m_ParsedModel = dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
+
 		return true;
 	}
 	return false;
 }
 
-bool GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Extensions fileExtension, GCGeometry* pGeometry)
+GC_GRAPHICS_ERROR GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtension, GCGeometry* pGeometry)
 {
-	if (!CHECK_POINTERSNULL("Model geometry loaded successfully", "Model Geometry is empty", pGeometry))
-		return false;
-	if (!CHECK_FILE(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully")))
-		return false;
+	if (CHECK_POINTERSNULL("Model geometry loaded successfully", "Model Geometry is empty", pGeometry) == false)
+		return GCRENDER_ERROR_POINTER_NULL;
+	if (CHECK_FILE(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully")) == false)
+		return GCRENDER_ERROR_FILEPATH_NOT_FOUND;
 
 
 
-	Parse(fileName, fileExtension);
+	if (Parse(fileName, fileExtension) == false)
+		return GCRENDER_ERROR_BAD_EXTENSION;
 
 	pGeometry->indiceNumber = m_ParsedModel->facesInfos.size();
 	pGeometry->vertexNumber = m_ParsedModel->coords.size();
@@ -64,6 +67,6 @@ bool GCModelParser::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, Ex
 		);
 	}
 
-	return true;
+	return GCRENDER_SUCCESS_OK;
 }
 

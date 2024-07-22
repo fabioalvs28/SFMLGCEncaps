@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿################################################################################
 # Ce fichier .gitignore a été automatiquement créé par Microsoft(R) Visual Studio.
 ################################################################################
@@ -307,3 +308,11 @@ src/Render/CsoCompiled/colorPS.cso
 src/Render/CsoCompiled/colorVS.cso
 src/Render/CsoCompiled/texturePS.cso
 src/Render/CsoCompiled/textureVS.cso
+=======
+*.db-wal
+*.db-shm
+*.user
+/ide
+.vscode
+.drawio
+>>>>>>> main

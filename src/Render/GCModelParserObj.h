@@ -1,6 +1,6 @@
 #pragma once
 
-struct ModelInfos;
+struct GC_MODELINFOS;
 
 class GCModelParserObj :public GCModelParser
 {
@@ -8,5 +8,5 @@ public:
 	GCModelParserObj();
 	~GCModelParserObj();
 
-	ModelInfos* Parse(std::string filePath);
+	GC_MODELINFOS* Parse(std::string filePath);
 };

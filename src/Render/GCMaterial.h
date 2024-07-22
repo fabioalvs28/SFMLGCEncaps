@@ -5,7 +5,7 @@ public:
 	GCMaterial();
 	~GCMaterial();
 
-	bool Initialize(GCShader* pShader);
+	GC_GRAPHICS_ERROR Initialize(GCShader* pShader);
 	/**
 	*  Applies a texture to the material
 	 * @brief
@@ -35,10 +35,20 @@ public:
     void IncrementCBCount() { m_iCount++; }
 	void ResetCBCount() { m_iCount = 0; }
     int GetCount() const { return m_iCount; }
-private:
-	GCRender* m_pRender;
 
-	int m_iCount = 0;
+	DirectX::XMFLOAT4 ambientLightColor;
+	DirectX::XMFLOAT4 ambient;
+	DirectX::XMFLOAT4 diffuse;
+	DirectX::XMFLOAT4 specular;
+	float shininess;
+
+	// Material Id
+	float m_materialId;
+
+private:
+	int m_iCount;
+
+	GCRenderContext* m_pRender;
 
 	GCShader* m_pShader;
 	GCTexture* m_pTexture;
