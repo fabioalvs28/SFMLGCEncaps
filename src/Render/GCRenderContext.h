@@ -85,20 +85,22 @@ public:
 	void DesactivePixelIDMapping();
 	void DesactiveDeferredLightPass();
 
-	// StructuredBuffer
-	std::unique_ptr<GCUploadBuffer<GC_MATERIAL_DSL>> m_uploadBuffer;
 
-	// Camera & Light -> Temporarily
+	// Camera & Light Upload
 	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
-	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
+	GCUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	inline GCRenderResources* GetRenderResources() { return m_pGCRenderResources; }
 
 	inline void Set2DMode() { m_renderMode = 0; }
 	inline void Set3DMode() { m_renderMode = 1; }
 
-	// Structured Buffer Send to Deferred Shader
-	std::vector<GC_MATERIAL_DSL> materialsUsedInFrame;
+	// DEFERRED SHADING LIGHT RESOURCES
+	// All diferent material used in same frame
+	std::vector<GC_MATERIAL_DSL> m_materialsUsedInFrame;
+	// Upload Material DSL, Send to Deferred Shader
+	GCUploadBuffer<GC_MATERIAL_DSL>* m_pCbMaterialDsl;
+	//*
 private:
 
 	bool m_isBasicPostProcessingActivated;
@@ -108,11 +110,30 @@ private:
 
 	int m_renderMode = 1; //2D or 3d
 
-	// Add passes Shaders
 	GCShader* m_pPostProcessingShader;
 	GCShader* m_pPixelIdMappingShader;
-	GCShader* m_pDeferredLightPassShader;
+	GCShader* m_pDeferredLightPassShader; // need PixelIdMapping pass
 
+	////////////////////////*///////////////////////
+
+	//Post Processing Resources
+	GC_DESCRIPTOR_RESOURCE* m_pPostProcessingRtv;
+	//Pixel Id Mapping Resources
+	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingBufferRtv; //Rtv Buffer
+	//DSV for PIM -> #TODO Use the principal dsv, in reading 
+	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingDepthStencilBuffer; //Rtv Buffer
+
+	// Deferred Shading Light Resources
+	GCUploadBufferBase* m_materialsStructuredBuffer;
+
+	GC_DESCRIPTOR_RESOURCE* m_pDeferredLightPassBufferRtv;
+	GC_DESCRIPTOR_RESOURCE* m_pAlbedoGBuffer;
+	GC_DESCRIPTOR_RESOURCE* m_pWorldPosGBuffer;
+	GC_DESCRIPTOR_RESOURCE* m_pNormalGBuffer;
+
+	////////////////////////*///////////////////////
+
+	// Contain the bare minimum render pipeline resource
 	GCRenderResources* m_pGCRenderResources;
 
 

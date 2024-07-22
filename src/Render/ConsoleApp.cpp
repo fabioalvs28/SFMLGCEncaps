@@ -262,15 +262,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner);
     GCMATRIX worldCubeInner2 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner2);
 
-    //XMFLOAT4X4 worldCubeOuter;
-    //XMFLOAT4X4 worldCubeInner;
-    //XMFLOAT4X4 worldCubeInner2;
-    //XMFLOAT4X4 worldSphere;
-
-    //XMStoreFloat4x4(&worldCubeOuter, worldMatrixCubeOuter);
-    //XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInner);
-    //XMStoreFloat4x4(&worldCubeInner2, worldMatrixCubeInner2);
-    //XMStoreFloat4x4(&worldSphere, worldMatrixSphere);
 
     auto startTime = std::chrono::steady_clock::now();
     auto lastFrameTime = startTime;
@@ -285,23 +276,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
 
 
-        //XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
-
-
-        //XMStoreFloat4x4(&worldCubeInner, worldMatrixCubeInnerUpdated);
-
-        // Gestion des entr�es utilisateur pour le d�placement de la cam�ra
-        //if (window->IsKeyDown('Z')) {
-        //    cameraPosition += cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
-        //}
-        //if (window->IsKeyDown('S')) {
-        //    cameraPosition -= cameraMoveSpeed * XMVector3Normalize(XMVectorSubtract(cameraTarget, cameraPosition));
-        //}
-
-        //viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
-        //transposedViewMatrix = XMMatrixTranspose(viewMatrix);
-        //XMStoreFloat4x4(&storedViewMatrix, transposedViewMatrix);
-
         GCMATERIALPROPERTIES materialProperties;
         materialProperties.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         materialProperties.ambient = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
@@ -311,45 +285,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateMaterialProperties(materialCubeInner.resource, materialProperties);
 
         GCMATERIALPROPERTIES materialProperties2;
-        materialProperties2.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-        materialProperties2.ambient = DirectX::XMFLOAT4(0.9f, 0.9f, 0.4f, 1.0f);
+        materialProperties2.ambientLightColor = DirectX::XMFLOAT4(0.5f, 0.2f, 1.0f, 1.0f);
+        materialProperties2.ambient = DirectX::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
         materialProperties2.diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-        materialProperties2.specular = DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-        materialProperties2.shininess = 12.0f;
+        materialProperties2.specular = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        materialProperties2.shininess = 128.0f;
         graphics->UpdateMaterialProperties(materialCubeInner2.resource, materialProperties2);
 
-        GCLIGHTSPROPERTIES lightData = {};
+        std::vector<GCLIGHT> lights;
 
         GCLIGHT directionalLight;
-        directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); 
+        directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
         directionalLight.direction = DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f);
-        directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); 
-        directionalLight.spotAngle = 0.0f; 
+        directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+        directionalLight.spotAngle = 0.0f;
         directionalLight.lightIntensity = 1.3f;
         directionalLight.lightType = LIGHT_TYPE_DIRECTIONAL;
-
         GCLIGHT pointLight;
-        pointLight.position = DirectX::XMFLOAT3(0.0f, 4.0f, 0.0f); // Position en 2D (x, y, 0)
+        pointLight.position = DirectX::XMFLOAT3(0.0f, 4.0f, 0.0f);
         pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-        pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
-        pointLight.spotAngle = 0.0f; // Angle du spot si applicable
+        pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+        pointLight.spotAngle = 0.0f;
         pointLight.lightIntensity = 20.4f;
-        pointLight.lightType = LIGHT_TYPE_POINT; // Type de lumière ponctuelle
+        pointLight.lightType = LIGHT_TYPE_POINT;
 
+        lights.push_back(directionalLight);
+        lights.push_back(pointLight);
 
-        lightData.lights[1] = pointLight;
-        lightData.lights[0] = directionalLight;
-
-        graphics->UpdateLights(lightData);
+        graphics->UpdateLights(lights);
 
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
-        //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter, 1.0f);
-        //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource,true);
-
-        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
-        //graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
 
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource, true);
@@ -357,19 +324,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateWorldConstantBuffer(materialCubeInner2.resource, worldCubeInner, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner2.resource, true);
 
-        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner, 3.0f);
-        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
-
-        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
-        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
-
         graphics->EndFrame();
         window->Run(graphics->GetRender());
-
-        //break;
     }
 
-    //delete graphics;
+    delete graphics;
 
     return 0;
 }

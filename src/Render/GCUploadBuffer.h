@@ -1,5 +1,6 @@
 #pragma once
 
+
 class GCShaderUploadBufferBase
 {
 public:
@@ -15,7 +16,7 @@ public:
 
     ID3D12Resource* Resource() const
     {
-        return m_pUpload.Get();
+        return m_pUpload;
     }
 
     virtual void CopyData(int elementIndex, const GCSHADERCB& data) = 0;
@@ -24,7 +25,7 @@ public:
     int m_framesSinceLastUse;
 
 protected:
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_pUpload;
+    ID3D12Resource* m_pUpload;
     BYTE* m_data;
     UINT m_elementByteSize;
     bool m_isConstantBuffer;
@@ -84,7 +85,7 @@ public:
 
     ID3D12Resource* Resource() const
     {
-        return m_pUpload.Get();
+        return m_pUpload;
     }
 
     virtual void CopyData(int elementIndex, const void* data, size_t dataSize) = 0;
@@ -93,7 +94,7 @@ public:
     int m_framesSinceLastUse;
 
 protected:
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_pUpload;
+    ID3D12Resource* m_pUpload;
     BYTE* m_data;
     UINT m_elementByteSize;
     bool m_isConstantBuffer;

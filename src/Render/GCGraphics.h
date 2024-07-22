@@ -248,7 +248,7 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateLights(GCLIGHTSPROPERTIES& objectData);
+	bool UpdateLights(std::vector<GCLIGHT>& objectData);
 
 	/************************************************************************************************
 	* @brief Converts pixel pos to world pos, This function converts the pixels given in args into ndc coordinates

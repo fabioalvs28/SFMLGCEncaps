@@ -31,10 +31,6 @@ GCRenderResources::GCRenderResources()
 	m_DepthStencilFormat(DXGI_FORMAT_D24_UNORM_S8_UINT),
 	m_BackBufferFormat(DXGI_FORMAT_R8G8B8A8_UNORM),
 
-	m_pPostProcessingRtv(nullptr),
-	m_pPixelIdMappingBufferRtv(nullptr),
-	m_pPixelIdMappingDepthStencilBuffer(nullptr),
-
 	m_ScissorRect(),
 
 	m_4xMsaaQuality(0),

@@ -69,21 +69,12 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
 	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
     m_pCbCameraInstances.push_back(pCbInstance);
 
-    pCbInstance = new GCShaderUploadBuffer<GCLIGHTSPROPERTIES>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
-    m_pCbLightPropertiesInstance = pCbInstance;
-
-    GCLIGHTSPROPERTIES lightData = {};
-
-    UpdateConstantBuffer(lightData, m_pCbLightPropertiesInstance);
-
-    m_pRender->m_pCbLightPropertiesInstance = m_pCbLightPropertiesInstance;
-
     return true;
 }
 
 bool GCGraphics::StartFrame()
 {
-    m_pRender->materialsUsedInFrame.clear();
+    m_pRender->m_materialsUsedInFrame.clear();
 
     for (auto& material : m_vMaterials)
     {
@@ -508,7 +499,6 @@ void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
     uploadBufferInstance->CopyData(0, objectData);
 }
 
-
 DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4& proj, DirectX::XMFLOAT4X4& view) {
     DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pRender->GetRenderResources()->GetRenderWidth(), m_pRender->GetRenderResources()->GetRenderHeight(), proj, view);
 
@@ -562,8 +552,9 @@ bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOA
     return true;
 }
 
-bool GCGraphics::UpdateLights(GCLIGHTSPROPERTIES& objectData) {
-    UpdateConstantBuffer(objectData, m_pCbLightPropertiesInstance);
+bool GCGraphics::UpdateLights(std::vector<GCLIGHT>& objectData) {
+    size_t count = objectData.size();
+    m_pRender->m_pCbLightPropertiesInstance->CopyData(0, objectData.data(), sizeof(GCLIGHT)*count);
 
     return true;
 }

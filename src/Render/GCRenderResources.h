@@ -113,25 +113,6 @@ private:
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
 
-	////////////////////////*///////////////////////
-	
-	//Post Processing Resources
-	GC_DESCRIPTOR_RESOURCE* m_pPostProcessingRtv;
-	//Pixel Id Mapping Resources
-	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingBufferRtv; //Rtv Buffer
-	// DSV for PIM -> #TODO Use the principal dsv, in reading 
-	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingDepthStencilBuffer; //Rtv Buffer
-
-	// Deferred Shading Light Resources
-	GCUploadBufferBase* m_materialsStructuredBuffer;
-
-	GC_DESCRIPTOR_RESOURCE* m_pDeferredLightPassBufferRtv;
-	GC_DESCRIPTOR_RESOURCE* m_pAlbedoGBuffer;
-	GC_DESCRIPTOR_RESOURCE* m_pWorldPosGBuffer;
-	GC_DESCRIPTOR_RESOURCE* m_pNormalGBuffer;
-
-	////////////////////////*///////////////////////
-
 	//Descriptor Heap Creation
 	void CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** ppDescriptorHeap);
 

@@ -16,6 +16,10 @@ GCRenderContext::~GCRenderContext() {
 	DELETE(m_pGCRenderResources);
 	DELETE(m_pPostProcessingShader);
 	DELETE(m_pPixelIdMappingShader);
+
+	DELETE(m_pPostProcessingRtv);
+	DELETE(m_pPixelIdMappingBufferRtv);
+	DELETE(m_pPixelIdMappingDepthStencilBuffer);
 }
 
 
@@ -176,7 +180,7 @@ void GCRenderContext::CreateSwapChain()
 
 void GCRenderContext::CreatePostProcessingResources() {
 	{
-		m_pGCRenderResources->m_pPostProcessingRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pPostProcessingRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
 		//Create Post Processing Shader
 		m_pPostProcessingShader = new GCShader();
@@ -198,21 +202,21 @@ void GCRenderContext::CreatePostProcessingResources() {
 	
 	{
 		//Create RTV For Object Buffer Id For pass Mesh id to pixel, to apply them on a texture 
-		m_pGCRenderResources->m_pPixelIdMappingBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pPixelIdMappingBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 	}
 }
 
 void GCRenderContext::CreateDeferredLightPassResources() {
 	{
 		//GBuffer Creation
-		m_pGCRenderResources->m_pAlbedoGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->m_rgbaFormat, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-		m_pGCRenderResources->m_pWorldPosGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->m_rgbaFormat, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-		m_pGCRenderResources->m_pNormalGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->m_rgbaFormat, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pAlbedoGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pWorldPosGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->m_rgbaFormat, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pNormalGBuffer = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->m_rgbaFormat, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 	}
 
 	{
 		//Rtv for draw light pass
-		m_pGCRenderResources->m_pDeferredLightPassBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pDeferredLightPassBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
 		//Shader light pass
 		m_pDeferredLightPassShader = new GCShader();
@@ -237,7 +241,9 @@ void GCRenderContext::CreateDeferredLightPassResources() {
 		m_pDeferredLightPassShader->Load();
 	}
 
-	m_uploadBuffer = std::make_unique<GCUploadBuffer<GC_MATERIAL_DSL>>(m_pGCRenderResources->m_d3dDevice, 100, true);
+
+	m_pCbMaterialDsl = new GCUploadBuffer<GC_MATERIAL_DSL>(m_pGCRenderResources->m_d3dDevice, 100, true);
+	m_pCbLightPropertiesInstance = new GCUploadBuffer<GCLIGHT>(m_pGCRenderResources->m_d3dDevice, 100, true);
 }
 
 
@@ -314,7 +320,7 @@ void GCRenderContext::CreateDepthStencilBufferAndView()
 	m_pGCRenderResources->m_DepthStencilBuffer = dsv1->resource;
 	m_pGCRenderResources->m_DepthStencilBufferAddress = dsv1->cpuHandle;
 
-	m_pGCRenderResources->m_pPixelIdMappingDepthStencilBuffer = m_pGCRenderResources->CreateDepthStencilBufferAndView(DXGI_FORMAT_D24_UNORM_S8_UINT, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	m_pPixelIdMappingDepthStencilBuffer = m_pGCRenderResources->CreateDepthStencilBufferAndView(DXGI_FORMAT_D24_UNORM_S8_UINT, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
 }
 
@@ -391,12 +397,12 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_pPixelIdMappingDepthStencilBuffer->cpuHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	/*m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pPixelIdMappingBufferRtv->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pPixelIdMappingDepthStencilBuffer->cpuHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);*/
 
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvs;
@@ -405,10 +411,6 @@ bool GCRenderContext::PrepareDraw()
 		// Basic draw
 		D3D12_CPU_DESCRIPTOR_HANDLE basicRtv = m_pGCRenderResources->CurrentBackBufferViewAddress();
 		rtvs.push_back(basicRtv);
-		if (m_renderMode == RENDER_MODE_2D)
-		{
-			dsvs.push_back({ 0 });
-		}
 		if (m_renderMode == RENDER_MODE_3D) 
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE basicDsv = m_pGCRenderResources->GetDepthStencilViewAddress();
@@ -419,17 +421,17 @@ bool GCRenderContext::PrepareDraw()
 	{
 		// Pixel Id Mapping
 		if (m_isPixelIDMappingActivated) {
-			rtvs.push_back(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->cpuHandle);
-			dsvs.push_back(m_pGCRenderResources->m_pPixelIdMappingDepthStencilBuffer->cpuHandle);
+			rtvs.push_back(m_pPixelIdMappingBufferRtv->cpuHandle);
+			dsvs.push_back({ 0 });
 		}
 	}
 	
 	{
 		// Deferred Light Pass
 		if (m_isDeferredLightPassActivated) {
-			rtvs.push_back(m_pGCRenderResources->m_pAlbedoGBuffer->cpuHandle);
-			rtvs.push_back(m_pGCRenderResources->m_pWorldPosGBuffer->cpuHandle);
-			rtvs.push_back(m_pGCRenderResources->m_pNormalGBuffer->cpuHandle);
+			rtvs.push_back(m_pAlbedoGBuffer->cpuHandle);
+			rtvs.push_back(m_pWorldPosGBuffer->cpuHandle);
+			rtvs.push_back(m_pNormalGBuffer->cpuHandle);
 			dsvs.push_back({ 0 });
 			dsvs.push_back({ 0 });
 			dsvs.push_back({ 0 });
@@ -502,15 +504,16 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 	newMaterial.shininess = pMaterial->shininess;
 	newMaterial.materialId = pMaterial->m_materialId;
 
-	//for (const auto& material : materialsUsedInFrame)
-	//{
-	//	if (material.materialId == newMaterial.materialId)
-	//	{
-	//		// Meterial already in array
-	//		return true;
-	//	}
-	//}
-	materialsUsedInFrame.push_back(newMaterial);
+	//Material already in array?
+	for (const auto& material : m_materialsUsedInFrame)
+	{
+		if (material.materialId == newMaterial.materialId)
+		{
+			
+			return true;
+		}
+	}
+	m_materialsUsedInFrame.push_back(newMaterial);
 
 	return true;
 }
@@ -551,20 +554,26 @@ bool GCRenderContext::CompleteDraw()
 }
 
 void GCRenderContext::PerformDeferredLightPass() {
-	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &m_pGCRenderResources->m_pDeferredLightPassBufferRtv->cpuHandle, FALSE, nullptr);
+	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &m_pDeferredLightPassBufferRtv->cpuHandle, FALSE, nullptr);
 
 	// Root Sign / Pso
 	m_pGCRenderResources->m_CommandList->SetPipelineState(m_pDeferredLightPassShader->GetPso(true));
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(m_pDeferredLightPassShader->GetRootSign());
 
 	//deferred light pass entry texture (albedo, worldPosition, normal) linking to shader
-	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->resource, m_pGCRenderResources->GetBackBufferFormat());
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pPixelIdMappingBufferRtv->resource, m_pGCRenderResources->GetBackBufferFormat());
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_1, srvGpuHandle);
-	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pAlbedoGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
+
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pAlbedoGBuffer->resource, m_pGCRenderResources->GetBackBufferFormat());
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
-	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pWorldPosGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
+
+	//srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pWorldPosGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
+	//m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_3, srvGpuHandle);
+
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_DepthStencilBuffer, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_3, srvGpuHandle);
-	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pNormalGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
+
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pNormalGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_4, srvGpuHandle);
 
 	// Draw quad on deferred light pass rtv
@@ -585,26 +594,26 @@ void GCRenderContext::PerformDeferredLightPass() {
 	//	m_uploadBuffer->CopyData(static_cast<int>(i), &materialsUsedInFrame[i], sizeof(SBMaterialDSL));
 	//}
 
-	size_t count = materialsUsedInFrame.size();
-	m_uploadBuffer->CopyData(0, materialsUsedInFrame.data(), sizeof(GC_MATERIAL_DSL) * count); 
+	size_t count = m_materialsUsedInFrame.size();
+	m_pCbMaterialDsl->CopyData(0, m_materialsUsedInFrame.data(), sizeof(GC_MATERIAL_DSL) * count);
 	// #TODO FAIRE EN SORTE DE POUVOIR UPDATE TOUT LES MATERIALS DU VECTOR
 
-	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_2, m_uploadBuffer->Resource()->GetGPUVirtualAddress());
+	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_2, m_pCbMaterialDsl->Resource()->GetGPUVirtualAddress());
 
 	m_pGCRenderResources->m_CommandList->DrawIndexedInstanced(theMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);
 
-	CD3DX12_RESOURCE_BARRIER RtToCopySrc = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pDeferredLightPassBufferRtv->resource, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	CD3DX12_RESOURCE_BARRIER RtToCopySrc = CD3DX12_RESOURCE_BARRIER::Transition(m_pDeferredLightPassBufferRtv->resource, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToCopySrc);
 	CD3DX12_RESOURCE_BARRIER PixelShaderToCopyDst = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &PixelShaderToCopyDst);
 
 	// Copy On Final
-	m_pGCRenderResources->m_CommandList->CopyResource(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->m_pDeferredLightPassBufferRtv->resource);
+	m_pGCRenderResources->m_CommandList->CopyResource(m_pGCRenderResources->CurrentBackBuffer(), m_pDeferredLightPassBufferRtv->resource);
 
 	//
 	CD3DX12_RESOURCE_BARRIER DstToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &DstToPresent);
-	CD3DX12_RESOURCE_BARRIER SrcToRt = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pDeferredLightPassBufferRtv->resource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	CD3DX12_RESOURCE_BARRIER SrcToRt = CD3DX12_RESOURCE_BARRIER::Transition(m_pDeferredLightPassBufferRtv->resource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &SrcToRt);
 }
 
@@ -616,7 +625,7 @@ void GCRenderContext::PerformPostProcessing()
 
 	// Set Render target
 	//D3D12_CPU_DESCRIPTOR_HANDLE dsv = m_pGCRenderResources->GetDepthStencilViewAddress();
-	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &m_pGCRenderResources->m_pPostProcessingRtv->cpuHandle, FALSE, nullptr);
+	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(1, &m_pPostProcessingRtv->cpuHandle, FALSE, nullptr);
 
 	// Root Sign / Pso
 	m_pGCRenderResources->m_CommandList->SetPipelineState(m_pPostProcessingShader->GetPso(true));
@@ -637,7 +646,7 @@ void GCRenderContext::PerformPostProcessing()
 	//Object/Layers BufferId Linking to shader
 	if (m_isPixelIDMappingActivated) 
 	{
-		srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->resource, m_pGCRenderResources->GetBackBufferFormat());
+		srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pPixelIdMappingBufferRtv->resource, m_pGCRenderResources->GetBackBufferFormat());
 		m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pPostProcessingShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
 	}
 
@@ -652,18 +661,18 @@ void GCRenderContext::PerformPostProcessing()
 	//
 
 	// 
-	CD3DX12_RESOURCE_BARRIER RtToCopySrc = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv->resource, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	CD3DX12_RESOURCE_BARRIER RtToCopySrc = CD3DX12_RESOURCE_BARRIER::Transition(m_pPostProcessingRtv->resource, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToCopySrc);
 	CD3DX12_RESOURCE_BARRIER PixelShaderToCopyDst = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &PixelShaderToCopyDst);
 
 	// Copy On Final
-	m_pGCRenderResources->m_CommandList->CopyResource(m_pGCRenderResources->CurrentBackBuffer(), m_pGCRenderResources->m_pPostProcessingRtv->resource);
+	m_pGCRenderResources->m_CommandList->CopyResource(m_pGCRenderResources->CurrentBackBuffer(), m_pPostProcessingRtv->resource);
 
 	//
 	CD3DX12_RESOURCE_BARRIER DstToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &DstToPresent);
-	CD3DX12_RESOURCE_BARRIER SrcToRt = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->m_pPostProcessingRtv->resource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	CD3DX12_RESOURCE_BARRIER SrcToRt = CD3DX12_RESOURCE_BARRIER::Transition(m_pPostProcessingRtv->resource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &SrcToRt);
 }
 

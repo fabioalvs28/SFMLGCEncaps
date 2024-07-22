@@ -41,10 +41,10 @@ struct GCLIGHT
     float padding3[2];    
 };
 
-struct GCLIGHTSPROPERTIES : GCSHADERCB
-{
-    GCLIGHT lights[10]; 
-};
+//struct GCLIGHTSPROPERTIES : GCSHADERCB
+//{
+//    GCLIGHT lights[10]; 
+//};
 
 
 //Deferred Shading Light
