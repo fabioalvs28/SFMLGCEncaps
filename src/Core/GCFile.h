@@ -9,8 +9,9 @@ class GCFile
 private:
 
 public:
-	std::string filename;
-	const char* mode;
+	std::string filename = "";
+	const char* mode = "";
+	long long size = 0;
 
 
 	GCFile(const char* filename, const char* mode);

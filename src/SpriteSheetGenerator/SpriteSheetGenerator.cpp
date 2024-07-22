@@ -109,16 +109,36 @@ int SpriteSheetGenerator::Packer()
 
     for (const auto& entry : fs::directory_iterator(m_importPath))
     {
-        if (entry.is_regular_file() && entry.path().extension() == ".bmp")
+        if (entry.is_regular_file())
         {
-            std::string filename = entry.path().filename().string();
-            data["spriteIndex"][filename] = "";
-            GCImage image = GCImage(0, 0);
-            
-            if (!image.LoadBMP(entry.path().string()))
+            std::string filename = entry.path().filename().string(); 
+            data["spriteIndex"][filename] = ""; 
+            GCImage image = GCImage(0, 0); 
+            if (entry.path().extension() == ".bmp")
             {
-                std::printf("Error opening image\n");
-                return 1;
+
+                if (!image.LoadBMP(entry.path().string()))
+                {
+                    std::printf("Error opening image\n");
+                    return 1;
+                }
+            }
+
+            if (entry.path().extension() == ".png")
+            {
+                GCFile imageFile = GCFile(entry.path().string().c_str(), "rb");
+                std::vector<UI8> buffer;
+                if (!imageFile.Read(buffer, imageFile.size))
+                {
+                    std::printf("Error opening image\n");
+                    return 1;
+                }
+                ;
+                if (!image.LoadPNG(buffer.data(), imageFile.size))
+                {
+                    std::printf("Error opening image\n");
+                    return 1;
+                }
             }
 
             int h = image.GetHeight();

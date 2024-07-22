@@ -42,11 +42,11 @@ struct Emplacement
 
 class SpriteSheetGenerator
 {
-    fs::path m_importPath;
-    fs::path m_outputPath;
-    bool m_allowRotate;
-    bool m_tryRefillPrevRow;
-    int m_padding;
+    fs::path m_importPath = "";
+    fs::path m_outputPath = "";
+    int m_padding = 0;
+    bool m_allowRotate = false;
+    bool m_tryRefillPrevRow = false;
 
     static int getSmallestSheetSize(int remainingSize);
     static int getSizeOfImageList(std::vector<Sprite> Sprites, int padding);

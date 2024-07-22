@@ -411,7 +411,8 @@ bool GCImage::LoadPNG(BYTE* buffer, int size)
 
 	m_rowStride = m_width * 4;
 	size = m_rowStride * m_height;
-	m_bitCount = m_width * m_height;
+	m_bits = m_width * m_height;
+	m_channels = m_bitCount / 8;
 	return true;
 
 }
