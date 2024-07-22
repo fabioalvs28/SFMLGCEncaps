@@ -380,14 +380,17 @@ bool GCImage::LoadPNG(BYTE* buffer, int size)
 		return false;
 	}
 
-	lodepng::State state;
+	LodePNGState state;
+	lodepng_state_init(&state);
+	state.info_raw.colortype = LCT_RGBA;
+	state.info_raw.bitdepth = 8;
 	UI32 pngWidth = 0;
 	UI32 pngHeight = 0;
 	if (lodepng_inspect(&pngWidth, &pngHeight, &state, buffer, size))
 	{
 		return false;
 	}
-
+	state.info_png.color.colortype = LCT_RGBA;
 	switch (state.info_png.color.colortype)
 	{
 	case LCT_RGBA:
@@ -404,6 +407,7 @@ bool GCImage::LoadPNG(BYTE* buffer, int size)
 		break;
 	}
 
+	lodepng_state_cleanup(&state);
 	UI32 error = lodepng_decode32(&m_rgba, (UI32*)&m_width, (UI32*)&m_height, buffer, size);
 	if (error)
 	{
@@ -411,10 +415,15 @@ bool GCImage::LoadPNG(BYTE* buffer, int size)
 		return false;
 	}
 
+
 	m_rowStride = m_width * 4;
 	size = m_rowStride * m_height;
 	m_bits = m_width * m_height;
 	m_channels = m_bitCount / 8;
+	for (size_t i = 0; i < size; i++)
+	{
+		data.emplace_back(m_rgba[i]);
+	}
 	return true;
 }
 
