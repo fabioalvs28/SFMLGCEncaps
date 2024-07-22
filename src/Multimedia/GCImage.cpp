@@ -380,10 +380,7 @@ bool GCImage::LoadPNG(BYTE* buffer, int size)
 		return false;
 	}
 
-	LodePNGState state;
-	lodepng_state_init(&state);
-	state.info_raw.colortype = LCT_RGBA;
-	state.info_raw.bitdepth = 8;
+	lodepng::State state;
 	UI32 pngWidth = 0;
 	UI32 pngHeight = 0;
 	if (lodepng_inspect(&pngWidth, &pngHeight, &state, buffer, size))
