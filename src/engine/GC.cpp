@@ -37,3 +37,6 @@ GCSceneManager* GC::GetActiveSceneManager()
 
 GCRenderManager* GC::GetActiveRenderManager()
 { return &m_pActiveGameManager->m_pRenderManager; }
+
+GCInputSystem* GC::GetActiveInputSystem()
+{ return &m_pActiveGameManager->m_pInputSystem; }

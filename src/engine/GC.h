@@ -32,6 +32,8 @@ public:
     static GCSceneManager* GetActiveSceneManager();
     static GCRenderManager* GetActiveRenderManager();
 
+    static GCInputSystem* GetActiveInputSystem();
+
 private:
     inline static GCList<GCGameManager*> m_pGameManagersList = GCList<GCGameManager*>();
     inline static GCGameManager* m_pActiveGameManager = nullptr;

@@ -33,4 +33,5 @@ protected:
     GCEventManager m_pEventManager;
     GCSceneManager m_pSceneManager;
     GCRenderManager m_pRenderManager;
+    GCInputSystem m_pInputSystem;
 };
