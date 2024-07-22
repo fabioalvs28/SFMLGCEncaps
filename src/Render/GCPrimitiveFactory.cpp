@@ -214,6 +214,41 @@ void GCPrimitiveFactory::GenerateCube(std::vector<DirectX::XMFLOAT3>& vertices,
     }
 }
 
+void GCPrimitiveFactory::GeneratePlaneBorder(float width, float height, float borderWidth, std::vector<DirectX::XMFLOAT3>& outVertices, std::vector<uint16_t>& outIndices)
+{
+    outVertices.clear();
+    outIndices.clear();
+
+    // Outer vertices (clockwise)
+    outVertices.push_back(DirectX::XMFLOAT3(-width / 2 - borderWidth, -height / 2 - borderWidth, 0.0f)); // Bottom-left outer
+    outVertices.push_back(DirectX::XMFLOAT3(-width / 2 - borderWidth, height / 2 + borderWidth, 0.0f)); // Top-left outer
+    outVertices.push_back(DirectX::XMFLOAT3(width / 2 + borderWidth, height / 2 + borderWidth, 0.0f)); // Top-right outer
+    outVertices.push_back(DirectX::XMFLOAT3(width / 2 + borderWidth, -height / 2 - borderWidth, 0.0f)); // Bottom-right outer
+
+    // Inner vertices (clockwise)
+    outVertices.push_back(DirectX::XMFLOAT3(-width / 2, -height / 2, 0.0f)); // Bottom-left inner
+    outVertices.push_back(DirectX::XMFLOAT3(-width / 2, height / 2, 0.0f)); // Top-left inner
+    outVertices.push_back(DirectX::XMFLOAT3(width / 2, height / 2, 0.0f)); // Top-right inner
+    outVertices.push_back(DirectX::XMFLOAT3(width / 2, -height / 2, 0.0f)); // Bottom-right inner
+
+    // Indices for the border (two triangles for each side of the border)
+    // Bottom border
+    outIndices.push_back(0); outIndices.push_back(4); outIndices.push_back(7);
+    outIndices.push_back(0); outIndices.push_back(7); outIndices.push_back(3);
+
+    // Left border
+    outIndices.push_back(0); outIndices.push_back(1); outIndices.push_back(5);
+    outIndices.push_back(0); outIndices.push_back(5); outIndices.push_back(4);
+
+    // Top border
+    outIndices.push_back(1); outIndices.push_back(2); outIndices.push_back(6);
+    outIndices.push_back(1); outIndices.push_back(6); outIndices.push_back(5);
+
+    // Right border
+    outIndices.push_back(2); outIndices.push_back(3); outIndices.push_back(7);
+    outIndices.push_back(2); outIndices.push_back(7); outIndices.push_back(6);
+}
+
 void GCPrimitiveFactory::GenerateCubeSkybox(std::vector<DirectX::XMFLOAT3>& vertices,
     std::vector<uint16_t>& indices,
     std::vector<DirectX::XMFLOAT2>& uvs,
@@ -314,7 +349,6 @@ bool GCPrimitiveFactory::Initialize()
     std::vector<DirectX::XMFLOAT2> circleUvs;
     std::vector<uint16_t> circleIndices;
 
-
     GenerateCircle(0.5f, 32, circleVertices, circleUvs, circleIndices, circleNormals);
 
     // Create sphere vertices, uvs and indices
@@ -412,6 +446,12 @@ bool GCPrimitiveFactory::Initialize()
                 DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f)  // Normal for Top-right
             }},
         },
+        { //Plane Border
+            {L"index", sphereIndices},
+            {L"pos", sphereVertices},
+            {L"uvs", sphereUvs},
+            {L"normals", sphereNormals},
+        }
     };
 
     return true;

@@ -114,6 +114,7 @@ class Window;
 #include "GCMaterial.h"
 #include "GCModelParser.h"
 #include "GCModelParserObj.h"
+#include "GCParticleSystem.h"
 
 #include "GCPrimitiveFactory.h"
 #include "GCTexture.h"
