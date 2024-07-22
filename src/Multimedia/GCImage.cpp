@@ -543,7 +543,7 @@ bool GCImage::SavePNG(GCFile* pFile, int* pOutSize, bool gray)
 
 	BYTE* png = nullptr;
 	size_t size = 0;
-	UI32 error = lodepng_encodeEx(&png, &size, m_rgba, m_width, m_height, m_bits, gray);
+	UI32 error = lodepng_encodeEx(&png, &size, data.data(), m_width, m_height, m_bits, gray);
 	if (error)
 		return false;
 

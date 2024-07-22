@@ -60,7 +60,7 @@ bool SpriteSheetGenerator::sortBySpriteHeight(const Sprite& a, const Sprite& b)
 
 int SpriteSheetGenerator::Packer()
 {
-    bool saveAsBMP = true;
+    bool saveAsBMP = false;
 
     json data = json::parse(R"({})");
     data["totalImageCount"] = 0;
@@ -83,11 +83,9 @@ int SpriteSheetGenerator::Packer()
             std::printf("Error : Output Path isn't a folder\n");
             return 1;
         }
+        fs::remove_all(m_outputPath);
     }
-    else
-    {
-        fs::create_directory(m_outputPath);
-    }
+    fs::create_directory(m_outputPath);
 
 
     if (number_of_files_in_directory(m_importPath) == 0)
@@ -99,7 +97,7 @@ int SpriteSheetGenerator::Packer()
     if (number_of_files_in_directory(m_outputPath) > 0)
     {
         std::printf("Error : Output Path isn't empty\n");
-        return 1;
+        //return 1;
     }
 
     std::vector<std::string> fileList;
@@ -269,6 +267,7 @@ int SpriteSheetGenerator::Packer()
         textureName = std::to_string(textureIndex) + ".png";
     std::string outfilePath = m_outputPath.string() + textureName;
     GCFile outfile = GCFile(outfilePath.c_str(), "wb");
+
     if (saveAsBMP)
         spritSheet.SaveBMP(&outfile);
     else
