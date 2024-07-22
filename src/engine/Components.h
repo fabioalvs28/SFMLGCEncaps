@@ -39,6 +39,8 @@ public:
     bool IsActive() { return m_globalActive && m_selfActive; }
 
     GCGameObject* GetGameObject() { return m_pGameObject; }
+    
+    virtual Component* Duplicate() = 0;
 
 protected:
     Component();
@@ -84,10 +86,11 @@ public:
     
     
     void SetSprite( std::string texturePath );
-    void SetColor(); 
+    void SetColor() {};
     
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }
+
 
 protected:
 	SpriteRenderer();
@@ -95,6 +98,7 @@ protected:
 
     void Render() override;
     void Destroy() override {}
+    SpriteRenderer* Duplicate() override; 
     
     FLAGS GetFlags() override { return RENDER; }
 
@@ -104,9 +108,6 @@ protected:
 
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
-
-    XMMATRIX* m_worldMatrix;
-
 };
 
 
@@ -142,9 +143,6 @@ protected:
 
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
-
-    XMMATRIX* m_worldMatrix;
-
 };
 
 
@@ -162,6 +160,7 @@ public:
     GCVEC2 GetSize() { return m_size; }
     void SetSize( GCVEC2 size ) { m_size = size; }
 
+
 protected:
     BoxCollider();
     ~BoxCollider() override {}
@@ -169,6 +168,7 @@ protected:
     void FixedUpdate() override {}
     void Render() override;
     void Destroy() override {}
+    BoxCollider* Duplicate() override;
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -191,6 +191,7 @@ public:
     float GetRadius() { return m_radius; }
     void SetRadius( float radius ) { m_radius = radius; }
 
+
 protected:
     CircleCollider() {}
     ~CircleCollider() override {}
@@ -198,6 +199,7 @@ protected:
     void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
+    CircleCollider* Duplicate() override;
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -219,12 +221,14 @@ public:
     
     void AddForce( GCVEC2 force ) {}
 
+
 protected:
     RigidBody();
     ~RigidBody() override {}
     
     void FixedUpdate() override;
     void Destroy() override {}
+    RigidBody* Duplicate() override;
     
     FLAGS GetFlags() override { return FIXED_UPDATE; }
 
@@ -246,12 +250,14 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
+
 protected:
 	Animator() {}
     ~Animator() override {}
     
     void Update() override {}
     void Destroy() override {}
+    Animator* Duplicate() override;
     
     FLAGS GetFlags() override { return UPDATE; }
 
@@ -272,12 +278,14 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
+
 protected:
 	SoundMixer() {}
     ~SoundMixer() override {}
     
     void Update() override {}
     void Destroy() override {}
+    SoundMixer* Duplicate() override;
     
     FLAGS GetFlags() override { return UPDATE; }
 
@@ -298,11 +306,13 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
+
 protected:
     Camera() {}
     ~Camera() override {}
     
     void Destroy() override {}
+    Camera* Duplicate() override;
     
     FLAGS GetFlags() override { return NONE; }
 
@@ -329,6 +339,8 @@ protected:
     virtual void OnTriggerExit( Collider* collider ) {}
     
     FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
+    
+    Script* Duplicate() override { return nullptr; }
 
 protected:
     inline static int scriptCount = (1<<15)-1;
