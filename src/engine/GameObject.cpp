@@ -260,7 +260,15 @@ void GCGameObject::SetName( const char const* name ) { m_name = name; }
 /// 
 /// @note The layer determines the order in which GameObjects are rendered (higher layers are renderer on top).
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::SetLayer( const int layer ) { m_layer = layer; }
+void GCGameObject::SetLayer( const int layer )
+{ 
+    m_layer = layer; 
+    if ( m_pRenderNode != nullptr )
+    {
+        m_pRenderNode->Delete();
+        GC::GetActiveRenderManager()->RegisterGameObject(this);
+    }
+}
 
 
 
