@@ -102,7 +102,6 @@ int SpriteSheetGenerator::Packer()
 
     std::vector<std::string> fileList;
     std::vector<Sprite> imageList;
-    std::vector<uint8_t> buffer;
     int totalSize = 0;
 
     //fileList = sorted_alphanumeric(os.listdir(importPath)); // Sort input maybe 1, 2, 3, 10 insead of 1, 10, 2, 3
@@ -118,7 +117,7 @@ int SpriteSheetGenerator::Packer()
             {
                 if (!image.LoadBMP(entry.path().string()))
                 {
-                    std::printf("Error opening image\n");
+                    std::printf("Error loading image\n");
                     return 1;
                 }
             }
@@ -129,15 +128,16 @@ int SpriteSheetGenerator::Packer()
                 std::vector<uint8_t> buffer;
                 if (!imageFile.Read(buffer, imageFile.size))
                 {
-                    std::printf("Error opening image\n");
+                    std::printf("Error opening file\n");
                     return 1;
                 }
-                ;
+                
                 if (!image.LoadPNG(buffer.data(), imageFile.size))
                 {
-                    std::printf("Error opening image\n");
+                    std::printf("Error loading image\n");
                     return 1;
                 }
+                buffer.clear();
             }
 
             int h = image.GetHeight();
