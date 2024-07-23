@@ -80,42 +80,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGameObject* test3bis = pScene->CreateGameObject();
     GCGameObject* test2 = test3->CreateChild();
 
-    test3->SetLayer(3);
-    test2->SetLayer(4);
+    test3->SetLayer(10);
+    test2->SetLayer(40);
+    test3bis->SetLayer(15);
 
     //test1->AddComponent<BoxCollider>();
     test2->AddComponent<BoxCollider>()->SetVisible(true);
-    test2->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
+    test2->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
 
     test3->AddComponent<BoxCollider>()->SetVisible(true);
-    test3->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    test3->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
 
     test3bis->AddComponent<BoxCollider>()->SetVisible(true);
-    test3bis->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    test3bis->AddComponent<SpriteRenderer>()->SetSprite("gojo.dds");
 
     test1->m_transform.SetPosition(GCVEC3(2, 0, 0));
     
-    test2->m_transform.SetPosition(GCVEC3(1, 0, 0));
-    test2->m_transform.SetScale(GCVEC3(2, 1, 1));
+    test2->m_transform.SetPosition(GCVEC3(4.8, 3, 0));
+    test2->m_transform.SetScale(GCVEC3(5, 5, 1));
 
-    test3->m_transform.SetPosition(GCVEC3(0, -5, 0));
-    test3->m_transform.SetScale(GCVEC3(1, 1, 1));
+    test3->m_transform.SetPosition(GCVEC3(1, -5, 0));
+    test3->m_transform.SetScale(GCVEC3(2, 2, 1));
 
-    test3bis->m_transform.SetPosition(GCVEC3(0, -6, 0));
-    test3bis->m_transform.SetScale(GCVEC3(4, 1, 1));
+    test3bis->m_transform.SetPosition(GCVEC3(0, -4, 0));
+    test3bis->m_transform.SetScale(GCVEC3(2, 2, 1));
+
+    test2->SetLayer(0);
 
     //auto startTime = std::chrono::steady_clock::now();
     
     int counter = 0;
     
     while (true) {
-        
-        test3->m_transform.Translate(GCVEC3(-0.02f, 0, 0));
-        counter++;
-        if (counter >= 200) test3bis->AddChild(test2);
-        
-        using namespace std;
-        cout << counter << endl;
+        //
+        //test3->m_transform.Translate(GCVEC3(-0.02f, 0, 0));
+        //counter++;
+        //if (counter >= 200) test3bis->AddChild(test2);
+        //
+        //using namespace std;
+        //cout << counter << endl;
         //cout << "Parent" << endl;
         //cout << test3->m_transform.m_worldMatrix._11 << " " << test3->m_transform.m_worldMatrix._12 << " " << test3->m_transform.m_worldMatrix._13 << " " << test3->m_transform.m_worldMatrix._14 << endl;
         //cout << test3->m_transform.m_worldMatrix._21 << " " << test3->m_transform.m_worldMatrix._22 << " " << test3->m_transform.m_worldMatrix._23 << " " << test3->m_transform.m_worldMatrix._24 << endl;
