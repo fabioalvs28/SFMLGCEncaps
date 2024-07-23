@@ -50,27 +50,25 @@ enum ImageType {
 class GCImage
 {
 private:
-UI32 m_width;
+	UI32 m_width;
 	UI32 m_height;
-	int m_bitCount;
-	int m_channels = m_bitCount / 8;
-	int m_rowStride = (m_width * m_channels + 3) & (~3);
+	int m_bitDepth;
+	int m_channels = m_bitDepth / 8;
+	int m_rowStride = rowStride();
 	int m_size;
-	int m_bits;
 
 	std::vector<uint8_t> m_rgba;
-	uint32_t rowStride() const { return ((m_width * m_bitCount / 8) + 3) & ~3; }
+	uint32_t rowStride() const { return ((m_width * m_channels) + 3) & (~3); }
 
 public:
 
 
-	GCImage(int w = 1600, int h = 1200, int bpp = 32) : m_width(w), m_height(h), m_bitCount(bpp)
+	GCImage(int w = 1600, int h = 1200, int bpp = 32) : m_width(w), m_height(h), m_bitDepth(bpp)
 	{
-		m_channels = m_bitCount / 8;
-		m_rowStride = (m_width * m_channels + 3) & (~3);
+		m_channels = m_bitDepth / 8;
+		m_rowStride = rowStride();
 		m_rgba.resize(m_width * m_height * m_channels, 0);
 		m_size = m_width * m_height * m_channels;
-		m_bits = bpp;
 	}
 
 	// Copy constructor
@@ -143,12 +141,10 @@ public:
 	int GetWidth() { return m_width; }
 	// get Height of the image
 	int GetHeight() { return m_height; }
-	// get BitCount of the image
-	int GetPixelCount() { return m_bitCount; }
-	// Set Bits of the image
-	void SetBits(int bits);
-	// get Bits of the image
-	int GetBits() { return m_bits; }
+	// Set Bit Depth of the image
+	void SetBits(int bitDepth);
+	// get Bit Depth of the image
+	int GetBitDepth() { return m_bitDepth; }
 
 	// get RGBA of the image
 	std::vector<uint8_t> GetRGBA() { return m_rgba; }
@@ -170,8 +166,8 @@ public:
 	int GetPixelDepth(int x, int y);
 	// get pixel color of the image
 	bool GetPixels(std::vector<uint8_t> pTarget, int x, int y, int w, int h);
-	// get pixelCount of the image
-	int GetPixelCount(int r, int g, int b, int a);
+	// count how many pixel of this color are in the image
+	int CountPixelOfColor(int r, int g, int b, int a);
 
 	// Create Empty Image, w and h are the width and height, bpp is the bits per pixel (24 or 32)
 	void CreateEmptyImage(int w, int h, int bpp);

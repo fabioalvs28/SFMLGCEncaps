@@ -14,12 +14,11 @@ GCImage::GCImage(const GCImage& img)
 	m_rgba = img.m_rgba;
 	m_width = img.m_width;
 	m_height = img.m_height;
-	m_bitCount = img.m_bitCount;
+	m_bitDepth = img.m_bitDepth;
 	m_channels = img.m_channels;
 	m_rowStride = img.m_rowStride;
 	m_size = img.m_size;
 	m_rgba = img.m_rgba;
-	m_bits = img.m_bits;
 }
 
 //** (operator=(GCSurface)) Not working **//
@@ -31,7 +30,7 @@ GCImage::GCImage(const GCImage& img)
 	//	m_height = surf.height;
 	//	m_bitCount = surf.bits;
 	//	m_channels = surf.count;
-	//	m_rowStride = (m_width * m_channels + 3) & (~3);
+	//	m_rowStride = rowStride();
 	//	m_size = m_width * m_height * m_channels;
 	//	data.resize(m_size, 0);
 	//	m_rgba = data.data();
@@ -117,7 +116,7 @@ GCImage& GCImage::operator=(const GCImage& img)
 	{
 		m_width = img.m_width;
 		m_height = img.m_height;
-		m_bitCount = img.m_bitCount;
+		m_bitDepth = img.m_bitDepth;
 		m_channels = img.m_channels;
 		m_rgba = img.m_rgba;
 	}
@@ -134,7 +133,7 @@ bool GCImage::Load(GCImage* img, REC2* pRect)
 	if (pRect == nullptr) {
 		m_width = img->m_width;
 		m_height = img->m_height;
-		m_bitCount = img->m_bitCount;
+		m_bitDepth = img->m_bitDepth;
 		m_channels = img->m_channels;
 		m_rowStride = img->m_rowStride;
 		m_size = img->m_size;
@@ -143,9 +142,9 @@ bool GCImage::Load(GCImage* img, REC2* pRect)
 	else {
 		m_width = pRect->width;
 		m_height = pRect->height;
-		m_bitCount = img->m_bitCount;
+		m_bitDepth = img->m_bitDepth;
 		m_channels = img->m_channels;
-		m_rowStride = (m_width * m_channels + 3) & (~3);
+		m_rowStride = rowStride();
 		m_size = m_width * m_height * m_channels;
 		m_rgba.resize(m_size, 0);
 		for (int y = 0; y < m_height; ++y) {
@@ -173,9 +172,9 @@ bool GCImage::Load(GCSurface* pSurf, int bits)
 
 	m_width = pSurf->width;
 	m_height = pSurf->height;
-	m_bitCount = bits;
-	m_channels = m_bitCount / 8;
-	m_rowStride = (m_width * m_channels + 3) & (~3);
+	m_bitDepth = bits;
+	m_channels = m_bitDepth / 8;
+	m_rowStride = rowStride();
 	m_size = m_width * m_height * m_channels;
 	m_rgba.resize(m_size, 0);
 	for (int y = 0; y < m_height; ++y) {
@@ -204,7 +203,7 @@ bool GCImage::Load(std::vector<uint8_t> buffer, int size)
 	m_rgba = buffer;
 	m_width = m_width;
 	m_height = m_height;
-	m_bitCount = m_bitCount;
+	m_bitDepth = m_bitDepth;
 	m_channels = m_channels;
 	m_rowStride = m_rowStride;
 	m_size = size;
@@ -227,7 +226,7 @@ bool GCImage::Load(GCFile* file, int size)
 	m_rgba = buffer;
 	m_width = m_width;
 	m_height = m_height;
-	m_bitCount = m_bitCount;
+	m_bitDepth = m_bitDepth;
 	m_channels = m_channels;
 	m_rowStride = m_rowStride;
 	size = size;
@@ -243,9 +242,9 @@ bool GCImage::LoadRGB(std::vector<uint8_t> buffer, int width, int height, bool f
 
 	m_width = width;
 	m_height = height;
-	m_bitCount = 24;
-	m_channels = m_bitCount / 8;
-	m_rowStride = (m_width * m_channels + 3) & (~3);
+	m_bitDepth = 24;
+	m_channels = m_bitDepth / 8;
+	m_rowStride = rowStride();
 	m_size = m_width * m_height * m_channels;
 	m_rgba.resize(m_size);
 
@@ -291,9 +290,9 @@ bool GCImage::LoadBGR(std::vector<uint8_t> buffer, int width, int height, bool f
 
 	m_width = width;
 	m_height = height;
-	m_bitCount = 24;
-	m_channels = m_bitCount / 8;
-	m_rowStride = (m_width * m_channels + 3) & (~3);
+	m_bitDepth = 24;
+	m_channels = m_bitDepth / 8;
+	m_rowStride = rowStride();
 	m_size = m_width * m_height * m_channels;
 	m_rgba.resize(m_size);
 
@@ -344,8 +343,8 @@ bool GCImage::LoadBMP(const std::string& filename)
 
 	m_width = header.biWidth;
 	m_height = header.biHeight;
-	m_bitCount = header.biBitCount;
-	m_channels = m_bitCount / 8;
+	m_bitDepth = header.biBitCount;
+	m_channels = m_bitDepth / 8;
 	m_size = m_width * m_height * m_channels;
 	m_rgba.resize(m_size);
 
@@ -389,8 +388,7 @@ bool GCImage::LoadPNG(const std::string& filename)
 
 	m_rowStride = m_width * 4;
 	m_size = m_rowStride * m_height;
-	m_bits = m_width * m_height;
-	m_channels = m_bitCount / 8;
+	m_channels = m_bitDepth / 8;
 	return true;
 }
 
@@ -409,8 +407,7 @@ bool GCImage::LoadPNG(std::vector<uint8_t>& buffer, int size)
 
 	m_rowStride = m_width * 4;
 	m_size = m_rowStride * m_height;
-	m_bits = m_width * m_height;
-	m_channels = m_bitCount / 8;
+	m_channels = m_bitDepth / 8;
 	return true;
 }
 
@@ -429,8 +426,7 @@ bool GCImage::LoadJPG(std::vector<uint8_t> buffer, int size)
 
 	m_rowStride = m_width * 4;
 	m_size = m_rowStride * m_height;
-	m_bits = m_width * m_height;
-	m_channels = m_bitCount / 8;
+	m_channels = m_bitDepth / 8;
 	return true;
 }
 
@@ -478,7 +474,7 @@ bool GCImage::SaveBMP(GCFile* pFile, int* pOutSize)
 	header.biWidth = m_width;
 	header.biHeight = m_height;
 	header.biPlanes = 1;
-	header.biBitCount = m_bitCount;
+	header.biBitCount = m_bitDepth;
 	header.biCompression = 0;
 	header.biSizeImage = m_size;
 	header.biXPelsPerMeter = 0;
@@ -538,7 +534,7 @@ void GCImage::Close()
 	}
 	m_width = 0;
 	m_height = 0;
-	m_bitCount = 0;
+	m_bitDepth = 0;
 	m_rowStride = 0;
 	m_size = 0;
 	m_channels = 0;
@@ -570,21 +566,21 @@ bool GCImage::Clear(const REC2* pRect)
 	return true;
 }
 
-void GCImage::SetBits(int bits)
+void GCImage::SetBits(int bitDepth)
 {
-	m_bits = bits;
-	m_channels = m_bits / 8;
-	m_rowStride = (m_width * m_channels + 3) & (~3);
+	m_bitDepth = bitDepth;
+	m_channels = m_bitDepth / 8;
+	m_rowStride = rowStride();
 	m_size = m_width * m_height * m_channels;
 	m_rgba.resize(m_size, 0);
 }
 
-void GCImage::CreateEmptyImage(int w, int h, int bpp)
+void GCImage::CreateEmptyImage(int w, int h, int bitDepth)
 {
 	m_width = w;
 	m_height = h;
-	m_bitCount = bpp;
-	m_channels = m_bitCount / 8;
+	m_bitDepth = bitDepth;
+	m_channels = m_bitDepth / 8;
 	m_rgba.resize(m_width * m_height * m_channels, 0);
 }
 
@@ -611,7 +607,7 @@ void GCImage::SetPixel(int x, int y, int r, int g, int b, int a)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return;
 
-	int m_channels = m_bitCount / 8;
+	int m_channels = m_bitDepth / 8;
 	int index = (x + y * m_width) * m_channels;
 
 	m_rgba[index] = r;
@@ -632,7 +628,6 @@ COLORREF GCImage::GetPixel(int x, int y)
 
 void GCImage::WritePixel(int x, int y, int r, int g, int b, int a, int d, int id)
 {
-
 }
 
 uint8_t GCImage::GetPixelA(int x, int y)
@@ -640,7 +635,6 @@ uint8_t GCImage::GetPixelA(int x, int y)
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return 0;
 	int index = (x + y * m_width) * m_channels;
 	return m_rgba[index + 3];
-
 }
 
 int GCImage::GetPixelDepth(int x, int y)
@@ -654,7 +648,7 @@ bool GCImage::GetPixels(std::vector<uint8_t> pTarget, int x, int y, int w, int h
 	if (pTarget.data() == nullptr || x < 0 || x >= m_width || y < 0 || y >= m_height || w <= 0 || h <= 0)
 		return false;
 
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	int rowStride = (m_width * channels + 3) & (~3);
 	int targetStride = (w * channels + 3) & (~3);
 
@@ -667,7 +661,7 @@ bool GCImage::GetPixels(std::vector<uint8_t> pTarget, int x, int y, int w, int h
 	return true;
 }
 
-int GCImage::GetPixelCount(int r, int g, int b, int a)
+int GCImage::CountPixelOfColor(int r, int g, int b, int a)
 {
 	int count = 0;
 	for (int y = 0; y < m_height; ++y) 
@@ -874,7 +868,7 @@ bool GCImage::Flip(bool horz, bool vert)
 		return false;
 	}
 
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4)
 	{
 		std::cerr << "Flip function requires images with 4 channels (RGBA)." << std::endl;
@@ -910,7 +904,7 @@ bool GCImage::AddHorizontalImage(GCImage* pImg)
 		return false;
 	}
 
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4)
 	{
 		std::cerr << "AddHorizontalImage function requires images with 4 channels (RGBA)." << std::endl;
@@ -956,7 +950,7 @@ bool GCImage::AddVerticalImage(GCImage* pImg)
 		return false;
 	}
 
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4)
 	{
 		std::cerr << "AddVerticalImage function requires images with 4 channels (RGBA)." << std::endl;
@@ -992,7 +986,7 @@ bool GCImage::AddVerticalImage(GCImage* pImg)
 
 bool GCImage::SetAlpha(uint8_t alpha)
 {
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4)
 	{
 		std::cerr << "SetAlpha function requires images with 4 channels (RGBA)." << std::endl;
@@ -1012,7 +1006,7 @@ bool GCImage::SetAlpha(uint8_t alpha)
 
 bool GCImage::SetAlphaForColor(uint8_t alpha, COLORREF colorToFind)
 {
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4)
 	{
 		std::cerr << "SetAlphaForColor function requires images with 4 channels (RGBA)." << std::endl;
@@ -1041,7 +1035,7 @@ bool GCImage::Rotate(int angle)
 		return false;
 	}
 
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4)
 	{
 		std::cerr << "Rotate function requires images with 4 channels (RGBA)." << std::endl;
@@ -1097,7 +1091,7 @@ bool GCImage::Rotate(int angle)
 
 bool GCImage::Premultiply()
 {
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4) {
 		std::cerr << "Premultiply function requires images with 4 channels (RGBA)." << std::endl;
 		return false;
@@ -1125,7 +1119,7 @@ bool GCImage::Premultiply()
 //** It's not a Solidify function -> Need Refacto **//
 bool GCImage::Solidify(GCImage* pOpaque)
 {
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4) {
 		std::cerr << "Solidify function requires images with 4 channels (RGBA)." << std::endl;
 		return false;
@@ -1141,7 +1135,7 @@ bool GCImage::Solidify(GCImage* pOpaque)
 		return false;
 	}
 
-	if (pOpaque->m_bitCount != 24) {
+	if (pOpaque->m_bitDepth != 24) {
 		std::cerr << "Opaque image must have 24 bits." << std::endl;
 		return false;
 	}
@@ -1170,7 +1164,7 @@ bool GCImage::Solidify(GCImage* pOpaque)
 //** It's not a Solidify function -> Need Refacto **//
 bool GCImage::Solidify()
 {
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4) {
 		std::cerr << "Solidify function requires images with 4 channels (RGBA)." << std::endl;
 		return false;
@@ -1221,8 +1215,8 @@ bool GCImage::Copy(int x, int y, GCImage* pImg, int xsrc, int ysrc, int w, int h
 		return false;
 	}
 
-	int channels = m_bitCount / 8;
-	if (channels != pImg->m_bitCount / 8) 
+	int channels = m_bitDepth / 8;
+	if (channels != pImg->m_bitDepth / 8) 
 	{
 		std::cerr << "Both images must have the same bit count." << std::endl;
 		return false;
@@ -1303,8 +1297,8 @@ bool GCImage::Blend(int x, int y, GCImage* pImg, int xsrc, int ysrc, int w, int 
 		return false;
 	}
 
-	int channels = m_bitCount / 8;
-	if (channels != pImg->m_bitCount / 8)
+	int channels = m_bitDepth / 8;
+	if (channels != pImg->m_bitDepth / 8)
 	{
 		std::cerr << "Both images must have the same bit count." << std::endl;
 		return false;
@@ -1401,12 +1395,12 @@ bool GCImage::Blend(int x, int y, int w, int h, GCImage* pSrc, int quality)
 
 bool GCImage::BlendSTD(const GCImage& overlay, float alpha)
 {
-	if (m_bitCount != overlay.m_bitCount) {
+	if (m_bitDepth != overlay.m_bitDepth) {
 		std::cerr << "Both images must have the same bit count." << std::endl;
 		return false;
 	}
 
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4) {
 		std::cerr << "Blend function requires images with 4 channels (RGBA)." << std::endl;
 		return false;
@@ -1449,12 +1443,12 @@ bool GCImage::BlendSTD(const GCImage& overlay, float alpha)
 
 bool GCImage::BlendPRE(const GCImage& overlay, float alpha)
 {
-	if (m_bitCount != overlay.m_bitCount) {
+	if (m_bitDepth != overlay.m_bitDepth) {
 		std::cerr << "Both images must have the same bit count." << std::endl;
 		return false;
 	}
 
-	int channels = m_bitCount / 8;
+	int channels = m_bitDepth / 8;
 	if (channels != 4) {
 		std::cerr << "Blend function requires images with 4 channels (RGBA)." << std::endl;
 		return false;
