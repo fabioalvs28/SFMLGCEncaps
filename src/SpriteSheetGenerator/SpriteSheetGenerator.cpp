@@ -124,20 +124,11 @@ int SpriteSheetGenerator::Packer()
 
             if (entry.path().extension() == ".png")
             {
-                GCFile imageFile = GCFile(entry.path().string().c_str(), "rb");
-                std::vector<uint8_t> buffer;
-                if (!imageFile.Read(buffer, imageFile.size))
-                {
-                    std::printf("Error opening file\n");
-                    return 1;
-                }
-                
-                if (!image.LoadPNG(buffer.data(), imageFile.size))
+                if (!image.LoadPNG(entry.path().string()))
                 {
                     std::printf("Error loading image\n");
                     return 1;
                 }
-                buffer.clear();
             }
 
             int h = image.GetHeight();
