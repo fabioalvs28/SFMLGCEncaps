@@ -16,10 +16,6 @@ def main(outputPath, imageCount, minWidth, maxWidth, minHeight, maxHeight, forma
             sys.exit(1)
     else:
         os.mkdir(outputPath)
-    
-    if len(os.listdir(outputPath)) > 0:
-        print("Error : Output Path isn't empty")
-        sys.exit(1)
         
     for x in range(imageCount):
         r = random.randrange(0, 255)

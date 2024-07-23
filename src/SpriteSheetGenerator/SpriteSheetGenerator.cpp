@@ -179,7 +179,7 @@ int SpriteSheetGenerator::Packer()
             std::string filename = imageList[imageIndex].filename;
             bool rotated = imageList[imageIndex].rotated;
 
-            if (m_tryRefillPrevRow)
+            if (m_tryRefillPrevRow) // This part is very upgradable, trying to put only the largest image that fit in a space, remembering vertical size too, ect
             {
                 bool foundPrevEmplacement = false;
                 for (const auto& emplacement : remainingRows)
