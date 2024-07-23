@@ -463,7 +463,7 @@ bool GCImage::SaveBMP(GCFile* pFile, int* pOutSize)
 	if (pFile == nullptr)
 		return false;
 
-	BMPHeader header;
+	BMPHeader header{};
 	header.bfType = 0x4D42;
 	header.bfSize = sizeof(header) + m_size;
 	header.bfReserved1 = 0;
