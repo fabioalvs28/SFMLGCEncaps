@@ -1,7 +1,7 @@
 #include "GCImage.h"
 #include "BMPHeader.h"
 #include "GCFile.h"
-#include "lib_lodepng.h"
+#include "lodepng.h"
 
 #include <iostream>
 #include <fstream>
@@ -382,100 +382,37 @@ bool GCImage::LoadPNG(const std::string& filename)
 		Close();
 		return 1;
 	}
+	imageFile.Close();
 
-	lodepng::State state;
-	UI32 pngWidth = 0;
-	UI32 pngHeight = 0;
-	if (lodepng_inspect(&pngWidth, &pngHeight, &state, buffer.data(), imageFile.size))
-	{
-		return false;
-	}
-	state.info_png.color.colortype = LCT_RGBA;
-	switch (state.info_png.color.colortype)
-	{
-	case LCT_RGBA:
-	case LCT_GREY_ALPHA:
-	case LCT_PALETTE:
-		m_bitCount = 32;
-		break;
-	case LCT_RGB:
-	case LCT_GREY:
-		m_bitCount = 24;
-		break;
-	default:
-		return false;
-		break;
-	}
+	unsigned error = lodepng::decode(data, m_width, m_height, buffer);
 
-	lodepng_state_cleanup(&state);
-	UI32 error = lodepng_decode32(&m_rgba, (UI32*)&m_width, (UI32*)&m_height, buffer.data(), imageFile.size);
-	if (error)
-	{
-		Close();
-		return false;
-	}
-
+	//if there's an error, display it
+	if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 
 	m_rowStride = m_width * 4;
 	m_size = m_rowStride * m_height;
 	m_bits = m_width * m_height;
 	m_channels = m_bitCount / 8;
-	for (size_t i = 0; i < m_size; i++)
-	{
-		data.emplace_back(m_rgba[i]);
-	}
 	return true;
 }
 
-bool GCImage::LoadPNG(BYTE* buffer, int size)
+bool GCImage::LoadPNG(std::vector<uint8_t>& buffer, int size)
 {
-	if (buffer == nullptr || size <= 0)
+	if (&buffer == nullptr || size <= 0)
 	{
 		Close();
 		return false;
 	}
 
-	lodepng::State state;
-	UI32 pngWidth = 0;
-	UI32 pngHeight = 0;
-	if (lodepng_inspect(&pngWidth, &pngHeight, &state, buffer, size))
-	{
-		return false;
-	}
-	state.info_png.color.colortype = LCT_RGBA;
-	switch (state.info_png.color.colortype)
-	{
-	case LCT_RGBA:
-	case LCT_GREY_ALPHA:
-	case LCT_PALETTE:
-		m_bitCount = 32;
-		break;
-	case LCT_RGB:
-	case LCT_GREY:
-		m_bitCount = 24;
-		break;
-	default:
-		return false;
-		break;
-	}
+	unsigned error = lodepng::decode(data, m_width, m_height, buffer);
 
-	lodepng_state_cleanup(&state);
-	UI32 error = lodepng_decode32(&m_rgba, (UI32*)&m_width, (UI32*)&m_height, buffer, size);
-	if (error)
-	{
-		Close();
-		return false;
-	}
-
+	//if there's an error, display it
+	if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 
 	m_rowStride = m_width * 4;
 	m_size = m_rowStride * m_height;
 	m_bits = m_width * m_height;
 	m_channels = m_bitCount / 8;
-	for (size_t i = 0; i < m_size; i++)
-	{
-		data.emplace_back(m_rgba[i]);
-	}
 	return true;
 }
 
@@ -604,14 +541,13 @@ bool GCImage::SavePNG(GCFile* pFile, int* pOutSize, bool gray)
 	if (pFile == nullptr || m_rgba == nullptr)
 		return false;
 
-	BYTE* png = nullptr;
+	std::vector<uint8_t> png;
 	size_t size = 0;
-	UI32 error = lodepng_encodeEx(&png, &size, data.data(), m_width, m_height, m_bits, gray);
+	unsigned error = lodepng::encode(png, data.data(), m_width, m_height);
 	if (error)
 		return false;
 
-	pFile->Write(png, (int)size);
-	DELPTRS(png);
+	pFile->Write(png);
 
 	if (pOutSize)
 		*pOutSize = (int)size;

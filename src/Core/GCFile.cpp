@@ -25,7 +25,7 @@ GCFile::GCFile(const char* filename, const char* mode)
 
 GCFile::~GCFile()
 {
-	//Close();
+	Close();
 }
 
 
