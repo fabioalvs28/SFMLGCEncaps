@@ -20,7 +20,7 @@
             "projects": ["RenderApp.json", "Render.json"]
         },
         "tools": {
-            "projects": ["Multimedia.json","Core.json", "SpriteSheetGenerator.json"]
+            "projects": ["SpriteSheetGenerator.json", "Multimedia.json","Core.json"]
         },
         "qa": {
             "projects": []
