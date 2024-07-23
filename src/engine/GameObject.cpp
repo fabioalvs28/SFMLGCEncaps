@@ -260,7 +260,15 @@ void GCGameObject::SetName( const char const* name ) { m_name = name; }
 /// 
 /// @note The layer determines the order in which GameObjects are rendered (higher layers are renderer on top).
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::SetLayer( const int layer ) { m_layer = layer; }
+void GCGameObject::SetLayer( const int layer )
+{ 
+    m_layer = layer; 
+    if ( m_pRenderNode != nullptr )
+    {
+        m_pRenderNode->Delete();
+        GC::GetActiveRenderManager()->RegisterGameObject(this);
+    }
+}
 
 
 
@@ -326,4 +334,54 @@ void GCGameObject::ClearComponents()
 {
     for ( auto it : m_componentsList )
         RemoveComponent( it.second->GetID() );
+}
+
+
+void GCGameObject::Render()
+{
+    for (GCListNode<Component*>* pComponentNode = m_renderComponentList.GetFirstNode(); pComponentNode != nullptr ; pComponentNode = pComponentNode->GetNext() )
+    {
+        pComponentNode->GetData()->Render();
+    }
+}
+
+void GCGameObject::RegisterComponentToRender( Component* pComponent )
+{
+
+    GCListNode<Component*>* pFirstNode = m_renderComponentList.GetFirstNode();
+
+    if (pFirstNode == nullptr )
+    {
+        GC::GetActiveRenderManager()->RegisterGameObject(this);
+        pComponent->m_pRenderNode = m_renderComponentList.PushBack(pComponent);
+        return;
+    }
+
+    if (pFirstNode == m_renderComponentList.GetLastNode())
+    {
+        if (pFirstNode->GetData()->GetLayer() < pComponent->GetLayer())
+        {
+            m_renderComponentList.PushBack(pComponent);
+            return;
+        }
+    }
+
+
+    for (GCListNode<Component*>* pComponentNode = m_renderComponentList.GetLastNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetPrevious())
+    {
+        if (pComponentNode->GetData()->GetLayer() <= pComponent->GetLayer())
+        {
+            pComponent->m_pRenderNode = pComponentNode->PushAfter(pComponent);
+            return;
+        }
+    }
+
+    m_renderComponentList.PushFront(pComponent);
+}
+
+void GCGameObject::UnregisterComponentFromRender( GCListNode<Component*>* pComponent )
+{
+    pComponent->Delete();
+    if (m_renderComponentList.GetFirstNode() == nullptr)
+        m_pRenderNode->Delete();
 }

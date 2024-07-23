@@ -1,11 +1,12 @@
 #include "pch.h"
 
 GCGraphics::GCGraphics()
+    : m_pRender(nullptr),
+    m_pPrimitiveFactory(nullptr),
+    m_pModelParserFactory(nullptr),
+    m_pCbLightPropertiesInstance(nullptr)
 {
-    m_pRender = nullptr;
-    m_pPrimitiveFactory = nullptr;
-    m_pModelParserFactory = nullptr;
-
+    m_lTextureActiveFlags.clear();
     m_lTextures.clear();
     m_vShaders.clear();
     m_vMaterials.clear();
@@ -465,11 +466,11 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
 }
 
 // Update per camera constant buffer
-bool GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatrix, DirectX::XMFLOAT4X4 viewMatrix) 
+bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
-    cameraData.view = viewMatrix;
-    cameraData.proj = projectionMatrix;
+    cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
+    cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
 
     UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
 
@@ -479,7 +480,7 @@ bool GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMFLOAT4X4 projectionMatr
 }
 
 // Update per object constant buffer
-bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLOAT4X4 worldMatrix, float meshId)
+bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId)
 {
     if (CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
@@ -487,8 +488,11 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMFLO
     if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
         pMaterial->AddCbPerObject<GCWORLDCB>();
     }
+
+
+
     GCWORLDCB worldData;
-    worldData.world = worldMatrix;
+    worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
 
     worldData.objectId = meshId;
     // Update 
