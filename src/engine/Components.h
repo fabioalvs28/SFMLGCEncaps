@@ -1,62 +1,72 @@
 #pragma once
 #include "../core/framework.h"
+#include "../Render/pch.h"
+
 #include "GCColor.h"
+#include "Map.h"
+
+using namespace DirectX;
+
+// TODO Adding lots of stuff to the components
+// TODO Transforms for colliders
+// TODO Make sure IDs are handled differently
+
+class GCGameObject;
+
 
 
 enum FLAGS
 {
+    NONE            = 0,
 	UPDATE          = 1 << 0,
 	FIXED_UPDATE    = 1 << 1,
     RENDER          = 1 << 2,
 };
-inline FLAGS operator|(FLAGS a, FLAGS b)
-{
-	return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-
-class GCGameObject;
-
-// TODO Adding lots of stuff to the components
-// todo 2 transforms for colliders (self & wold)
+inline FLAGS operator|( FLAGS a, FLAGS b ) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
 
 
 class Component
 {
 friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
+public:
+    virtual const int GetID() = 0;
+    
+    void SetActive( bool active );
+    bool IsActive() { return m_globalActive && m_selfActive; }
 
-public: enum { TYPE = 0 };
+    GCGameObject* GetGameObject() { return m_pGameObject; }
 
 protected:
-	int m_flags;
-
-public:
     Component();
-    Component(int flags);
-    virtual ~Component() {};
+    virtual ~Component() = default;
     
-    virtual int GetType() = 0;
+    virtual void RegisterToManagers();
+    virtual void UnregisterFromManagers();
     
+    virtual void Start() {}
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
-    virtual void Destroy() = 0;
+    virtual void Destroy() {}
     
-    void SetActive( bool active ) { m_active = active; }
+    virtual FLAGS GetFlags() = 0;
+    bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
     
-    bool IsActive() { return m_active; }
-
-    inline GCGameObject* GetGameObject() { return m_pGameObject; }
-
-    inline bool IsFlagSet(FLAGS flag) { return (m_flags & flag) != 0; }
+    void SetGlobalActive( bool active );
 
 protected:
-    void SetGameObject( GCGameObject* pGameObject ) { m_pGameObject = pGameObject; };
-
-protected:
+    inline static int componentCount = 0;
     GCGameObject* m_pGameObject;
-    bool m_active;
+    bool m_globalActive;
+    bool m_selfActive;
+    
+    GCListNode<Component*>* m_pUpdateNode;
+    GCListNode<Component*>* m_pPhysicsNode;
+    GCListNode<Component*>* m_pRenderNode;
 
 };
 
@@ -64,26 +74,38 @@ protected:
 
 class SpriteRenderer : public Component
 {
-public: enum { TYPE = 1 };
-
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
-	SpriteRenderer() : Component(RENDER) {}
-    ~SpriteRenderer() override {}
-    
-    int GetType() override { return TYPE; }
-    
-    void Render() override {}
-    void Destroy() override {}
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
     
     
-    void SetSprite() {};
-    void SetColor( GCColor& color ) { m_color = color; }
+    void SetSprite( std::string texturePath );
+    void SetColor(); 
     
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }
 
 protected:
+	SpriteRenderer();
+    ~SpriteRenderer() override {}
+
+    void Render() override;
+    void Destroy() override {}
+    
+    FLAGS GetFlags() override { return RENDER; }
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
     GCColor m_color;
+
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
+
+    XMMATRIX* m_worldMatrix;
 
 };
 
@@ -91,10 +113,17 @@ protected:
 
 class Collider : public Component
 {
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 
 public:
     Collider();
-    ~Collider();
+    ~Collider() override {}
+    
+    void RegisterToManagers() override;
+    void UnregisterFromManagers() override;
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -103,8 +132,18 @@ public:
     bool IsVisible() { return m_visible; }
 
 protected:
+    FLAGS GetFlags() override { return FIXED_UPDATE | RENDER; }
+
+protected:
     bool m_trigger;
     bool m_visible;
+    
+    GCListNode<Collider*>* m_pColliderNode;
+
+    GCMesh* m_pMesh;
+    GCMaterial* m_pMaterial;
+
+    XMMATRIX* m_worldMatrix;
 
 };
 
@@ -112,23 +151,28 @@ protected:
 
 class BoxCollider : public Collider
 {
-public: enum { TYPE = 2 };
-
-private:
-    GCVEC2 m_size;
-
-
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+    GCVEC2 GetSize() { return m_size; }
+    void SetSize( GCVEC2 size ) { m_size = size; }
+
+protected:
+    BoxCollider();
     ~BoxCollider() override {}
-    
-    int GetType() override { return TYPE; }
-    
+
     void FixedUpdate() override {}
-    void Render() override {}
+    void Render() override;
     void Destroy() override {}
 
-    inline GCVEC2 GetSize() { return m_size; }
-    inline void SetSize( GCVEC2 size ) { m_size = size; }
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    GCVEC2 m_size;
 
 };
 
@@ -136,22 +180,28 @@ public:
 
 class CircleCollider : public Collider
 {
-public: enum { TYPE = 3 };
-
-private:
-    float m_radius;
-
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+    
+    float GetRadius() { return m_radius; }
+    void SetRadius( float radius ) { m_radius = radius; }
+
+protected:
+    CircleCollider() {}
     ~CircleCollider() override {}
     
-    int GetType() override { return TYPE; }
-
     void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
 
-    inline float GetRadius() { return m_radius; }
-    inline void SetRadius( float radius ) { m_radius = radius; }
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    float m_radius;
 
 };
 
@@ -159,21 +209,28 @@ public:
 
 class RigidBody : public Component
 {
-public: enum { TYPE = 4 };
-
-private:
-    GCVEC3 m_velocity;
-
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
-	RigidBody() : Component(FIXED_UPDATE), m_velocity(0, 0, 0) {}
-    ~RigidBody() override {}
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
     
-    int GetType() override { return TYPE; }
+    void AddForce( GCVEC2 force ) {}
+
+protected:
+    RigidBody();
+    ~RigidBody() override {}
     
     void FixedUpdate() override;
     void Destroy() override {}
     
-    void AddForce( GCVEC2 force ) {}
+    FLAGS GetFlags() override { return FIXED_UPDATE; }
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+    GCVEC3 m_velocity;
 
 };
 
@@ -181,16 +238,25 @@ public:
 
 class Animator : public Component
 {
-public: enum { TYPE = 5 };
-
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
-	Animator() : Component(UPDATE) {}
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+protected:
+	Animator() {}
     ~Animator() override {}
-    
-    int GetType() override { return TYPE; }
     
     void Update() override {}
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return UPDATE; }
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
 
 };
 
@@ -198,16 +264,50 @@ public:
 
 class SoundMixer : public Component
 {
-public: enum { TYPE = 6 };
-
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 public:
-	SoundMixer() : Component(UPDATE) {}
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+protected:
+	SoundMixer() {}
     ~SoundMixer() override {}
-    
-    int GetType() override { return TYPE; }
     
     void Update() override {}
     void Destroy() override {}
+    
+    FLAGS GetFlags() override { return UPDATE; }
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
+
+};
+
+
+
+class Camera : public Component
+{
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+protected:
+    Camera() {}
+    ~Camera() override {}
+    
+    void Destroy() override {}
+    
+    FLAGS GetFlags() override { return NONE; }
+
+protected:
+    inline static const int m_ID = ++Component::componentCount;
 
 };
 
@@ -215,16 +315,55 @@ public:
 
 class Script : public Component
 {
-public: enum { TYPE = 7 };
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
 
-public:
-	Script() : Component(UPDATE | FIXED_UPDATE) {}
-    ~Script() override {};
+protected:
+    Script() {}
+    virtual ~Script() = default;
     
-    int GetType() override { return TYPE; }
+    virtual void OnTriggerEnter( Collider* collider ) {}
+    virtual void OnTriggerStay( Collider* collider ) {}
+    virtual void OnTriggerExit( Collider* collider ) {}
     
-    void Update() override {}
-    void FixedUpdate() override {}
-    void Destroy() override {}
+    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
+
+protected:
+    inline static int scriptCount = (1<<15)-1;
 
 };
+
+#define CREATE_SCRIPT_INHERIT_START( CLASS_NAME, INHERITANCE ) \
+    class Script##CLASS_NAME : public Script##INHERITANCE \
+    { \
+    friend class GCGameObject; \
+    friend class GCUpdateManager; \
+    friend class GCPhysicManager; \
+    friend class GCRenderManager; \
+    public: \
+        static const int GetIDStatic() { return m_ID; } \
+        const int GetID() override { return m_ID; } \
+     \
+    protected: \
+        Script##CLASS_NAME() = default; \
+        ~Script##CLASS_NAME() = default; \
+         \
+        /*void Start() override; \
+        void Update() override; \
+        void FixedUpdate() override; \
+        void Destroy() override; \
+         \
+        void OnTriggerEnter( Collider* collider ) override; \
+        void OnTriggerStay( Collider* collider ) override; \
+        void OnTriggerExit( Collider* collider ) override;*/ \
+     \
+    protected: \
+        inline static const int m_ID = ++Script::scriptCount; \
+     \
+    private:
+
+#define CREATE_SCRIPT_START( CLASS_NAME ) CREATE_SCRIPT_INHERIT_START( CLASS_NAME,  )
+
+#define CREATE_SCRIPT_END };

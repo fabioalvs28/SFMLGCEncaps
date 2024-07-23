@@ -1,32 +1,32 @@
 #pragma once
-#include "../core/framework.h"
+#include "Define.h"
+#include "Vector.h"
+#include "Map.h"
+#include "List.h"
+#include "GameObjectTransform.h"
 
 class Component;
 class GCScene;
-class GCSceneManager;
 
 
 
 class GCGameObject
 {
+friend class GCGameObjectTransform;
 friend class GCScene;
 friend class GCSceneManager;
+friend class GC;
 
 protected:
     GCGameObject( GCScene* pScene );
     ~GCGameObject() = default;
-    
-    void Update();
-    void Render();
 
 public:
-    GCGameObject* Duplicate();
-    void Destroy();
+    GCGameObject* Duplicate(); // Potential optimization: A DuplicateAtCenter() method which doesn't calculate the transform's matrix and instead places the new GameObject at the center of the parent's bounds with no rotation and scale
     
     void RemoveParent();
     GCGameObject* CreateChild();
     void AddChild( GCGameObject* pChild );
-    void RemoveChild( GCGameObject* pChild );
     void DestroyChildren();
     
     void AddTag( const char* tag );
@@ -36,14 +36,14 @@ public:
     
     void SetScene( GCScene* pScene );
     void SetParent( GCGameObject* pParent );
-    void SetActive( bool active );
-    void SetName( const char* name );
-    void SetLayer( int layer );
+    void SetActive( const bool active );
+    void SetName( const char const* name );
+    void SetLayer( const int layer );
     
     unsigned int GetID() const;
     GCScene* GetScene() const;
     GCGameObject* GetParent() const;
-    GCList<GCGameObject*> GetChildren() const;
+    GCList<GCGameObject*>& GetChildren();
     bool IsActive() const;
     const char* GetName() const;
     const char* GetTag( int index ) const;
@@ -58,12 +58,15 @@ public:
     void ClearComponents();
 
 protected:
+    void Destroy();
+    
     void RemoveScene();
+    void SetGlobalActive( const bool active );
     
     void RemoveComponent( int type );
 
 public:
-    GCTransform m_transform;
+    GCGameObjectTransform m_transform;
 
 protected:
     static inline unsigned int s_gameObjectsCount = 0;
@@ -76,7 +79,11 @@ protected:
     GCList<GCGameObject*> m_childrenList;
     
     bool m_created;
-    bool m_active;
+    bool m_deleted;
+    
+    bool m_globalActive;
+    bool m_selfActive;
+    
     const char* m_name;
     GCVector<const char*> m_tagsList;
     int m_layer;
@@ -97,11 +104,12 @@ protected:
 template<class T>
 T* GCGameObject::AddComponent()
 {
-    if ( GetComponent<T>() != nullptr ) return nullptr;
-    T* component = new T();
-    component->SetGameObject( this );
-    m_componentsList.Insert( T::TYPE, component );
-    return component;
+    ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a component to a GameObject that already has it" );
+    T* pComponent = new T();
+    pComponent->m_pGameObject = this;
+    pComponent->RegisterToManagers();
+    m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    return pComponent;
 }
 
 ///////////////////////////////////////////////////////////
@@ -113,7 +121,7 @@ template<class T>
 T* GCGameObject::GetComponent()
 {
     Component* component;
-    if ( m_componentsList.Find( T::TYPE, component ) == true )
+    if ( m_componentsList.Find( T::GetIDStatic(), component ) == true )
         return (T*) component;
     return nullptr;
 }

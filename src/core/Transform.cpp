@@ -8,23 +8,25 @@ GCTransform::GCTransform()
 
 void GCTransform::Identity()
 {
-	m_direction = GCVEC3(0, 0, 1);
-	m_right = GCVEC3(1, 0, 0);
-	m_up = GCVEC3(0, 1, 0);
-	m_rotation = GCQUATERNION(0, 0, 0, 1);
-	m_rotationMatrix = GCMATRIX::Identity();
-	m_position = GCVEC3(0, 0, 0);
-	m_matrix = GCMATRIX::Identity();
-	m_scale = GCVEC3(1, 1, 1);	
+	m_direction.SetFront();
+	m_right.SetRight();
+	m_up.SetUp();
+	m_rotation.SetIdentity();
+	m_rotationMatrix.SetIdentity();
+	
+	m_position.SetZero();
+	m_scale.SetOne();
+	
+	m_matrix.SetIdentity();
 }
 
 void GCTransform::IdentityRotation()
 {
-	m_direction = GCVEC3(0, 0, 1);
-	m_right = GCVEC3(1, 0, 0);
-	m_up = GCVEC3(0, 1, 0);
-	m_rotation = GCQUATERNION(0, 0, 0, 1);
-	m_rotationMatrix = GCMATRIX::Identity();
+	m_direction.SetFront();
+	m_right.SetRight();
+	m_up.SetUp();
+	m_rotation.SetIdentity();
+	m_rotationMatrix.SetIdentity();
 }
 
 void GCTransform::FromMatrix(const GCMATRIX& matrix)
@@ -62,16 +64,21 @@ void GCTransform::UpdateVectorsFromQuaternion()
 
 void GCTransform::UpdateMatrix()
 {
+	// m_matrix = m_rotationMatrix * m_scaleMatrix * m_translationMatrix;
+	// m_rotationWorldMatrix = m_rotationWorldMatrixParent * m_rotationMatrix
+	// m_scaleWorldMatrix = m_scaleWorldMatrixParent * m_scaleMatrix
+	// m_translationWorldMatrix = m_translationWorldMatrixParent * m_translationMatrix
+	// m_worldMatrix = m_rotationWorldMatrix * m_scaleWorldMatrix * m_translationWorldMatrix;
 	m_matrix.SetIdentity();
-	m_matrix._11 = m_right.x;
+	m_matrix._11 = m_right.x * m_scale.x;
 	m_matrix._12 = m_right.y;
 	m_matrix._13 = m_right.z;
 	m_matrix._21 = m_up.x;
-	m_matrix._22 = m_up.y;
+	m_matrix._22 = m_up.y * m_scale.y;
 	m_matrix._23 = m_up.z;
 	m_matrix._31 = m_direction.x;
 	m_matrix._32 = m_direction.y;
-	m_matrix._33 = m_direction.z;
+	m_matrix._33 = m_direction.z * m_scale.z;
 	m_matrix._41 = m_position.x;
 	m_matrix._42 = m_position.y;
 	m_matrix._43 = m_position.z;
@@ -89,7 +96,6 @@ void GCTransform::Rotate(float yaw, float pitch, float roll)
 	qRoll.FromAxisAngle(m_direction, roll);
 
 	GCQUATERNION qResult = qRoll;
-
 	qResult *= qPitch;
 	qResult *= qYaw;
 
@@ -115,31 +121,25 @@ void GCTransform::RotateRoll(float angle)
 	Rotate(0, 0, angle);
 }
 
-void GCTransform::RotateWorld(float x, float y, float z)
+void GCTransform::SetRotation(float yaw, float pitch, float roll)
 {
 	IdentityRotation();
-	Rotate(y, x, z);
+	Rotate(yaw, pitch, roll);
 }
 
-void GCTransform::RotateWorldX(float angle)
+void GCTransform::SetRotationX(float angle)
 {
-	RotateWorld(angle, 0, 0);
+	SetRotation(angle, 0, 0);
 }
 
-void GCTransform::RotateWorldY(float angle)
+void GCTransform::SetRotationY(float angle)
 {
-	RotateWorld(0, angle, 0);
+	SetRotation(0, angle, 0);
 }
 
-void GCTransform::RotateWorldZ(float angle)
+void GCTransform::SetRotationZ(float angle)
 {
-	RotateWorld(0, 0, angle);
-}
-
-void GCTransform::Scale(const GCVEC3& scale)
-{
-	m_scale *= scale;
-	m_matrix.Scale(m_scale.x, m_scale.y, m_scale.z);
+	SetRotation(0, 0, angle);
 }
 
 void GCTransform::Translate(const GCVEC3& translation)
@@ -150,3 +150,32 @@ void GCTransform::Translate(const GCVEC3& translation)
 	m_matrix._43 = m_position.z;
 }
 
+void GCTransform::SetPosition(const GCVEC3& position)
+{
+	m_position = position;
+	m_matrix._41 = m_position.x;
+	m_matrix._42 = m_position.y;
+	m_matrix._43 = m_position.z;
+}
+
+void GCTransform::Scale(const GCVEC3& scale)
+{
+	m_scale *= scale;
+	m_matrix._11 *= scale.x;
+	m_matrix._22 *= scale.y;
+	m_matrix._33 *= scale.z;
+}
+
+void GCTransform::Scale(const float scale)
+{
+	m_scale *= scale;
+	m_matrix._11 *= scale;
+	m_matrix._22 *= scale;
+	m_matrix._33 *= scale;
+}
+
+void GCTransform::SetScale(const GCVEC3& scale)
+{
+	m_scale = scale;
+	UpdateMatrix();
+}
