@@ -230,7 +230,6 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateSrvWithTexture(ID3D12Reso
 	profiler.LogWarning("Offset srv count : " + std::to_string(m_srvOffsetCount));
 
 	//m_lShaderResourceView.push_back(srvGpuHandle);
-	if(m_srvOffsetCount == 300 || m_srvOffsetCount == 301)
 	m_lShaderResourceView.push_back(srvGpuHandle);
 	
 	m_srvOffsetCount++;

@@ -102,19 +102,19 @@ bool GCRenderContext::InitDX12RenderPipeline()
 	CreateSwapChain();
 	
 	//Create RTV/DSV Descriptor Heaps
-	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_pGCRenderResources->SwapChainBufferCount + 2, false, &m_pGCRenderResources->m_pRtvHeap);
+	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_pGCRenderResources->SwapChainBufferCount + 6, false, &m_pGCRenderResources->m_pRtvHeap);
 	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 2, false, &m_pGCRenderResources->m_pDsvHeap);
 	//Create CBV/SRV/UAV Descriptor Heaps
 	m_pGCRenderResources->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1000, true, &m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap);
 
 	//*
 
-	//CreateDeferredLightPassResources();
 
 	m_pGCRenderResources->m_canResize = true;
 
 	OnResize();
 	CreatePostProcessingResources();
+	CreateDeferredLightPassResources();
 
 	return true;
 }
@@ -182,7 +182,7 @@ void GCRenderContext::CreatePostProcessingResources() {
 		clearValue->Color[1] = 0.0f;
 		clearValue->Color[2] = 0.0f;
 		clearValue->Color[3] = 1.0f;
-		GetRenderResources()->m_pPostProcessingRtv = GetRenderResources()->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, clearValue);
+		GetRenderResources()->m_pPostProcessingRtv = GetRenderResources()->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 		GetRenderResources()->CreateSrvWithTexture(GetRenderResources()->m_pPostProcessingRtv->resource, DXGI_FORMAT_R8G8B8A8_UNORM);
 		GetRenderResources()->CreateUAV(GetRenderResources()->m_pPostProcessingRtv->resource);
 
@@ -210,13 +210,7 @@ void GCRenderContext::CreatePostProcessingResources() {
 		int flags2 = 0;
 		SET_FLAG(flags2, VERTEX_POSITION);
 
-		GetRenderResources()->m_objectBufferIdShader = new GCShader();
-		std::string shaderFilePath5 = "../../../src/RenderApp/Shaders/ObjectBufferId.hlsl";
-		std::string csoDestinationPath5 = "../../../src/RenderApp/CsoCompiled/ObjectBufferId";
-
-		GetRenderResources()->m_objectBufferIdShader->Initialize(this, shaderFilePath5, csoDestinationPath5, flags2);
-		GetRenderResources()->m_objectBufferIdShader->Load();
-		//m_pGCRenderResources->m_pPixelIdMappingBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		m_pGCRenderResources->m_pPixelIdMappingBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 	}
 }
 
@@ -410,12 +404,12 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	//m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	//m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	//m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 
-	//m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	//m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_pPixelIdMappingDepthStencilBuffer->cpuHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->m_pPixelIdMappingBufferRtv->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->m_pPixelIdMappingDepthStencilBuffer->cpuHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvs;
@@ -540,10 +534,10 @@ bool GCRenderContext::CompleteDraw()
 
 	if (m_isCSPostProcessingActivated) PerformPostProcessingCS();
 	
-	//if (m_isBasicPostProcessingActivated == false) {
-	//	CD3DX12_RESOURCE_BARRIER RtToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	//	m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToPresent);
-	//}
+	if (m_isCSPostProcessingActivated == false) {
+		CD3DX12_RESOURCE_BARRIER RtToPresent = CD3DX12_RESOURCE_BARRIER::Transition(m_pGCRenderResources->CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		m_pGCRenderResources->m_CommandList->ResourceBarrier(1, &RtToPresent);
+	}
 
 	if (m_isDeferredLightPassActivated) {
 		PerformDeferredLightPass();
@@ -563,7 +557,7 @@ bool GCRenderContext::CompleteDraw()
 
 	//Clear frame counter for resource using - Release short time resource
 	// #WARNING It will replace resource on these offset already allocated
-	//m_pGCRenderResources->m_srvOffsetCount = 300;
+	m_pGCRenderResources->m_srvOffsetCount = 305;
 
 	// Flush the command queue
 	if (FlushCommandQueue() == false) return false;

@@ -475,7 +475,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
     //materialCubeOuter.resource->SetTexture(texture2.resource);
 
-    auto materialCubeInner = graphics->CreateMaterial(shaderLightColor.resource);
+    auto materialCubeInner = graphics->CreateMaterial(shaderLightColor.resource); // problème ici
     auto materialCubeInner2 = graphics->CreateMaterial(shaderLightColor.resource);
     auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
     materialSphere.resource->SetTexture(texture.resource);
@@ -544,12 +544,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateMaterialProperties(materialCubeInner.resource, materialProperties);
 
         GCMATERIALPROPERTIES materialProperties2;
-        materialProperties2.ambientLightColor = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-        materialProperties2.ambient = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
+        materialProperties2.ambientLightColor = DirectX::XMFLOAT4(0.5f, 0.2f, 1.0f, 1.0f);
+        materialProperties2.ambient = DirectX::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
         materialProperties2.diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         materialProperties2.specular = DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
         materialProperties2.shininess = 128.0f;
-        graphics->UpdateMaterialProperties(materialCubeInner2.resource, materialProperties2);
+        graphics->UpdateMaterialProperties(materialCubeInner2.resource, materialProperties);
 
         GCLIGHTSPROPERTIES lightData = {};
 
@@ -584,11 +584,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
         //graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource,true);
 
-        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2, 2.0f);
-        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource, true);
-
-        graphics->UpdateWorldConstantBuffer(materialCubeInner2.resource, worldCubeInner, 2.0f);
+        graphics->UpdateWorldConstantBuffer(materialCubeInner2.resource, worldCubeInner2, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner2.resource, true);
+
+        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner, 2.0f);
+        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource, true);
+        //materialCubeInner.resource->AddCbPerObject<GCWORLDCB>();
+        //graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource, true);
 
         //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner, 3.0f);
         //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
