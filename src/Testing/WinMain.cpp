@@ -110,70 +110,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //auto startTime = std::chrono::steady_clock::now();
     
     int counter = 0;
+    GCInputSystem* pInputs = GC::GetActiveInputSystem();
     
     while (true) {
-        //
-        //test3->m_transform.Translate(GCVEC3(-0.02f, 0, 0));
-        //counter++;
-        //if (counter >= 200) test3bis->AddChild(test2);
-        //
-        //using namespace std;
-        //cout << counter << endl;
-        //cout << "Parent" << endl;
-        //cout << test3->m_transform.m_worldMatrix._11 << " " << test3->m_transform.m_worldMatrix._12 << " " << test3->m_transform.m_worldMatrix._13 << " " << test3->m_transform.m_worldMatrix._14 << endl;
-        //cout << test3->m_transform.m_worldMatrix._21 << " " << test3->m_transform.m_worldMatrix._22 << " " << test3->m_transform.m_worldMatrix._23 << " " << test3->m_transform.m_worldMatrix._24 << endl;
-        //cout << test3->m_transform.m_worldMatrix._31 << " " << test3->m_transform.m_worldMatrix._32 << " " << test3->m_transform.m_worldMatrix._33 << " " << test3->m_transform.m_worldMatrix._34 << endl;
-        //cout << test3->m_transform.m_worldMatrix._41 << " " << test3->m_transform.m_worldMatrix._42 << " " << test3->m_transform.m_worldMatrix._43 << " " << test3->m_transform.m_worldMatrix._44 << endl;
-        //cout << "Enfant" << endl;
-        //cout << test2->m_transform.m_matrix._11 << " " << test2->m_transform.m_matrix._12 << " " << test2->m_transform.m_matrix._13 << " " << test2->m_transform.m_matrix._14 << endl;
-        //cout << test2->m_transform.m_matrix._21 << " " << test2->m_transform.m_matrix._22 << " " << test2->m_transform.m_matrix._23 << " " << test2->m_transform.m_matrix._24 << endl;
-        //cout << test2->m_transform.m_matrix._31 << " " << test2->m_transform.m_matrix._32 << " " << test2->m_transform.m_matrix._33 << " " << test2->m_transform.m_matrix._34 << endl;
-        //cout << test2->m_transform.m_matrix._41 << " " << test2->m_transform.m_matrix._42 << " " << test2->m_transform.m_matrix._43 << " " << test2->m_transform.m_matrix._44 << endl;
-        
-        /*auto currentTime = std::chrono::steady_clock::now();
-        float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
-
-        float rotationSpeed = 1.0f;
-        float angle = rotationSpeed * elapsedTime;
-        XMMATRIX rotationMatrix = XMMatrixRotationY(angle);*/
-
-        // Mettre à jour la matrice de transformation du cube interne
-        //XMMATRIX worldMatrixCubeInnerUpdated = rotationMatrix * worldMatrixCubeInner;
-
-        //// Extraire les données de la matrice mise à jour dans une XMFLOAT4X4
-        //XMStoreFloat4x4(&worldCubeInner, XMMatrixTranspose(worldMatrixCubeInnerUpdated));
-
-
-        
-
-        //// Dessiner le cube externe
-        //graphics->UpdateWorldConstantBuffer(materialCubeOuter.resource, worldCubeOuter);
-        //graphics->GetRender()->DrawObject(meshCubeOuter.resource, materialCubeOuter.resource);
-
-
-        //////GCLIGHTSPROPERTIES lightData = {};
-
-        //////GCLIGHT light2;
-        //////light2.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Position en 2D (x, y, 0)
-        //////light2.direction = DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f); // Direction vers le bas en 2D
-        //////light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
-        //////light2.spotAngle = 10.0f; // Angle du spot si applicable
-        //////light2.lightIntensity = 3.2f;
-        //////light2.lightType = 1; // Type de lumière ponctuelle
-
-        //////GCLIGHT pointLight;
-        //////pointLight.position = DirectX::XMFLOAT3(6.0f, 1.0f, 0.0f); // Position en 2D (x, y, 0)
-        //////pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Direction vers le bas en 2D
-        //////pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
-        //////pointLight.spotAngle = 0.0f; // Angle du spot si applicable
-        //////pointLight.lightIntensity = 2.4f;
-        //////pointLight.lightType = 2; // Type de lumière ponctuelle
-
-
-        //////lightData.lights[1] = pointLight;
-        //////lightData.lights[0] = light2;
-
-        //////graphics->UpdateLights(lightData);
+        if (pInputs->m_pMouse->GetKeyDown(GCMouseInputManager::LEFT))
+            std::cout << "aaaaa";
+        if (pInputs->m_pKeyboard->GetKeyDown(GCKeyboardInputManager::A))
+            std::cout << "A";
 
         pGameManager->Update();
 
