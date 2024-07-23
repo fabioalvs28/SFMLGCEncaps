@@ -18,7 +18,7 @@ GCImage::GCImage(const GCImage& img)
 	m_channels = img.m_channels;
 	m_rowStride = img.m_rowStride;
 	m_size = img.m_size;
-	data = img.data;
+	m_rgba = img.m_rgba;
 	m_bits = img.m_bits;
 }
 
@@ -68,12 +68,12 @@ GCImage& GCImage::operator+=(GCImage& img)
 		{
 			int index = (x + y * m_width) * m_channels;
 			int imgIndex = (x + y * img.m_width) * img.m_channels;
-			data[index] += img.data[imgIndex];
-			data[index + 1] += img.data[imgIndex + 1];
-			data[index + 2] += img.data[imgIndex + 2];
+			m_rgba[index] += img.m_rgba[imgIndex];
+			m_rgba[index + 1] += img.m_rgba[imgIndex + 1];
+			m_rgba[index + 2] += img.m_rgba[imgIndex + 2];
 			if (m_channels == 4)
 			{
-				data[index + 3] += img.data[imgIndex + 3];
+				m_rgba[index + 3] += img.m_rgba[imgIndex + 3];
 			}
 		}
 	}
@@ -94,12 +94,12 @@ GCImage& GCImage::operator-=(GCImage& img)
 		{
 			int index = (x + y * m_width) * m_channels;
 			int imgIndex = (x + y * img.m_width) * img.m_channels;
-			data[index] -= img.data[imgIndex];
-			data[index + 1] -= img.data[imgIndex + 1];
-			data[index + 2] -= img.data[imgIndex + 2];
+			m_rgba[index] -= img.m_rgba[imgIndex];
+			m_rgba[index + 1] -= img.m_rgba[imgIndex + 1];
+			m_rgba[index + 2] -= img.m_rgba[imgIndex + 2];
 			if (m_channels == 4)
 			{
-				data[index + 3] -= img.data[imgIndex + 3];
+				m_rgba[index + 3] -= img.m_rgba[imgIndex + 3];
 			}
 		}
 	}
@@ -119,7 +119,7 @@ GCImage& GCImage::operator=(const GCImage& img)
 		m_height = img.m_height;
 		m_bitCount = img.m_bitCount;
 		m_channels = img.m_channels;
-		data = img.data;
+		m_rgba = img.m_rgba;
 	}
 	return *this;
 }
@@ -138,7 +138,7 @@ bool GCImage::Load(GCImage* img, REC2* pRect)
 		m_channels = img->m_channels;
 		m_rowStride = img->m_rowStride;
 		m_size = img->m_size;
-		data = img->data;
+		m_rgba = img->m_rgba;
 	}
 	else {
 		m_width = pRect->width;
@@ -147,17 +147,16 @@ bool GCImage::Load(GCImage* img, REC2* pRect)
 		m_channels = img->m_channels;
 		m_rowStride = (m_width * m_channels + 3) & (~3);
 		m_size = m_width * m_height * m_channels;
-		data.resize(m_size, 0);
-		m_rgba = data.data();
+		m_rgba.resize(m_size, 0);
 		for (int y = 0; y < m_height; ++y) {
 			for (int x = 0; x < m_width; ++x) {
 				int index = (x + y * m_width) * m_channels;
 				int imgIndex = ((x + pRect->x) + (y + pRect->y) * img->m_width) * img->m_channels;
-				data[index] = img->data[imgIndex];
-				data[index + 1] = img->data[imgIndex + 1];
-				data[index + 2] = img->data[imgIndex + 2];
+				m_rgba[index] = img->m_rgba[imgIndex];
+				m_rgba[index + 1] = img->m_rgba[imgIndex + 1];
+				m_rgba[index + 2] = img->m_rgba[imgIndex + 2];
 				if (m_channels == 4) {
-					data[index + 3] = img->data[imgIndex + 3];
+					m_rgba[index + 3] = img->m_rgba[imgIndex + 3];
 				}
 			}
 		}
@@ -178,17 +177,16 @@ bool GCImage::Load(GCSurface* pSurf, int bits)
 	m_channels = m_bitCount / 8;
 	m_rowStride = (m_width * m_channels + 3) & (~3);
 	m_size = m_width * m_height * m_channels;
-	data.resize(m_size, 0);
-	m_rgba = data.data();
+	m_rgba.resize(m_size, 0);
 	for (int y = 0; y < m_height; ++y) {
 		for (int x = 0; x < m_width; ++x) {
 			int index = (x + y * m_width) * m_channels;
 			int surfIndex = (x + y * pSurf->width) * pSurf->count;
-			data[index] = pSurf->rgba[surfIndex];
-			data[index + 1] = pSurf->rgba[surfIndex + 1];
-			data[index + 2] = pSurf->rgba[surfIndex + 2];
+			m_rgba[index] = pSurf->rgba[surfIndex];
+			m_rgba[index + 1] = pSurf->rgba[surfIndex + 1];
+			m_rgba[index + 2] = pSurf->rgba[surfIndex + 2];
 			if (m_channels == 4) {
-				data[index + 3] = pSurf->rgba[surfIndex + 3];
+				m_rgba[index + 3] = pSurf->rgba[surfIndex + 3];
 			}
 		}
 	}
@@ -196,9 +194,9 @@ bool GCImage::Load(GCSurface* pSurf, int bits)
 
 }
 
-bool GCImage::Load(BYTE* buffer, int size)
+bool GCImage::Load(std::vector<uint8_t> buffer, int size)
 {
-	if (buffer == nullptr || size <= 0)
+	if (buffer.data() == nullptr || size <= 0)
 		return false;
 
 	Close();
@@ -209,7 +207,7 @@ bool GCImage::Load(BYTE* buffer, int size)
 	m_bitCount = m_bitCount;
 	m_channels = m_channels;
 	m_rowStride = m_rowStride;
-	size = size;
+	m_size = size;
 	return true;
 }
 
@@ -226,7 +224,7 @@ bool GCImage::Load(GCFile* file, int size)
 		return false;
 	}
 
-	m_rgba = buffer.data();
+	m_rgba = buffer;
 	m_width = m_width;
 	m_height = m_height;
 	m_bitCount = m_bitCount;
@@ -236,9 +234,9 @@ bool GCImage::Load(GCFile* file, int size)
 	return true;
 }
 
-bool GCImage::LoadRGB(BYTE* buffer, int width, int height, bool flip)
+bool GCImage::LoadRGB(std::vector<uint8_t> buffer, int width, int height, bool flip)
 {
-	if (buffer == nullptr || width <= 0 || height <= 0)
+	if (buffer.data() == nullptr || width <= 0 || height <= 0)
 		return false;
 
 	Close();
@@ -249,7 +247,7 @@ bool GCImage::LoadRGB(BYTE* buffer, int width, int height, bool flip)
 	m_channels = m_bitCount / 8;
 	m_rowStride = (m_width * m_channels + 3) & (~3);
 	m_size = m_width * m_height * m_channels;
-	data.resize(m_size);
+	m_rgba.resize(m_size);
 
 	if (flip) 
 	{
@@ -259,9 +257,9 @@ bool GCImage::LoadRGB(BYTE* buffer, int width, int height, bool flip)
 			{
 				int index = (x + y * m_width) * m_channels;
 				int bufferIndex = ((m_height - 1 - y) * m_width + x) * 3;
-				data[index] = buffer[bufferIndex];
-				data[index + 1] = buffer[bufferIndex + 1];
-				data[index + 2] = buffer[bufferIndex + 2];
+				m_rgba[index] = buffer[bufferIndex];
+				m_rgba[index + 1] = buffer[bufferIndex + 1];
+				m_rgba[index + 2] = buffer[bufferIndex + 2];
 			}
 		}
 	}
@@ -273,9 +271,9 @@ bool GCImage::LoadRGB(BYTE* buffer, int width, int height, bool flip)
 			{
 				int index = (x + y * m_width) * m_channels;
 				int bufferIndex = (y * m_width + x) * 3;
-				data[index] = buffer[bufferIndex];
-				data[index + 1] = buffer[bufferIndex + 1];
-				data[index + 2] = buffer[bufferIndex + 2];
+				m_rgba[index] = buffer[bufferIndex];
+				m_rgba[index + 1] = buffer[bufferIndex + 1];
+				m_rgba[index + 2] = buffer[bufferIndex + 2];
 			}
 		}
 	}
@@ -284,9 +282,9 @@ bool GCImage::LoadRGB(BYTE* buffer, int width, int height, bool flip)
 
 }
 
-bool GCImage::LoadBGR(BYTE* buffer, int width, int height, bool flip)
+bool GCImage::LoadBGR(std::vector<uint8_t> buffer, int width, int height, bool flip)
 {
-	if (buffer == nullptr || width <= 0 || height <= 0)
+	if (buffer.data() == nullptr || width <= 0 || height <= 0)
 		return false;
 
 	Close();
@@ -297,7 +295,7 @@ bool GCImage::LoadBGR(BYTE* buffer, int width, int height, bool flip)
 	m_channels = m_bitCount / 8;
 	m_rowStride = (m_width * m_channels + 3) & (~3);
 	m_size = m_width * m_height * m_channels;
-	data.resize(m_size);
+	m_rgba.resize(m_size);
 
 	if (flip) 
 	{
@@ -307,9 +305,9 @@ bool GCImage::LoadBGR(BYTE* buffer, int width, int height, bool flip)
 			{
 				int index = (x + y * m_width) * m_channels;
 				int bufferIndex = ((m_height - 1 - y) * m_width + x) * 3;
-				data[index] = buffer[bufferIndex + 2];
-				data[index + 1] = buffer[bufferIndex + 1];
-				data[index + 2] = buffer[bufferIndex];
+				m_rgba[index] = buffer[bufferIndex + 2];
+				m_rgba[index + 1] = buffer[bufferIndex + 1];
+				m_rgba[index + 2] = buffer[bufferIndex];
 			}
 		}
 	}
@@ -321,9 +319,9 @@ bool GCImage::LoadBGR(BYTE* buffer, int width, int height, bool flip)
 			{
 				int index = (x + y * m_width) * m_channels;
 				int bufferIndex = (y * m_width + x) * 3;
-				data[index] = buffer[bufferIndex + 2];
-				data[index + 1] = buffer[bufferIndex + 1];
-				data[index + 2] = buffer[bufferIndex];
+				m_rgba[index] = buffer[bufferIndex + 2];
+				m_rgba[index + 1] = buffer[bufferIndex + 1];
+				m_rgba[index + 2] = buffer[bufferIndex];
 			}
 		}
 	}
@@ -349,7 +347,7 @@ bool GCImage::LoadBMP(const std::string& filename)
 	m_bitCount = header.biBitCount;
 	m_channels = m_bitCount / 8;
 	m_size = m_width * m_height * m_channels;
-	data.resize(m_size);
+	m_rgba.resize(m_size);
 
 	if (fseek(file.file, header.bfOffBits, SEEK_SET) != 0) 
 	{
@@ -366,7 +364,7 @@ bool GCImage::LoadBMP(const std::string& filename)
 			std::cerr << "Error reading pixel data from file: " << filename << std::endl;
 			return false;
 		}
-		std::memcpy(&data[(m_height - 1 - y) * m_width * m_channels], rowData.data(), m_width * m_channels);
+		std::memcpy(&m_rgba[(m_height - 1 - y) * m_width * m_channels], rowData.data(), m_width * m_channels);
 	}
 	file.Close();
 	return true;
@@ -384,7 +382,7 @@ bool GCImage::LoadPNG(const std::string& filename)
 	}
 	imageFile.Close();
 
-	unsigned error = lodepng::decode(data, m_width, m_height, buffer);
+	unsigned error = lodepng::decode(m_rgba, m_width, m_height, buffer);
 
 	//if there's an error, display it
 	if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
@@ -398,13 +396,13 @@ bool GCImage::LoadPNG(const std::string& filename)
 
 bool GCImage::LoadPNG(std::vector<uint8_t>& buffer, int size)
 {
-	if (&buffer == nullptr || size <= 0)
+	if (buffer.data() == nullptr || size <= 0)
 	{
 		Close();
 		return false;
 	}
 
-	unsigned error = lodepng::decode(data, m_width, m_height, buffer);
+	unsigned error = lodepng::decode(m_rgba, m_width, m_height, buffer);
 
 	//if there's an error, display it
 	if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
@@ -416,44 +414,23 @@ bool GCImage::LoadPNG(std::vector<uint8_t>& buffer, int size)
 	return true;
 }
 
-bool GCImage::LoadJPG(BYTE* buffer, int size)
+bool GCImage::LoadJPG(std::vector<uint8_t> buffer, int size)
 {
-	if (buffer == nullptr || size <= 0)
-	{
-		return false;
-	}
-	Close();
-
-	lodepng::State state;
-	UI32 pngWidth, pngHeight;
-	if (lodepng_inspect(&pngWidth, &pngHeight, &state, buffer, size))
-		return false;
-	switch (state.info_png.color.colortype)
-	{
-	case LCT_RGBA:
-	case LCT_GREY_ALPHA:
-	case LCT_PALETTE:
-		m_bitCount = 32;
-		break;
-	case LCT_RGB:
-	case LCT_GREY:
-		m_bitCount = 24;
-		break;
-	default:
-		return false;
-		break;
-	}
-
-	UI32 error = lodepng_decode32(&m_rgba, (UI32*)&m_width, (UI32*)&m_height, buffer, size);
-	if (error)
+	if (buffer.data() == nullptr || size <= 0)
 	{
 		Close();
 		return false;
 	}
 
+	unsigned error = lodepng::decode(m_rgba, m_width, m_height, buffer);
+
+	//if there's an error, display it
+	if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+
 	m_rowStride = m_width * 4;
-	size = m_rowStride * m_height;
-	m_bitCount = m_width * m_height;
+	m_size = m_rowStride * m_height;
+	m_bits = m_width * m_height;
+	m_channels = m_bitCount / 8;
 	return true;
 }
 
@@ -523,7 +500,7 @@ bool GCImage::SaveBMP(GCFile* pFile, int* pOutSize)
 
 	for (int y = 0; y < m_height; ++y) 
 	{
-		std::memcpy(rowData.data(), &data[(m_height - 1 - y) * m_width * m_channels], m_width * m_channels);
+		std::memcpy(rowData.data(), &m_rgba[(m_height - 1 - y) * m_width * m_channels], m_width * m_channels);
 		if (!pFile->Write(rowData)) {
 			std::cerr << "Error writing pixel data to file." << std::endl;
 			return false;
@@ -538,12 +515,12 @@ bool GCImage::SaveBMP(GCFile* pFile, int* pOutSize)
 
 bool GCImage::SavePNG(GCFile* pFile, int* pOutSize, bool gray)
 {
-	if (pFile == nullptr || m_rgba == nullptr)
+	if (pFile == nullptr || m_rgba.data() == nullptr)
 		return false;
 
 	std::vector<uint8_t> png;
 	size_t size = 0;
-	unsigned error = lodepng::encode(png, data.data(), m_width, m_height);
+	unsigned error = lodepng::encode(png, m_rgba.data(), m_width, m_height);
 	if (error)
 		return false;
 
@@ -556,8 +533,8 @@ bool GCImage::SavePNG(GCFile* pFile, int* pOutSize, bool gray)
 
 void GCImage::Close()
 {
-	if (m_rgba) {
-		m_rgba = nullptr;
+	if (m_rgba.data()) {
+		m_rgba.clear();
 	}
 	m_width = 0;
 	m_height = 0;
@@ -571,7 +548,7 @@ bool GCImage::Clear(const REC2* pRect)
 {
 	if (pRect == nullptr)
 	{
-		std::memset(data.data(), 0, m_size);
+		std::memset(m_rgba.data(), 0, m_size);
 	}
 	else
 	{
@@ -580,12 +557,12 @@ bool GCImage::Clear(const REC2* pRect)
 			for (int x = pRect->x; x < pRect->x + pRect->width; ++x)
 			{
 				int index = (x + y * m_width) * m_channels;
-				data[index] = 0;
-				data[index + 1] = 0;
-				data[index + 2] = 0;
+				m_rgba[index] = 0;
+				m_rgba[index + 1] = 0;
+				m_rgba[index + 2] = 0;
 				if (m_channels == 4)
 				{
-					data[index + 3] = 0;
+					m_rgba[index + 3] = 0;
 				}
 			}
 		}
@@ -599,8 +576,7 @@ void GCImage::SetBits(int bits)
 	m_channels = m_bits / 8;
 	m_rowStride = (m_width * m_channels + 3) & (~3);
 	m_size = m_width * m_height * m_channels;
-	data.resize(m_size, 0);
-	m_rgba = data.data();
+	m_rgba.resize(m_size, 0);
 }
 
 void GCImage::CreateEmptyImage(int w, int h, int bpp)
@@ -609,16 +585,16 @@ void GCImage::CreateEmptyImage(int w, int h, int bpp)
 	m_height = h;
 	m_bitCount = bpp;
 	m_channels = m_bitCount / 8;
-	data.resize(m_width * m_height * m_channels, 0);
+	m_rgba.resize(m_width * m_height * m_channels, 0);
 }
 
-inline BYTE* GCImage::GetRGBA(int x, int y)
+inline uint8_t GCImage::GetRGBA(int x, int y)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height)
 	{
-		return nullptr;
+		return NULL;
 	}
-	return &data[(x + y * m_width) * m_channels];
+	return m_rgba[(x + y * m_width) * m_channels];
 }
 
 inline bool GCImage::IsValidPixel(int x, int y)
@@ -638,12 +614,12 @@ void GCImage::SetPixel(int x, int y, int r, int g, int b, int a)
 	int m_channels = m_bitCount / 8;
 	int index = (x + y * m_width) * m_channels;
 
-	data[index] = r;
-	data[index + 1] = g;
-	data[index + 2] = b;
+	m_rgba[index] = r;
+	m_rgba[index + 1] = g;
+	m_rgba[index + 2] = b;
 	if (m_channels == 4)
 	{
-		data[index + 3] = a;
+		m_rgba[index + 3] = a;
 	}
 }
 
@@ -651,7 +627,7 @@ COLORREF GCImage::GetPixel(int x, int y)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return 0;
 	int index = (x + y * m_width) * m_channels;
-	return RGB(data[index], data[index + 1], data[index + 2]);
+	return RGB(m_rgba[index], m_rgba[index + 1], m_rgba[index + 2]);
 }
 
 void GCImage::WritePixel(int x, int y, int r, int g, int b, int a, int d, int id)
@@ -659,11 +635,11 @@ void GCImage::WritePixel(int x, int y, int r, int g, int b, int a, int d, int id
 
 }
 
-BYTE GCImage::GetPixelA(int x, int y)
+uint8_t GCImage::GetPixelA(int x, int y)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return 0;
 	int index = (x + y * m_width) * m_channels;
-	return data[index + 3];
+	return m_rgba[index + 3];
 
 }
 
@@ -673,9 +649,9 @@ int GCImage::GetPixelDepth(int x, int y)
 	return m_channels;
 }
 
-bool GCImage::GetPixels(BYTE* pTarget, int x, int y, int w, int h)
+bool GCImage::GetPixels(std::vector<uint8_t> pTarget, int x, int y, int w, int h)
 {
-	if (pTarget == nullptr || x < 0 || x >= m_width || y < 0 || y >= m_height || w <= 0 || h <= 0)
+	if (pTarget.data() == nullptr || x < 0 || x >= m_width || y < 0 || y >= m_height || w <= 0 || h <= 0)
 		return false;
 
 	int channels = m_bitCount / 8;
@@ -685,7 +661,7 @@ bool GCImage::GetPixels(BYTE* pTarget, int x, int y, int w, int h)
 	for (int i = 0; i < h; ++i) 
 	{
 		if (y + i >= m_height) break;
-		std::memcpy(&pTarget[i * targetStride], &data[(x + (y + i) * m_width) * channels], w * channels);
+		std::memcpy(&pTarget[i * targetStride], &m_rgba[(x + (y + i) * m_width) * channels], w * channels);
 	}
 
 	return true;
@@ -699,7 +675,7 @@ int GCImage::GetPixelCount(int r, int g, int b, int a)
 		for (int x = 0; x < m_width; ++x) 
 		{
 			int index = (x + y * m_width) * m_channels;
-			if (data[index] == r && data[index + 1] == g && data[index + 2] == b && data[index + 3] == a) 
+			if (m_rgba[index] == r && m_rgba[index + 1] == g && m_rgba[index + 2] == b && m_rgba[index + 3] == a)
 			{
 				++count;
 			}
@@ -716,9 +692,9 @@ void GCImage::WritePixel(int x, int y, COLORREF color, int d, int id)
 		return;
 	}
 	int index = (x + y * m_width) * m_channels;
-	data[index] = GetRValue(color);
-	data[index + 1] = GetGValue(color);
-	data[index + 2] = GetBValue(color);
+	m_rgba[index] = GetRValue(color);
+	m_rgba[index + 1] = GetGValue(color);
+	m_rgba[index + 2] = GetBValue(color);
 }
 
 void GCImage::DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -912,11 +888,11 @@ bool GCImage::Flip(bool horz, bool vert)
 		{
 			int index = (x + y * m_width) * channels;
 			int targetIndex = (x + (m_height - 1 - y) * m_width) * channels;
-			std::memcpy(&tempData[targetIndex], &data[index], channels);
+			std::memcpy(&tempData[targetIndex], &m_rgba[index], channels);
 		}
 	}
 
-	std::memcpy(data.data(), tempData.data(), m_size);
+	std::memcpy(m_rgba.data(), tempData.data(), m_size);
 	return true;
 }
 
@@ -948,20 +924,20 @@ bool GCImage::AddHorizontalImage(GCImage* pImg)
 		{
 			int index = (x + y * m_width) * channels;
 			int targetIndex = (x + y * m_width) * channels;
-			std::memcpy(&tempData[targetIndex], &data[index], channels);
+			std::memcpy(&tempData[targetIndex], &m_rgba[index], channels);
 		}
 		for (int x = 0; x < pImg->m_width; ++x)
 		{
 			int index = (x + y * pImg->m_width) * channels;
 			int targetIndex = (x + (m_width + y) * m_width) * channels;
-			std::memcpy(&tempData[targetIndex], &pImg->data[index], channels);
+			std::memcpy(&tempData[targetIndex], &pImg->m_rgba[index], channels);
 		}
 	}
 
 	m_width += pImg->m_width;
 	m_size = m_width * m_height * channels;
-	data.resize(m_size);
-	std::memcpy(data.data(), tempData.data(), m_size);
+	m_rgba.resize(m_size);
+	std::memcpy(m_rgba.data(), tempData.data(), m_size);
 	return true;
 
 }
@@ -994,7 +970,7 @@ bool GCImage::AddVerticalImage(GCImage* pImg)
 		{
 			int index = (x + y * m_width) * channels;
 			int targetIndex = (x + y * m_width) * channels;
-			std::memcpy(&tempData[targetIndex], &data[index], channels);
+			std::memcpy(&tempData[targetIndex], &m_rgba[index], channels);
 		}
 	}
 	for (int y = 0; y < pImg->m_height; ++y)
@@ -1003,18 +979,18 @@ bool GCImage::AddVerticalImage(GCImage* pImg)
 		{
 			int index = (x + y * pImg->m_width) * channels;
 			int targetIndex = (x + (y + m_height) * m_width) * channels;
-			std::memcpy(&tempData[targetIndex], &pImg->data[index], channels);
+			std::memcpy(&tempData[targetIndex], &pImg->m_rgba[index], channels);
 		}
 	}
 
 	m_height += pImg->m_height;
 	m_size = m_width * m_height * channels;
-	data.resize(m_size);
-	std::memcpy(data.data(), tempData.data(), m_size);
+	m_rgba.resize(m_size);
+	std::memcpy(m_rgba.data(), tempData.data(), m_size);
 	return true;
 }
 
-bool GCImage::SetAlpha(BYTE alpha)
+bool GCImage::SetAlpha(uint8_t alpha)
 {
 	int channels = m_bitCount / 8;
 	if (channels != 4)
@@ -1028,13 +1004,13 @@ bool GCImage::SetAlpha(BYTE alpha)
 		for (int x = 0; x < m_width; ++x)
 		{
 			int index = (x + y * m_width) * channels;
-			data[index + 3] = alpha;
+			m_rgba[index + 3] = alpha;
 		}
 	}
 	return true;
 }
 
-bool GCImage::SetAlphaForColor(BYTE alpha, COLORREF colorToFind)
+bool GCImage::SetAlphaForColor(uint8_t alpha, COLORREF colorToFind)
 {
 	int channels = m_bitCount / 8;
 	if (channels != 4)
@@ -1050,7 +1026,7 @@ bool GCImage::SetAlphaForColor(BYTE alpha, COLORREF colorToFind)
 			int index = (x + y * m_width) * channels;
 			if (GetPixel(x, y) == colorToFind)
 			{
-				data[index + 3] = alpha;
+				m_rgba[index + 3] = alpha;
 			}
 		}
 	}
@@ -1081,7 +1057,7 @@ bool GCImage::Rotate(int angle)
 			{
 				int index = (x + y * m_width) * channels;
 				int targetIndex = ((m_height - 1 - y) + x * m_height) * channels;
-				std::memcpy(&tempData[targetIndex], &data[index], channels);
+				std::memcpy(&tempData[targetIndex], &m_rgba[index], channels);
 			}
 		}
 		int temp = m_height;
@@ -1096,7 +1072,7 @@ bool GCImage::Rotate(int angle)
 			{
 				int index = (x + y * m_width) * channels;
 				int targetIndex = ((m_width - 1 - x) + (m_height - 1 - y) * m_width) * channels;
-				std::memcpy(&tempData[targetIndex], &data[index], channels);
+				std::memcpy(&tempData[targetIndex], &m_rgba[index], channels);
 			}
 		}
 	}
@@ -1108,14 +1084,14 @@ bool GCImage::Rotate(int angle)
 			{
 				int index = (x + y * m_width) * channels;
 				int targetIndex = (y + (m_width - 1 - x) * m_height) * channels;
-				std::memcpy(&tempData[targetIndex], &data[index], channels);
+				std::memcpy(&tempData[targetIndex], &m_rgba[index], channels);
 			}
 		}
 		m_width = m_height;
 		m_height = m_width;
 	}
 
-	std::memcpy(data.data(), tempData.data(), m_size);
+	std::memcpy(m_rgba.data(), tempData.data(), m_size);
 	return true;
 }
 
@@ -1131,16 +1107,16 @@ bool GCImage::Premultiply()
 		for (int x = 0; x < m_width; ++x) {
 			int index = (x + y * m_width) * channels;
 
-			uint8_t r = data[index];
-			uint8_t g = data[index + 1];
-			uint8_t b = data[index + 2];
-			uint8_t a = data[index + 3];
+			uint8_t r = m_rgba[index];
+			uint8_t g = m_rgba[index + 1];
+			uint8_t b = m_rgba[index + 2];
+			uint8_t a = m_rgba[index + 3];
 
 			float alpha = a / 255.0f;
 
-			data[index] = static_cast<uint8_t>(r * alpha);
-			data[index + 1] = static_cast<uint8_t>(g * alpha);
-			data[index + 2] = static_cast<uint8_t>(b * alpha);
+			m_rgba[index] = static_cast<uint8_t>(r * alpha);
+			m_rgba[index + 1] = static_cast<uint8_t>(g * alpha);
+			m_rgba[index + 2] = static_cast<uint8_t>(b * alpha);
 		}
 	}
 	return true;
@@ -1174,17 +1150,17 @@ bool GCImage::Solidify(GCImage* pOpaque)
 		for (int x = 0; x < m_width; ++x) {
 			int index = (x + y * m_width) * channels;
 
-			uint8_t r = data[index];
-			uint8_t g = data[index + 1];
-			uint8_t b = data[index + 2];
-			uint8_t a = data[index + 3];
+			uint8_t r = m_rgba[index];
+			uint8_t g = m_rgba[index + 1];
+			uint8_t b = m_rgba[index + 2];
+			uint8_t a = m_rgba[index + 3];
 
 			if (a == 0) {
 				int opaqueIndex = (x + y * m_width) * 3;
-				data[index] = pOpaque->data[opaqueIndex];
-				data[index + 1] = pOpaque->data[opaqueIndex + 1];
-				data[index + 2] = pOpaque->data[opaqueIndex + 2];
-				data[index + 3] = 255;
+				m_rgba[index] = pOpaque->m_rgba[opaqueIndex];
+				m_rgba[index + 1] = pOpaque->m_rgba[opaqueIndex + 1];
+				m_rgba[index + 2] = pOpaque->m_rgba[opaqueIndex + 2];
+				m_rgba[index + 3] = 255;
 			}
 		}
 	}
@@ -1204,16 +1180,16 @@ bool GCImage::Solidify()
 		for (int x = 0; x < m_width; ++x) {
 			int index = (x + y * m_width) * channels;
 
-			uint8_t r = data[index];
-			uint8_t g = data[index + 1];
-			uint8_t b = data[index + 2];
-			uint8_t a = data[index + 3];
+			uint8_t r = m_rgba[index];
+			uint8_t g = m_rgba[index + 1];
+			uint8_t b = m_rgba[index + 2];
+			uint8_t a = m_rgba[index + 3];
 
 			float alpha = a / 255.0f;
 
-			data[index] = static_cast<uint8_t>(r / alpha);
-			data[index + 1] = static_cast<uint8_t>(g / alpha);
-			data[index + 2] = static_cast<uint8_t>(b / alpha);
+			m_rgba[index] = static_cast<uint8_t>(r / alpha);
+			m_rgba[index + 1] = static_cast<uint8_t>(g / alpha);
+			m_rgba[index + 2] = static_cast<uint8_t>(b / alpha);
 		}
 	}
 	return true;
@@ -1274,11 +1250,11 @@ bool GCImage::Copy(int x, int y, GCImage* pImg, int xsrc, int ysrc, int w, int h
 			int targetIndex = (targetX + targetY * m_width) * channels;
 			int sourceIndex = (sourceX + sourceY * pImg->m_width) * channels;
 
-			data[targetIndex] = pImg->data[sourceIndex];
-			data[targetIndex + 1] = pImg->data[sourceIndex + 1];
-			data[targetIndex + 2] = pImg->data[sourceIndex + 2];
+			m_rgba[targetIndex] = pImg->m_rgba[sourceIndex];
+			m_rgba[targetIndex + 1] = pImg->m_rgba[sourceIndex + 1];
+			m_rgba[targetIndex + 2] = pImg->m_rgba[sourceIndex + 2];
 			if (channels == 4) {
-				data[targetIndex + 3] = pImg->data[sourceIndex + 3];
+				m_rgba[targetIndex + 3] = pImg->m_rgba[sourceIndex + 3];
 			}
 		}
 	}
@@ -1356,10 +1332,10 @@ bool GCImage::Blend(int x, int y, GCImage* pImg, int xsrc, int ysrc, int w, int 
 			int targetIndex = (targetX + targetY * m_width) * channels;
 			int sourceIndex = (sourceX + sourceY * pImg->m_width) * channels;
 
-			float sourceR = pImg->data[sourceIndex] / 255.0f;
-			float sourceG = pImg->data[sourceIndex + 1] / 255.0f;
-			float sourceB = pImg->data[sourceIndex + 2] / 255.0f;
-			float sourceA = pImg->data[sourceIndex + 3] / 255.0f;
+			float sourceR = pImg->m_rgba[sourceIndex] / 255.0f;
+			float sourceG = pImg->m_rgba[sourceIndex + 1] / 255.0f;
+			float sourceB = pImg->m_rgba[sourceIndex + 2] / 255.0f;
+			float sourceA = pImg->m_rgba[sourceIndex + 3] / 255.0f;
 		}
 	}
 }
@@ -1448,22 +1424,22 @@ bool GCImage::BlendSTD(const GCImage& overlay, float alpha)
 			int overlayIndex = (x + y * overlay.m_width) * channels;
 			int baseIndex = (targetX + targetY * m_width) * channels;
 
-			float sourceR = overlay.data[overlayIndex] / 255.0f;
-			float sourceG = overlay.data[overlayIndex + 1] / 255.0f;
-			float sourceB = overlay.data[overlayIndex + 2] / 255.0f;
-			float sourceA = overlay.data[overlayIndex + 3] / 255.0f;
+			float sourceR = overlay.m_rgba[overlayIndex] / 255.0f;
+			float sourceG = overlay.m_rgba[overlayIndex + 1] / 255.0f;
+			float sourceB = overlay.m_rgba[overlayIndex + 2] / 255.0f;
+			float sourceA = overlay.m_rgba[overlayIndex + 3] / 255.0f;
 
-			float destR = data[baseIndex] / 255.0f;
-			float destG = data[baseIndex + 1] / 255.0f;
-			float destB = data[baseIndex + 2] / 255.0f;
+			float destR = m_rgba[baseIndex] / 255.0f;
+			float destG = m_rgba[baseIndex + 1] / 255.0f;
+			float destB = m_rgba[baseIndex + 2] / 255.0f;
 
 			float resultR = sourceR + (destR * (1.0f - sourceA));
 			float resultG = sourceG + (destG * (1.0f - sourceA));
 			float resultB = sourceB + (destB * (1.0f - sourceA));
 
-			data[baseIndex] = static_cast<uint8_t>(resultR * 255);
-			data[baseIndex + 1] = static_cast<uint8_t>(resultG * 255);
-			data[baseIndex + 2] = static_cast<uint8_t>(resultB * 255);
+			m_rgba[baseIndex] = static_cast<uint8_t>(resultR * 255);
+			m_rgba[baseIndex + 1] = static_cast<uint8_t>(resultG * 255);
+			m_rgba[baseIndex + 2] = static_cast<uint8_t>(resultB * 255);
 		}
 	}
 
@@ -1496,22 +1472,22 @@ bool GCImage::BlendPRE(const GCImage& overlay, float alpha)
 			int overlayIndex = (x + y * overlay.m_width) * channels;
 			int baseIndex = (targetX + targetY * m_width) * channels;
 
-			float sourceR = overlay.data[overlayIndex] / 255.0f;
-			float sourceG = overlay.data[overlayIndex + 1] / 255.0f;
-			float sourceB = overlay.data[overlayIndex + 2] / 255.0f;
-			float sourceA = overlay.data[overlayIndex + 3] / 255.0f;
+			float sourceR = overlay.m_rgba[overlayIndex] / 255.0f;
+			float sourceG = overlay.m_rgba[overlayIndex + 1] / 255.0f;
+			float sourceB = overlay.m_rgba[overlayIndex + 2] / 255.0f;
+			float sourceA = overlay.m_rgba[overlayIndex + 3] / 255.0f;
 
-			float destR = data[baseIndex] / 255.0f;
-			float destG = data[baseIndex + 1] / 255.0f;
-			float destB = data[baseIndex + 2] / 255.0f;
+			float destR = m_rgba[baseIndex] / 255.0f;
+			float destG = m_rgba[baseIndex + 1] / 255.0f;
+			float destB = m_rgba[baseIndex + 2] / 255.0f;
 
 			float resultR = sourceR + (destR * (1.0f - sourceA));
 			float resultG = sourceG + (destG * (1.0f - sourceA));
 			float resultB = sourceB + (destB * (1.0f - sourceA));
 
-			data[baseIndex] = static_cast<uint8_t>(resultR * 255);
-			data[baseIndex + 1] = static_cast<uint8_t>(resultG * 255);
-			data[baseIndex + 2] = static_cast<uint8_t>(resultB * 255);
+			m_rgba[baseIndex] = static_cast<uint8_t>(resultR * 255);
+			m_rgba[baseIndex + 1] = static_cast<uint8_t>(resultG * 255);
+			m_rgba[baseIndex + 2] = static_cast<uint8_t>(resultB * 255);
 		}
 	}
 

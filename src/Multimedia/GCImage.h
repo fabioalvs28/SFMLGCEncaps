@@ -10,7 +10,7 @@ enum DrawQuality {
 	DRAWQUALITY_BICUBIC = 2
 };
 
-typedef unsigned char BYTE;
+typedef unsigned char uint8_t;
 
 
 struct REC2 {
@@ -31,7 +31,7 @@ public:
 	int stride;
 	int size;
 	int count;
-	BYTE* rgba;
+	uint8_t* rgba;
 
 	GCSurface() : width(0), height(0), bits(0), stride(0), size(0), count(0), rgba(nullptr) {}
 
@@ -50,9 +50,7 @@ enum ImageType {
 class GCImage
 {
 private:
-
-	BYTE* m_rgba;
-	UI32 m_width;
+UI32 m_width;
 	UI32 m_height;
 	int m_bitCount;
 	int m_channels = m_bitCount / 8;
@@ -60,7 +58,7 @@ private:
 	int m_size;
 	int m_bits;
 
-	std::vector<uint8_t> data;
+	std::vector<uint8_t> m_rgba;
 	uint32_t rowStride() const { return ((m_width * m_bitCount / 8) + 3) & ~3; }
 
 public:
@@ -70,9 +68,8 @@ public:
 	{
 		m_channels = m_bitCount / 8;
 		m_rowStride = (m_width * m_channels + 3) & (~3);
-		data.resize(m_width * m_height * m_channels, 0);
+		m_rgba.resize(m_width * m_height * m_channels, 0);
 		m_size = m_width * m_height * m_channels;
-		m_rgba = data.data();
 		m_bits = bpp;
 	}
 
@@ -92,14 +89,14 @@ public:
 	// Load image from file, pSurf is the surface and bits is the bits per pixel
 	bool Load(GCSurface* pSurf, int bits);
 	// Load image from file, buffer is the buffer and size is the size of the buffer
-	bool Load(BYTE* buffer, int size);
+	bool Load(std::vector<uint8_t> buffer, int size);
 	// Load image from file, file is the file and size is the size of the file
 	bool Load(GCFile* file, int size);
 
 	// Load image from file, buffer is the buffer, width and height are the size of the image and flip is the flip flag
-	bool LoadRGB(BYTE* buffer, int width, int height, bool flip = false);
+	bool LoadRGB(std::vector<uint8_t> buffer, int width, int height, bool flip = false);
 	// Load image from file, buffer is the buffer, width and height are the size of the image and flip is the flip flag
-	bool LoadBGR(BYTE* buffer, int width, int height, bool flip = false);
+	bool LoadBGR(std::vector<uint8_t> buffer, int width, int height, bool flip = false);
 	// Load image from file, filename is the path of the file
 	bool LoadBMP(const std::string& filename);
 	// Load image from file, filename is the path of the file
@@ -107,7 +104,7 @@ public:
 	// Load image from PNG buffer, buffer is the buffer and size is the size of the buffer
 	bool LoadPNG(std::vector<uint8_t>& buffer, int size);
 	// Load image from JPG file, buffer is the path of the file and size is the size of the buffer
-	bool LoadJPG(BYTE* buffer, int size);
+	bool LoadJPG(std::vector<uint8_t> buffer, int size);
 
 
 	// Save image to file, path is the path of the file and type is the type of the file, 
@@ -138,8 +135,8 @@ public:
 
 	//bool SaveJPG(GCFile* pFile, int* pOutSize = nullptr, int quality = 70);
 
-	// check if the image is got pixel
-	bool Has() {return m_rgba != nullptr; }
+	// check if the image has pixel data
+	bool Has() {return &m_rgba != nullptr; }
 	// get Size of the image
 	int GetSize() { return m_size; }
 	// get Width of the image
@@ -154,9 +151,9 @@ public:
 	int GetBits() { return m_bits; }
 
 	// get RGBA of the image
-	BYTE* GetRGBA() { return m_rgba; }
+	std::vector<uint8_t> GetRGBA() { return m_rgba; }
 	// get RGBA of the image
-	inline BYTE* GetRGBA(int x, int y);
+	inline uint8_t GetRGBA(int x, int y);
 	// check if the pixel is valid
 	inline bool IsValidPixel(int x, int y);
 	// get Index of the pixel
@@ -168,11 +165,11 @@ public:
 	// write a pixel to the image
 	void WritePixel(int x, int y, int r, int g, int b, int a, int d = 0, int id = -1);
 	// get pixel alpha of the image
-	BYTE GetPixelA(int x, int y);
+	uint8_t GetPixelA(int x, int y);
 	// get pixel depth of the image
 	int GetPixelDepth(int x, int y);
 	// get pixel color of the image
-	bool GetPixels(BYTE* pTarget, int x, int y, int w, int h);
+	bool GetPixels(std::vector<uint8_t> pTarget, int x, int y, int w, int h);
 	// get pixelCount of the image
 	int GetPixelCount(int r, int g, int b, int a);
 
@@ -196,9 +193,9 @@ public:
 	// Add Vertical Image, pImg is the image to add
 	bool AddVerticalImage(GCImage* pImg);
 	// Set Alpha of the image, alpha is the alpha value
-	bool SetAlpha(BYTE alpha);
+	bool SetAlpha(uint8_t alpha);
 	// Set Alpha for Color, alpha is the alpha value and colorToFind is the color to find
-	bool SetAlphaForColor(BYTE alpha, COLORREF colorToFind);
+	bool SetAlphaForColor(uint8_t alpha, COLORREF colorToFind);
 	// Rotate the image, angle is the angle to rotate
 	bool Rotate(int angle);
 	//Premultiply the image
