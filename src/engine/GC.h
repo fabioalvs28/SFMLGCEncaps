@@ -11,7 +11,7 @@ class GCRenderManager;
 
 class GC
 {
-friend class GCGameManager;
+    friend class GCGameManager;
 
 private:
     GC() = delete;
@@ -20,17 +20,18 @@ private:
 public:
     template <class MainScript>
     static GCGameManager* CreateGameManager();
-    
-    static void Destroy( GCGameObject*& pGameObject );
-    static void Destroy( GCScene*& pScene );
-    
+
+    static void Destroy(GCGameObject*& pGameObject);
+    static void Destroy(GCScene*& pScene);
+
     static GCGameManager* GetActiveGameManager();
-    
+
     static GCPhysicManager* GetActivePhysicManager();
     static GCUpdateManager* GetActiveUpdateManager();
     static GCEventManager* GetActiveEventManager();
     static GCSceneManager* GetActiveSceneManager();
     static GCRenderManager* GetActiveRenderManager();
+    static GCInputSystem* GetActiveInputSystem();
 
 private:
     inline static GCList<GCGameManager*> m_pGameManagersList = GCList<GCGameManager*>();
@@ -44,8 +45,8 @@ template <class MainScript>
 GCGameManager* GC::CreateGameManager()
 {
     GCGameManager* pGameManager = new GCGameManager();
-    pGameManager->m_pNode = m_pGameManagersList.PushBack( pGameManager );
-    if ( m_pActiveGameManager == nullptr )
+    pGameManager->m_pNode = m_pGameManagersList.PushBack(pGameManager);
+    if (m_pActiveGameManager == nullptr)
         m_pActiveGameManager = pGameManager;
     return pGameManager;
 }
