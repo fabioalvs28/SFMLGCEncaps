@@ -5,6 +5,7 @@
 #include "EventManager.h"
 #include "SceneManager.h"
 #include "RenderManager.h"
+#include "Timer.h"
 
 // TODO Script inside GameManager
 
@@ -34,4 +35,5 @@ protected:
     GCSceneManager m_pSceneManager;
     GCRenderManager m_pRenderManager;
     GCInputSystem m_pInputSystem;
+    GCTime m_Time;
 };

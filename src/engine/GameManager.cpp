@@ -15,10 +15,12 @@ GCGameManager::GCGameManager()
     m_pEventManager = GCEventManager();
     m_pSceneManager = GCSceneManager();
     m_pRenderManager = GCRenderManager();
+    m_Time.Reset();
 }
 
 void GCGameManager::Update()
 {
+	m_Time.Update();
     m_pInputSystem.Update();
     m_pPhysicManager.Update();
     m_pUpdateManager.Update();

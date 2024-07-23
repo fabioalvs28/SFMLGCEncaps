@@ -55,3 +55,8 @@ GCInputSystem* GC::GetActiveInputSystem()
 {
     return &m_pActiveGameManager->m_pInputSystem;
 }
+
+GCTime* GC::GetActiveTimer()
+{
+    return &m_pActiveGameManager->m_Time;
+}

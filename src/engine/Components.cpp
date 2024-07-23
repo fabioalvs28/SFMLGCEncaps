@@ -4,6 +4,7 @@
 #include "GC.h"
 #include "GameObject.h"
 #include "../Render/pch.h"
+#include "StateManager.h"
 
 using namespace DirectX;
 
@@ -216,3 +217,11 @@ void RigidBody::FixedUpdate()
 	// Apply velocity
 	m_pGameObject->m_transform.Translate(m_velocity);		// TODO: Multiply by the fixed delta time
 }
+
+
+
+void Animator::Update()
+{
+	m_pGlobalState->Update();
+}
+

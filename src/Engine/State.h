@@ -1,6 +1,5 @@
 #pragma once
 
-
 class GCState
 {
 public:
@@ -10,7 +9,6 @@ public:
 	virtual void Enter(GCState* previousState) = 0;
 	virtual void Update(float deltaTime) = 0;	
 	virtual void Exit(GCState* nextState) = 0;
-	static GCState& GetInstance(); 
 
 protected:
 	GCState() = default;

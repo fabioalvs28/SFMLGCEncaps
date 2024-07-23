@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "StateManager.h"
+#include "GC.h"
 
 void GCStateManager::Update()
 {
+	float deltaTime = GC::GetActiveTimer()->DeltaTime();
 	if (m_currentState)
 	{
-		//m_currentState->Update();
+		m_currentState->Update(deltaTime);
 	}
 	if (m_nextState)
 	{
