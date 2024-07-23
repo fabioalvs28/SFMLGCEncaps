@@ -150,22 +150,8 @@
 
 using namespace DirectX;
 
-XMMATRIX CreateBillboardMatrix(XMVECTOR objectPosition, XMVECTOR cameraPosition, XMVECTOR cameraUp) {
-    XMVECTOR lookAt = XMVector3Normalize(cameraPosition - objectPosition);
-    XMVECTOR right = XMVector3Normalize(XMVector3Cross(cameraUp, lookAt));
-    XMVECTOR up = XMVector3Cross(lookAt, right);
-
-    XMMATRIX billboardMatrix = XMMatrixIdentity();
-    billboardMatrix.r[0] = right;
-    billboardMatrix.r[1] = up;
-    billboardMatrix.r[2] = lookAt;
-    billboardMatrix.r[3] = objectPosition;
-
-    return XMMatrixTranspose(billboardMatrix);
-}
-
 // D�finition des variables globales pour la cam�ra
-XMVECTOR cameraPosition = XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
+XMVECTOR cameraPosition = XMVectorSet(0.0f, -30.0f, 5.0f, 1.0f);
 XMVECTOR cameraTarget = XMVectorZero();
 XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -198,7 +184,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     auto geometryPostProcessing = graphics->CreateGeometryPrimitive(Quad, DirectX::XMFLOAT4(DirectX::Colors::Yellow));
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
-    auto geoCubeInner = graphics->CreateGeometryPrimitive(Cube, XMFLOAT4(Colors::Green));
+    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
     auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
 
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
@@ -211,7 +197,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
     std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
-    auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
+    auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_NONE);
 
     auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
 
@@ -225,19 +211,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     // Cr�ation des meshes
     auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
-    auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
-    auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
+    auto meshCubeInner = graphics->CreateMeshColor(geoCubeInner.resource);
+    auto meshSphere = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightTexture);
     //graphics->GetRender()->FlushCommandQueue();
-    meshCubeInner.resource->UploadGeometryData(geoSphere.resource, flagsLightColor);
+    //meshSphere.resource->UploadGeometryData(geoCubeInner.resource, flagsLightTexture);
 
-    //meshCubeInner.resource->AddGeometry(geoCubeInner.resource, XMFLOAT3(1.0f, 1.0f, 1.0f));
+    GCParticleSystem* particleSystem = new GCParticleSystem();
+    particleSystem->InitializeRandom(1, true, meshSphere.resource);
+
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/cottage_diffuse.dds";
     auto texture = graphics->CreateTexture(texturePath);
     auto texture2 = graphics->CreateTexture(texturePath2);
 
+    meshSphere.resource->AddGeometry(DirectX::XMFLOAT3(-1.0f,-1.0f,0.0f));
     graphics->InitializeGraphicsResourcesEnd();
-
+    //meshSphere.resource->AddGeometry(geoCubeInner.resource, DirectX::XMFLOAT3(-1.0f,-1.0f,-2.0f));
     // Cr�ation des mat�riaux
     auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
     //materialCubeOuter.resource->SetTexture(texture2.resource);
@@ -269,7 +258,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     while (true) {
         auto currentTime = std::chrono::steady_clock::now();
         float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
-
+        float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime).count();
+        lastFrameTime = currentTime;
 
         float rotationSpeed = 1.0f; 
         float angle = rotationSpeed * elapsedTime;
@@ -321,8 +311,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2, 2.0f);
         graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource, true);
 
-        graphics->UpdateWorldConstantBuffer(materialCubeInner2.resource, worldCubeInner, 2.0f);
-        graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner2.resource, true);
+        graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner, 3.0f);
+        //meshSphere.resource->UpdateGeometryData(deltaTime);
+        particleSystem->UpdateParticleSystem(deltaTime);
+
+        graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
+
+        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2, 4.0f);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource, true);
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());
