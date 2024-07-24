@@ -110,16 +110,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //auto startTime = std::chrono::steady_clock::now();
     
     int counter = 0;
+    GCInputSystem* pInputs = GC::GetActiveInputSystem();
     
     GCInputSystem* pInputs = GC::GetActiveInputSystem();
 
     while (true) {
+        if (pInputs->m_pMouse->GetKeyDown(GCMouseInputManager::LEFT))
+            std::cout << "aaaaa";
+        if (pInputs->m_pKeyboard->GetKeyDown(GCKeyboardInputManager::A))
+            std::cout << "A";
 
         pGameManager->Update();
-
-        if (pInputs->m_pKeyboard->GetKeyDown(GCKeyboardInputManager::A))
-            std::cout << "aaaa";
-
         window->Run(GC::GetActiveRenderManager()->m_pGraphics->GetRender());
     }
 

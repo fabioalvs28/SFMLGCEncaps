@@ -29,4 +29,6 @@ void GCGameManager::Update()
 
 
 void GCGameManager::SetActiveGameManager()
-{ GC::m_pActiveGameManager = this; }
+{
+    GC::m_pActiveGameManager = this;
+}

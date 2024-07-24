@@ -12,21 +12,17 @@
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 
 
+
 GCInputSystem::GCInputSystem()
 {
     m_pKeyboard = new GCKeyboardInputManager();
     m_pMouse = new GCMouseInputManager();
-    m_managerList = std::vector<GCInputManager*>(2);
-    m_managerList[0] = m_pKeyboard;
-    m_managerList[1] = m_pMouse;
 }
 
 void GCInputSystem::Update()
 {
-    for (int i = 0 ; i < m_managerList.size(); i++ )
-    {
-        m_managerList[i]->Update();
-    }
+    m_pKeyboard->Update();
+    m_pMouse->Update();
 }
 
 void GCInputManager::InitializeCallbacks()
@@ -35,7 +31,6 @@ void GCInputManager::InitializeCallbacks()
         std::vector<std::function<void(GCEvent&)>>(GetIDSize()));
 }
 
-//
 //#pragma region Controller Manager
 //
 //GCControllerManager::GCControllerManager()

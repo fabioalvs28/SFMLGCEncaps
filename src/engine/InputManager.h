@@ -40,7 +40,6 @@ public:
 
     GCKeyboardInputManager();
 
-    void Update();
 
     bool IsKeyPressed(int keyID);
 
@@ -150,6 +149,7 @@ private:
     void OnKeyPressed(GCKeyPressedEvent& ev);
     void OnKeyReleased(GCKeyReleasedEvent& ev);
 
+    void Update();
 private:
     std::vector<BYTE> m_keyState;
 };
@@ -298,16 +298,12 @@ private:
 class GCInputSystem
 {
     friend class GCGameManager;
-
-public: 
-
+public:
     GCKeyboardInputManager* m_pKeyboard;
     GCMouseInputManager* m_pMouse;
-
-private: 
+protected:
     GCInputSystem();
-    ~GCInputSystem() {};
+    ~GCInputSystem() {}
 
     void Update();
-    std::vector<GCInputManager*> m_managerList;
 };
