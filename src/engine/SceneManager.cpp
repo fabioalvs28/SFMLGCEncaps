@@ -25,6 +25,22 @@ void GCSceneManager::Update()
 
 
 
+
+
+void GCSceneManager::SetActiveScene( GCScene* pScene )
+{
+	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to set a nullptr pScene as the active Scene" );
+	if ( m_pActiveScene != nullptr )
+		m_pActiveScene->m_active = false;
+    m_pActiveScene = pScene;
+    m_pActiveScene->m_active = true;
+}
+
+GCScene* GCSceneManager::GetActiveScene()
+{ return m_pActiveScene; }
+
+
+
 ////////////////////////////////////////////////////
 /// @brief Creates a new Scene.
 /// 
@@ -37,15 +53,6 @@ GCScene* GCSceneManager::CreateScene()
 	if ( m_pActiveScene == nullptr )
 		SetActiveScene( pScene );
 	return pScene;
-}
-
-void GCSceneManager::SetActiveScene( GCScene* pScene )
-{
-	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to set a nullptr pScene as the active Scene" );
-	if ( m_pActiveScene != nullptr )
-		m_pActiveScene->m_active = false;
-    m_pActiveScene = pScene;
-    m_pActiveScene->m_active = true;
 }
 
 /////////////////////////////////////////////////////////
