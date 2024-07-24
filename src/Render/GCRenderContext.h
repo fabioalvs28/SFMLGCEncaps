@@ -19,7 +19,7 @@ public:
 	void CreateCommandObjects();
 	void CreateSwapChain();
 
-	void CreatePostProcessingResources();
+	void CreatePostProcessingResources(std::string shaderfilePath, std::string csoDestinationPath);
 	void CreateDeferredLightPassResources();
 
 	// Resize 
@@ -36,8 +36,6 @@ public:
 
 	bool FlushCommandQueue();
 
-
-	void PerformPostProcessing();
 	void PerformPostProcessingCS();
 	void PerformDeferredLightPass();
 
@@ -78,12 +76,10 @@ public:
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
 
-	void ActiveBasicPostProcessing();
 	void ActiveCSPostProcessing();
 	void ActivePixelIDMapping();
 	void ActiveDeferredLightPass();
 
-	void DesactiveBasicPostProcessing();
 	void DesactiveCSPostProcessing();
 	void DesactivePixelIDMapping();
 	void DesactiveDeferredLightPass();
@@ -103,14 +99,17 @@ public:
 	std::vector<GC_MATERIAL_DSL> m_materialsUsedInFrame;
 	// Upload Material DSL, Send to Deferred Shader
 	GCUploadBuffer<GC_MATERIAL_DSL>* m_pCbMaterialDsl;
+
+	std::string m_PPa;
+	std::string m_PPb;
 	//*
 private:
-
-	bool m_isBasicPostProcessingActivated;
-	bool m_isCSPostProcessingActivated;
 	bool m_isPixelIDMappingActivated; 
-
 	bool m_isDeferredLightPassActivated;
+
+	bool m_isCSPostProcessingActivated;
+
+
 
 	int m_renderMode = 1; //2D or 3d
 
@@ -122,6 +121,12 @@ private:
 
 	//Post Processing Resources
 	GC_DESCRIPTOR_RESOURCE* m_pPostProcessingRtv;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_postProcessingFrontBufferSrvGpuHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_postProcessingBackBufferSrvGpuHandle;
+
+
+	D3D12_GPU_DESCRIPTOR_HANDLE m_postProcessingUavGpuHandle;
+
 	//Pixel Id Mapping Resources
 	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingBufferRtv; //Rtv Buffer
 	//DSV for PIM -> #TODO Use the principal dsv, in reading 
@@ -139,6 +144,4 @@ private:
 
 	// Contain the bare minimum render pipeline resource
 	GCRenderResources* m_pGCRenderResources;
-
-
 };

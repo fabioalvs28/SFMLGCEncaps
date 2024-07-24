@@ -51,7 +51,7 @@ GCGraphics::~GCGraphics()
     DELETE(m_pModelParserFactory);
 }
 
-bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
+bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
 {
     if (CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow) == false)
         return false;
@@ -224,7 +224,6 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
-    profiler.LogInfo("ERROR STATE" + std::to_string(errorState));
     if (errorState != 0)
         return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
     errorState = pShader->Load();
@@ -460,13 +459,58 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
     return GCRENDER_ERROR_RESOURCE_TO_REMOVE_DONT_FIND;
 }
 
-// Update per camera constant buffer
 bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
     cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
     cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
 
+    UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
+
+    m_pRender->m_pCbCurrentViewProjInstance = m_pCbCameraInstances[0];
+
+    return true;
+}
+
+// Update per camera constant buffer
+bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp, 
+    float fieldOfView, 
+    float aspectRatio,
+    float nearZ,
+    float farZ,
+    GC_PROJECTIONTYPE projType,
+    GCMATRIX& projectionMatrix,
+    GCMATRIX& viewMatrix)
+{
+    DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraPosition));
+    DirectX::XMVECTOR camTarget = XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraTarget));
+    DirectX::XMVECTOR camUp = XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraUp));
+
+    DirectX::XMMATRIX viewMatrixXM = DirectX::XMMatrixLookAtLH(camPos, camTarget, camUp);
+
+    DirectX::XMMATRIX projectionMatrixXM;
+
+    if (projType == PERSPECTIVE) {
+        projectionMatrixXM = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, aspectRatio, nearZ, farZ);
+    }
+    else {
+        projectionMatrixXM = DirectX::XMMatrixOrthographicLH(aspectRatio * 10.0f, 10.0f, nearZ, farZ);
+    }
+
+    DirectX::XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrixXM);
+    DirectX::XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrixXM);
+
+    GCMATRIX storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
+    GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
+
+    // Output
+    projectionMatrix = storedProjectionMatrix;
+    viewMatrix = storedViewMatrix;
+
+    // Cb buffer
+    GCVIEWPROJCB cameraData;
+    cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
+    cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
     UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
 
     m_pRender->m_pCbCurrentViewProjInstance = m_pCbCameraInstances[0];

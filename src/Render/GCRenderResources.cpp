@@ -58,6 +58,9 @@ GCRenderResources::~GCRenderResources() {
 		dsvResource->resource->Release();
 	}
 
+	m_lShaderResourceView.clear(); 
+	m_lUnorderedAccessView.clear();
+
 	// Release Swap Chain Buffers
 	for (int i = 0; i < SwapChainBufferCount; ++i) {
 		m_SwapChainBuffer[i]->Release();
@@ -92,8 +95,8 @@ void GCRenderResources::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UI
 GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags, D3D12_CLEAR_VALUE* clearValue)
 {
 	//Handle Cpu
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_rtvOffsetCount, m_rtvDescriptorSize);
-	//rtvHeapHandle.Offset(m_rtvOffsetCount, m_rtvDescriptorSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvCpuHandle(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart());
+	rtvCpuHandle.Offset(m_rtvOffsetCount, m_rtvDescriptorSize);
 
 	D3D12_RESOURCE_DESC textureDesc = {};
 	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -125,7 +128,7 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, 
 		D3D12_HEAP_FLAG_NONE,
 		&textureDesc,
 		D3D12_RESOURCE_STATE_COMMON,
-		resourceFlags==D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS?nullptr:actualClearValue,
+		resourceFlags == D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS ? nullptr: actualClearValue,
 		IID_PPV_ARGS(&renderTargetTexture)
 	);
 
@@ -137,13 +140,14 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, 
 
 	if(resourceFlags != D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS)
 	{
-		m_d3dDevice->CreateRenderTargetView(renderTargetTexture, &rtvDesc, rtvHeapHandle);
+		m_d3dDevice->CreateRenderTargetView(renderTargetTexture, &rtvDesc, rtvCpuHandle);
 	}
 
 	// Manager Rtv
 	GC_DESCRIPTOR_RESOURCE* descriptorResource = new GC_DESCRIPTOR_RESOURCE();
 	descriptorResource->resource = renderTargetTexture;
-	descriptorResource->cpuHandle = rtvHeapHandle;
+	descriptorResource->cpuHandle = rtvCpuHandle;
+
 	m_lRenderTargets.push_back(descriptorResource);
 
 	m_rtvOffsetCount++;
@@ -204,7 +208,7 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateDepthStencilBufferAndView(DXGI_
 	return dsv;
 }
 
-CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format)
+CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateStaticSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = format;
@@ -214,37 +218,75 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateSrvWithTexture(ID3D12Reso
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle(m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-	srvCpuHandle.Offset(m_srvOffsetCount, m_cbvSrvUavDescriptorSize);
+	srvCpuHandle.Offset(m_srvStaticOffsetCount, m_cbvSrvUavDescriptorSize);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	srvGpuHandle.Offset(m_srvOffsetCount, m_cbvSrvUavDescriptorSize);
+	srvGpuHandle.Offset(m_srvStaticOffsetCount, m_cbvSrvUavDescriptorSize);
+
+	m_d3dDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
+
+	GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
+	profiler.LogWarning("Offset srv count : " + std::to_string(m_srvStaticOffsetCount));
+
+	//m_lShaderResourceView.push_back(srvGpuHandle);
+	m_lShaderResourceView.push_back(srvGpuHandle);
+
+	m_srvStaticOffsetCount++;
+
+	return srvGpuHandle;
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateDynamicSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvCpuHandle(m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	srvCpuHandle.Offset(m_srvDynamicOffsetCount, m_cbvSrvUavDescriptorSize);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	srvGpuHandle.Offset(m_srvDynamicOffsetCount, m_cbvSrvUavDescriptorSize);
 
 	m_d3dDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
 
 
 	GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
-	profiler.LogWarning("Offset srv count : " + std::to_string(m_srvOffsetCount));
+	profiler.LogWarning("Offset srv count : " + std::to_string(m_srvDynamicOffsetCount));
 
 	//m_lShaderResourceView.push_back(srvGpuHandle);
 	m_lShaderResourceView.push_back(srvGpuHandle);
 	
-	m_srvOffsetCount++;
+	m_srvDynamicOffsetCount++;
 
 	return srvGpuHandle;
 }
 
-void GCRenderResources::CreateUAV(ID3D12Resource* textureResource)
+CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateUavTexture(ID3D12Resource* textureResource)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE uavCpuHandle(m_pCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-	uavCpuHandle.Offset(m_srvOffsetCount, m_cbvSrvUavDescriptorSize);
+	uavCpuHandle.Offset(m_uavOffsetCount, m_cbvSrvUavDescriptorSize);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE uavGpuHandle(m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	uavGpuHandle.Offset(m_uavOffsetCount, m_cbvSrvUavDescriptorSize);
+
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 	uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
 	uavDesc.Texture2D.MipSlice = 0;
-	m_d3dDevice->CreateUnorderedAccessView(textureResource,
-		nullptr, &uavDesc, uavCpuHandle);
-	//uavCpuHandle.Offset(1, m_cbvSrvUavDescriptorSize); // Move to the next descriptor
-	m_srvOffsetCount++;
+
+	m_d3dDevice->CreateUnorderedAccessView(textureResource, nullptr, &uavDesc, uavCpuHandle);
+
+	GCGraphicsLogger& logger = GCGraphicsLogger::GetInstance();
+	logger.LogWarning("Offset uav count : " + std::to_string(m_uavOffsetCount));
+
+	m_lUnorderedAccessView.push_back(uavCpuHandle);
+	m_uavOffsetCount++;
+
+	return uavGpuHandle;
 }
 
 //void GCRenderResources::DeleteRenderTarget(ID3D12Resource* pRenderTarget) {

@@ -5,7 +5,7 @@ struct GCVEC3;
 struct GCMATRIX
 {
 
-	GCMATRIX() {}; //constructeur par defaut
+	GCMATRIX(); //constructeur par defaut
 
 	GCMATRIX(float _11, float _12, float _13, float _14,
 		float _21, float _22, float _23, float _24,

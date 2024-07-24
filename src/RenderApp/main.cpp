@@ -461,7 +461,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
     auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
     //graphics->GetRender()->FlushCommandQueue();
-    meshCubeInner.resource->UploadGeometryData(geoSphere.resource, flagsLightColor);
 
     //meshCubeInner.resource->AddGeometry(geoCubeInner.resource, XMFLOAT3(1.0f, 1.0f, 1.0f));
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
@@ -551,7 +550,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         materialProperties2.shininess = 128.0f;
         graphics->UpdateMaterialProperties(materialCubeInner2.resource, materialProperties);
 
-        GCLIGHTSPROPERTIES lightData = {};
+        std::vector<GCLIGHT> lights;
 
         GCLIGHT directionalLight;
         directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -570,10 +569,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         pointLight.lightType = LIGHT_TYPE_POINT; // Type de lumière ponctuelle
 
 
-        lightData.lights[1] = pointLight;
-        lightData.lights[0] = directionalLight;
+        lights.push_back(directionalLight);
+        lights.push_back(pointLight);
 
-        graphics->UpdateLights(lightData);
+        graphics->UpdateLights(lights);
 
         graphics->StartFrame();
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);

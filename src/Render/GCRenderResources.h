@@ -121,19 +121,26 @@ private:
 	GC_DESCRIPTOR_RESOURCE* CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE, D3D12_CLEAR_VALUE* clearValue = nullptr);
 
 	//Srv Manager
-	int m_srvOffsetCount = 300;
+	int m_srvStaticOffsetCount = 300;
+	int m_srvDynamicOffsetCount = 320;
 	std::list<CD3DX12_GPU_DESCRIPTOR_HANDLE> m_lShaderResourceView;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateDynamicSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateStaticSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
+
+	//Uav Manager
+	int m_uavOffsetCount = 400;
+	std::list<CD3DX12_CPU_DESCRIPTOR_HANDLE> m_lUnorderedAccessView;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateUavTexture(ID3D12Resource* textureResource);
 
 	//Dsv Manager
 	int m_dsvOffsetCount = 0;
 	std::list<GC_DESCRIPTOR_RESOURCE*> m_lDepthStencilView;
 	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags);
 	
-	void CreateUAV(ID3D12Resource* textureResource);
-
 	GCShader* m_postProcessingShader;
 	GCComputeShader* m_postProcessingShaderCS;
 	// Object / Layers Buffer Id Resources
 	GCShader* m_objectBufferIdShader;
 };
+
+// #TODO optimiser les srv dynamic, les passer en statique?

@@ -23,6 +23,11 @@ struct ResourceCreationResult {
 	GC_GRAPHICS_ERROR errorState = GCRENDER_ERROR_UNKNOWN;
 };
 
+enum GC_PROJECTIONTYPE {
+	ORTHOGRAPHIC,
+	PERSPECTIVE
+};
+
 class GCGraphics
 {
 public:
@@ -181,6 +186,15 @@ public:
 	* @return bool(success)
 	************************************************************************************************/
 	bool UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix); //#TODO -> Have possibility to specify camera we want draw with
+	bool CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp,
+		float fieldOfView,
+		float aspectRatio,
+		float nearZ,
+		float farZ,
+		GC_PROJECTIONTYPE projType,
+		GCMATRIX& projectionMatrix,
+		GCMATRIX& viewMatrix
+	);
 
 	/************************************************************************************************
 	* @brief Update one object data, using GCWORLDCB Struct, template for update object matrix, and object/layer id in for PixelIdMapping
