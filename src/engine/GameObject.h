@@ -72,9 +72,6 @@ protected:
     void RemoveScene();
     
     void RemoveComponent( int ID );
-    template <class T>
-    T* DuplicateComponent( GCGameObject* pGameObject );
-    void DuplicateComponent( unsigned int ID, GCGameObject* pGameObject );
 
 public:
     GCGameObjectTransform m_transform; // The transform that contains the GameObject's position, scale and rotation.

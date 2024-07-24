@@ -54,7 +54,7 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
-    pGameObject->m_tagsList = m_tagsList; // TODO Change this
+    pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
         ;
@@ -74,7 +74,7 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
-    pGameObject->m_tagsList = m_tagsList; // TODO Change this
+    pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
         ;
