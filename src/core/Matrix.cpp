@@ -6,7 +6,6 @@
 /// <summary>
 /// Default constructor
 /// </summary>
-
 GCMATRIX::GCMATRIX() { SetZero(); }
 
 GCMATRIX::GCMATRIX(
@@ -45,56 +44,29 @@ void GCMATRIX::operator*=(const GCMATRIX& other)
 /// <summary>
 /// Set the matrix to zero
 /// </summary>
-
 void GCMATRIX::SetZero()
 {
-	_11 = 0.0f;
-	_12 = 0.0f;
-	_13 = 0.0f;
-	_14 = 0.0f;
-	_21 = 0.0f;
-	_22 = 0.0f;
-	_23 = 0.0f;
-	_24 = 0.0f;
-	_31 = 0.0f;
-	_32 = 0.0f;
-	_33 = 0.0f;
-	_34 = 0.0f;
-	_41 = 0.0f;
-	_42 = 0.0f;
-	_43 = 0.0f;
-	_44 = 0.0f;
+	_11 = 0.0f; _12 = 0.0f; _13 = 0.0f; _14 = 0.0f;
+	_21 = 0.0f; _22 = 0.0f; _23 = 0.0f; _24 = 0.0f;
+	_31 = 0.0f; _32 = 0.0f; _33 = 0.0f; _34 = 0.0f;
+	_41 = 0.0f; _42 = 0.0f; _43 = 0.0f; _44 = 0.0f;
 }
 
 /// <summary>
 /// Set the matrix to identity
 /// </summary>
-
 void GCMATRIX::SetIdentity()
 {
-	_11 = 1.0f;
-	_12 = 0.0f;
-	_13 = 0.0f;
-	_14 = 0.0f;
-	_21 = 0.0f;
-	_22 = 1.0f;
-	_23 = 0.0f;
-	_24 = 0.0f;
-	_31 = 0.0f;
-	_32 = 0.0f;
-	_33 = 1.0f;
-	_34 = 0.0f;
-	_41 = 0.0f;
-	_42 = 0.0f;
-	_43 = 0.0f;
-	_44 = 1.0f;
+	_11 = 1.0f; _12 = 0.0f; _13 = 0.0f; _14 = 0.0f;
+	_21 = 0.0f; _22 = 1.0f; _23 = 0.0f; _24 = 0.0f;
+	_31 = 0.0f; _32 = 0.0f; _33 = 1.0f; _34 = 0.0f;
+	_41 = 0.0f; _42 = 0.0f; _43 = 0.0f; _44 = 1.0f;
 }
 
 /// <summary>
 /// Put the matrix to the power of exp
 /// </summary>
 /// <param name="exp">Exponent</param>
-
 void GCMATRIX::Pow(int exp)
 {
 	if (exp == 0)
@@ -133,7 +105,6 @@ void GCMATRIX::Pow(int exp)
 /// <summary>
 /// Returnn the determinant of the matrix
 /// </summary>
-
 float GCMATRIX::Determinant()
 {
 	return _41 * _32 * _23 * _14 - _31 * _42 * _23 * _14 -
@@ -154,7 +125,6 @@ float GCMATRIX::Determinant()
 /// <summary>
 /// Inverse the matrix. WARNING : If the determinant is 0, the function will return without doing anything
 /// </summary>
-
 void GCMATRIX::Inverse()
 {
 
@@ -188,7 +158,6 @@ void GCMATRIX::Inverse()
 /// <summary>
 /// Swap rows with columns of the matrix
 /// </summary>
-
 void GCMATRIX::Transpose()
 {
 	GCMATRIX pM = *this;
@@ -217,7 +186,6 @@ void GCMATRIX::Transpose()
 /// <param name="x">Translation on the X axis</param>
 /// <param name="y">Translation on the Y axis</param>
 /// <param name="z">Translation on the Z axis</param>
-
 void GCMATRIX::Translation(float x, float y, float z)
 {
 	SetIdentity();
@@ -232,7 +200,6 @@ void GCMATRIX::Translation(float x, float y, float z)
 /// </summary>
 /// <param name="axes">Axis of rotation</param>
 /// <param name="angle">Angle of rotation</param>
-
 void GCMATRIX::Rotation(GCVEC3 axes, float angle)
 {
 	SetIdentity();
@@ -258,11 +225,21 @@ void GCMATRIX::Rotation(GCVEC3 axes, float angle)
 /// <param name="x">Scaling on the X axis</param>
 /// <param name="y">Scaling on the Y axis</param>
 /// <param name="z">Scaling on the Z axis</param>
-
 void GCMATRIX::Scale(float x, float y, float z)
 {
 	SetIdentity();
 	_11 = x;
 	_22 = y;
 	_33 = z;
+}
+
+
+bool GCMATRIX::IsIdentity() const
+{
+	return (
+		_11 == 1.0f && _12 == 0.0f && _13 == 0.0f && _14 == 0.0f &&
+        _21 == 0.0f && _22 == 1.0f && _23 == 0.0f && _24 == 0.0f &&
+        _31 == 0.0f && _32 == 0.0f && _33 == 1.0f && _34 == 0.0f &&
+        _41 == 0.0f && _42 == 0.0f && _43 == 0.0f && _44 == 1.0f
+	);
 }

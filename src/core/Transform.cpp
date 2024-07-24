@@ -65,15 +65,15 @@ void GCTransform::UpdateVectorsFromQuaternion()
 void GCTransform::UpdateMatrix()
 {
 	m_matrix.SetIdentity();
-	m_matrix._11 = m_right.x;
+	m_matrix._11 = m_right.x * m_scale.x;
 	m_matrix._12 = m_right.y;
 	m_matrix._13 = m_right.z;
 	m_matrix._21 = m_up.x;
-	m_matrix._22 = m_up.y;
+	m_matrix._22 = m_up.y * m_scale.y;
 	m_matrix._23 = m_up.z;
 	m_matrix._31 = m_direction.x;
 	m_matrix._32 = m_direction.y;
-	m_matrix._33 = m_direction.z;
+	m_matrix._33 = m_direction.z * m_scale.z;
 	m_matrix._41 = m_position.x;
 	m_matrix._42 = m_position.y;
 	m_matrix._43 = m_position.z;
@@ -91,7 +91,6 @@ void GCTransform::Rotate(float yaw, float pitch, float roll)
 	qRoll.FromAxisAngle(m_direction, roll);
 
 	GCQUATERNION qResult = qRoll;
-
 	qResult *= qPitch;
 	qResult *= qYaw;
 
@@ -157,23 +156,21 @@ void GCTransform::SetPosition(const GCVEC3& position)
 void GCTransform::Scale(const GCVEC3& scale)
 {
 	m_scale *= scale;
-	m_matrix._11 *= m_scale.x;
-	m_matrix._22 *= m_scale.y;
-	m_matrix._33 *= m_scale.z;
+	m_matrix._11 *= scale.x;
+	m_matrix._22 *= scale.y;
+	m_matrix._33 *= scale.z;
 }
 
 void GCTransform::Scale(const float scale)
 {
 	m_scale *= scale;
-	m_matrix._11 *= m_scale.x;
-	m_matrix._22 *= m_scale.y;
-	m_matrix._33 *= m_scale.z;
+	m_matrix._11 *= scale;
+	m_matrix._22 *= scale;
+	m_matrix._33 *= scale;
 }
 
 void GCTransform::SetScale(const GCVEC3& scale)
 {
 	m_scale = scale;
-	m_matrix._11 = m_scale.x;
-	m_matrix._22 = m_scale.y;
-	m_matrix._33 = m_scale.z;
+	UpdateMatrix();
 }

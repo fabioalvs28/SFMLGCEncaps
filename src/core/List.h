@@ -1,4 +1,5 @@
 #pragma once
+#include "Define.h"
 
 template <typename T> class GCList;
 
@@ -21,13 +22,13 @@ public:
     GCListNode<T>* GetNext() const;
 
 private:
-    GCListNode();
+    GCListNode( const T& data );
     ~GCListNode() {}
 
 private:
+    GCList<T>* m_pList;
     GCListNode<T>* m_pNext;
     GCListNode<T>* m_pPrev;
-    GCList<T>* m_pList;
     T m_data;
 
 };
@@ -79,11 +80,12 @@ private:
 /// @tparam T The type to be stored in the ListNode.
 ///////////////////////////////////////////////////////////
 template <typename T>
-GCListNode<T>::GCListNode()
+GCListNode<T>::GCListNode( const T& data )
 {
+    m_pList = nullptr;
     m_pNext = nullptr;
     m_pPrev = nullptr;
-    m_data = NULL;
+    m_data = data;
 }
 
 
@@ -199,8 +201,7 @@ void GCList<T>::Init()
 template <typename T>
 GCListNode<T>* GCList<T>::PushBack( const T& data )
 {
-    GCListNode<T>* pNewNode = new GCListNode<T>();
-    pNewNode->m_data = data;
+    GCListNode<T>* pNewNode = new GCListNode<T>( data );
     pNewNode->m_pList = this;
     pNewNode->m_pNext = nullptr;
     if ( m_pTail != nullptr )
@@ -209,7 +210,8 @@ GCListNode<T>* GCList<T>::PushBack( const T& data )
         pNewNode->m_pPrev->m_pNext = pNewNode;
     }
     m_pTail = pNewNode;
-    if ( m_pHead == nullptr ) m_pHead = pNewNode;
+    if ( m_pHead == nullptr )
+        m_pHead = pNewNode;
     return pNewNode;
 }
 
@@ -223,8 +225,7 @@ GCListNode<T>* GCList<T>::PushBack( const T& data )
 template <typename T>
 GCListNode<T>* GCList<T>::PushFront( const T& data )
 {
-    GCListNode<T>* pNewNode = new GCListNode<T>();
-    pNewNode->m_data = data;
+    GCListNode<T>* pNewNode = new GCListNode<T>( data );
     pNewNode->m_pList = this;
     if ( m_pHead != nullptr )
     {
@@ -233,7 +234,8 @@ GCListNode<T>* GCList<T>::PushFront( const T& data )
     }
     pNewNode->m_pPrev = nullptr;
     m_pHead = pNewNode;
-    if ( m_pTail == nullptr ) m_pTail = pNewNode;
+    if ( m_pTail == nullptr )
+        m_pTail = pNewNode;
     return pNewNode;
 }
 
@@ -248,10 +250,12 @@ GCListNode<T>* GCList<T>::PushFront( const T& data )
 /// @return A pointer to the newly created ListNode.
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-GCListNode<T>* GCList<T>::PushBefore(const T& data, GCListNode<T>* pNode)
+GCListNode<T>* GCList<T>::PushBefore( const T& data, GCListNode<T>* pNode )
 {
-    GCListNode<T>* pNewNode = new GCListNode<T>();
-    pNewNode->m_data = data;
+    ASSERT( pNode != nullptr, LOG_FATAL, "Attempting to push before a nullptr Node" );
+    ASSERT( pNode->m_pList == this, LOG_FATAL, "Attempting to push before a Node from a different List" );
+    
+    GCListNode<T>* pNewNode = new GCListNode<T>( data );
     pNewNode->m_pList = this;
     
     if ( pNode == m_pHead )
@@ -278,10 +282,12 @@ GCListNode<T>* GCList<T>::PushBefore(const T& data, GCListNode<T>* pNode)
 /// @return A pointer to the newly created ListNode.
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-GCListNode<T>* GCList<T>::PushAfter(const T& data, GCListNode<T>* pNode)
+GCListNode<T>* GCList<T>::PushAfter( const T& data, GCListNode<T>* pNode )
 {
-    GCListNode<T>* pNewNode = new GCListNode<T>();
-    pNewNode->m_data = data;
+    ASSERT( pNode != nullptr, LOG_FATAL, "Attempting to push after a nullptr Node" );
+    ASSERT( pNode->m_pList == this, LOG_FATAL, "Attempting to push after a Node from a different List" );
+    
+    GCListNode<T>* pNewNode = new GCListNode<T>( data );
     pNewNode->m_pList = this;
     
     if ( pNode == m_pTail )
@@ -299,23 +305,32 @@ GCListNode<T>* GCList<T>::PushAfter(const T& data, GCListNode<T>* pNode)
 
 
 
-/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 /// @brief Removes the ListNode from the List.
 /// 
 /// @tparam T The type that is stored in the List.
 /// 
 /// @param pNode The node to be removed from the List.
 /// 
+/// @warning You can't remove a node that is not in the List.
+/// 
 /// @note Does not delete the ListNode or its data.
-/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 template <typename T>
 void GCList<T>::RemoveNode( const GCListNode<T>* pNode )
 {
-    if ( pNode == m_pHead ) m_pHead = pNode->m_pNext;
-    else pNode->m_pPrev->m_pNext = pNode->m_pNext;
+    ASSERT( pNode != nullptr, LOG_FATAL, "Attempting to remove a nullptr Node from the List" );
+    ASSERT( pNode->m_pList == this, LOG_FATAL, "Attempting to remove a Node from a different List" );
     
-    if ( pNode == m_pTail ) m_pTail = pNode->m_pPrev;
-    else pNode->m_pNext->m_pPrev = pNode->m_pPrev;
+    if ( pNode == m_pHead )
+        m_pHead = pNode->m_pNext;
+    else
+        pNode->m_pPrev->m_pNext = pNode->m_pNext;
+    
+    if ( pNode == m_pTail )
+        m_pTail = pNode->m_pPrev;
+    else
+        pNode->m_pNext->m_pPrev = pNode->m_pPrev;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -325,11 +340,16 @@ void GCList<T>::RemoveNode( const GCListNode<T>* pNode )
 /// 
 /// @param pNode The node to be deleted.
 /// 
+/// @warning You can't delete a node that is not in the List.
+/// 
 /// @note If the stored data is a pointer, it does not delete the value behind the pointer.
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 void GCList<T>::DeleteNode( const GCListNode<T>* pNode )
 {
+    ASSERT( pNode != nullptr, LOG_FATAL, "Attempting to delete a nullptr Node from the List" );
+    ASSERT( pNode->m_pList == this, LOG_FATAL, "Attempting to delete a Node from a different List" );
+    
     RemoveNode( pNode );
     delete pNode;
 }
@@ -344,7 +364,9 @@ void GCList<T>::DeleteNode( const GCListNode<T>* pNode )
 template <typename T>
 void GCList<T>::Clear()
 {
-	if ( m_pHead == nullptr ) return;
+	if ( m_pHead == nullptr )
+        return;
+    
     for ( GCListNode<T>* pTemp = m_pHead->m_pNext; pTemp != nullptr; pTemp = pTemp->m_pNext )
     {
         delete m_pHead;
@@ -368,7 +390,8 @@ template <typename T>
 bool GCList<T>::Find( const T& data ) const
 {
     for ( GCListNode<T>* pTemp = m_pHead; pTemp != nullptr; pTemp = pTemp->m_pNext )
-        if ( pTemp->m_data == data ) return true;
+        if ( pTemp->m_data == data )
+            return true;
     return false;
 }
 

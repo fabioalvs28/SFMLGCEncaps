@@ -9,6 +9,10 @@ struct GCGameObjectTransform: public GCTransform
 {
 friend class GCGameObject;
 
+	GCVEC3 m_worldScale;
+	GCVEC3 m_worldPosition;
+	GCMATRIX m_worldRotationMatrix;
+	
 	GCMATRIX m_worldMatrix;
 	GCGameObject* m_pGameObject;
 	

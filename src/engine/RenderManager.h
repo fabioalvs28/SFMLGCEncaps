@@ -6,7 +6,7 @@ using namespace DirectX;
 
 class GCRenderManager
 {
-    friend class GCGameObject;
+    friend class Component;
 private:
     GCList<Component*> m_componentList;
 public:
@@ -28,7 +28,7 @@ public:
     XMVECTOR m_cameraPosition ;
     XMVECTOR m_cameraTarget ;
     XMVECTOR m_cameraUp ;
-    XMFLOAT4X4 m_storedProjectionMatrix;
-    XMFLOAT4X4 m_storedViewMatrix;
+    GCMATRIX m_storedProjectionMatrix;
+    GCMATRIX m_storedViewMatrix;
 
 };
