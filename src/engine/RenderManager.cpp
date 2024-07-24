@@ -40,9 +40,9 @@ void GCRenderManager::Render() // Render : order by layer, and spriteRenderer be
 
     // Affichage : premier de la liste au prmeier plan.
 
-    for (GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext())
+    for (GCListNode<Component*>* pComponentNode = m_componentList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext())
     {
-        pGameObjectNode->GetData()->Render();
+        pComponentNode->GetData()->Render();
     }
 
     m_pGraphics->EndFrame();
@@ -55,37 +55,60 @@ void GCRenderManager::CreateGeometry()
 }
 
 
-void GCRenderManager::RegisterGameObject( GCGameObject* pGameObject )
+void GCRenderManager::RegisterComponent( Component* pComponent )
 {   
-    GCListNode<GCGameObject*>* pFirstNode = m_gameObjectList.GetFirstNode() ;
+    GCListNode<Component*>* pFirstNode = m_componentList.GetFirstNode() ;
 
     if ( pFirstNode == nullptr )
     {
-        pGameObject->m_pRenderNode = m_gameObjectList.PushBack(pGameObject);
+        pComponent->m_pRenderNode = m_componentList.PushBack(pComponent);
         return; 
     }
 
 
-    if ( pFirstNode == m_gameObjectList.GetLastNode() )
+    if ( pFirstNode == m_componentList.GetLastNode() )
     {
-        if ( pFirstNode->GetData()->GetLayer() < pGameObject->GetLayer() )
+        if ( pFirstNode->GetData()->m_pGameObject->GetLayer() < pComponent->m_pGameObject->GetLayer() )
         {
-            m_gameObjectList.PushBack(pGameObject);
+            m_componentList.PushBack(pComponent);
             return;
+        }
+
+        if ( pFirstNode->GetData()->m_pGameObject->GetLayer() == pComponent->m_pGameObject->GetLayer() )
+        {
+            if ( pFirstNode->GetData()->GetComponentLayer() < pComponent->GetComponentLayer() )
+            {
+                m_componentList.PushBack( pComponent );
+                return;
+            }
+        }
+
+        m_componentList.PushFront( pComponent );
+    }
+
+
+    for ( GCListNode<Component*>* pComponentNode = m_componentList.GetLastNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetPrevious() )
+    {
+        Component* pComponentInList = pComponentNode->GetData();
+
+        if (pComponentInList->m_pGameObject->GetLayer() < pComponent->m_pGameObject->GetLayer() )
+        {
+            pComponent->m_pRenderNode = pComponentNode->PushAfter(pComponent);
+            return;
+        }
+
+        if ( pComponentInList->m_pGameObject->GetLayer() == pComponent->m_pGameObject->GetLayer() )
+        {
+            if ( pComponentInList->GetComponentLayer() <= pComponent->GetComponentLayer() )
+            {
+                pComponent->m_pRenderNode = pComponentNode->PushAfter( pComponent );
+                return;
+            }
+
         }
     }
 
-
-    for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectList.GetLastNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetPrevious() )
-    {
-        if (pGameObjectNode->GetData()->GetLayer() <= pGameObject->GetLayer() )
-        {
-            pGameObject->m_pRenderNode = pGameObjectNode->PushAfter(pGameObject);
-            return;
-        }       
-    }
-
-    m_gameObjectList.PushFront(pGameObject);
+    m_componentList.PushFront(pComponent);
 }
 
 

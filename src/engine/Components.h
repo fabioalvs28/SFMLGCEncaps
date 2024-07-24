@@ -60,7 +60,7 @@ protected:
     
     void SetGlobalActive( bool active );
 
-    virtual int GetLayer() { return 0; }
+    virtual int GetComponentLayer() { return 0; }
 
 protected:
     inline static int componentCount = 0;
@@ -104,7 +104,7 @@ protected:
     
     FLAGS GetFlags() override { return RENDER; }
 
-    virtual int GetLayer() override { return 5; }
+    virtual int GetComponentLayer() override { return 5; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -139,7 +139,7 @@ public:
 protected:
     FLAGS GetFlags() override { return FIXED_UPDATE | RENDER; }
 
-    virtual int GetLayer() override { return 10; }
+    virtual int GetComponentLayer() override { return 10; }
 
 protected:
     bool m_trigger;

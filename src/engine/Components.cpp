@@ -31,19 +31,28 @@ void Component::RegisterToManagers()
 		GC::GetActiveUpdateManager()->RegisterComponent( this );
 	
 	if ( IsFlagSet( RENDER ) )
-		m_pGameObject->RegisterComponentToRender(this);
+		GC::GetActiveRenderManager()->RegisterComponent(this);
 }
 
 void Component::UnregisterFromManagers()
 {
 	if ( IsFlagSet( UPDATE ) )
+	{
 		m_pUpdateNode->Delete();
+		m_pUpdateNode = nullptr;
+	}
 	
 	if ( IsFlagSet( FIXED_UPDATE ) )
+	{
 		m_pPhysicsNode->Delete();
+		m_pPhysicsNode = nullptr;
+	}
 	
-	if (IsFlagSet(RENDER))
-		m_pGameObject->UnregisterComponentFromRender( m_pRenderNode ); 
+	if ( IsFlagSet( RENDER ) )
+	{
+		m_pRenderNode->Delete();
+		m_pRenderNode = nullptr;
+	}
 }
 
 
