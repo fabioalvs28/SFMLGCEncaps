@@ -57,46 +57,87 @@ void Component::UnregisterFromManagers()
 
 
 
+void Component::Activate()
+{
+	if( m_selfActive == true )
+		return;
+
+	m_selfActive = true;
+
+	if( m_globalActive == false )
+		return;
+
+	if( IsCreated() == true )
+		return;
+
+	RegisterToManagers();
+}
+
+void Component::Deactivate()
+{
+	if ( m_selfActive == false )
+		return;
+	
+	m_selfActive = false;
+	
+	if ( m_globalActive == false )
+	    return;
+	
+	if ( IsCreated() == false )
+	    return;
+	
+	UnregisterFromManagers();
+}
+
+void Component::ActivateGlobal()
+{
+	if ( m_globalActive == true )
+		return;
+	
+	m_globalActive = true;
+	
+	if ( m_selfActive == false )
+		return;
+	
+	if ( IsCreated() == false )
+		return;
+	
+	RegisterToManagers();
+}
+
+void Component::DeactivateGlobal()
+{
+	if ( m_globalActive == false )
+		return;
+	
+	m_globalActive = false;
+	
+	if ( m_selfActive == false )
+		return;
+	
+	if ( IsCreated() == false )
+		return;
+	
+	UnregisterFromManagers();
+}
+
 void Component::SetActive( bool active )
 {
-	if ( IsActive() == true )
+	if ( active == true )
 	{
-		if ( active == false )
-		{
-			m_selfActive = active;
-	    	UnregisterFromManagers();
-		}
+		Activate();
+		return;
 	}
-	else
-	{
-		m_selfActive = active;
-		if ( IsActive() == true )
-			RegisterToManagers();
-	}
+	Deactivate();
 }
 
-void Component::SetGlobalActive( bool active )
+bool Component::IsCreated()
 {
-	if ( IsActive() == true )
-	{
-		if ( active == false )
-		{
-			m_globalActive = active;
-	    	UnregisterFromManagers();
-		}
-	}
-	else
-	{
-		m_globalActive = active;
-		if ( IsActive() == true )
-			RegisterToManagers();
-	}
+	if ( m_pGameObject == nullptr )
+		return true;
+	
+	return m_pGameObject->m_created;
 }
-
-
-
-
-
 
 SpriteRenderer::SpriteRenderer()
 {

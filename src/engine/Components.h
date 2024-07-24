@@ -30,11 +30,14 @@ class Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
     virtual const int GetID() = 0;
     
+    void Activate();
+    void Deactivate();
     void SetActive( bool active );
     bool IsActive() { return m_globalActive && m_selfActive; }
 
@@ -58,7 +61,10 @@ protected:
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
     
-    void SetGlobalActive( bool active );
+    void ActivateGlobal();
+    void DeactivateGlobal();
+    
+    bool IsCreated();
 
     virtual int GetComponentLayer() { return 0; }
 
@@ -80,6 +86,7 @@ class SpriteRenderer : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -120,6 +127,7 @@ class Collider : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 
@@ -157,6 +165,7 @@ class BoxCollider : public Collider
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -188,6 +197,7 @@ class CircleCollider : public Collider
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -219,6 +229,7 @@ class RigidBody : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -250,6 +261,7 @@ class Animator : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -278,6 +290,7 @@ class SoundMixer : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -306,6 +319,7 @@ class Camera : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -333,6 +347,7 @@ class Script : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 
@@ -356,6 +371,7 @@ protected:
     { \
     friend class GCGameObject; \
     friend class GCUpdateManager; \
+    friend class GCSceneManager; \
     friend class GCPhysicManager; \
     friend class GCRenderManager; \
     public: \
