@@ -1,8 +1,6 @@
 #pragma once
 
-struct GC_MODELINFOS;
-
-class GCModelParserObj :public GCModelParser
+class GCModelParserObj :public GCModelParserFactory
 {
 public:
 	GCModelParserObj();

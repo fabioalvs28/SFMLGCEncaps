@@ -59,6 +59,7 @@ bool GCGraphics::Initialize(Window* pWindow,int renderWidth,int renderHeight)
     //Creates Primitive and parser instances
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
+    m_pFontGeometryLoader = new GCFontGeometryLoader();
 
     m_pPrimitiveFactory->Initialize();
 
@@ -222,11 +223,12 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
-    if (errorState != 0);
-        return ResourceCreationResult<GCShader*>(false, nullptr);
-
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
+    profiler.LogInfo("ERROR STATE" + std::to_string(errorState));
+    if (errorState != 0)
+        return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
     errorState = pShader->Load();
-    if (errorState != 0);
+    if (errorState != 0)
         return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
 
     m_vShaders.push_back(pShader);
@@ -240,9 +242,8 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& fi
     GCShader* pShader = new GCShader();
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits, cullMode, flagRootParameters);
-    if (errorState != 0) {
+    if (errorState != 0)
         ResourceCreationResult<GCShader*>(false, nullptr, errorState);
-    }
     errorState = pShader->Load();
     if (errorState != 0)
         ResourceCreationResult<GCShader*>(false, nullptr, errorState);
@@ -417,7 +418,7 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 
 GC_GRAPHICS_ERROR GCGraphics::RemoveMesh(GCMesh* pMesh)
 {
-    if(CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh) == false)
+    if (CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh) == false)
         return GCRENDER_ERROR_POINTER_NULL;
 
     // Removes Mesh

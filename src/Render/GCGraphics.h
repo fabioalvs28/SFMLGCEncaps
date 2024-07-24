@@ -328,7 +328,7 @@ public:
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 	void Resize(int width, int height);
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
-	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
+	GCModelParserFactory* GetModelParserFactory() const { return m_pModelParserFactory; }
 
 	//Other
 	GCShaderUploadBufferBase* GetCbLightPropertiesInstance() const { return m_pCbLightPropertiesInstance; }
@@ -336,6 +336,8 @@ public:
 
 	// Manage inactive slot to push resource
 	std::list<bool> m_lTextureActiveFlags;
+
+	GCFontGeometryLoader* m_pFontGeometryLoader;
 
 private:
 	GCRenderContext* m_pRender;
@@ -352,7 +354,8 @@ private:
 
 	//Vertex Parser
 	GCPrimitiveFactory* m_pPrimitiveFactory;
-	GCModelParser* m_pModelParserFactory;
+	GCModelParserFactory* m_pModelParserFactory;
+
 };
 
 template<typename ShaderTypeConstantBuffer>

@@ -30,8 +30,8 @@ struct SBMaterialDSL
 
 Texture2D texture_pixelIdMapping : register(t0);
 Texture2D g_buffer_albedo : register(t1);
-//Texture2D g_buffer_worldPosition : register(t2);
-Texture2D g_buffer_depth : register(t2);
+Texture2D g_buffer_worldPosition : register(t2);
+//Texture2D g_buffer_depth : register(t2);
 Texture2D g_buffer_normal : register(t3);
 
 SamplerState g_sampler : register(s0);
@@ -76,8 +76,8 @@ VSOutput VS(float3 posL : POSITION, float2 uv : TEXCOORD)
 float4 PS(VSOutput pin) : SV_Target
 {
     float4 albedo = g_buffer_albedo.Sample(g_sampler, pin.UV);
-    //float3 worldPos = g_buffer_worldPosition.Sample(g_sampler, pin.UV);
-    float depth = g_buffer_depth.Sample(g_sampler, pin.UV).r;
+    float3 worldPos = g_buffer_worldPosition.Sample(g_sampler, pin.UV);
+    //float depth = g_buffer_depth.Sample(g_sampler, pin.UV).r;
     
     float4 remappedNormal = g_buffer_normal.Sample(g_sampler, pin.UV);
     float4 pixelIdMapping = texture_pixelIdMapping.Sample(g_sampler, pin.UV);
@@ -95,7 +95,7 @@ float4 PS(VSOutput pin) : SV_Target
 
     float2 screenPos = pin.UV; // Assumed to be normalized; otherwise, adjust as needed
     //worldPos = ReconstructWorldPosition(screenPos, worldPos.z,gView, gProj);
-    float3 worldPos = ReconstructWorldPosition(screenPos, depth, gView, gProj);
+    //float3 worldPos = ReconstructWorldPosition(screenPos, depth, gView, gProj);
    
     // Remap des normales de [0, 1] à [-1, 1]
     float3 normal = remappedNormal.xyz * 2.0 - 1.0;

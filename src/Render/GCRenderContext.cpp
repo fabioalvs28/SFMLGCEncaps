@@ -457,7 +457,7 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 
 	//Basic Draw
 	{
-		m_pGCRenderResources->m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso(true));
+		m_pGCRenderResources->m_CommandList->SetPipelineState(pMaterial->GetShader()->GetPso(alpha));
 		m_pGCRenderResources->m_CommandList->SetGraphicsRootSignature(pMaterial->GetShader()->GetRootSign());
 
 		m_pGCRenderResources->m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -567,11 +567,11 @@ void GCRenderContext::PerformDeferredLightPass() {
 	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pAlbedoGBuffer->resource, m_pGCRenderResources->GetBackBufferFormat());
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_2, srvGpuHandle);
 
-	//srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pWorldPosGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
-	//m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_3, srvGpuHandle);
-
-	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_DepthStencilBuffer, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
+	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pWorldPosGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_3, srvGpuHandle);
+
+	//srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pGCRenderResources->m_DepthStencilBuffer, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
+	//m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_3, srvGpuHandle);
 
 	srvGpuHandle = m_pGCRenderResources->CreateSrvWithTexture(m_pNormalGBuffer->resource, m_pGCRenderResources->m_rgbaFormat);
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootDescriptorTable(m_pDeferredLightPassShader->m_rootParameter_DescriptorTable_4, srvGpuHandle);
@@ -587,17 +587,10 @@ void GCRenderContext::PerformDeferredLightPass() {
 	// Set camera & lights entry
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_0, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_1, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
-	// Send Materials array used in frame -> #TODO same for World Pos?
-	//size_t count = materialsUsedInFrame.size();
-	//for (size_t i = 0; i < count; ++i)
-	//{
-	//	m_uploadBuffer->CopyData(static_cast<int>(i), &materialsUsedInFrame[i], sizeof(SBMaterialDSL));
-	//}
 
+	//Update Materials
 	size_t count = m_materialsUsedInFrame.size();
 	m_pCbMaterialDsl->CopyData(0, m_materialsUsedInFrame.data(), sizeof(GC_MATERIAL_DSL) * count);
-	// #TODO FAIRE EN SORTE DE POUVOIR UPDATE TOUT LES MATERIALS DU VECTOR
-
 	m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(m_pDeferredLightPassShader->m_rootParameter_ConstantBuffer_2, m_pCbMaterialDsl->Resource()->GetGPUVirtualAddress());
 
 	m_pGCRenderResources->m_CommandList->DrawIndexedInstanced(theMesh->GetBufferGeometryData()->IndexCount, 1, 0, 0, 0);

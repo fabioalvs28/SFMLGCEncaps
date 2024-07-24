@@ -50,7 +50,8 @@ DirectX::XMMATRIX GCUtils::GCMATRIXToXMMATRIX(const GCMATRIX& mat) {
 		mat._21, mat._22, mat._23, mat._24,
 		mat._31, mat._32, mat._33, mat._34,
 		mat._41, mat._42, mat._43, mat._44
-);
+	);
+}
 
 
 DirectX::XMMATRIX GCUtils::CreateBillboardMatrix(DirectX::XMVECTOR objectPosition, DirectX::XMVECTOR cameraPosition, DirectX::XMVECTOR cameraUp)
