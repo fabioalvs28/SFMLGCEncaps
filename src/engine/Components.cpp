@@ -140,7 +140,7 @@ SpriteRenderer* SpriteRenderer::Duplicate()
 {
 	SpriteRenderer* pNewComponent = new SpriteRenderer();
 
-	pNewComponent->m_pGameObject = m_pGameObject; 
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
 	pNewComponent->m_globalActive = m_globalActive;
 	pNewComponent->m_selfActive = m_selfActive;
 
@@ -210,7 +210,7 @@ BoxCollider* BoxCollider::Duplicate()
 {
 	BoxCollider* pNewComponent = new BoxCollider();
 
-	pNewComponent->m_pGameObject = m_pGameObject;
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
 	pNewComponent->m_globalActive = m_globalActive;
 	pNewComponent->m_selfActive = m_selfActive;
 
@@ -241,7 +241,7 @@ CircleCollider* CircleCollider::Duplicate()
 {
 	CircleCollider* pNewComponent = new CircleCollider();
 
-	pNewComponent->m_pGameObject = m_pGameObject;
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
 	pNewComponent->m_globalActive = m_globalActive;
 	pNewComponent->m_selfActive = m_selfActive;
 
@@ -275,7 +275,7 @@ RigidBody* RigidBody::Duplicate()
 {
 	RigidBody* pNewComponent = new RigidBody();
 
-	pNewComponent->m_pGameObject = m_pGameObject;
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
 	pNewComponent->m_globalActive = m_globalActive;
 	pNewComponent->m_selfActive = m_selfActive;
 
@@ -290,7 +290,7 @@ Animator* Animator::Duplicate()
 {
 	Animator* pNewComponent = new Animator();
 
-	pNewComponent->m_pGameObject = m_pGameObject;
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
 	pNewComponent->m_globalActive = m_globalActive;
 	pNewComponent->m_selfActive = m_selfActive;
 
@@ -303,7 +303,7 @@ SoundMixer* SoundMixer::Duplicate()
 {
 	SoundMixer* pNewComponent = new SoundMixer();
 
-	pNewComponent->m_pGameObject = m_pGameObject;
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
 	pNewComponent->m_globalActive = m_globalActive;
 	pNewComponent->m_selfActive = m_selfActive;
 
@@ -315,7 +315,7 @@ Camera* Camera::Duplicate()
 {
 	Camera* pNewComponent = new Camera();
 
-	pNewComponent->m_pGameObject = m_pGameObject;
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
 	pNewComponent->m_globalActive = m_globalActive;
 	pNewComponent->m_selfActive = m_selfActive;
 
