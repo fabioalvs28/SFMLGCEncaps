@@ -17,46 +17,58 @@ void GCInputManager::InitializeCallbacks()
         std::vector<std::function<void(GCEvent&)>>(GetIDSize()));
 }
 
-#pragma region Controller Manager
-
-GCControllerManager::GCControllerManager()
+GCInputSystem::GCInputSystem()
 {
-
-    m_pControllerList = GCVector<GCControllerInputManager*>(4);
-    for (int i = 0; i < XUSER_MAX_COUNT; i++)
-    {
-        m_pControllerList[i] = nullptr;
-    }
-
-    GetConnectedControllers();
+    m_pKeyboard = new GCKeyboardInputManager();
+    m_pMouse = new GCMouseInputManager();
 }
 
-////////////////////////////////////////////////////
-/// @brief Function to get connected controllers.
-////////////////////////////////////////////////////
-void GCControllerManager::GetConnectedControllers()
+void GCInputSystem::Update()
 {
-    XINPUT_STATE state;
-
-    for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
-    {
-        if ( XInputGetState( i, &state ) == ERROR_SUCCESS )
-        {
-            GCControllerInputManager* pController = new GCControllerInputManager( i ); 
-            m_pControllerList.Insert( i, pController );
-        }
-    }
+    m_pKeyboard->Update();
+    m_pMouse->Update();
 }
 
-void GCControllerManager::Update()
-{
-
-    for (int i = 0; i < XUSER_MAX_COUNT; i++)
-    {
-        if (m_pControllerList[i] != nullptr) m_pControllerList[i]->UpdateController();
-    }
-}
-#pragma endregion
+//#pragma region Controller Manager
+//
+//GCControllerManager::GCControllerManager()
+//{
+//
+//    m_pControllerList = GCVector<GCControllerInputManager*>(4);
+//    for (int i = 0; i < XUSER_MAX_COUNT; i++)
+//    {
+//        m_pControllerList[i] = nullptr;
+//    }
+//
+//    GetConnectedControllers();
+//}
+//
+//////////////////////////////////////////////////////
+///// @brief Function to get connected controllers.
+//////////////////////////////////////////////////////
+//void GCControllerManager::GetConnectedControllers()
+//{
+//    XINPUT_STATE state;
+//
+//    for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
+//    {
+//        if ( XInputGetState( i, &state ) == ERROR_SUCCESS )
+//        {
+//            GCControllerInputManager* pController = new GCControllerInputManager( i ); 
+//            m_pControllerList.Insert( i, pController );
+//        }
+//    }
+//}
+//
+//void GCControllerManager::Update()
+//{
+//
+//    for (int i = 0; i < XUSER_MAX_COUNT; i++)
+//    {
+//        if (m_pControllerList[i] != nullptr) m_pControllerList[i]->UpdateController();
+//    }
+//}
+//#pragma endregion
 
 #pragma region Keyboard Manager
 
@@ -83,14 +95,14 @@ void GCKeyboardInputManager::UnbindAction(int keyID, BYTE keyState)
 
 void GCKeyboardInputManager::SendEvent(int index, BYTE state)
 {
-    if (state == KeyboardState::DOWN)
-    {
-        m_eventManager->QueueEvent(new GCKeyPressedEvent(index, state));
-    }
-    else if (state == KeyboardState::UP)
-    {
-        m_eventManager->QueueEvent(new GCKeyReleasedEvent(index, state));
-    }
+    //if (state == KeyboardState::DOWN)
+    //{
+    //    m_eventManager->QueueEvent(new GCKeyPressedEvent(index, state));
+    //}
+    //else if (state == KeyboardState::UP)
+    //{
+    //    m_eventManager->QueueEvent(new GCKeyReleasedEvent(index, state));
+    //}
     m_keyState[index] = state;
 }
 
@@ -324,244 +336,244 @@ void GCMouseInputManager::Update()
     }
 }
 #pragma endregion
-
-#pragma region ControllerInput Manager
-
-GCControllerInputManager::GCControllerInputManager() : GCControllerManager()
-{
-    m_ID = -1;
-    m_pControllersLeftAxis.x = 0.0; m_pControllersLeftAxis.y = 0.0;
-    m_pControllersRightAxis.x = 0.0; m_pControllersRightAxis.y = 0.0;
-    m_pControllerTrigger.x = 0.0; m_pControllerTrigger.y = 0.0;
-
-    m_buttonState = GCVector<BYTE>(16);
-
-    for (int j = 0; j < ControllerID::CONTROLLERIDCOUNT; j++)
-    {
-        m_buttonState[j] = GCControllerInputManager::NONE;
-    }
-}
-
-GCControllerInputManager::GCControllerInputManager(int id)
-{
-    m_ID = id;
-    m_pControllersLeftAxis.x = 0.0; m_pControllersLeftAxis.y = 0.0;
-    m_pControllersRightAxis.x = 0.0; m_pControllersRightAxis.y = 0.0;
-    m_pControllerTrigger.x = 0.0; m_pControllerTrigger.y = 0.0;
-    m_buttonState = GCVector<BYTE>(16);
-
-    for (int j = 0; j < ControllerID::CONTROLLERIDCOUNT; j++)
-    {
-        m_buttonState[j] = GCControllerInputManager::NONE;
-    }
-}
-
+//
+//#pragma region ControllerInput Manager
+//
+//GCControllerInputManager::GCControllerInputManager() : GCControllerManager()
+//{
+//    m_ID = -1;
+//    m_pControllersLeftAxis.x = 0.0; m_pControllersLeftAxis.y = 0.0;
+//    m_pControllersRightAxis.x = 0.0; m_pControllersRightAxis.y = 0.0;
+//    m_pControllerTrigger.x = 0.0; m_pControllerTrigger.y = 0.0;
+//
+//    m_buttonState = GCVector<BYTE>(16);
+//
+//    for (int j = 0; j < ControllerID::CONTROLLERIDCOUNT; j++)
+//    {
+//        m_buttonState[j] = GCControllerInputManager::NONE;
+//    }
+//}
+//
+//GCControllerInputManager::GCControllerInputManager(int id)
+//{
+//    m_ID = id;
+//    m_pControllersLeftAxis.x = 0.0; m_pControllersLeftAxis.y = 0.0;
+//    m_pControllersRightAxis.x = 0.0; m_pControllersRightAxis.y = 0.0;
+//    m_pControllerTrigger.x = 0.0; m_pControllerTrigger.y = 0.0;
+//    m_buttonState = GCVector<BYTE>(16);
+//
+//    for (int j = 0; j < ControllerID::CONTROLLERIDCOUNT; j++)
+//    {
+//        m_buttonState[j] = GCControllerInputManager::NONE;
+//    }
+//}
+//
+//////////////////////////////////////////////////////////////////
+///// @brief Return true if the given controller button is DOWN  
+///// 
+///// @param vButton button's index in the list. 
+//////////////////////////////////////////////////////////////////
+//bool GCControllerInputManager::GetControllerButtonDown(int vButton)
+//{
+//    int index = 0x5800;
+//    if ( vButton > 0x05807 )
+//        index += 8;
+//
+//    if ( m_buttonState[vButton - index] == GCControllerInputManager::DOWN )
+//        return true;
+//    return false;
+//}
+//
+///////////////////////////////////////////////////////////////////
+///// @brief Return true if the given controller button is PUSH  
+///// 
+///// @param vButton button's index in the list. 
+///////////////////////////////////////////////////////////////////
+//bool GCControllerInputManager::GetControllerButtonStay(int vButton)
+//{
+//    int index = 0x5800;
+//    if ( vButton > 0x05807 )
+//        index += 8;
+//
+//    if ( m_buttonState[vButton - index] == GCControllerInputManager::STAY )
+//        return true;
+//    return false;
+//}
+//
 ////////////////////////////////////////////////////////////////
-/// @brief Return true if the given controller button is DOWN  
-/// 
-/// @param vButton button's index in the list. 
+///// @brief Return true if the given controller button is UP
+///// 
+///// @param vButton button's index in the list. 
 ////////////////////////////////////////////////////////////////
-bool GCControllerInputManager::GetControllerButtonDown(int vButton)
-{
-    int index = 0x5800;
-    if ( vButton > 0x05807 )
-        index += 8;
-
-    if ( m_buttonState[vButton - index] == GCControllerInputManager::DOWN )
-        return true;
-    return false;
-}
-
-/////////////////////////////////////////////////////////////////
-/// @brief Return true if the given controller button is PUSH  
-/// 
-/// @param vButton button's index in the list. 
-/////////////////////////////////////////////////////////////////
-bool GCControllerInputManager::GetControllerButtonStay(int vButton)
-{
-    int index = 0x5800;
-    if ( vButton > 0x05807 )
-        index += 8;
-
-    if ( m_buttonState[vButton - index] == GCControllerInputManager::STAY )
-        return true;
-    return false;
-}
-
-//////////////////////////////////////////////////////////////
-/// @brief Return true if the given controller button is UP
-/// 
-/// @param vButton button's index in the list. 
-//////////////////////////////////////////////////////////////
-bool GCControllerInputManager::GetControllerButtonUp(int vButton)
-{
-    int index = 0x5800;
-    if ( vButton > 0x05807 )
-        index += 8;
-
-    if ( m_buttonState[vButton - index] == GCControllerInputManager::UP )
-        return true;
-    return false;
-}
-
-void GCControllerInputManager::UpdateController()
-{
-    UpdateControllerInput();
-    UpdateJoySticksinput();
-    UpdateTriggers();
-}
-
-void GCControllerInputManager::SendEvent(int index, BYTE state)
-{
-    m_buttonState[index] = state;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the state of the controller's buttons.
-/// 
-/// @note Calls the function to update joysticks and triggers' analog state
-///////////////////////////////////////////////////////////////////////////////
-void GCControllerInputManager::UpdateControllerInput()
-{
-    XINPUT_KEYSTROKE key;
-
-    int j = 0;
-
-    if (XInputGetKeystroke(m_ID, 0, &key) == ERROR_SUCCESS)
-    {
-
-        for ( int i = 0; i < 16; i++ )
-        {
-            j = 0x5800;
-
-            if ( i > 7 )
-                j = 0x5800 + 8;
-
-            if ( key.VirtualKey == j + i && key.Flags == 1 )
-            {
-                switch ( m_buttonState[key.VirtualKey - j] )
-                {
-                case GCControllerInputManager::NONE:
-                    SendEvent(key.VirtualKey - j, GCControllerInputManager::DOWN);
-                    break;
-                case GCControllerInputManager::UP:
-                    SendEvent(key.VirtualKey - j, GCControllerInputManager::DOWN);
-                    break;
-                case GCControllerInputManager::DOWN:
-                    SendEvent(key.VirtualKey - j, GCControllerInputManager::STAY);
-                    break;
-                }
-            }
-
-            else if ( key.VirtualKey == j + i )
-            {
-                switch ( m_buttonState[key.VirtualKey - j] )
-                {
-                case GCControllerInputManager::STAY:
-                    SendEvent(key.VirtualKey - j, GCControllerInputManager::UP);
-                    break;
-                case GCControllerInputManager::UP:
-                    SendEvent(key.VirtualKey - j, GCControllerInputManager::NONE);
-                    break;
-                case GCControllerInputManager::DOWN:
-                    SendEvent(key.VirtualKey - j, GCControllerInputManager::UP);
-                    break;
-
-                }
-            }
-        }
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the state of the controller's joysticks.
-/// 
-/// @note This function retrieves the state of the controller's left and right joystick axes 
-/// and normalizes the values to a range between -1.0 and 1.0.
-/// 
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-void GCControllerInputManager::UpdateJoySticksinput()
-{
-    XINPUT_STATE state;
-
-    int side[2] = { 1,1 };
-
-    if ( XInputGetState( m_ID, &state ) == ERROR_SUCCESS )
-    {
-
-        float LX = state.Gamepad.sThumbLX;
-        float LY = state.Gamepad.sThumbLY;
-
-
-        if (LX <= -32767) LX = -32767;
-        if (LY <= -32767) LY = -32767;
-
-        float rLX = LX / 32767;  float rLY = LY / 32767;
-
-        if ( rLX < 0 ) side[0] = -1; if ( rLY < 0 ) side[1] = -1;
-
-        rLX = rLX * rLX;
-        rLY = rLY * rLY;
-
-
-        if ( LX * side[0] + LY * side[1] < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
-        {
-            rLX = 0.0f, rLY = 0.0f;
-        }
-
-
-
-
-        m_pControllersLeftAxis.x = rLX; m_pControllersLeftAxis.y = rLY;
-
-
-        side[0] = 1; side[1] = 1;
-
-        float RX = state.Gamepad.sThumbRX;
-        float RY = state.Gamepad.sThumbRY;
-
-
-        if ( RX <= -32767 ) RX = -32767;
-        if ( RY <= -32767 ) RY = -32767;
-
-        float rRX = RX / 32767;  float rRY = RY / 32767;
-
-        if ( rRX < 0 ) side[0] = -1; if ( rRY < 0 ) side[1] = -1;
-
-        rRX = rRX * rRX;
-        rRY = rRY * rRY;
-
-
-        if ( RX * side[0] + RY * side[1] < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
-        {
-            rRX = 0.0, rRY = 0.0;
-        }
-
-
-        m_pControllersRightAxis.x = rRX; m_pControllersRightAxis.y = rRY;
-    }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the state of the controller's triggers.
-/// 
-/// @note This function retrieves the state of the controller's left and right triggers
-/// and normalizes the values to a range between 0.0 and 1.0.
-/// 
-//////////////////////////////////////////////////////////////////////////////////////////
-void GCControllerInputManager::UpdateTriggers()
-{
-    XINPUT_STATE state; 
-    if ( XInputGetState( m_ID, &state ) == ERROR_SUCCESS )
-    {
-        float lTriggerState = state.Gamepad.bLeftTrigger;
-        float rTriggerState = state.Gamepad.bRightTrigger;
-
-        lTriggerState /= 255;  rTriggerState /= 255;
-         
-
-        m_pControllerTrigger.x = lTriggerState; m_pControllerTrigger.y = rTriggerState; 
-    }
-}
-#pragma endregion
+//bool GCControllerInputManager::GetControllerButtonUp(int vButton)
+//{
+//    int index = 0x5800;
+//    if ( vButton > 0x05807 )
+//        index += 8;
+//
+//    if ( m_buttonState[vButton - index] == GCControllerInputManager::UP )
+//        return true;
+//    return false;
+//}
+//
+//void GCControllerInputManager::UpdateController()
+//{
+//    UpdateControllerInput();
+//    UpdateJoySticksinput();
+//    UpdateTriggers();
+//}
+//
+//void GCControllerInputManager::SendEvent(int index, BYTE state)
+//{
+//    m_buttonState[index] = state;
+//}
+//
+/////////////////////////////////////////////////////////////////////////////////
+///// @brief Updates the state of the controller's buttons.
+///// 
+///// @note Calls the function to update joysticks and triggers' analog state
+/////////////////////////////////////////////////////////////////////////////////
+//void GCControllerInputManager::UpdateControllerInput()
+//{
+//    XINPUT_KEYSTROKE key;
+//
+//    int j = 0;
+//
+//    if (XInputGetKeystroke(m_ID, 0, &key) == ERROR_SUCCESS)
+//    {
+//
+//        for ( int i = 0; i < 16; i++ )
+//        {
+//            j = 0x5800;
+//
+//            if ( i > 7 )
+//                j = 0x5800 + 8;
+//
+//            if ( key.VirtualKey == j + i && key.Flags == 1 )
+//            {
+//                switch ( m_buttonState[key.VirtualKey - j] )
+//                {
+//                case GCControllerInputManager::NONE:
+//                    SendEvent(key.VirtualKey - j, GCControllerInputManager::DOWN);
+//                    break;
+//                case GCControllerInputManager::UP:
+//                    SendEvent(key.VirtualKey - j, GCControllerInputManager::DOWN);
+//                    break;
+//                case GCControllerInputManager::DOWN:
+//                    SendEvent(key.VirtualKey - j, GCControllerInputManager::STAY);
+//                    break;
+//                }
+//            }
+//
+//            else if ( key.VirtualKey == j + i )
+//            {
+//                switch ( m_buttonState[key.VirtualKey - j] )
+//                {
+//                case GCControllerInputManager::STAY:
+//                    SendEvent(key.VirtualKey - j, GCControllerInputManager::UP);
+//                    break;
+//                case GCControllerInputManager::UP:
+//                    SendEvent(key.VirtualKey - j, GCControllerInputManager::NONE);
+//                    break;
+//                case GCControllerInputManager::DOWN:
+//                    SendEvent(key.VirtualKey - j, GCControllerInputManager::UP);
+//                    break;
+//
+//                }
+//            }
+//        }
+//    }
+//}
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// @brief Updates the state of the controller's joysticks.
+///// 
+///// @note This function retrieves the state of the controller's left and right joystick axes 
+///// and normalizes the values to a range between -1.0 and 1.0.
+///// 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//void GCControllerInputManager::UpdateJoySticksinput()
+//{
+//    XINPUT_STATE state;
+//
+//    int side[2] = { 1,1 };
+//
+//    if ( XInputGetState( m_ID, &state ) == ERROR_SUCCESS )
+//    {
+//
+//        float LX = state.Gamepad.sThumbLX;
+//        float LY = state.Gamepad.sThumbLY;
+//
+//
+//        if (LX <= -32767) LX = -32767;
+//        if (LY <= -32767) LY = -32767;
+//
+//        float rLX = LX / 32767;  float rLY = LY / 32767;
+//
+//        if ( rLX < 0 ) side[0] = -1; if ( rLY < 0 ) side[1] = -1;
+//
+//        rLX = rLX * rLX;
+//        rLY = rLY * rLY;
+//
+//
+//        if ( LX * side[0] + LY * side[1] < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+//        {
+//            rLX = 0.0f, rLY = 0.0f;
+//        }
+//
+//
+//
+//
+//        m_pControllersLeftAxis.x = rLX; m_pControllersLeftAxis.y = rLY;
+//
+//
+//        side[0] = 1; side[1] = 1;
+//
+//        float RX = state.Gamepad.sThumbRX;
+//        float RY = state.Gamepad.sThumbRY;
+//
+//
+//        if ( RX <= -32767 ) RX = -32767;
+//        if ( RY <= -32767 ) RY = -32767;
+//
+//        float rRX = RX / 32767;  float rRY = RY / 32767;
+//
+//        if ( rRX < 0 ) side[0] = -1; if ( rRY < 0 ) side[1] = -1;
+//
+//        rRX = rRX * rRX;
+//        rRY = rRY * rRY;
+//
+//
+//        if ( RX * side[0] + RY * side[1] < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
+//        {
+//            rRX = 0.0, rRY = 0.0;
+//        }
+//
+//
+//        m_pControllersRightAxis.x = rRX; m_pControllersRightAxis.y = rRY;
+//    }
+//}
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+///// @brief Updates the state of the controller's triggers.
+///// 
+///// @note This function retrieves the state of the controller's left and right triggers
+///// and normalizes the values to a range between 0.0 and 1.0.
+///// 
+////////////////////////////////////////////////////////////////////////////////////////////
+//void GCControllerInputManager::UpdateTriggers()
+//{
+//    XINPUT_STATE state; 
+//    if ( XInputGetState( m_ID, &state ) == ERROR_SUCCESS )
+//    {
+//        float lTriggerState = state.Gamepad.bLeftTrigger;
+//        float rTriggerState = state.Gamepad.bRightTrigger;
+//
+//        lTriggerState /= 255;  rTriggerState /= 255;
+//         
+//
+//        m_pControllerTrigger.x = lTriggerState; m_pControllerTrigger.y = rTriggerState; 
+//    }
+//}
+//#pragma endregion

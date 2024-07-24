@@ -9,6 +9,7 @@
 GCGameManager::GCGameManager()
 {
     m_pNode = nullptr;
+    m_pInputSystem = GCInputSystem();
     m_pPhysicManager = GCPhysicManager();
     m_pUpdateManager = GCUpdateManager();
     m_pEventManager = GCEventManager();
@@ -18,6 +19,7 @@ GCGameManager::GCGameManager()
 
 void GCGameManager::Update()
 {
+    m_pInputSystem.Update();
     m_pPhysicManager.Update();
     m_pUpdateManager.Update();
     m_pSceneManager.Update();
@@ -27,4 +29,6 @@ void GCGameManager::Update()
 
 
 void GCGameManager::SetActiveGameManager()
-{ GC::m_pActiveGameManager = this; }
+{
+    GC::m_pActiveGameManager = this;
+}

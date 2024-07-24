@@ -31,7 +31,7 @@ void Component::RegisterToManagers()
 		GC::GetActiveUpdateManager()->RegisterComponent( this );
 	
 	if ( IsFlagSet( RENDER ) )
-	 	GC::GetActiveRenderManager()->RegisterComponent( this );
+		m_pGameObject->RegisterComponentToRender(this);
 }
 
 void Component::UnregisterFromManagers()
@@ -42,8 +42,8 @@ void Component::UnregisterFromManagers()
 	if ( IsFlagSet( FIXED_UPDATE ) )
 		m_pPhysicsNode->Delete();
 	
-	if ( IsFlagSet( RENDER ) )
-		m_pRenderNode->Delete();
+	if (IsFlagSet(RENDER))
+		m_pGameObject->UnregisterComponentFromRender( m_pRenderNode ); 
 }
 
 
@@ -151,13 +151,13 @@ SpriteRenderer::SpriteRenderer()
 /// 
 /// @note The sprite must be in .dds 
 /////////////////////////////////////////////////
-void SpriteRenderer::SetSprite(std::string texturePath)
+void SpriteRenderer::SetSprite(std::string fileName)
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
 	m_pMesh = pGraphics->CreateMeshTexture(GC::GetActiveRenderManager()->m_pPlane).resource;
-	GCTexture* texture = pGraphics->CreateTexture( std::string("../../../src/Textures/") + texturePath).resource;
+	GCTexture* texture = pGraphics->CreateTexture( std::string("../../../src/Textures/") + fileName).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 	ResourceCreationResult<GCShader*> shaderTexture = pGraphics->CreateShaderTexture();
@@ -174,29 +174,7 @@ void SpriteRenderer::Render()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
-	XMFLOAT4X4 worldMatrix;
-	
-	worldMatrix._11 = m_pGameObject->m_transform.m_worldMatrix._11;
-	worldMatrix._12 = m_pGameObject->m_transform.m_worldMatrix._12;
-	worldMatrix._13 = m_pGameObject->m_transform.m_worldMatrix._13;
-	worldMatrix._14 = m_pGameObject->m_transform.m_worldMatrix._14;
-	
-	worldMatrix._21 = m_pGameObject->m_transform.m_worldMatrix._21;
-	worldMatrix._22 = m_pGameObject->m_transform.m_worldMatrix._22;
-	worldMatrix._23 = m_pGameObject->m_transform.m_worldMatrix._23;
-	worldMatrix._24 = m_pGameObject->m_transform.m_worldMatrix._24;
-	
-	worldMatrix._31 = m_pGameObject->m_transform.m_worldMatrix._31;
-	worldMatrix._32 = m_pGameObject->m_transform.m_worldMatrix._32;
-	worldMatrix._33 = m_pGameObject->m_transform.m_worldMatrix._33;
-	worldMatrix._34 = m_pGameObject->m_transform.m_worldMatrix._34;
-	
-	worldMatrix._41 = m_pGameObject->m_transform.m_worldMatrix._41;
-	worldMatrix._42 = m_pGameObject->m_transform.m_worldMatrix._42;
-	worldMatrix._43 = m_pGameObject->m_transform.m_worldMatrix._43;
-	worldMatrix._44 = m_pGameObject->m_transform.m_worldMatrix._44;
-
-	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, worldMatrix);
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.m_worldMatrix);
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
 }
@@ -257,12 +235,7 @@ void BoxCollider::Render()
 
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
-	XMMATRIX meshMatrix = XMMatrixScaling(m_pGameObject->m_transform.m_scale.x + m_size.x , m_pGameObject->m_transform.m_scale.y + m_size.y , m_pGameObject->m_transform.m_scale.z) * XMMatrixTranslation(m_pGameObject->m_transform.m_position.x, m_pGameObject->m_transform.m_position.y, m_pGameObject->m_transform.m_position.z);
-
-	XMFLOAT4X4 meshMatrix4X4;
-	XMStoreFloat4x4(&meshMatrix4X4, meshMatrix);
-
-	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, meshMatrix4X4);
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.m_worldMatrix);
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
 }

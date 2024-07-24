@@ -1,5 +1,5 @@
 #include "pch.h"
-
+#include "../core/framework.h"
 #include "RenderManager.h"
 #include "GC.h"
 #include "GameObject.h"
@@ -23,9 +23,9 @@ GCRenderManager::GCRenderManager()
     XMMATRIX viewMatrix = XMMatrixLookAtLH(m_cameraPosition, m_cameraTarget, m_cameraUp);
     XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
     XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
-
-    XMStoreFloat4x4(&m_storedProjectionMatrix, transposedProjectionMatrix);
-    XMStoreFloat4x4(&m_storedViewMatrix, transposedViewMatrix);
+    
+    m_storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
+    m_storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 }
 
 GCRenderManager::~GCRenderManager()
@@ -40,9 +40,9 @@ void GCRenderManager::Render() // Render : order by layer, and spriteRenderer be
 
     // Affichage : premier de la liste au prmeier plan.
 
-    for (GCListNode<Component*>* componentNode = m_componentList.GetFirstNode(); componentNode != nullptr; componentNode = componentNode->GetNext())
+    for (GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext())
     {
-        componentNode->GetData()->Render();
+        pGameObjectNode->GetData()->Render();
     }
 
     m_pGraphics->EndFrame();
@@ -55,51 +55,37 @@ void GCRenderManager::CreateGeometry()
 }
 
 
-void GCRenderManager::RegisterComponent(Component* component)
-{
-
-    //component->m_pRenderNode = m_componentList.PushBack(component);
-    
-    GCListNode<Component*>* pFirstNode = m_componentList.GetFirstNode() ;
+void GCRenderManager::RegisterGameObject( GCGameObject* pGameObject )
+{   
+    GCListNode<GCGameObject*>* pFirstNode = m_gameObjectList.GetFirstNode() ;
 
     if ( pFirstNode == nullptr )
     {
-        component->m_pRenderNode = m_componentList.PushBack(component);
+        pGameObject->m_pRenderNode = m_gameObjectList.PushBack(pGameObject);
         return; 
     }
 
 
-    if ( pFirstNode == m_componentList.GetLastNode() )
+    if ( pFirstNode == m_gameObjectList.GetLastNode() )
     {
-        if ( pFirstNode->GetData()->GetGameObject()->GetLayer() < component->GetGameObject()->GetLayer() )
+        if ( pFirstNode->GetData()->GetLayer() < pGameObject->GetLayer() )
         {
-            m_componentList.PushBack( component );
-            return;
-        }
-        else if ( pFirstNode->GetData()->GetID() >= component->GetID() )
-        {
-            m_componentList.PushFront( component );
+            m_gameObjectList.PushBack(pGameObject);
             return;
         }
     }
 
 
-    for ( GCListNode<Component*>* pComponent = m_componentList.GetLastNode(); pComponent != nullptr; pComponent = pComponent->GetPrevious() )
+    for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectList.GetLastNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetPrevious() )
     {
-        if ( pComponent->GetData()->GetGameObject()->GetLayer() < component->GetGameObject()->GetLayer() )
+        if (pGameObjectNode->GetData()->GetLayer() <= pGameObject->GetLayer() )
         {
-            component->m_pRenderNode = pComponent->PushAfter( component );
+            pGameObject->m_pRenderNode = pGameObjectNode->PushAfter(pGameObject);
             return;
-        }
-        if ( pComponent->GetData()->GetGameObject()->GetLayer() == component->GetGameObject()->GetLayer() && pComponent->GetData()->GetID() <= component->GetID() )
-        {
-            component->m_pRenderNode = pComponent->PushAfter( component );
-            return;
-        }
+        }       
     }
 
-    m_componentList.PushBack( component );
-
+    m_gameObjectList.PushFront(pGameObject);
 }
 
 

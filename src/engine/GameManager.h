@@ -11,9 +11,9 @@ template <typename T>
 class GCListNode;
 class Script;
 
-class GCGameManager 
+class GCGameManager
 {
-friend class GC;
+    friend class GC;
 
 public:
     void Run() {};
@@ -28,13 +28,14 @@ public:
 protected:
     GCGameManager();
     ~GCGameManager() = default;
-    
+
 public: void Update();
-    
-    void SetActiveGameManager();
-    
+
+      void SetActiveGameManager();
+
 protected:
     GCListNode<GCGameManager*>* m_pNode;
+    GCInputSystem m_pInputSystem;
     GCPhysicManager m_pPhysicManager;
     GCUpdateManager m_pUpdateManager;
     GCEventManager m_pEventManager;
