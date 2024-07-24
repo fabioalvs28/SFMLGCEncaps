@@ -7,6 +7,8 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 
+
+
 //#define WIN32_LEAN_AND_MEAN             // Exclure les en-têtes Windows rarement utilisés
 // Fichiers d'en-tête Windows
 #include <windows.h>
@@ -48,6 +50,7 @@
 #include <WindowsX.h>
 
 
+
 struct GCGeometry;
 struct GCMESHBUFFERDATA;
 
@@ -57,6 +60,7 @@ struct GCWORLDCB;
 struct GCVIEWPROJCB;
 
 enum GC_PRIMITIVE_ID;
+struct GC_MODELINFOS;
 
 // Add William 
 class GCGraphicsLogger;
@@ -94,6 +98,8 @@ class Window;
 #include "./GCShaderConstantBufferStruct.h"
 #include "./GCMeshBufferData.h"
 #include "GCPrimitiveIdEnum.h"
+
+#include "../core/framework.h"
 
 
 //

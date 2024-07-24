@@ -81,15 +81,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGameObject* test3bis = pScene->CreateGameObject();
     GCGameObject* test2 = pScene->CreateGameObject();
 
-    test3->SetLayer(3);
-    test2->SetLayer(4);
+    test3->SetLayer(10);
+    test2->SetLayer(40);
+    test3bis->SetLayer(15);
 
     //test1->AddComponent<BoxCollider>();
     test2->AddComponent<BoxCollider>()->SetVisible(true);
-    test2->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
+    test2->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
 
     test3->AddComponent<BoxCollider>()->SetVisible(true);
-    test3->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    test3->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
 
     test3bis->AddComponent<SpriteRenderer>()->SetSprite("gojo.dds");
 
@@ -101,8 +102,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     test3->m_transform.SetPosition(GCVEC3(5.8, 3, 0));
     test3->m_transform.SetScale(GCVEC3(10, 10, 1));
 
-    test3bis->m_transform.SetPosition(GCVEC3(0, -6, 0));
-    test3bis->m_transform.SetScale(GCVEC3(4, 1, 1));
+    test3bis->m_transform.SetPosition(GCVEC3(0, -4, 0));
+    test3bis->m_transform.SetScale(GCVEC3(2, 2, 1));
+
+    test2->SetLayer(0);
 
     //auto startTime = std::chrono::steady_clock::now();
     

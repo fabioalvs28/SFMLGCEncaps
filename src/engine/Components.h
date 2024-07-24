@@ -60,6 +60,8 @@ protected:
     
     void SetGlobalActive( bool active );
 
+    virtual int GetLayer() { return 0; }
+
 protected:
     inline static int componentCount = 0;
     GCGameObject* m_pGameObject;
@@ -85,7 +87,7 @@ public:
     const int GetID() override { return m_ID; }
     
     
-    void SetSprite( std::string texturePath );
+    void SetSprite( std::string fileName);
     void SetColor() {};
     
     void GetSprite() {};
@@ -101,6 +103,8 @@ protected:
     SpriteRenderer* Duplicate() override; 
     
     FLAGS GetFlags() override { return RENDER; }
+
+    virtual int GetLayer() override { return 5; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -134,6 +138,8 @@ public:
 
 protected:
     FLAGS GetFlags() override { return FIXED_UPDATE | RENDER; }
+
+    virtual int GetLayer() override { return 10; }
 
 protected:
     bool m_trigger;
