@@ -1,7 +1,6 @@
 #pragma once
 #include "List.h"
-
-// TODO Scripts in Scenes
+#include "Map.h"
 
 class Script;
 
@@ -33,13 +32,13 @@ public:
 	
 	void SetParent( GCScene* pParent );
 	GCScene* GetParent() const;
-	
- //	  template <class ScriptClass>
- //   ScriptClass* AddScript();
- //   template <class ScriptClass>
- //   ScriptClass* GetScript();
- //   template <class ScriptClass>
- //   void RemoveScript();
+    
+	template <class ScriptClass>
+    ScriptClass* AddScript();
+    template <class ScriptClass>
+    ScriptClass* GetScript();
+    template <class ScriptClass>
+    void RemoveScript();
 
 protected:
 	void Destroy();
@@ -59,7 +58,7 @@ protected:
 	bool m_active;
 	
 	GCList<GCGameObject*> m_gameObjectsList;
-    //GCMap<unsigned int, Script*> m_scriptsList;
+    GCMap<unsigned int, Script*> m_scriptsList;
 
 };
 
@@ -68,30 +67,30 @@ protected:
 
 
 
-//template <class ScriptClass>
-//ScriptClass* GCScene::AddScript()
-//{
-//    ASSERT( GetScript<ScriptClass>() == nullptr, LOG_FATAL, "Trying to add a Script to a Scene that it already has it" );
-//    ScriptClass* pScript = new ScriptClass();
-//    pScript->RegisterToManagers();
-//    m_scriptsList.Insert( ScriptClass->GetIDStatic(), pScript );
-//    return pScript;
-//}
-//
-//template <class ScriptClass>
-//ScriptClass* GCScene::GetScript()
-//{
-//    ScriptClass* pScript;
-//    if ( m_scriptsList.Find( ScriptClass::GetIDStatic(), pScript ) == true )
-//        return (ScriptClass*) pScript;
-//    return nullptr;
-//}
-//
-//template <class ScriptClass>
-//void GCScene::RemoveScript()
-//{
-//    ScriptClass* pScript = GetScript<ScriptClass>();
-//    ASSERT( pScript != nullptr, LOG_FATAL, "Trying to remove a Script from a Scene that doesn't have it" );
-//    delete pScript;
-//    m_scriptsList.Remove( ScriptClass::GetIDStatic() );
-//}
+template <class ScriptClass>
+ScriptClass* GCScene::AddScript()
+{
+    ASSERT( GetScript<ScriptClass>() == nullptr, LOG_FATAL, "Trying to add a Script to a Scene that it already has it" );
+    ScriptClass* pScript = new ScriptClass();
+    pScript->RegisterToManagers();
+    m_scriptsList.Insert( ScriptClass->GetIDStatic(), pScript );
+    return pScript;
+}
+
+template <class ScriptClass>
+ScriptClass* GCScene::GetScript()
+{
+    ScriptClass* pScript;
+    if ( m_scriptsList.Find( ScriptClass::GetIDStatic(), pScript ) == true )
+        return (ScriptClass*) pScript;
+    return nullptr;
+}
+
+template <class ScriptClass>
+void GCScene::RemoveScript()
+{
+    ScriptClass* pScript = GetScript<ScriptClass>();
+    ASSERT( pScript != nullptr, LOG_FATAL, "Trying to remove a Script from a Scene that doesn't have it" );
+    delete pScript;
+    m_scriptsList.Remove( ScriptClass::GetIDStatic() );
+}
