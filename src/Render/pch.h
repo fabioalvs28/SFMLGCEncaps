@@ -83,6 +83,7 @@ class GCPrimitiveFactory;
 class GCRenderContext;
 class GCRenderResources;
 class GCShader;
+class GCComputeShader;
 class GCTexture;
 class GCTextureFactory;
 class GCShaderUploadBufferBase; 
