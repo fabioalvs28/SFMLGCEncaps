@@ -1,1 +1,1 @@
-python randomImageGen.py -o randomImage -n 512 -w 10 -W 100 -h 10 -H 100 -format png
+python randomImageGen.py -o randomImage -n 10 -w 10 -W 100 -h 10 -H 100 -format dds

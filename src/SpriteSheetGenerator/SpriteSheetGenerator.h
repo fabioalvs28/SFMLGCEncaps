@@ -42,6 +42,13 @@ struct Emplacement
 
 class SpriteSheetGenerator
 {
+    enum SaveFormat
+    {
+        BMP,
+        PNG,
+        DDS,
+    };
+
     fs::path m_importPath = "";
     fs::path m_outputPath = "";
     int m_padding = 0;

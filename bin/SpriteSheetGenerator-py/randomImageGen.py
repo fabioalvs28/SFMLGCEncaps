@@ -8,7 +8,7 @@ from PIL import Image
 @click.option('-W', "maxWidth", default=100)
 @click.option('-h', "minHeight", default=10)
 @click.option('-H', "maxHeight", default=100)
-@click.option('-format', "format", type=click.Choice(['png', 'bmp'], case_sensitive=False))
+@click.option('-format', "format", type=click.Choice(['png', 'bmp', 'dds'], case_sensitive=False))
 def main(outputPath, imageCount, minWidth, maxWidth, minHeight, maxHeight, format):
     if os.path.exists(outputPath):
         if (not os.path.isdir(outputPath)):

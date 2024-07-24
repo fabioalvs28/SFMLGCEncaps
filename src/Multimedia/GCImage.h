@@ -99,6 +99,8 @@ public:
 	bool LoadBMP(const std::string& filename);
 	// Load image from file, filename is the path of the file
 	bool LoadPNG(const std::string& filename);
+	// Load image from file, filename is the path of the file
+	bool LoadDDS(const std::string& filename);
 	// Load image from PNG buffer, buffer is the buffer and size is the size of the buffer
 	bool LoadPNG(std::vector<uint8_t>& buffer, int size);
 	// Load image from JPG file, buffer is the path of the file and size is the size of the buffer
@@ -113,6 +115,8 @@ public:
 	bool SaveBMP(GCFile* pFile, int* pOutSize = nullptr);
 	// Save image to PNG file, path is the path of the file, pOutSize and gray is the gray flag
 	bool SavePNG(GCFile* pFile, int* pOutSize = nullptr, bool gray = false);
+
+	bool SaveDDS(GCFile* pFile, int* pOutSize = nullptr);
 	// Close the image
 	void Close();
 

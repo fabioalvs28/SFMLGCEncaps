@@ -1,5 +1,6 @@
 #include "GCImage.h"
 #include "BMPHeader.h"
+#include "dds.hpp"
 #include "GCFile.h"
 #include "lodepng.h"
 
@@ -384,11 +385,28 @@ bool GCImage::LoadPNG(const std::string& filename)
 	unsigned error = lodepng::decode(m_rgba, m_width, m_height, buffer);
 
 	//if there's an error, display it
-	if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+	if (error) std::cout << "png decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 
 	m_rowStride = m_width * 4;
 	m_size = m_rowStride * m_height;
 	m_channels = m_bitDepth / 8;
+	return true;
+}
+
+bool GCImage::LoadDDS(const std::string& filename)
+{
+	dds::Image dds;
+	auto error = dds::readFile(filename, &dds);
+
+	//if there's an error, display it
+	if (error) std::cout << "dds decoder error " << error << std::endl;
+
+	m_width = dds.width;
+	m_height = dds.height;
+	m_rowStride = m_width * 4;
+	m_size = m_rowStride * m_height;
+	m_channels = dds.depth / 8;
+	m_rgba = dds.data;
 	return true;
 }
 
@@ -524,6 +542,24 @@ bool GCImage::SavePNG(GCFile* pFile, int* pOutSize, bool gray)
 
 	if (pOutSize)
 		*pOutSize = (int)size;
+	return true;
+}
+
+bool GCImage::SaveDDS(GCFile* pFile, int* pOutSize)
+{
+	if (pFile == nullptr || m_rgba.data() == nullptr)
+		return false;
+
+	dds::Image dds;
+	auto error = dds::readImage(m_rgba.data(), m_rgba.size(), &dds); // This read a DDS BUFFER, not a pixel buffer, so it cannot save pixel to DDS
+
+	//if there's an error, display it
+	if (error) std::cout << "dds decoder error " << error << std::endl;
+
+	pFile->Write(dds.data);
+
+	if (pOutSize)
+		*pOutSize = (int)dds.arraySize;
 	return true;
 }
 

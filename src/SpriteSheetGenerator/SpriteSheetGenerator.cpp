@@ -60,7 +60,7 @@ bool SpriteSheetGenerator::sortBySpriteHeight(const Sprite& a, const Sprite& b)
 
 int SpriteSheetGenerator::Packer()
 {
-    bool saveAsBMP = false;
+    SaveFormat saveFormat = SaveFormat::PNG;
 
     json data = json::parse(R"({})");
     data["totalImageCount"] = 0;
@@ -125,6 +125,15 @@ int SpriteSheetGenerator::Packer()
             if (entry.path().extension() == ".png")
             {
                 if (!image.LoadPNG(entry.path().string()))
+                {
+                    std::printf("Error loading image\n");
+                    return 1;
+                }
+            }
+
+            if (entry.path().extension() == ".dds")
+            {
+                if (!image.LoadDDS(entry.path().string()))
                 {
                     std::printf("Error loading image\n");
                     return 1;
@@ -229,13 +238,37 @@ int SpriteSheetGenerator::Packer()
                 spriteSheetSize *= 2;
                 if (spriteSheetSize == 4096)
                 {
-                    std::string textureName = std::to_string(textureIndex) + ".png";
+                    std::string textureName;
+                    switch (saveFormat)
+                    {
+                    case SpriteSheetGenerator::BMP:
+                        textureName = std::to_string(textureIndex) + ".bmp";
+                        break;
+                    case SpriteSheetGenerator::PNG:
+                        textureName = std::to_string(textureIndex) + ".png";
+                        break;
+                    case SpriteSheetGenerator::DDS:
+                        textureName = std::to_string(textureIndex) + ".dds";
+                        break;
+                    default:
+                        break;
+                    }
                     std::string outfilePath = m_outputPath.string() + textureName;
                     GCFile outfile = GCFile(outfilePath.c_str(), "wb");
-                    if (saveAsBMP)
+                    switch (saveFormat)
+                    {
+                    case SpriteSheetGenerator::BMP:
                         spritSheet.SaveBMP(&outfile);
-                    else
+                        break;
+                    case SpriteSheetGenerator::PNG:
                         spritSheet.SavePNG(&outfile);
+                        break;
+                    case SpriteSheetGenerator::DDS:
+                        spritSheet.SaveDDS(&outfile);
+                        break;
+                    default:
+                        break;
+                    }
                     data["textures"][textureIndex]["textureName"] = textureName;
                     textureIndex++;
                     startImageIndex = imageIndex;
@@ -245,7 +278,7 @@ int SpriteSheetGenerator::Packer()
                     spriteSheetSize = getSmallestSheetSize(total);
                 }
                 else
-                    data["textures"].erase(data["textures"].size());
+                    data["textures"].erase(data["textures"].size() - 1);
                 spritSheet = GCImage(spriteSheetSize, spriteSheetSize);
                 break;
             }
@@ -271,17 +304,36 @@ int SpriteSheetGenerator::Packer()
 
     data["totalTextureCount"] = textureIndex + 1;
     std::string textureName;
-    if (saveAsBMP)
+    switch (saveFormat)
+    {
+    case SpriteSheetGenerator::BMP:
         textureName = std::to_string(textureIndex) + ".bmp";
-    else
+        break;
+    case SpriteSheetGenerator::PNG:
         textureName = std::to_string(textureIndex) + ".png";
+        break;
+    case SpriteSheetGenerator::DDS:
+        textureName = std::to_string(textureIndex) + ".dds";
+        break;
+    default:
+        break;
+    }
     std::string outfilePath = m_outputPath.string() + textureName;
     GCFile outfile = GCFile(outfilePath.c_str(), "wb");
-
-    if (saveAsBMP)
+    switch (saveFormat)
+    {
+    case SpriteSheetGenerator::BMP:
         spritSheet.SaveBMP(&outfile);
-    else
+        break;
+    case SpriteSheetGenerator::PNG:
         spritSheet.SavePNG(&outfile);
+        break;
+    case SpriteSheetGenerator::DDS:
+        spritSheet.SaveDDS(&outfile);
+        break;
+    default:
+        break;
+    }
     data["textures"][textureIndex]["textureName"] = textureName;
 
     std::ofstream myfile;
