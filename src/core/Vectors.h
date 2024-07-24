@@ -72,15 +72,13 @@ struct GCVEC3
     GCVEC3();
     GCVEC3( const float& x, const float& y, const float& z );
     ~GCVEC3() {};
-
-    static GCVEC3 Zero() { return GCVEC3( 0.0f, 0.0f, 0.0f ); }
-    static GCVEC3 One() { return GCVEC3( 1.0f, 1.0f, 1.0f ); }
-    static GCVEC3 Up() { return GCVEC3( 0.0f, -1.0f, 0.0f ); }
-    static GCVEC3 Down() { return GCVEC3( 0.0f, 1.0f, 0.0f ); }
-    static GCVEC3 Left() { return GCVEC3( -1.0f, 0.0f, 0.0f ); }
-    static GCVEC3 Right() { return GCVEC3( 1.0f, 0.0f , 0.0f); }
-    static GCVEC3 Forward() { return GCVEC3( 0.0f, 0.0f, 1.0f ); }
-    static GCVEC3 Back() { return GCVEC3( 0.0f, 0.0f, -1.0f ); }
+    
+    static GCVEC3 Zero();
+    static GCVEC3 One();
+    static GCVEC3 Right();
+    static GCVEC3 Up();
+    static GCVEC3 Front();
+    
     void SetZero();
     void SetOne();
     void SetRight();

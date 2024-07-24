@@ -6,13 +6,13 @@
 
 
 
-void GC::Destroy( GCGameObject*& pGameObject )
+void GC::Destroy(GCGameObject*& pGameObject)
 {
     pGameObject->Destroy();
     pGameObject = nullptr;
 }
 
-void GC::Destroy( GCScene*& pScene )
+void GC::Destroy(GCScene*& pScene)
 {
     pScene->Destroy();
     pScene = nullptr;
@@ -37,3 +37,6 @@ GCSceneManager* GC::GetActiveSceneManager()
 
 GCRenderManager* GC::GetActiveRenderManager()
 { return &m_pActiveGameManager->m_pRenderManager; }
+
+GCInputSystem* GC::GetActiveInputSystem()
+{ return &m_pActiveGameManager->m_pInputSystem; }

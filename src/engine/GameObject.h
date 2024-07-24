@@ -4,8 +4,8 @@
 #include "Map.h"
 #include "List.h"
 #include "GameObjectTransform.h"
+#include "Components.h"
 
-class Component;
 class GCScene;
 
 
@@ -13,16 +13,20 @@ class GCScene;
 class GCGameObject
 {
 friend class GCGameObjectTransform;
+friend class Component;
 friend class GCScene;
 friend class GCSceneManager;
+friend class GCRenderManager;
 friend class GC;
+friend class Component;
 
 protected:
     GCGameObject( GCScene* pScene );
     ~GCGameObject() = default;
 
 public:
-    GCGameObject* Duplicate(); // Potential optimization: A DuplicateAtCenter() method which doesn't calculate the transform's matrix and instead places the new GameObject at the center of the parent's bounds with no rotation and scale
+    GCGameObject* Duplicate();
+    GCGameObject* Duplicate( GCGameObject* pParent );
     
     void RemoveParent();
     GCGameObject* CreateChild();
@@ -31,8 +35,10 @@ public:
     
     void AddTag( const char* tag );
     void RemoveTag( const char* tag );
-    void RemoveTag( int index );
     void RemoveTags();
+    
+    void Activate();
+    void Deactivate();
     
     void SetScene( GCScene* pScene );
     void SetParent( GCGameObject* pParent );
@@ -49,46 +55,50 @@ public:
     const char* GetTag( int index ) const;
     int GetLayer() const;
     
-    template<class T>
+    template <class T>
     T* AddComponent();
-    template<class T>
+    template <class T>
     T* GetComponent();
-    template<class T>
+    template <class T>
     void RemoveComponent();
     void ClearComponents();
 
 protected:
     void Destroy();
     
-    void RemoveScene();
-    void SetGlobalActive( const bool active );
+    void RemoveTag( int index );
     
-    void RemoveComponent( int type );
+    void ActivateGlobal();
+    void DeactivateGlobal();
+    
+    void RemoveScene();
+    
+    void RemoveComponent( int ID );
 
 public:
-    GCGameObjectTransform m_transform;
+    GCGameObjectTransform m_transform; // The transform that contains the GameObject's position, scale and rotation.
 
 protected:
-    static inline unsigned int s_gameObjectsCount = 0;
-    unsigned int m_ID;
-    GCListNode<GCGameObject*>* m_pSceneNode;
-    GCListNode<GCGameObject*>* m_pChildNode;
+    static inline unsigned int s_gameObjectsCount = 0; // The amount of GameObjects created within the game.
+    unsigned int m_ID; // The unique ID of the GameObject.
+    GCListNode<GCGameObject*>* m_pSceneNode; // The Node of the GameObject in its Scene's GameObjects_List.
+    GCListNode<GCGameObject*>* m_pChildNode; // The Node of the GameObject in its Parent's Children_List.
     
-    GCScene* m_pScene;
-    GCGameObject* m_pParent;
-    GCList<GCGameObject*> m_childrenList;
+    GCScene* m_pScene; // The Scene where the GameObject located.
+    GCGameObject* m_pParent; // The GameObject's Parent.
+    GCList<GCGameObject*> m_childrenList; // The list of children the GameObject has.
     
-    bool m_created;
-    bool m_deleted;
+    bool m_created; // A boolean value indicating if the GameObject is fully created.
+    bool m_deleted; // A boolean value indicating that the GameObject is going to be deleted in the next frame.
     
-    bool m_globalActive;
-    bool m_selfActive;
+    bool m_globalActive; // The global active state of the GameObject ( Usually its Parent active state ).
+    bool m_selfActive; // The active state of the GameObject.
     
-    const char* m_name;
-    GCVector<const char*> m_tagsList;
-    int m_layer;
+    const char* m_name; // The GameObject's name.
+    GCVector<const char*> m_tagsList; // The list of tags the GameObject has.
+    int m_layer; // The GameObject's layer.
     
-    GCMap<int, Component*> m_componentsList;
+    GCMap<int, Component*> m_componentsList; // The list of Components the GameObject has.
 
 };
 
@@ -97,39 +107,42 @@ protected:
 ////////////////////////////////////////////////////////
 /// @brief Adds a new Component to the GameObject.
 /// 
-/// @tparam T The class of the Component to be added.
+/// @tparam T The class of the Component to add.
 /// 
 /// @return A pointer to the newly created Component.
 ////////////////////////////////////////////////////////
-template<class T>
+template <class T>
 T* GCGameObject::AddComponent()
 {
-    ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a component to a GameObject that already has it" );
+    ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a Component to a GameObject that already has it" );
     T* pComponent = new T();
     pComponent->m_pGameObject = this;
-    pComponent->RegisterToManagers();
+    bool gameObjectActive = IsActive();
+    pComponent->m_globalActive = gameObjectActive;
+    if ( gameObjectActive == true && m_created == true )
+        pComponent->RegisterToManagers();
     m_componentsList.Insert( T::GetIDStatic(), pComponent );
     return pComponent;
 }
 
-///////////////////////////////////////////////////////////
-/// @tparam T The class of the Component to be searched.
+/////////////////////////////////////////////////////
+/// @tparam T The class of the searched Component.
 /// 
 /// @return A pointer to the searched Component.
-///////////////////////////////////////////////////////////
-template<class T>
+/////////////////////////////////////////////////////
+template <class T>
 T* GCGameObject::GetComponent()
 {
-    Component* component;
-    if ( m_componentsList.Find( T::GetIDStatic(), component ) == true )
-        return (T*) component;
+    Component* pComponent;
+    if ( m_componentsList.Find( T::GetIDStatic(), pComponent ) == true )
+        return (T*) pComponent;
     return nullptr;
 }
 
-//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 /// @brief Removes a Component from the GameObject.
 /// 
-/// @tparam T The class of the Component to be removed.
-//////////////////////////////////////////////////////////
-template<class T>
-void GCGameObject::RemoveComponent() { RemoveComponent( T::TYPE ); }
+/// @tparam T The class of the Component to remove.
+//////////////////////////////////////////////////////
+template <class T>
+void GCGameObject::RemoveComponent() { RemoveComponent( T::GetIDStatic() ); }

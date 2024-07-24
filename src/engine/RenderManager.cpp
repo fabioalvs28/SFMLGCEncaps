@@ -1,5 +1,5 @@
 #include "pch.h"
-
+#include "../core/framework.h"
 #include "RenderManager.h"
 #include "GC.h"
 #include "GameObject.h"
@@ -23,9 +23,9 @@ GCRenderManager::GCRenderManager()
     XMMATRIX viewMatrix = XMMatrixLookAtLH(m_cameraPosition, m_cameraTarget, m_cameraUp);
     XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
     XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
-
-    XMStoreFloat4x4(&m_storedProjectionMatrix, transposedProjectionMatrix);
-    XMStoreFloat4x4(&m_storedViewMatrix, transposedViewMatrix);
+    
+    m_storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
+    m_storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 }
 
 GCRenderManager::~GCRenderManager()
@@ -40,9 +40,9 @@ void GCRenderManager::Render() // Render : order by layer, and spriteRenderer be
 
     // Affichage : premier de la liste au prmeier plan.
 
-    for (GCListNode<Component*>* componentNode = m_componentList.GetFirstNode(); componentNode != nullptr; componentNode = componentNode->GetNext())
+    for (GCListNode<Component*>* pComponentNode = m_componentList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext())
     {
-        componentNode->GetData()->Render();
+        pComponentNode->GetData()->Render();
     }
 
     m_pGraphics->EndFrame();
@@ -55,51 +55,60 @@ void GCRenderManager::CreateGeometry()
 }
 
 
-void GCRenderManager::RegisterComponent(Component* component)
-{
-
-    //component->m_pRenderNode = m_componentList.PushBack(component);
-    
+void GCRenderManager::RegisterComponent( Component* pComponent )
+{   
     GCListNode<Component*>* pFirstNode = m_componentList.GetFirstNode() ;
 
     if ( pFirstNode == nullptr )
     {
-        component->m_pRenderNode = m_componentList.PushBack(component);
+        pComponent->m_pRenderNode = m_componentList.PushBack(pComponent);
         return; 
     }
 
 
     if ( pFirstNode == m_componentList.GetLastNode() )
     {
-        if ( pFirstNode->GetData()->GetGameObject()->GetLayer() < component->GetGameObject()->GetLayer() )
+        if ( pFirstNode->GetData()->m_pGameObject->GetLayer() < pComponent->m_pGameObject->GetLayer() )
         {
-            m_componentList.PushBack( component );
+            m_componentList.PushBack(pComponent);
             return;
         }
-        else if ( pFirstNode->GetData()->GetID() >= component->GetID() )
+
+        if ( pFirstNode->GetData()->m_pGameObject->GetLayer() == pComponent->m_pGameObject->GetLayer() )
         {
-            m_componentList.PushFront( component );
-            return;
+            if ( pFirstNode->GetData()->GetComponentLayer() < pComponent->GetComponentLayer() )
+            {
+                m_componentList.PushBack( pComponent );
+                return;
+            }
         }
+
+        m_componentList.PushFront( pComponent );
     }
 
 
-    for ( GCListNode<Component*>* pComponent = m_componentList.GetLastNode(); pComponent != nullptr; pComponent = pComponent->GetPrevious() )
+    for ( GCListNode<Component*>* pComponentNode = m_componentList.GetLastNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetPrevious() )
     {
-        if ( pComponent->GetData()->GetGameObject()->GetLayer() < component->GetGameObject()->GetLayer() )
+        Component* pComponentInList = pComponentNode->GetData();
+
+        if (pComponentInList->m_pGameObject->GetLayer() < pComponent->m_pGameObject->GetLayer() )
         {
-            component->m_pRenderNode = pComponent->PushAfter( component );
+            pComponent->m_pRenderNode = pComponentNode->PushAfter(pComponent);
             return;
         }
-        if ( pComponent->GetData()->GetGameObject()->GetLayer() == component->GetGameObject()->GetLayer() && pComponent->GetData()->GetID() <= component->GetID() )
+
+        if ( pComponentInList->m_pGameObject->GetLayer() == pComponent->m_pGameObject->GetLayer() )
         {
-            component->m_pRenderNode = pComponent->PushAfter( component );
-            return;
+            if ( pComponentInList->GetComponentLayer() <= pComponent->GetComponentLayer() )
+            {
+                pComponent->m_pRenderNode = pComponentNode->PushAfter( pComponent );
+                return;
+            }
+
         }
     }
 
-    m_componentList.PushBack( component );
-
+    m_componentList.PushFront(pComponent);
 }
 
 
