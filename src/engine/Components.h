@@ -61,6 +61,8 @@ protected:
     
     void ActivateGlobal();
     void DeactivateGlobal();
+    
+    bool IsCreated();
 
 protected:
     inline static int componentCount = 0;
