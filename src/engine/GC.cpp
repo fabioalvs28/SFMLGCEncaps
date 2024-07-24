@@ -6,16 +6,8 @@
 
 
 
-void GC::Destroy(GCGameObject*& pGameObject)
-{
-    pGameObject->Destroy();
-    pGameObject = nullptr;
-}
 
-void GC::Destroy(GCScene*& pScene)
 {
-    pScene->Destroy();
-    pScene = nullptr;
 }
 
 
