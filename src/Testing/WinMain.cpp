@@ -64,6 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GC::GetActiveRenderManager()->m_pGraphics->Initialize(window, 1920, 1080);
     GC::GetActiveRenderManager()->CreateGeometry();
 
+    GCKeyboardInputManager* keys = new GCKeyboardInputManager();
     //int flagsLightColor = 0;
     //SET_FLAG(flagsLightColor, HAS_POSITION);
     //SET_FLAG(flagsLightColor, HAS_COLOR);
@@ -78,7 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGameObject* test1 = pScene->CreateGameObject();
     GCGameObject* test3 = pScene->CreateGameObject();
     GCGameObject* test3bis = pScene->CreateGameObject();
-    GCGameObject* test2 = test3->CreateChild();
+    GCGameObject* test2 = pScene->CreateGameObject();
 
     test3->SetLayer(10);
     test2->SetLayer(40);
@@ -91,16 +92,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     test3->AddComponent<BoxCollider>()->SetVisible(true);
     test3->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
 
-    test3bis->AddComponent<BoxCollider>()->SetVisible(true);
     test3bis->AddComponent<SpriteRenderer>()->SetSprite("gojo.dds");
 
     test1->m_transform.SetPosition(GCVEC3(2, 0, 0));
     
-    test2->m_transform.SetPosition(GCVEC3(4.8, 3, 0));
-    test2->m_transform.SetScale(GCVEC3(5, 5, 1));
+    test2->m_transform.SetPosition(GCVEC3(-5, 3, 0));
+    test2->m_transform.SetScale(GCVEC3(5, 8.5, 1));
 
-    test3->m_transform.SetPosition(GCVEC3(1, -5, 0));
-    test3->m_transform.SetScale(GCVEC3(2, 2, 1));
+    test3->m_transform.SetPosition(GCVEC3(5.8, 3, 0));
+    test3->m_transform.SetScale(GCVEC3(10, 10, 1));
 
     test3bis->m_transform.SetPosition(GCVEC3(0, -4, 0));
     test3bis->m_transform.SetScale(GCVEC3(2, 2, 1));
@@ -111,7 +111,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     
     int counter = 0;
     GCInputSystem* pInputs = GC::GetActiveInputSystem();
-    
+
     while (true) {
         if (pInputs->m_pMouse->GetKeyDown(GCMouseInputManager::LEFT))
             std::cout << "aaaaa";
@@ -119,15 +119,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
             std::cout << "A";
 
         pGameManager->Update();
-
-        //// Dessiner la sphère interne
-        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldSphere);
-        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
-
-        //// Dessiner le deuxième cube interne (worldCubeInner2) avec la matrice mise à jour
-        //graphics->UpdateWorldConstantBuffer(materialSphere.resource, worldCubeInner2);
-        //graphics->GetRender()->DrawObject(meshSphere.resource, materialSphere.resource);
-
         window->Run(GC::GetActiveRenderManager()->m_pGraphics->GetRender());
     }
 

@@ -21,37 +21,22 @@ void GC::Destroy(GCScene*& pScene)
 
 
 GCGameManager* GC::GetActiveGameManager()
-{
-    return m_pActiveGameManager;
-}
+{ return m_pActiveGameManager; }
 
 GCPhysicManager* GC::GetActivePhysicManager()
-{
-    return &m_pActiveGameManager->m_pPhysicManager;
-}
+{ return &m_pActiveGameManager->m_pPhysicManager; }
 
 GCUpdateManager* GC::GetActiveUpdateManager()
-{
-    return &m_pActiveGameManager->m_pUpdateManager;
-}
+{ return &m_pActiveGameManager->m_pUpdateManager; }
 
 GCEventManager* GC::GetActiveEventManager()
-{
-    return &m_pActiveGameManager->m_pEventManager;
-}
+{ return &m_pActiveGameManager->m_pEventManager; }
 
 GCSceneManager* GC::GetActiveSceneManager()
-{
-    return &m_pActiveGameManager->m_pSceneManager;
-}
+{ return &m_pActiveGameManager->m_pSceneManager; }
 
 GCRenderManager* GC::GetActiveRenderManager()
-{
-    return &m_pActiveGameManager->m_pRenderManager;
-}
-
+{ return &m_pActiveGameManager->m_pRenderManager; }
 
 GCInputSystem* GC::GetActiveInputSystem()
-{
-    return &m_pActiveGameManager->m_pInputSystem;
-}
+{ return &m_pActiveGameManager->m_pInputSystem; }

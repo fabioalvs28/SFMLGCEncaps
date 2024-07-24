@@ -8,6 +8,8 @@
 
 class GCControllerInputManager;
 class GCEventManager;
+class GCInputManager;
+
 
 class GCInputManager
 {
@@ -18,7 +20,7 @@ public:
 
     GCInputManager() = default;
 
-    virtual void Update() {} ;
+    virtual void Update() {};
 
     virtual int GetStateSize() const = 0;
     virtual int GetIDSize() const = 0;
@@ -28,8 +30,6 @@ protected:
     std::vector<std::vector<std::function<void(GCEvent&)>>> callbacks;
     GCEventManager* m_eventManager = nullptr;
 };
-
-
 
 class GCKeyboardInputManager : public GCInputManager
 {
@@ -153,7 +153,6 @@ private:
 private:
     std::vector<BYTE> m_keyState;
 };
-
 
 class GCMouseInputManager : public GCInputManager
 {

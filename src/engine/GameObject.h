@@ -75,10 +75,6 @@ protected:
     
     void RemoveComponent( int ID );
 
-    void RegisterComponentToRender( Component* pComponent );
-    void UnregisterComponentFromRender(GCListNode<Component*>* pComponent);
-    void Render();
-
 public:
     GCGameObjectTransform m_transform; // The transform that contains the GameObject's position, scale and rotation.
 

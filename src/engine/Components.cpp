@@ -31,19 +31,28 @@ void Component::RegisterToManagers()
 		GC::GetActiveUpdateManager()->RegisterComponent( this );
 	
 	if ( IsFlagSet( RENDER ) )
-		m_pGameObject->RegisterComponentToRender(this);
+		GC::GetActiveRenderManager()->RegisterComponent(this);
 }
 
 void Component::UnregisterFromManagers()
 {
 	if ( IsFlagSet( UPDATE ) )
+	{
 		m_pUpdateNode->Delete();
+		m_pUpdateNode = nullptr;
+	}
 	
 	if ( IsFlagSet( FIXED_UPDATE ) )
+	{
 		m_pPhysicsNode->Delete();
+		m_pPhysicsNode = nullptr;
+	}
 	
-	if (IsFlagSet(RENDER))
-		m_pGameObject->UnregisterComponentFromRender( m_pRenderNode ); 
+	if ( IsFlagSet( RENDER ) )
+	{
+		m_pRenderNode->Delete();
+		m_pRenderNode = nullptr;
+	}
 }
 
 
@@ -168,6 +177,20 @@ void SpriteRenderer::SetSprite(std::string fileName)
 	
 }
 
+SpriteRenderer* SpriteRenderer::Duplicate()
+{
+	SpriteRenderer* pNewComponent = new SpriteRenderer();
+
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
+	pNewComponent->m_globalActive = m_globalActive;
+	pNewComponent->m_selfActive = m_selfActive;
+
+	pNewComponent->m_color = m_color; 
+	*(pNewComponent->m_pMesh) = *m_pMesh;
+	*(pNewComponent->m_pMaterial) = *m_pMaterial;
+	
+	return pNewComponent;
+}
 
 
 void SpriteRenderer::Render()
@@ -189,8 +212,6 @@ Collider::Collider()
 	m_trigger = false;
 	m_visible = false;
 }
-
-
 
 void Collider::RegisterToManagers()
 {
@@ -226,7 +247,22 @@ BoxCollider::BoxCollider()
 
 }
 
+BoxCollider* BoxCollider::Duplicate()
+{
+	BoxCollider* pNewComponent = new BoxCollider();
 
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
+	pNewComponent->m_globalActive = m_globalActive;
+	pNewComponent->m_selfActive = m_selfActive;
+
+	*(pNewComponent->m_pMesh) = *m_pMesh;
+	*(pNewComponent->m_pMaterial) = *m_pMaterial;
+	pNewComponent->m_trigger = m_trigger;
+	pNewComponent->m_visible = m_visible;
+	pNewComponent->m_size = m_size;
+
+	return pNewComponent;
+}
 
 void BoxCollider::Render()
 {
@@ -242,6 +278,22 @@ void BoxCollider::Render()
 
 
 
+CircleCollider* CircleCollider::Duplicate()
+{
+	CircleCollider* pNewComponent = new CircleCollider();
+
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
+	pNewComponent->m_globalActive = m_globalActive;
+	pNewComponent->m_selfActive = m_selfActive;
+
+	*(pNewComponent->m_pMesh) = *m_pMesh;
+	*(pNewComponent->m_pMaterial) = *m_pMaterial;
+	pNewComponent->m_trigger = m_trigger;
+	pNewComponent->m_visible = m_visible;
+	pNewComponent->m_radius = m_radius;
+
+	return pNewComponent;
+}
 
 
 
@@ -256,4 +308,57 @@ void RigidBody::FixedUpdate()
 {
 	// Apply velocity
 	m_pGameObject->m_transform.Translate(m_velocity);		// TODO: Multiply by the fixed delta time
+}
+
+
+
+RigidBody* RigidBody::Duplicate()
+{
+	RigidBody* pNewComponent = new RigidBody();
+
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
+	pNewComponent->m_globalActive = m_globalActive;
+	pNewComponent->m_selfActive = m_selfActive;
+
+	pNewComponent->m_velocity = m_velocity;
+
+	return pNewComponent;
+}
+
+
+
+Animator* Animator::Duplicate()
+{
+	Animator* pNewComponent = new Animator();
+
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
+	pNewComponent->m_globalActive = m_globalActive;
+	pNewComponent->m_selfActive = m_selfActive;
+
+	return pNewComponent;
+}
+
+
+
+SoundMixer* SoundMixer::Duplicate()
+{
+	SoundMixer* pNewComponent = new SoundMixer();
+
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
+	pNewComponent->m_globalActive = m_globalActive;
+	pNewComponent->m_selfActive = m_selfActive;
+
+	return pNewComponent;
+}
+
+
+Camera* Camera::Duplicate()
+{
+	Camera* pNewComponent = new Camera();
+
+	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
+	pNewComponent->m_globalActive = m_globalActive;
+	pNewComponent->m_selfActive = m_selfActive;
+
+	return pNewComponent;
 }
