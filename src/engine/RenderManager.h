@@ -10,7 +10,7 @@ class GCRenderManager
 private:
     GCList<Component*> m_componentList;
 public:
-    GCRenderManager();
+    GCRenderManager( Window* pWindow );
     ~GCRenderManager();
 
     void RegisterComponent(Component* pComponent);

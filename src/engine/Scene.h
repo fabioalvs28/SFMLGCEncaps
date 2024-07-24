@@ -1,7 +1,6 @@
 #pragma once
 #include "List.h"
-
-// TODO Scripts in Scenes
+#include "Map.h"
 
 class Script;
 

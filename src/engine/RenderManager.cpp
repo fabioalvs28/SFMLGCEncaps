@@ -7,10 +7,12 @@
 
 using namespace DirectX;
 
-GCRenderManager::GCRenderManager()
+GCRenderManager::GCRenderManager( Window* pWindow )
 {
 
     m_pGraphics = new GCGraphics();
+    m_pGraphics->Initialize(pWindow,1920,1080);
+    CreateGeometry();
 
     m_cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
     m_cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);

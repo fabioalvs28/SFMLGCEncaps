@@ -6,16 +6,15 @@
 
 
 
-void GC::Destroy(GCGameObject*& pGameObject)
-{
-    pGameObject->Destroy();
-    pGameObject = nullptr;
-}
 
-void GC::Destroy(GCScene*& pScene)
+
+GCGameManager* GC::CreateGameManager( HINSTANCE hInstance )
 {
-    pScene->Destroy();
-    pScene = nullptr;
+    GCGameManager* pGameManager = new GCGameManager( hInstance );
+    pGameManager->m_pNode = m_pGameManagersList.PushBack( pGameManager );
+    if ( m_pActiveGameManager == nullptr )
+        m_pActiveGameManager = pGameManager;
+    return pGameManager;
 }
 
 
@@ -23,20 +22,23 @@ void GC::Destroy(GCScene*& pScene)
 GCGameManager* GC::GetActiveGameManager()
 { return m_pActiveGameManager; }
 
-GCPhysicManager* GC::GetActivePhysicManager()
-{ return &m_pActiveGameManager->m_pPhysicManager; }
-
-GCUpdateManager* GC::GetActiveUpdateManager()
-{ return &m_pActiveGameManager->m_pUpdateManager; }
-
-GCEventManager* GC::GetActiveEventManager()
-{ return &m_pActiveGameManager->m_pEventManager; }
-
-GCSceneManager* GC::GetActiveSceneManager()
-{ return &m_pActiveGameManager->m_pSceneManager; }
-
-GCRenderManager* GC::GetActiveRenderManager()
-{ return &m_pActiveGameManager->m_pRenderManager; }
+Window* GC::GetWindow()
+{ return m_pActiveGameManager->m_pWindow; }
 
 GCInputSystem* GC::GetActiveInputSystem()
-{ return &m_pActiveGameManager->m_pInputSystem; }
+{ return m_pActiveGameManager->m_pInputSystem; }
+
+GCEventManager* GC::GetActiveEventManager()
+{ return m_pActiveGameManager->m_pEventManager; }
+
+GCPhysicManager* GC::GetActivePhysicManager()
+{ return m_pActiveGameManager->m_pPhysicManager; }
+
+GCUpdateManager* GC::GetActiveUpdateManager()
+{ return m_pActiveGameManager->m_pUpdateManager; }
+
+GCSceneManager* GC::GetActiveSceneManager()
+{ return m_pActiveGameManager->m_pSceneManager; }
+
+GCRenderManager* GC::GetActiveRenderManager()
+{ return m_pActiveGameManager->m_pRenderManager; }
