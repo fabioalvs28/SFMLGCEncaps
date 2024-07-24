@@ -26,19 +26,19 @@ Window* GC::GetWindow()
 { return m_pActiveGameManager->m_pWindow; }
 
 GCInputSystem* GC::GetActiveInputSystem()
-{ return &m_pActiveGameManager->m_inputSystem; }
+{ return m_pActiveGameManager->m_pInputSystem; }
 
 GCEventManager* GC::GetActiveEventManager()
-{ return &m_pActiveGameManager->m_eventManager; }
+{ return m_pActiveGameManager->m_pEventManager; }
 
 GCPhysicManager* GC::GetActivePhysicManager()
-{ return &m_pActiveGameManager->m_physicManager; }
+{ return m_pActiveGameManager->m_pPhysicManager; }
 
 GCUpdateManager* GC::GetActiveUpdateManager()
-{ return &m_pActiveGameManager->m_updateManager; }
+{ return m_pActiveGameManager->m_pUpdateManager; }
 
 GCSceneManager* GC::GetActiveSceneManager()
-{ return &m_pActiveGameManager->m_sceneManager; }
+{ return m_pActiveGameManager->m_pSceneManager; }
 
 GCRenderManager* GC::GetActiveRenderManager()
-{ return &m_pActiveGameManager->m_renderManager; }
+{ return m_pActiveGameManager->m_pRenderManager; }

@@ -1,7 +1,13 @@
 #include "pch.h"
 #include "GameManager.h"
 
-#include "../Render/Window.h"
+#include "../Render/pch.h"
+#include "InputManager.h"
+#include "EventManager.h"
+#include "PhysicManager.h"
+#include "UpdateManager.h"
+#include "SceneManager.h"
+#include "RenderManager.h"
 #include "GC.h"
 
 // TODO Timer Implementation
@@ -12,12 +18,12 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
     m_pWindow = new Window( hInstance );
     m_pWindow->Initialize();
     
-    m_inputSystem = GCInputSystem();
-    m_eventManager = GCEventManager();
-    m_physicManager = GCPhysicManager();
-    m_updateManager = GCUpdateManager();
-    m_sceneManager = GCSceneManager();
-    m_renderManager = GCRenderManager();
+    m_pInputSystem = new GCInputSystem();
+    m_pEventManager = new GCEventManager();
+    m_pPhysicManager = new GCPhysicManager();
+    m_pUpdateManager = new GCUpdateManager();
+    m_pSceneManager = new GCSceneManager();
+    m_pRenderManager = new GCRenderManager( m_pWindow );
 }
 
 
@@ -33,12 +39,12 @@ void GCGameManager::GameLoop()
 {
     while ( true )
     {
-        m_inputSystem.Update();
-        m_physicManager.Update();
-        m_updateManager.Update();
-        m_sceneManager.Update();
-        m_renderManager.Render();
-        m_pWindow->Run( m_renderManager.m_pGraphics->GetRender() );
+        m_pInputSystem->Update();
+        m_pPhysicManager->Update();
+        m_pUpdateManager->Update();
+        m_pSceneManager->Update();
+        m_pRenderManager->Render();
+        m_pWindow->Run( m_pRenderManager->m_pGraphics->GetRender() );
     }
 }
 

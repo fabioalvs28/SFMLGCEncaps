@@ -1,15 +1,17 @@
 #pragma once
+#include "Define.h"
 #include "Map.h"
-#include "InputManager.h"
-#include "EventManager.h"
-#include "PhysicManager.h"
-#include "UpdateManager.h"
-#include "SceneManager.h"
-#include "RenderManager.h"
 
 template <typename T>
 class GCListNode;
 class Script;
+class Window;
+class GCInputSystem;
+class GCEventManager;
+class GCPhysicManager;
+class GCUpdateManager;
+class GCSceneManager;
+class GCRenderManager;
 struct HINSTANCE__;
 typedef struct HINSTANCE__ *HINSTANCE;
 
@@ -39,12 +41,12 @@ protected:
     GCListNode<GCGameManager*>* m_pNode;
     Window* m_pWindow;
     
-    GCInputSystem m_inputSystem;
-    GCEventManager m_eventManager;
-    GCPhysicManager m_physicManager;
-    GCUpdateManager m_updateManager;
-    GCSceneManager m_sceneManager;
-    GCRenderManager m_renderManager;
+    GCInputSystem* m_pInputSystem;
+    GCEventManager* m_pEventManager;
+    GCPhysicManager* m_pPhysicManager;
+    GCUpdateManager* m_pUpdateManager;
+    GCSceneManager* m_pSceneManager;
+    GCRenderManager* m_pRenderManager;
     
     GCMap<unsigned int, Script*> m_scriptsList;
 };
