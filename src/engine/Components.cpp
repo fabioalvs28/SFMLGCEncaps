@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Components.h"
 #include "Log.h"
+#include "UpdateManager.h"
+#include "PhysicManager.h"
+#include "RenderManager.h"
 #include "GC.h"
 #include "GameObject.h"
 #include "../Render/pch.h"
@@ -28,7 +31,7 @@ void Component::RegisterToManagers()
 		GC::GetActiveUpdateManager()->RegisterComponent( this );
 	
 	if ( IsFlagSet( FIXED_UPDATE ) )
-		GC::GetActiveUpdateManager()->RegisterComponent( this );
+		GC::GetActivePhysicManager()->RegisterComponent( this );
 	
 	if ( IsFlagSet( RENDER ) )
 		GC::GetActiveRenderManager()->RegisterComponent(this);

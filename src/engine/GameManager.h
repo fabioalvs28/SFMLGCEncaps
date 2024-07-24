@@ -1,22 +1,26 @@
 #pragma once
+#include "Define.h"
 #include "Map.h"
-#include "PhysicManager.h"
-#include "RenderManager.h"
-#include "UpdateManager.h"
-#include "EventManager.h"
-#include "SceneManager.h"
-#include "RenderManager.h"
 
 template <typename T>
 class GCListNode;
 class Script;
+class Window;
+class GCInputSystem;
+class GCEventManager;
+class GCPhysicManager;
+class GCUpdateManager;
+class GCSceneManager;
+class GCRenderManager;
+struct HINSTANCE__;
+typedef struct HINSTANCE__ *HINSTANCE;
 
 class GCGameManager
 {
     friend class GC;
 
 public:
-    void Run() {};
+    void Run();
     
     template <class ScriptClass>
     ScriptClass* AddScript();
@@ -26,21 +30,24 @@ public:
     void RemoveScript();
 
 protected:
-    GCGameManager();
+    GCGameManager( HINSTANCE hInstance );
     ~GCGameManager() = default;
 
-public: void Update();
+    void GameLoop();
 
-      void SetActiveGameManager();
+    void SetActiveGameManager();
 
 protected:
     GCListNode<GCGameManager*>* m_pNode;
-    GCInputSystem m_pInputSystem;
-    GCPhysicManager m_pPhysicManager;
-    GCUpdateManager m_pUpdateManager;
-    GCEventManager m_pEventManager;
-    GCSceneManager m_pSceneManager;
-    GCRenderManager m_pRenderManager;
+    Window* m_pWindow;
+    
+    GCInputSystem* m_pInputSystem;
+    GCEventManager* m_pEventManager;
+    GCPhysicManager* m_pPhysicManager;
+    GCUpdateManager* m_pUpdateManager;
+    GCSceneManager* m_pSceneManager;
+    GCRenderManager* m_pRenderManager;
+    
     GCMap<unsigned int, Script*> m_scriptsList;
 };
 

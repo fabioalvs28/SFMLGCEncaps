@@ -56,13 +56,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 {
     // Initialisation des ressources graphiques
 
-    GCGameManager* pGameManager = GC::CreateGameManager<ScriptExample>();
-
-    Window* window = new Window(hInstance);
-    window->Initialize();
-
-    GC::GetActiveRenderManager()->m_pGraphics->Initialize(window, 1920, 1080);
-    GC::GetActiveRenderManager()->CreateGeometry();
+    GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
 
     GCKeyboardInputManager* keys = new GCKeyboardInputManager();
     //int flagsLightColor = 0;
@@ -112,15 +106,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     int counter = 0;
     GCInputSystem* pInputs = GC::GetActiveInputSystem();
 
-    while (true) {
-        if (pInputs->m_pMouse->GetKeyDown(GCMouseInputManager::LEFT))
-            std::cout << "aaaaa";
-        if (pInputs->m_pKeyboard->GetKeyDown(GCKeyboardInputManager::A))
-            std::cout << "A";
-
-        pGameManager->Update();
-        window->Run(GC::GetActiveRenderManager()->m_pGraphics->GetRender());
-    }
+    pGameManager->Run();
+    
+    //if (pInputs->m_pMouse->GetKeyDown(GCMouseInputManager::LEFT))
+    //    std::cout << "aaaaa";
+    //if (pInputs->m_pKeyboard->GetKeyDown(GCKeyboardInputManager::A))
+    //    std::cout << "A";
 
     return 0;
 }
