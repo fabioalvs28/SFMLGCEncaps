@@ -111,8 +111,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     
     int counter = 0;
     GCInputSystem* pInputs = GC::GetActiveInputSystem();
-    
-    GCInputSystem* pInputs = GC::GetActiveInputSystem();
 
     while (true) {
         if (pInputs->m_pMouse->GetKeyDown(GCMouseInputManager::LEFT))
