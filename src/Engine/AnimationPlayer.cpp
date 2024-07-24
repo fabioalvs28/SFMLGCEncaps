@@ -1,18 +1,4 @@
 #pragma once
 #include "pch.h"
-#include "AnimationPlayer.h"
+#include "AnimationManager.h"
 
-void GCAnimationPlayer::UpdateState()
-{
-
-}
-
-void GCAnimationPlayer::PlayAnimation()
-{
-
-}
-
-void GCAnimationPlayer::StopAnimation()
-{
-
-}

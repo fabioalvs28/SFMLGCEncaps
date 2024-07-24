@@ -13,7 +13,8 @@ public:
 	void IncrementFrame();
 	void Reset();
 	const GCFrame* GetCurrentFrame() const;
-
+	int GetNumberOfFrames() const { return m_frames.GetSize(); }
+	int GetCurrentFrameIndex() const { return m_currentFrameIndex; }
 
 private:
 	GCVector<GCFrame> m_frames;
