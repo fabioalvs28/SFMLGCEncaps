@@ -345,8 +345,6 @@ protected:
     virtual void OnTriggerExit( Collider* collider ) {}
     
     FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
-    
-    Script* Duplicate() override { return nullptr; }
 
 protected:
     inline static int scriptCount = (1<<15)-1;
