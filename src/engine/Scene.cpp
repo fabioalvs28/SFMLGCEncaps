@@ -237,8 +237,6 @@ void GCScene::SetParent( GCScene* pParent )
 	pParent->AddChild( this );
 }
 
-
-
 ///////////////////////////////////////////////
 /// @return A pointer to the Scene's parent.
 ///////////////////////////////////////////////
