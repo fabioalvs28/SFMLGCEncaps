@@ -67,10 +67,6 @@ protected:
     
     void RemoveComponent( int type );
 
-    void RegisterComponentToRender( Component* pComponent );
-    void UnregisterComponentFromRender(GCListNode<Component*>* pComponent);
-    void Render();
-
 public:
     GCGameObjectTransform m_transform;
 
@@ -79,9 +75,6 @@ protected:
     unsigned int m_ID;
     GCListNode<GCGameObject*>* m_pSceneNode;
     GCListNode<GCGameObject*>* m_pChildNode;
-    
-    GCListNode<GCGameObject*>* m_pRenderNode;
-    GCList<Component*> m_renderComponentList;
 
     GCScene* m_pScene;
     GCGameObject* m_pParent;

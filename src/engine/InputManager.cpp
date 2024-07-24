@@ -11,11 +11,7 @@
 #define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 
-void GCInputManager::InitializeCallbacks()
-{
-    callbacks = std::vector<std::vector<std::function<void(GCEvent&)>>>(GetStateSize(),
-        std::vector<std::function<void(GCEvent&)>>(GetIDSize()));
-}
+
 
 GCInputSystem::GCInputSystem()
 {
@@ -27,6 +23,12 @@ void GCInputSystem::Update()
 {
     m_pKeyboard->Update();
     m_pMouse->Update();
+}
+
+void GCInputManager::InitializeCallbacks()
+{
+    callbacks = std::vector<std::vector<std::function<void(GCEvent&)>>>(GetStateSize(),
+        std::vector<std::function<void(GCEvent&)>>(GetIDSize()));
 }
 
 //#pragma region Controller Manager

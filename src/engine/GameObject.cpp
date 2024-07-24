@@ -263,10 +263,16 @@ void GCGameObject::SetName( const char const* name ) { m_name = name; }
 void GCGameObject::SetLayer( const int layer )
 { 
     m_layer = layer; 
-    if ( m_pRenderNode != nullptr )
+
+    for ( auto it : m_componentsList )
     {
-        m_pRenderNode->Delete();
-        GC::GetActiveRenderManager()->RegisterGameObject(this);
+        Component* pComponent = it.second;
+        if ( pComponent->IsFlagSet( RENDER ) )
+        {
+            pComponent->m_pRenderNode->Delete();
+            pComponent->m_pRenderNode = nullptr;
+            GC::GetActiveRenderManager()->RegisterComponent( pComponent );
+        }
     }
 }
 
@@ -334,54 +340,4 @@ void GCGameObject::ClearComponents()
 {
     for ( auto it : m_componentsList )
         RemoveComponent( it.second->GetID() );
-}
-
-
-void GCGameObject::Render()
-{
-    for (GCListNode<Component*>* pComponentNode = m_renderComponentList.GetFirstNode(); pComponentNode != nullptr ; pComponentNode = pComponentNode->GetNext() )
-    {
-        pComponentNode->GetData()->Render();
-    }
-}
-
-void GCGameObject::RegisterComponentToRender( Component* pComponent )
-{
-
-    GCListNode<Component*>* pFirstNode = m_renderComponentList.GetFirstNode();
-
-    if (pFirstNode == nullptr )
-    {
-        GC::GetActiveRenderManager()->RegisterGameObject(this);
-        pComponent->m_pRenderNode = m_renderComponentList.PushBack(pComponent);
-        return;
-    }
-
-    if (pFirstNode == m_renderComponentList.GetLastNode())
-    {
-        if (pFirstNode->GetData()->GetLayer() < pComponent->GetLayer())
-        {
-            m_renderComponentList.PushBack(pComponent);
-            return;
-        }
-    }
-
-
-    for (GCListNode<Component*>* pComponentNode = m_renderComponentList.GetLastNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetPrevious())
-    {
-        if (pComponentNode->GetData()->GetLayer() <= pComponent->GetLayer())
-        {
-            pComponent->m_pRenderNode = pComponentNode->PushAfter(pComponent);
-            return;
-        }
-    }
-
-    m_renderComponentList.PushFront(pComponent);
-}
-
-void GCGameObject::UnregisterComponentFromRender( GCListNode<Component*>* pComponent )
-{
-    pComponent->Delete();
-    if (m_renderComponentList.GetFirstNode() == nullptr)
-        m_pRenderNode->Delete();
 }
