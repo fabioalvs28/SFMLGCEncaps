@@ -1,9 +1,9 @@
 #pragma once
-enum Extensions {
+enum GC_EXTENSIONS {
 	obj,
 };
 
-struct ModelInfos
+struct GC_MODELINFOS
 {
 	std::vector<std::vector<float>> coords;
 	std::vector<std::vector<uint16_t>> facesInfos;
@@ -17,13 +17,12 @@ public:
 	GCModelParserFactory();
 	virtual ~GCModelParserFactory();
 
-	GC_GRAPHICS_ERROR BuildModel(std::string filePath, DirectX::XMFLOAT4 color, Extensions fileExtension, GCGeometry* pGeometry);
+	GC_GRAPHICS_ERROR BuildModel(std::string filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtension, GCGeometry* pGeometry);
 
-	bool Parse(std::string filePath, Extensions fileExtension);
+	bool Parse(std::string filePath, GC_EXTENSIONS fileExtension);
 
 protected:
 	std::string m_filePath;
-	ModelInfos* m_ParsedModel;
-	
+	GC_MODELINFOS* m_ParsedModel;
 };
 

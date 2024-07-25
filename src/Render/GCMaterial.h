@@ -46,9 +46,9 @@ public:
 	float m_materialId;
 
 private:
-	GCRenderContext* m_pRender;
+	int m_iCount;
 
-	int m_iCount = 0;
+	GCRenderContext* m_pRender;
 
 	GCShader* m_pShader;
 	GCTexture* m_pTexture;

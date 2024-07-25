@@ -62,3 +62,4 @@ PSOutput PS(VertexOut pin) : SV_Target
     // Color & Alpha
     return output;
 }
+

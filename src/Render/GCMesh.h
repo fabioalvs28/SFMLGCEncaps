@@ -27,6 +27,7 @@ private:
     std::vector<DirectX::XMFLOAT3> m_geometryPositions;
 
     int m_flagEnabledBits;
+    int m_geoAmount;
 
     int m_currentVertexUploadBufferSize;
     int m_currentIndexUploadBufferSize;

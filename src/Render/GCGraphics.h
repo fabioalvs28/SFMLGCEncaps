@@ -145,7 +145,7 @@ public:
 	*
 	* @return ResourceCreationResult -> bool(success), GCGeometry, errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCGeometry*> CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, Extensions fileExtensionType);
+	ResourceCreationResult<GCGeometry*> CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtensionType);
 
 	/************************************************************************************************
 	* @brief Creates mesh custom from a geometry, we can create many mesh from the same geometry because mesh describe the geometry entry we want use, 

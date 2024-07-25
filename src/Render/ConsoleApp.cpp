@@ -1,17 +1,16 @@
-//// 2D BASIC
+﻿//// 2D BASIC
 //
 //#include "pch.h"
 //
-//#include "pch.h"
 //
 //using namespace DirectX;
 //
-//
-//XMVECTOR cameraPosition = XMVectorSet(0.0f, -10.0f, 5.0f, 1.0f);
-//XMVECTOR cameraTarget = XMVectorZero();
+//// Définition des variables globales pour la caméra
+//XMVECTOR cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
+//XMVECTOR cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 //XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 //
-//float cameraMoveSpeed = 0.05f; 
+//float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
 //
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
 //    // Initialisation des ressources graphiques
@@ -23,9 +22,6 @@
 //
 //    GCGraphics* graphics = new GCGraphics();
 //    graphics->Initialize(window, 1920, 1080);
-//
-//    graphics->GetRender()->ActiveBasicPostProcessing();
-//    graphics->GetRender()->ActivePixelIDMapping();
 //
 //    int flagsLightColor = 0;
 //    SET_FLAG(flagsLightColor, VERTEX_POSITION);
@@ -39,10 +35,11 @@
 //
 //
 //
-//    auto geometryPostProcessing = graphics->CreateGeometryPrimitive(Quad, DirectX::XMFLOAT4(DirectX::Colors::Yellow));
+//    // Création des géométries
 //    auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
-//    auto geoCubeInner = graphics->CreateGeometryPrimitive(Cube, XMFLOAT4(Colors::Green));
-//    auto geoSphere = graphics->CreateGeometryPrimitive(Cube, XMFLOAT4(Colors::Yellow));
+//    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
+//    auto geoCubeInner3 = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red));
+//    auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
 //
 //    graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
 //
@@ -51,7 +48,7 @@
 //    // Chargement des shaders personnalisés
 //    std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
 //    std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
-//    auto shaderLightColor = graphics->CreateShaderColor();
+//    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
 //
 //    std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
 //    std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
@@ -63,18 +60,10 @@
 //
 //    graphics->InitializeGraphicsResourcesStart();
 //
-//    int flags = 0;
-//    SET_FLAG(flags, VERTEX_POSITION);
-//    SET_FLAG(flags, VERTEX_UV);
-//
-//    auto meshPostProcessing = graphics->CreateMeshCustom(geometryPostProcessing.resource, flags);
-//
-//    // Cr�ation des meshes
 //    auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
-//    auto meshCubeInner = graphics->CreateMeshColor(geoCubeInner.resource);
+//    auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
+//    auto meshCubeInner3 = graphics->CreateMeshCustom(geoCubeInner3.resource, flagsLightColor);
 //    auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
-//    //graphics->GetRender()->FlushCommandQueue();
-//    //meshSphere.resource->TestUpdateANewGeometry(geoCubeInner.resource);
 //
 //    auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneAlphabet);
 //
@@ -96,7 +85,9 @@
 //    auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
 //    materialSphere.resource->SetTexture(texture.resource);
 //
-//    XMMATRIX projectionMatrix = XMMatrixPerspectiveFovLH(0.25f * XM_PI, window->AspectRatio(), 1.0f, 1000.0f);
+//    float viewWidth = 20.0f;
+//    float viewHeight = 20.0f;
+//    XMMATRIX projectionMatrix = XMMatrixOrthographicLH(viewWidth, viewHeight, 1.0f, 1000.0f);
 //    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
 //    XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
 //    XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
@@ -160,11 +151,7 @@
 //
 //        graphics->EndFrame();
 //        window->Run(graphics->GetRender());
-//
-//        //break;
 //    }
-//
-//    //delete graphics;
 //
 //    return 0;
 //}

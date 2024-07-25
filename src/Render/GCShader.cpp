@@ -1,20 +1,35 @@
 #include "pch.h"
 //test
-GCShader::GCShader() 
-{
-	m_RootSignature = nullptr;
-	m_pPsoAlpha = nullptr;
-	m_pPsoNoAlpha = nullptr;
-	m_InputLayout.clear(); 
-	m_vsByteCode = nullptr;
-	m_psByteCode = nullptr;
-	m_vsCsoPath.clear();
-	m_psCsoPath.clear();
-	m_pRender = nullptr;
-	m_flagEnabledBits = 0;
-	m_cullMode = D3D12_CULL_MODE_NONE;
+GCShader::GCShader()
+	: m_RootSignature(nullptr),
 
-	for (int i = 0; i < 4; ++i) {
+	m_pPsoAlpha(nullptr),
+	m_pPsoNoAlpha(nullptr),
+
+	m_vsByteCode(nullptr),
+	m_psByteCode(nullptr),
+
+	m_pRender(nullptr),
+
+	m_flagRootParameters(0),
+	m_flagEnabledBits(0),
+	m_cullMode(D3D12_CULL_MODE_NONE),
+
+	m_pRtt(nullptr),
+
+	m_rootParameter_ConstantBuffer_0(-1),
+	m_rootParameter_ConstantBuffer_1(-1),
+	m_rootParameter_ConstantBuffer_2(-1),
+	m_rootParameter_ConstantBuffer_3(-1),
+	m_rootParameter_DescriptorTable_1(-1),
+	m_rootParameter_DescriptorTable_2(-1)
+
+{
+	m_psCsoPath.clear();
+	m_vsCsoPath.clear();
+	m_InputLayout.clear(); 
+
+	for (int i = 0; i < 8; ++i) {
 		m_rtvFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
 }
@@ -22,11 +37,11 @@ GCShader::GCShader()
 
 GCShader::~GCShader()
 {
-	SAFE_RELEASE(m_RootSignature);
-	SAFE_RELEASE(m_pPsoAlpha);
-	SAFE_RELEASE(m_pPsoNoAlpha);
-	SAFE_RELEASE(m_vsByteCode);
-	SAFE_RELEASE(m_psByteCode);
+	m_RootSignature->Release();
+	m_pPsoAlpha->Release();
+	m_pPsoNoAlpha->Release();
+	m_vsByteCode->Release();
+	m_psByteCode->Release();
 
 	m_InputLayout.clear();
 }
@@ -137,6 +152,20 @@ void GCShader::RootSign()
 			CD3DX12_DESCRIPTOR_RANGE srvTable2;
 			srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
 			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable2);
+		}
+
+		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
+			m_rootParameter_DescriptorTable_3 = numParameters;
+			CD3DX12_DESCRIPTOR_RANGE srvTable3;
+			srvTable3.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable3);
+		}
+
+		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
+			m_rootParameter_DescriptorTable_4 = numParameters;
+			CD3DX12_DESCRIPTOR_RANGE srvTable4;
+			srvTable4.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable4);
 		}
 	}
 

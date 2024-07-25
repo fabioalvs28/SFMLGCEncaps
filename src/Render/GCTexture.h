@@ -21,4 +21,7 @@ private:
     ID3D12Resource* m_pUploadTexture;
     CD3DX12_GPU_DESCRIPTOR_HANDLE m_textureAddress;
     UINT m_mipLevels;
+
+    int m_height = 0;
+    int m_width = 0;
 };
