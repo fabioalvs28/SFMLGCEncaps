@@ -199,7 +199,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->Initialize(window, 1920, 1080);
 
     graphics->GetRender()->CreatePostProcessingResources("../../../src/Render/Shaders/test.hlsl", "../../../src/Render/CsoCompiled/test");
-    graphics->GetRender()->ActiveCSPostProcessing();
+    //graphics->GetRender()->ActiveCSPostProcessing();
     graphics->GetRender()->ActiveDeferredLightPass();
 
     int flagsLightColor = 0;
@@ -284,7 +284,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     );
 
     XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
-    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f); // Cube interne centr�
+    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(0.0f, 10.0f, 0.0f); // Cube interne centr�
     XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-6.0f, 0.0f, 0.0f); // Cube interne centr�
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sph�re d�plac�e dans le cube interne
 
@@ -325,7 +325,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
         GCLIGHT directionalLight;
         directionalLight.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-        directionalLight.direction = DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f);
+        directionalLight.direction = DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f);
         directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
         directionalLight.spotAngle = 0.0f;
         directionalLight.lightIntensity = 1.3f;
@@ -338,8 +338,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         pointLight.lightIntensity = 20.4f;
         pointLight.lightType = LIGHT_TYPE_POINT;
 
-        lights.push_back(directionalLight);
-        lights.push_back(pointLight);
+        GCLIGHT light1;
+        light1.position = DirectX::XMFLOAT3(-5.0f, 20.0f, -2.0f);
+        light1.direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
+        light1.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+        light1.spotAngle = 10.0f;
+        light1.lightIntensity = 1.2f;
+        light1.lightType = 1;
+
+        //lights.push_back(directionalLight);
+        //lights.push_back(pointLight);
+        lights.push_back(light1);
 
         graphics->UpdateLights(lights);
 
@@ -349,8 +358,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2, 2.0f);
         graphics->GetRender()->DrawObject(meshSphere.resource, materialCubeInner.resource, true);
 
-        graphics->UpdateWorldConstantBuffer(materialCubeInner2.resource, worldCubeInner, 2.0f);
-        graphics->GetRender()->DrawObject(meshSphere.resource, materialCubeInner2.resource, true);
+        //graphics->UpdateWorldConstantBuffer(materialCubeInner2.resource, worldCubeInner, 2.0f);
+        //graphics->GetRender()->DrawObject(meshSphere.resource, materialCubeInner2.resource, true);
 
         graphics->EndFrame();
         window->Run(graphics->GetRender());

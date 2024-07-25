@@ -494,6 +494,7 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
         projectionMatrixXM = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, aspectRatio, nearZ, farZ);
     }
     else {
+        // #TODO make work ortho
         projectionMatrixXM = DirectX::XMMatrixOrthographicLH(aspectRatio * 10.0f, 10.0f, nearZ, farZ);
     }
 

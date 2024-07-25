@@ -23,7 +23,7 @@ public:
     bool Get4xMsaaState()const;
     void Set4xMsaaState(bool value);
 
-    int Run(GCRenderContext* pRender);
+    bool Run(GCRenderContext* pRender);
 
     virtual bool Initialize();
     virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

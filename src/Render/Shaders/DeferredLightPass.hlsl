@@ -76,7 +76,7 @@ VSOutput VS(float3 posL : POSITION, float2 uv : TEXCOORD)
 float4 PS(VSOutput pin) : SV_Target
 {
     float4 albedo = g_buffer_albedo.Sample(g_sampler, pin.UV);
-    float3 worldPos = g_buffer_worldPosition.Sample(g_sampler, pin.UV);
+    float4 worldPosSample = g_buffer_worldPosition.Sample(g_sampler, pin.UV);
     //float depth = g_buffer_depth.Sample(g_sampler, pin.UV).r;
     
     float4 remappedNormal = g_buffer_normal.Sample(g_sampler, pin.UV);
@@ -94,7 +94,9 @@ float4 PS(VSOutput pin) : SV_Target
 
 
     float2 screenPos = pin.UV; // Assumed to be normalized; otherwise, adjust as needed
-    //worldPos = ReconstructWorldPosition(screenPos, worldPos.z,gView, gProj);
+    float3 worldPos;
+    worldPos.xy = worldPosSample.xy;
+    worldPos.z = worldPosSample.z;
     //float3 worldPos = ReconstructWorldPosition(screenPos, depth, gView, gProj);
    
     // Remap des normales de [0, 1] à [-1, 1]
