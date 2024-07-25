@@ -3,6 +3,8 @@
 
 #include "GameObject.h"
 #include "Scene.h"
+#include "SceneManager.h"
+#include "GameManager.h"
 
 
 
@@ -39,6 +41,9 @@ GCUpdateManager* GC::GetActiveUpdateManager()
 
 GCSceneManager* GC::GetActiveSceneManager()
 { return m_pActiveGameManager->m_pSceneManager; }
+
+GCScene* GC::GetActiveScene()
+{ return m_pActiveGameManager->m_pSceneManager->m_pActiveScene; }
 
 GCRenderManager* GC::GetActiveRenderManager()
 { return m_pActiveGameManager->m_pRenderManager; }

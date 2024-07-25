@@ -1,12 +1,14 @@
 #pragma once
 #include "List.h"
-#include "GameManager.h"
 
 class GCGameManager;
+class Window;
+class GCInputSystem;
 class GCPhysicManager;
 class GCUpdateManager;
 class GCEventManager;
 class GCSceneManager;
+class GCScene;
 class GCRenderManager;
 struct HINSTANCE__;
 typedef struct HINSTANCE__ *HINSTANCE;
@@ -29,6 +31,7 @@ public:
     static GCPhysicManager* GetActivePhysicManager();
     static GCUpdateManager* GetActiveUpdateManager();
     static GCSceneManager* GetActiveSceneManager();
+    static GCScene* GetActiveScene();
     static GCRenderManager* GetActiveRenderManager();
 
 private:
