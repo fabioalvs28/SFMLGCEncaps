@@ -1,13 +1,14 @@
 #pragma once
+#include "Vectors.h"
 #include "Matrix.h"
 #include "Transform.h"
 
-struct GCVEC3;
 class GCGameObject;
 
 struct GCGameObjectTransform: public GCTransform
 {
 friend class GCGameObject;
+friend class Component;
 
 	GCVEC3 m_worldScale;
 	GCVEC3 m_worldPosition;
@@ -29,9 +30,9 @@ friend class GCGameObject;
 	void RotateRoll( float angle );
 	
     void SetRotation( float yaw, float pitch, float roll );
-	void SetRotationX( float angle );
-	void SetRotationY( float angle ); //! FAIS LE
-	void SetRotationZ( float angle );
+	void SetRotationX( float angle ) {};
+	void SetRotationY( float angle ) {}; //! FAIS LE
+	void SetRotationZ( float angle ) {};
 
 protected:
 	void UpdateWorldMatrixFromParent();

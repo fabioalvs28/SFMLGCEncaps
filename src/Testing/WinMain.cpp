@@ -45,13 +45,6 @@ CREATE_SCRIPT_END
 
 using namespace DirectX;
 
-// Définition des variables globales pour la caméra
-XMVECTOR cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
-XMVECTOR cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Initialisation des ressources graphiques
