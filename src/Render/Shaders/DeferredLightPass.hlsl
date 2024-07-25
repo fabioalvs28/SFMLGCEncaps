@@ -73,8 +73,13 @@ VSOutput VS(float3 posL : POSITION, float2 uv : TEXCOORD)
     return output;
 }
 
+// 3D
+
 float4 PS(VSOutput pin) : SV_Target
 {
+    //return float4(0.678431392f, 0.847058892f, 0.901960850f, 1.0f);
+    
+    
     float4 albedo = g_buffer_albedo.Sample(g_sampler, pin.UV);
     float4 worldPosSample = g_buffer_worldPosition.Sample(g_sampler, pin.UV);
     //float depth = g_buffer_depth.Sample(g_sampler, pin.UV).r;
@@ -95,15 +100,25 @@ float4 PS(VSOutput pin) : SV_Target
 
     float2 screenPos = pin.UV; // Assumed to be normalized; otherwise, adjust as needed
     float3 worldPos;
+
+    //// Convert float2 to float3 and initialize z-component to 0
+    //float3 position = normalize(float3(screenPos, 0.0f)) * 0.0f;
+    //position += gView[3].xyz;
+
+    // Assign position to worldPos directly
+    //worldPos.xy = float2(-6.0f, 0.0f);
     worldPos.xy = worldPosSample.xy;
     worldPos.z = worldPosSample.z;
-    //float3 worldPos = ReconstructWorldPosition(screenPos, depth, gView, gProj);
+
+        // Reconstruct position from depth
+    
    
     // Remap des normales de [0, 1] à [-1, 1]
     float3 normal = remappedNormal.xyz * 2.0 - 1.0;
 
     float3x3 invViewMatrix = (float3x3) transpose(gView); // Transpose of view matrix
     float3 cameraPosition = -mul(invViewMatrix, gView[3].xyz); // Camera position in world space
+   
 
     float3 viewDirection = normalize(cameraPosition - worldPos); // View direction
 
@@ -112,7 +127,7 @@ float4 PS(VSOutput pin) : SV_Target
     float3 diffuseColor = float3(0.0f, 0.0f, 0.0f);
     float3 specularColor = float3(0.0f, 0.0f, 0.0f);
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 100; ++i)
     {
         Light currentLight = lights[i];
 
@@ -129,10 +144,11 @@ float4 PS(VSOutput pin) : SV_Target
         }
         else if (currentLight.cbPerLight_lightType == LIGHT_TYPE_SPOT)
         {
+            // Spot light calculations
             float3 lightColorSpot = currentLight.cbPerLight_color * currentLight.cbPerLight_lightIntensity;
             float3 lightPositionSpot = currentLight.cbPerLight_position;
             float3 lightDirectionSpot = normalize(currentLight.cbPerLight_direction);
-            float spotAngle = radians(currentLight.cbPerLight_direction);
+            float spotAngle = radians(currentLight.cbPerLight_spotAngle);
 
             float spotIntensity = ComputeSpotIntensity(lightPositionSpot, lightDirectionSpot, worldPos, spotAngle);
 
@@ -161,61 +177,83 @@ float4 PS(VSOutput pin) : SV_Target
 }
 
 
+
+
+
+// 2D
+
+
+
+
+
 //float4 PS(VSOutput pin) : SV_Target
 //{
+//    // Échantillonnage des textures
 //    float4 albedo = g_buffer_albedo.Sample(g_sampler, pin.UV);
 //    float4 remappedNormal = g_buffer_normal.Sample(g_sampler, pin.UV);
     
-//    // Don't calculate light on rtv clear color value
+//    // Ne pas calculer la lumière sur la couleur de nettoyage de RTV
 //    if (albedo.r == 0.678431392f || albedo.g == 0.847058892f || albedo.b == 0.901960850f)
 //    {
 //        return float4(0.678431392f, 0.847058892f, 0.901960850f, 1.0f);
 //    }
 
-//    float3 normal = remappedNormal.xyz * 2.0 - 1.0;
-//    float4 finalColor = ComputeAmbient(ambientLightColor, ambient, albedo);
+//    // Remap des normales
+//    float3 normal = remappedNormal.xyz * 2.0f - 1.0f;
+    
+//    // Obtenez l'ID du matériau à partir de la texture pixelIdMapping
+//    float objectId = texture_pixelIdMapping.Sample(g_sampler, pin.UV).r * 255.0f;
+//    float materialId = texture_pixelIdMapping.Sample(g_sampler, pin.UV).g * 255.0f;
 
+//    // Récupérez le matériau courant
+//    SBMaterialDSL currentMaterial = GetMaterialById(materialId);
+
+//    // Calcul de la couleur ambiante
+//    float4 finalColor = ComputeAmbient(currentMaterial.ambientLightColor, currentMaterial.ambient, albedo);
+
+//    // Calcul des lumières
 //    for (int i = 0; i < 10; ++i)
 //    {
 //        Light currentLight = lights[i];
 
+//        // Lumière directionnelle
 //        if (currentLight.cbPerLight_lightType == LIGHT_TYPE_DIRECTIONAL)
 //        {
 //            float3 lightColorDirectional = currentLight.cbPerLight_color * currentLight.cbPerLight_lightIntensity;
-//            float3 lightDirectionDirectional = -normalize(currentLight.cbPerLight_direction); // Direction inversée pour la lumière directionnelle
+//            float3 lightDirectionDirectional = -normalize(currentLight.cbPerLight_direction); // Direction inversée
 
 //            float diffuseIntensity = dot(normal, lightDirectionDirectional);
 //            diffuseIntensity = saturate(diffuseIntensity);
 
-//            finalColor.rgb += ComputeDiffuse(lightDirectionDirectional, normal, lightColorDirectional, diffuse) * diffuseIntensity;
-//            finalColor.rgb += ComputePhongSpecular(lightDirectionDirectional, normal, float3(0, 0, -1), lightColorDirectional, specular, shininess); // Direction de vue fixe (par exemple, vers le bas)
+//            finalColor.rgb += ComputeDiffuse(lightDirectionDirectional, normal, lightColorDirectional, currentMaterial.diffuse) * diffuseIntensity;
+//            finalColor.rgb += ComputePhongSpecular(lightDirectionDirectional, normal, float3(0, 0, -1), lightColorDirectional, currentMaterial.specular, currentMaterial.shininess); // Direction de vue fixe
 //        }
+//        // Lumière spot
 //        else if (currentLight.cbPerLight_lightType == LIGHT_TYPE_SPOT)
 //        {
- 
 //            float3 lightColorSpot = currentLight.cbPerLight_color * currentLight.cbPerLight_lightIntensity;
 //            float3 lightPositionSpot = currentLight.cbPerLight_position;
 //            float3 lightDirectionSpot = normalize(currentLight.cbPerLight_direction);
-//            float spotAngle = radians(currentLight.cbPerLight_direction);
+//            float spotAngle = radians(currentLight.cbPerLight_spotAngle); // Corrigez ici
 
 //            float spotIntensity = ComputeSpotIntensity(lightPositionSpot, lightDirectionSpot, float3(pin.UV, 0), spotAngle);
 
-//            finalColor.rgb += ComputeDiffuse(lightDirectionSpot, normal, lightColorSpot, diffuse) * spotIntensity;
-//            finalColor.rgb += ComputePhongSpecular(lightDirectionSpot, normal, float3(0, 0, -1), lightColorSpot, specular, shininess) * spotIntensity;
+//            finalColor.rgb += ComputeDiffuse(lightDirectionSpot, normal, lightColorSpot, currentMaterial.diffuse) * spotIntensity;
+//            finalColor.rgb += ComputePhongSpecular(lightDirectionSpot, normal, float3(0, 0, -1), lightColorSpot, currentMaterial.specular, currentMaterial.shininess) * spotIntensity;
 //        }
+//        // Lumière ponctuelle
 //        else if (currentLight.cbPerLight_lightType == LIGHT_TYPE_POINT)
 //        {
 //            float3 lightColorPoint = currentLight.cbPerLight_color;
-
 //            float3 lightPositionPoint = currentLight.cbPerLight_position;
 
 //            float pointLightIntensity = ComputePointLightIntensity(lightPositionPoint, float3(pin.UV, 0), currentLight.cbPerLight_lightIntensity);
 
 //            float3 lightDirectionPoint = normalize(lightPositionPoint - float3(pin.UV, 0));
-//            float3 diffuseComponent = ComputeDiffuse(lightDirectionPoint, normal, lightColorPoint, diffuse) * pointLightIntensity;
+//            float3 diffuseComponent = ComputeDiffuse(lightDirectionPoint, normal, lightColorPoint, currentMaterial.diffuse) * pointLightIntensity;
 
-//            float3 viewDirection2D = float3(0, 0, -1);
-//            float3 specularComponent = ComputePhongSpecular(lightDirectionPoint, normal, viewDirection2D, lightColorPoint, specular, shininess) * pointLightIntensity;
+//            float3 viewDirection2D = float3(0, 0, -1); // Direction de vue fixe pour 2D
+//            float3 specularComponent = ComputePhongSpecular(lightDirectionPoint, normal, viewDirection2D, lightColorPoint, currentMaterial.specular, currentMaterial.shininess) * pointLightIntensity;
 
 //            finalColor.rgb += diffuseComponent;
 //            finalColor.rgb += specularComponent;
@@ -227,4 +265,3 @@ float4 PS(VSOutput pin) : SV_Target
 
 //    return finalColor;
 //}
-

@@ -98,34 +98,32 @@ float ComputePointLightIntensity(float3 lightPosition, float3 surfacePosition, f
     return lightIntensity * attenuation;
 }
 
-float2 ReconstructWorldPosition(float2 screenPos, float4x4 viewMatrix, float4x4 projectionMatrix)
-{
-    // Convertir les coordonnées d'écran (0 à 1) en coordonnées de clip (-1 à 1)
-    float4 clipPos = float4(screenPos * 2.0f - 1.0f, 1.0f, 1.0f); // Utiliser profondeur 1.0 comme valeur par défaut
-
-    // Passer des coordonnées de clip à l'espace de vue
-    float4x4 invProj = InverseMatrix(projectionMatrix);
-    float4 viewPos = mul(invProj, clipPos);
-    viewPos.xyz /= viewPos.w; // Normaliser les coordonnées
-
-    // Passer des coordonnées de vue à l'espace du monde
-    float4x4 invView = InverseMatrix(viewMatrix);
-    float4 worldPos = mul(invView, viewPos);
-
-    // Renvoie les coordonnées (x, y) dans l'espace du monde
-    return worldPos.xy;
-}
-
-//float3 ReconstructWorldPosition(float2 screenPos, float depth, float4x4 viewMatrix, float4x4 projectionMatrix)
+//float2 ReconstructWorldPosition(float2 screenPos, float4x4 projectionMatrix)
 //{
-//    float4 clipPos = float4(screenPos * 2.0f - 1.0f, depth, 1.0f);
+//    // Convertir les coordonnées d'écran (0 à 1) en coordonnées de clip (-1 à 1)
+//    float4 clipPos = float4(screenPos * 2.0f - 1.0f, 1.0f, 1.0f); // Utiliser profondeur 1.0 comme valeur par défaut
 
-//    // to view space
-//    float4 viewPos = mul(InverseMatrix(projectionMatrix), clipPos);
-//    viewPos /= viewPos.w;
+//    // Passer des coordonnées de clip à l'espace de projection
+//    float4x4 invProj = InverseMatrix(projectionMatrix);
+//    float4 projPos = mul(invProj, clipPos);
+    
+//    // Normaliser les coordonnées pour obtenir la position en espace de l'écran
+//    float2 screenPos2D = projPos.xy / projPos.w;
 
-//    // to world space
-//    float4 worldPos = mul(InverseMatrix(viewMatrix), viewPos);
-
-//    return worldPos.xyz;
+//    // Retourner les coordonnées (x, y) en espace de l'écran
+//    return screenPos2D;
 //}
+
+float3 ReconstructWorldPosition(float2 screenPos, float depth, float4x4 viewMatrix, float4x4 projectionMatrix)
+{
+    float4 clipPos = float4(screenPos * 2.0f - 1.0f, depth, 1.0f);
+
+    // to view space
+    float4 viewPos = mul(InverseMatrix(projectionMatrix), clipPos);
+    viewPos /= viewPos.w;
+
+    // to world space
+    float4 worldPos = mul(InverseMatrix(viewMatrix), viewPos);
+
+    return worldPos.xyz;
+}

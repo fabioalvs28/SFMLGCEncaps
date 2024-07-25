@@ -186,15 +186,15 @@ public:
 	* @return bool(success)
 	************************************************************************************************/
 	bool UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix); //#TODO -> Have possibility to specify camera we want draw with
-	bool CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp,
-		float fieldOfView,
-		float aspectRatio,
-		float nearZ,
-		float farZ,
+	bool CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp, float fieldOfView, 
+		float aspectRatio, 
+		float nearZ, 
+		float farZ, 
+		float viewWidth,  
+		float viewHeight,  
 		GC_PROJECTIONTYPE projType,
 		GCMATRIX& projectionMatrix,
-		GCMATRIX& viewMatrix
-	);
+		GCMATRIX& viewMatrix);
 
 	/************************************************************************************************
 	* @brief Update one object data, using GCWORLDCB Struct, template for update object matrix, and object/layer id in for PixelIdMapping

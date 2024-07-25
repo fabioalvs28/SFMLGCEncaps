@@ -473,11 +473,13 @@ bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATR
 }
 
 // Update per camera constant buffer
-bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp, 
-    float fieldOfView, 
+bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp,
+    float fieldOfView,
     float aspectRatio,
     float nearZ,
     float farZ,
+    float viewWidth,   // Ajoutez ces paramètres
+    float viewHeight,  // Ajoutez ces paramètres
     GC_PROJECTIONTYPE projType,
     GCMATRIX& projectionMatrix,
     GCMATRIX& viewMatrix)
@@ -494,12 +496,13 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
         projectionMatrixXM = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, aspectRatio, nearZ, farZ);
     }
     else {
-        // #TODO make work ortho
-        projectionMatrixXM = DirectX::XMMatrixOrthographicLH(aspectRatio * 10.0f, 10.0f, nearZ, farZ);
+        // Créer une matrice orthographique avec viewWidth et viewHeight
+        projectionMatrixXM = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, nearZ, farZ);
     }
 
-    DirectX::XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrixXM);
-    DirectX::XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrixXM);
+    // Transposer les matrices pour les shaders
+    DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrixXM);
+    DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrixXM);
 
     GCMATRIX storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
     GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
