@@ -4,9 +4,9 @@
 
 //
 #include <iostream>
- #include <Windows.h>
- #include "Window.h"
- //#include "EventSystem.h"
+#include <Windows.h>
+//#include "Window.h"
+//#include "EventSystem.h"
  #include "Log.h"
 #include "Vectors.h"
 #include "GCColor.h"
@@ -54,11 +54,11 @@ float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-    // Initialisation des ressources graphiques
-
+    
     GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
+    
 
-    GCKeyboardInputManager* keys = new GCKeyboardInputManager();
+    // Initialisation des ressources graphiques
     //int flagsLightColor = 0;
     //SET_FLAG(flagsLightColor, HAS_POSITION);
     //SET_FLAG(flagsLightColor, HAS_COLOR);
@@ -70,6 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
     GCScene* pScene = GCScene::Create();
+
     GCGameObject* test1 = pScene->CreateGameObject();
     GCGameObject* test3 = pScene->CreateGameObject();
     GCGameObject* test3bis = pScene->CreateGameObject();
