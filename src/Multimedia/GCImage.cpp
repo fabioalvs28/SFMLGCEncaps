@@ -1,6 +1,7 @@
 #include "GCImage.h"
 #include "BMPHeader.h"
-#include "dds.hpp"
+#include "dds/dds.hpp"
+#include "dds/savedds.h"
 #include "GCFile.h"
 #include "lodepng.h"
 
@@ -406,7 +407,17 @@ bool GCImage::LoadDDS(const std::string& filename)
 	m_rowStride = m_width * 4;
 	m_size = m_rowStride * m_height;
 	m_channels = dds.depth / 8;
-	m_rgba = dds.data;
+	m_rgba.resize(dds.mipmaps.front().size());
+
+	auto& firstMipmap = dds.mipmaps.front();
+	for (int i = 0; i < m_height * m_width * 4; i += 4)
+	{
+		m_rgba[i + 0] = firstMipmap[i + 2];
+		m_rgba[i + 1] = firstMipmap[i + 1];
+		m_rgba[i + 2] = firstMipmap[i + 0];
+		m_rgba[i + 3] = firstMipmap[i + 3];
+	}
+	//memcpy(m_rgba.data(), dds.mipmaps.front().data(), dds.mipmaps.front().size());
 	return true;
 }
 
@@ -550,16 +561,34 @@ bool GCImage::SaveDDS(GCFile* pFile, int* pOutSize)
 	if (pFile == nullptr || m_rgba.data() == nullptr)
 		return false;
 
-	dds::Image dds;
-	auto error = dds::readImage(m_rgba.data(), m_rgba.size(), &dds); // This read a DDS BUFFER, not a pixel buffer, so it cannot save pixel to DDS
+	std::vector<uint8_t> buffer(4);
+	char magic[5] = "DDS ";
+	memcpy(buffer.data(), magic, 4);
 
-	//if there's an error, display it
-	if (error) std::cout << "dds decoder error " << error << std::endl;
+	pFile->Write(buffer);
 
-	pFile->Write(dds.data);
+	DDSURFACEDESC2 ddsd;
+	buffer.resize(sizeof(ddsd));
+	memset(&ddsd, 0, sizeof(ddsd));
+	ddsd.dwSize = sizeof(ddsd);
+	ddsd.dwFlags = 0;
+	ddsd.dwWidth = m_width;
+	ddsd.dwHeight = m_height;
+	ddsd.lPitch = m_width * m_height;
+	ddsd.dwMipMapCount = 0;
+	ddsd.ddpfPixelFormat.dwSize = sizeof(ddsd.ddpfPixelFormat);
+	ddsd.ddpfPixelFormat.dwFlags = DDSF_FOURCC;
+	ddsd.ddpfPixelFormat.dwFourCC = m_bitDepth == 24 ? FOURCC_DXT1 : FOURCC_DXT5;
+	memcpy(buffer.data(), &ddsd, sizeof(ddsd));
+	pFile->Write(buffer);
+
+	int size;
+	auto dds = compress_to_dxt(m_rgba.data(), m_width, m_height, m_bitDepth, &size);
+
+	pFile->Write(dds, size);
 
 	if (pOutSize)
-		*pOutSize = (int)dds.arraySize;
+		*pOutSize = size;
 	return true;
 }
 

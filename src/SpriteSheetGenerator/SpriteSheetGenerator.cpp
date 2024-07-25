@@ -60,7 +60,7 @@ bool SpriteSheetGenerator::sortBySpriteHeight(const Sprite& a, const Sprite& b)
 
 int SpriteSheetGenerator::Packer()
 {
-    SaveFormat saveFormat = SaveFormat::PNG;
+    SaveFormat saveFormat = SaveFormat::DDS;
 
     json data = json::parse(R"({})");
     data["totalImageCount"] = 0;
