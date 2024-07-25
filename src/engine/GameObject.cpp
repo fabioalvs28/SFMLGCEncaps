@@ -5,6 +5,7 @@
 #include "Components.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "RenderManager.h"
 #include "GC.h"
 
 //todo HasTag( const char* tag )
@@ -328,9 +329,12 @@ void GCGameObject::SetLayer( const int layer )
         Component* pComponent = it.second;
         if ( pComponent->IsFlagSet( RENDER ) )
         {
-            pComponent->m_pRenderNode->Delete();
-            pComponent->m_pRenderNode = nullptr;
-            GC::GetActiveRenderManager()->RegisterComponent( pComponent );
+            if ( pComponent->m_pRenderNode != nullptr )
+            {
+                pComponent->m_pRenderNode->Delete();
+                pComponent->m_pRenderNode = nullptr;
+                GC::GetActiveRenderManager()->RegisterComponent( pComponent );
+            }
         }
     }
 }
