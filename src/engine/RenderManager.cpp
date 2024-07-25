@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "../core/framework.h"
+#include "Components.h"
+#include "Scene.h"
 #include "RenderManager.h"
 #include "GC.h"
 #include "GameObject.h"
@@ -9,25 +11,9 @@ using namespace DirectX;
 
 GCRenderManager::GCRenderManager( Window* pWindow )
 {
-
     m_pGraphics = new GCGraphics();
     m_pGraphics->Initialize(pWindow,1920,1080);
     CreateGeometry();
-
-    m_cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
-    m_cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-    m_cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-    //Set Camera
-    float viewWidth = 20.0f;
-    float viewHeight = 20.0f;
-    XMMATRIX projectionMatrix = XMMatrixOrthographicLH(viewWidth, viewHeight, 1.0f, 1000.0f);
-    XMMATRIX viewMatrix = XMMatrixLookAtLH(m_cameraPosition, m_cameraTarget, m_cameraUp);
-    XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
-    XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
-    
-    m_storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
-    m_storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 }
 
 GCRenderManager::~GCRenderManager()
@@ -37,8 +23,8 @@ GCRenderManager::~GCRenderManager()
 void GCRenderManager::Render() // Render : order by layer, and spriteRenderer before Collider.
 {
     m_pGraphics->StartFrame();
-
-    m_pGraphics->UpdateViewProjConstantBuffer(m_storedProjectionMatrix, m_storedViewMatrix);
+    
+    GC::GetActiveScene()->GetMainCamera()->Update();
 
     // Affichage : premier de la liste au prmeier plan.
 

@@ -20,6 +20,7 @@ GCScene::GCScene()
 	
 	m_name = "GCScene";
 	m_active = false;
+	m_pMainCamera = nullptr;
 }
 
 ////////////////////////////////////////////////////
@@ -241,3 +242,8 @@ void GCScene::SetParent( GCScene* pParent )
 /// @return A pointer to the Scene's parent.
 ///////////////////////////////////////////////
 GCScene* GCScene::GetParent() const { return m_pParent; }
+
+
+
+Camera* GCScene::GetMainCamera()
+{ return m_pMainCamera; }

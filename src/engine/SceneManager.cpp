@@ -50,6 +50,9 @@ GCScene* GCSceneManager::CreateScene()
 {
 	GCScene* pScene = new GCScene();
     pScene->m_pNode = m_scenesList.PushBack( pScene );
+	GCGameObject* pMainCameraGameObject = pScene->CreateGameObject();
+	pMainCameraGameObject->m_transform.SetPosition( GCVEC3( 0.0f, 0.0f, -1.0f ) );
+	pScene->m_pMainCamera = pMainCameraGameObject->AddComponent<Camera>(); //! If you delete the GameObject that currently contains the MainCamera, it will make everything stopped working and it will be the end of the world.
 	if ( m_pActiveScene == nullptr )
 		SetActiveScene( pScene );
 	return pScene;

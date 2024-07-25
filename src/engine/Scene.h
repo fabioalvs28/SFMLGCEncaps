@@ -2,6 +2,7 @@
 #include "List.h"
 #include "Map.h"
 
+class Camera;
 class Script;
 
 class GCScene
@@ -39,6 +40,8 @@ public:
     ScriptClass* GetScript();
     template <class ScriptClass>
     void RemoveScript();
+	
+	Camera* GetMainCamera();
 
 protected:
 	void Destroy();
@@ -56,6 +59,7 @@ protected:
 	
 	const char* m_name;
 	bool m_active;
+	Camera* m_pMainCamera;
 	
 	GCList<GCGameObject*> m_gameObjectsList;
     GCMap<unsigned int, Script*> m_scriptsList;

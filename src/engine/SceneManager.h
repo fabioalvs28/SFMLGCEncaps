@@ -1,14 +1,12 @@
 #pragma once
 #include "../core/framework.h"
 
-class GCGameObject;
-class GCScene;
-
 class GCSceneManager
 {
 friend class GCGameObject;
 friend class GCScene;
 friend class GCGameManager;
+friend class GC;
 
 private:
     GCSceneManager() = default;
