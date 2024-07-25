@@ -35,6 +35,16 @@ public:
     void IncrementCBCount() { m_iCount++; }
 	void ResetCBCount() { m_iCount = 0; }
     int GetCount() const { return m_iCount; }
+
+	DirectX::XMFLOAT4 ambientLightColor;
+	DirectX::XMFLOAT4 ambient;
+	DirectX::XMFLOAT4 diffuse;
+	DirectX::XMFLOAT4 specular;
+	float shininess;
+
+	// Material Id
+	float m_materialId;
+
 private:
 	GCRenderContext* m_pRender;
 

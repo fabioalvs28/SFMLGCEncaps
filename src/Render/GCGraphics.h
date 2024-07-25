@@ -23,6 +23,11 @@ struct ResourceCreationResult {
 	GC_GRAPHICS_ERROR errorState = GCRENDER_ERROR_UNKNOWN;
 };
 
+enum GC_PROJECTIONTYPE {
+	ORTHOGRAPHIC,
+	PERSPECTIVE
+};
+
 class GCGraphics
 {
 public:
@@ -181,6 +186,15 @@ public:
 	* @return bool(success)
 	************************************************************************************************/
 	bool UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix); //#TODO -> Have possibility to specify camera we want draw with
+	bool CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp,
+		float fieldOfView,
+		float aspectRatio,
+		float nearZ,
+		float farZ,
+		GC_PROJECTIONTYPE projType,
+		GCMATRIX& projectionMatrix,
+		GCMATRIX& viewMatrix
+	);
 
 	/************************************************************************************************
 	* @brief Update one object data, using GCWORLDCB Struct, template for update object matrix, and object/layer id in for PixelIdMapping
@@ -225,7 +239,7 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4 ambientLightColor, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, float shininess);
+	bool UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4& ambientLightColor, DirectX::XMFLOAT4& ambient, DirectX::XMFLOAT4& diffuse, DirectX::XMFLOAT4& specular, float shininess);
 
 	/************************************************************************************************
 	* @brief Same function as above but with GCMATERIALPROPERTIES data object already completed, without args
@@ -237,7 +251,7 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES objectData);
+	bool UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES& objectData);
 	
 	/************************************************************************************************
 	* @brief Update lights (basic light system), 10 maximum
@@ -248,7 +262,7 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateLights(GCLIGHTSPROPERTIES& objectData);
+	bool UpdateLights(std::vector<GCLIGHT>& objectData);
 
 	/************************************************************************************************
 	* @brief Converts pixel pos to world pos, This function converts the pixels given in args into ndc coordinates
@@ -260,7 +274,7 @@ public:
 	*
 	* @return world matrix of the object at said coordinates(pixelX/pixelY)
 	************************************************************************************************/
-	DirectX::XMFLOAT4X4 ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4 proj, DirectX::XMFLOAT4X4 view);
+	DirectX::XMFLOAT4X4 ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4& proj, DirectX::XMFLOAT4X4& view);
 
 	/************************************************************************************************
 	* @brief Remove the shader resource in ShaderManager, for Release resource, to avoid performance problems, if shader is not used
@@ -328,7 +342,7 @@ public:
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 	void Resize(int width, int height);
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
-	GCModelParser* GetModelParserFactory() const { return m_pModelParserFactory; }
+	GCModelParserFactory* GetModelParserFactory() const { return m_pModelParserFactory; }
 
 	//Other
 	GCShaderUploadBufferBase* GetCbLightPropertiesInstance() const { return m_pCbLightPropertiesInstance; }
@@ -336,6 +350,8 @@ public:
 
 	// Manage inactive slot to push resource
 	std::list<bool> m_lTextureActiveFlags;
+
+	GCFontGeometryLoader* m_pFontGeometryLoader;
 
 private:
 	GCRenderContext* m_pRender;
@@ -352,7 +368,8 @@ private:
 
 	//Vertex Parser
 	GCPrimitiveFactory* m_pPrimitiveFactory;
-	GCModelParser* m_pModelParserFactory;
+	GCModelParserFactory* m_pModelParserFactory;
+
 };
 
 template<typename ShaderTypeConstantBuffer>
