@@ -355,6 +355,52 @@ SoundMixer* SoundMixer::Duplicate()
 }
 
 
+
+
+
+
+
+Camera::Camera()
+{
+	m_position.SetZero();
+	m_target.SetZero();
+	m_up.SetZero();
+	
+	m_viewWidth = 20.0f;
+	m_viewHeight = 20.0f;
+	m_nearZ = 1.0f;
+	m_farZ = 1000.0f;
+	
+	m_viewMatrix.SetIdentity();
+	m_projectionMatrix.SetIdentity();
+}
+
+
+
+void Camera::Update()
+{
+	bool dirty = false;
+	
+	if ( m_position != m_pGameObject->m_transform.m_position )
+	{
+		m_position = m_pGameObject->m_transform.m_position;
+		dirty = true;
+	}
+	
+	if ( m_up != m_pGameObject->m_transform.m_up )
+	{
+		m_up = m_pGameObject->m_transform.m_up;
+		dirty = true;
+	}
+	
+	if ( dirty == false )
+		return;
+	
+	GC::GetActiveRenderManager()->m_pGraphics->CreateViewProjConstantBuffer( m_pGameObject->m_transform.m_position, m_target, m_pGameObject->m_transform.m_up, 0.0f, 0.0f, m_nearZ, m_farZ, m_viewWidth, m_viewHeight, GC_PROJECTIONTYPE::ORTHOGRAPHIC, m_projectionMatrix, m_viewMatrix );
+}
+
+
+
 Camera* Camera::Duplicate()
 {
 	Camera* pNewComponent = new Camera();
