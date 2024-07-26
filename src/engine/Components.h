@@ -255,6 +255,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -269,8 +270,14 @@ protected:
     
     FLAGS GetFlags() override { return UPDATE; }
 
+    void PlayAnimation();
+    void StopAnimation();
+
 protected:
     inline static const int m_ID = ++Component::componentCount;
+    
+private:
+    GCStateManager* m_pGlobalState;
 
 };
 

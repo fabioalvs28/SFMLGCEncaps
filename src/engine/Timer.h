@@ -4,6 +4,8 @@
 #include <profileapi.h>
 #include <timeapi.h>
 
+typedef __int64 I64;
+
 class GCTime
 {
 public:
