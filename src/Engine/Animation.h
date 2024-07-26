@@ -1,6 +1,6 @@
 #pragma once
-#include "Vector.h"
-#include "Frame.h"
+#include "pch.h"
+#include "../core/pch.h"
 
 class Animation
 {

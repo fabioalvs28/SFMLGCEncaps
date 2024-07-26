@@ -26,14 +26,7 @@ GCTime* GC::GetActiveTimer()
 { return m_pActiveGameManager->m_pTimer; }
 
 GCInputSystem* GC::GetActiveInputSystem()
-{
-    return m_pActiveGameManager->m_pInputSystem;
-}
-
-GCTime* GC::GetActiveTimer()
-{
-    return m_pActiveGameManager->m_Time;
-}
+{ return m_pActiveGameManager->m_pInputSystem; }
 
 GCEventManager* GC::GetActiveEventManager()
 { return m_pActiveGameManager->m_pEventManager; }

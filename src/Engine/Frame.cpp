@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "Frame.h"
 
 GCFrame::GCFrame()
 	: m_x(0), m_y(0), m_width(0), m_height(0), m_displayTime(0.0f), m_isFlipingX(false), m_isFlipingY(false) 

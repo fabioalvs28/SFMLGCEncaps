@@ -1,7 +1,4 @@
 #include "pch.h"
-#include "StateManager.h"
-#include "GC.h"
-#include "Timer.h"
 
 void GCStateManager::Update()
 {

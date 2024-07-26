@@ -46,8 +46,18 @@ class GCScene;
 // Managers
 
 class GCRenderManager;
+
 class GCSceneManager;
+
+class GCState;
+class GCStateManager;
+
+class GCFrame;
+class GCAnimation;
+class GCAnimationManager;
+
 class GCUpdateManager;
+
 class GCPhysicManager;
 
 class Layer;
@@ -74,6 +84,7 @@ class GCMouseInputManager;
 class GCInputSystem;
 
 class GCTime;
+
 class GCGameManager;
 
 
@@ -94,6 +105,11 @@ class GC;
 
 #include "RenderManager.h"
 #include "SceneManager.h"
+#include "State.h"
+#include "StateManager.h"
+#include "Frame.h"
+#include "Animation.h"
+#include "AnimationManager.h"
 #include "UpdateManager.h"
 #include "PhysicManager.h"
 #include "Layer.h"

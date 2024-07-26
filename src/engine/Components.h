@@ -265,7 +265,7 @@ protected:
 	Animator() {}
     ~Animator() override {}
     
-    void Update() override;
+    void Update() override {}
     void Destroy() override {}
     Animator* Duplicate() override;
     

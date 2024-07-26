@@ -1,7 +1,5 @@
 #include "pch.h"
 
-#include "Timer.h"
-
 GCTime::GCTime()
 {
 	Reset();

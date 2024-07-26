@@ -1,6 +1,4 @@
 #include "pch.h"
-#include "Animation.h"
-
 
 Animation::Animation() : m_frames(0), m_currentFrameIndex(0), m_currentFrameTime(0) {}
 

@@ -27,7 +27,6 @@ public:
     static GCSceneManager* GetActiveSceneManager();
     static GCScene* GetActiveScene();
     static GCRenderManager* GetActiveRenderManager();
-	static GCTime* GetActiveTimer();
 
 private:
     inline static GCList<GCGameManager*> m_gameManagersList = GCList<GCGameManager*>();
