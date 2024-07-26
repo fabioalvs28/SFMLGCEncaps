@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "GameObject.h"
 
 //todo HasTag( const char* tag )
 

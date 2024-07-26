@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "Components.h"
 #include "../Render/pch.h"
 
 using namespace DirectX;
