@@ -30,7 +30,6 @@ public:
     static GCUpdateManager* GetActiveUpdateManager();
     static GCSceneManager* GetActiveSceneManager();
     static GCRenderManager* GetActiveRenderManager();
-    static GCInputSystem* GetActiveInputSystem();
 	static GCTime* GetActiveTimer();
 
 private:

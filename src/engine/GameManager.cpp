@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "RenderManager.h"
 #include "GC.h"
+#include "Timer.h"
 
 // TODO Timer Implementation
 
@@ -24,7 +25,7 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
     m_pUpdateManager = new GCUpdateManager();
     m_pSceneManager = new GCSceneManager();
     m_pRenderManager = new GCRenderManager( m_pWindow );
-    m_Time->Reset();
+    m_Time = new GCTime();
 }
 
 

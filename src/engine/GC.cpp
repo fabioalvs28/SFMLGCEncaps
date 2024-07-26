@@ -32,7 +32,7 @@ GCInputSystem* GC::GetActiveInputSystem()
 
 GCTime* GC::GetActiveTimer()
 {
-    return &m_pActiveGameManager->m_Time;
+    return m_pActiveGameManager->m_Time;
 }
 
 GCEventManager* GC::GetActiveEventManager()
