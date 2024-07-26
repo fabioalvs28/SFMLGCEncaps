@@ -29,9 +29,6 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_pScene = pScene;
     m_pParent = nullptr;
     
-    m_created = false;
-    m_deleted = false;
-    
     m_globalActive = true;
     m_selfActive = true;
     
@@ -88,13 +85,12 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
 /// 
 /// @note The GameObject's children will also be destroyed.
 /// @note The GameObject will be fully destroyed in the next frame. //? Is it necessary ?
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////// ! To Change
 void GCGameObject::Destroy()
 {
-    ASSERT( m_deleted == false, LOG_FATAL, "Trying to destroy a GameObject that is already going to be destroyed in the next frame" );
-    m_deleted = true;
+	ClearComponents();
     DestroyChildren();
-    GC::GetActiveSceneManager()->AddGameObjectToDeleteQueue( this );
+    m_pScene->DestroyGameObject( this );
 }
 
 
@@ -392,8 +388,8 @@ void GCGameObject::RemoveComponent( int ID )
 {
     Component* pComponent;
     ASSERT( m_componentsList.Find( ID, pComponent ) == true, LOG_FATAL, "Trying to remove a Component from a GameObject that doesn't have it" ); //? The .Find() is necessary for the method to work but it's in an ASSERT ?
-    delete pComponent;
-    m_componentsList.Remove( ID );
+    m_componentsList.Remove( ID ); //? To See ?
+    GC::GetActiveSceneManager()->AddComponentToDeleteQueue( pComponent );
 }
 
 ///////////////////////////////////////////////////////////

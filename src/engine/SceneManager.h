@@ -1,6 +1,9 @@
 #pragma once
 #include "../core/framework.h"
 
+class Component;
+class GCScene;
+
 class GCSceneManager
 {
 friend class GCGameObject;
@@ -21,11 +24,11 @@ private:
 	void UnloadScene( GCScene* pScene );
 	void DestroyScene( GCScene* pScene );
 	
-	void CreateGameObject( GCGameObject* pGameObject );
-	void DestroyGameObject( GCGameObject* pGameObject );
+	void CreateComponent( Component* pComponent );
+	void DestroyComponent( Component* pComponent );
 	
-	void AddGameObjectToDeleteQueue( GCGameObject* pGameObject );
-	void AddGameObjectToCreateQueue( GCGameObject* pGameObject );
+	void AddComponentToCreateQueue( Component* pComponent );
+	void AddComponentToDeleteQueue( Component* pComponent );
 	
 	GCScene* CreateScene();
 
@@ -33,6 +36,6 @@ private:
     GCScene* m_pActiveScene;
 	GCList<GCScene*> m_scenesList;
 	GCList<GCScene*> m_loadedScenesList;
-	GCList<GCGameObject*> m_gameObjectsToDeleteList;
-	GCList<GCGameObject*> m_gameObjectsToCreateList;
+	GCList<Component*> m_componentsToCreateList;
+	GCList<Component*> m_componentsToDeleteList;
 };

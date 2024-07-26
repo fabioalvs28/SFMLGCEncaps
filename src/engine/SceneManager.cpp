@@ -2,31 +2,33 @@
 #include "SceneManager.h"
 
 #include "../core/framework.h"
-#include "Scene.h"
+#include "Components.h"
 #include "GameObject.h"
-
-// todo RenderQueue
-
+#include "Scene.h"
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Creates the GameObjects in the "Creation Queue" and Destroys the GameObjects in the "Deletion Queue".
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Creates the Components in the "Creation Queue" and Destroys the Components in the "Deletion Queue".
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCSceneManager::Update()
 {
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToCreateList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
-		CreateGameObject( pGameObjectNode->GetData() );
-	m_gameObjectsToCreateList.Clear();
+	for ( GCListNode<Component*>* pComponentNode = m_componentsToCreateList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
+		CreateComponent( pComponentNode->GetData() );
+	m_componentsToCreateList.Clear();
 	
-	for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
-		DestroyGameObject( pGameObjectNode->GetData() );
-	m_gameObjectsToDeleteList.Clear();
+	for ( GCListNode<Component*>* pComponentNode = m_componentsToDeleteList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
+		DestroyComponent( pComponentNode->GetData() );
+	m_componentsToDeleteList.Clear();
 }
 
 
 
-
-
+///////////////////////////////////////////////////////////////////////////
+/// @brief Changes the active Scene to the given one.
+/// 
+/// @param pScene A pointer to the Scene to set as the new active Scene.
+///////////////////////////////////////////////////////////////////////////
 void GCSceneManager::SetActiveScene( GCScene* pScene )
 {
 	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to set a nullptr pScene as the active Scene" );
@@ -36,6 +38,9 @@ void GCSceneManager::SetActiveScene( GCScene* pScene )
     m_pActiveScene->m_active = true;
 }
 
+/////////////////////////////////////////////
+/// @return A pointer to the active scene.
+/////////////////////////////////////////////
 GCScene* GCSceneManager::GetActiveScene()
 { return m_pActiveScene; }
 
@@ -52,7 +57,7 @@ GCScene* GCSceneManager::CreateScene()
     pScene->m_pNode = m_scenesList.PushBack( pScene );
 	GCGameObject* pMainCameraGameObject = pScene->CreateGameObject();
 	pMainCameraGameObject->m_transform.SetPosition( GCVEC3( 0.0f, 0.0f, -1.0f ) );
-	pScene->m_pMainCamera = pMainCameraGameObject->AddComponent<Camera>(); //! If you delete the GameObject that currently contains the MainCamera, it will make everything stopped working and it will be the end of the world.
+	pScene->m_pMainCamera = pMainCameraGameObject->AddComponent<Camera>(); //! If you delete the GameObject that currently contains the MainCamera, it will make everything stop working and it will be the end of the world.
 	if ( m_pActiveScene == nullptr )
 		SetActiveScene( pScene );
 	return pScene;
@@ -105,57 +110,53 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 
 
 
-////////////////////////////////////////////////////////////////////
-/// @brief Fully creates the GameObject.
+////////////////////////////////////////////////////////////////////////////
+/// @brief Fully creates the Component by Registering it to the Managers.
 /// 
-/// @param pGameObject A pointer to the GameObject to be created.
-////////////////////////////////////////////////////////////////////
-void GCSceneManager::CreateGameObject( GCGameObject* pGameObject )
+/// @param pComponent A pointer to the Component to create.
+////////////////////////////////////////////////////////////////////////////
+void GCSceneManager::CreateComponent( Component* pComponent )
 {
-	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to create a nullptr pGameObject (SceneManager)" );
-	for ( auto it : pGameObject->m_componentsList )
-		it.second->RegisterToManagers();
-	pGameObject->m_created = true;
+	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to create a nullptr pComponent" );
+	if ( pComponent->IsActive() == true )
+	{
+		pComponent->m_created = true;
+		pComponent->RegisterToManagers();
+	}
 }
 
-//////////////////////////////////////////////////////////////////////
-/// @brief Fully destroys the GameObject.
+///////////////////////////////////////////////////////////////
+/// @brief Fully destroys the Component.
 /// 
-/// @param pGameObject A pointer to the GameObject to be destroyed.
-/// 
-/// @note The GameObject's Components are also destroyed.
-//////////////////////////////////////////////////////////////////////
-void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
+/// @param pComponent A pointer to the Component to destroy.
+///////////////////////////////////////////////////////////////
+void GCSceneManager::DestroyComponent( Component* pComponent )
 {
-	ASSERT( pGameObject!= nullptr, LOG_FATAL, "Trying to destroy a nullptr pGameObject (SceneManager)" );
-	if ( pGameObject->m_pSceneNode != nullptr )
-		pGameObject->RemoveScene();
-	if ( pGameObject->m_pParent != nullptr )
-		pGameObject->RemoveParent();
-	pGameObject->ClearComponents();
-	delete pGameObject;
+	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to destroy a nullptr pComponent" );
+	pComponent->Destroy();
+	delete pComponent;
 }
 
 
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Adds the GameObject to the "Deletion Queue".
+////////////////////////////////////////////////////////////////////////
+/// @brief Adds the Component to the "Creation Queue".
 /// 
-/// @param pGameObject A pointer to the GameObject to be added to the queue.
-///////////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddGameObjectToDeleteQueue( GCGameObject* pGameObject )
+/// @param pComponent A pointer to the Component to add to the queue.
+////////////////////////////////////////////////////////////////////////
+void GCSceneManager::AddComponentToCreateQueue( Component* pComponent )
 {
-	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to add a nullptr pGameObject to the Deletion Queue" );
-	m_gameObjectsToDeleteList.PushBack( pGameObject );
+	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to add a nullptr pComponent to the Creation Queue" );
+	m_componentsToCreateList.PushBack( pComponent );
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Adds the GameObject to the "Creation Queue".
+////////////////////////////////////////////////////////////////////////
+/// @brief Adds the Component to the "Deletion Queue".
 /// 
-/// @param pGameObject A pointer to the GameObject to be added to the queue.
-///////////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddGameObjectToCreateQueue( GCGameObject* pGameObject )
+/// @param pComponent A pointer to the Component to add to the queue.
+////////////////////////////////////////////////////////////////////////
+void GCSceneManager::AddComponentToDeleteQueue( Component* pComponent )
 {
-	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to add a nullptr pGameObject to the Creation Queue" );
-	m_gameObjectsToCreateList.PushBack( pGameObject );
+	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to add a nullptr pComponent to the Deletion Queue" );
+	m_componentsToDeleteList.PushBack( pComponent );
 }

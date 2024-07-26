@@ -45,38 +45,42 @@ void GCScene::Unload() { GC::GetActiveSceneManager()->UnloadScene( this ); }
 /// 
 /// @note The Scene will be deleted the next frame.
 /// @note The Scene's children will also be added to the "Deletion Queue".
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// ! TO CHANGE
 void GCScene::Destroy()
 {
-	GC::GetActiveSceneManager()->DestroyScene( this );
 	DestroyGameObjects(); //? Maybe there will be an issue with destroying every GameObjects including the childs who are already destroyed by their parents.
 	DestroyChildren();
+	GC::GetActiveSceneManager()->DestroyScene( this );
 }
 
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Creates a GameObject and adds it to the "Creation queue".
+/// @brief Creates a GameObject.
 /// 
 /// @return A pointer to the newly created GameObject.
-/// 
-/// @note It will not update nor will it render until the creation is completed (the next frame).
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GCGameObject* GCScene::CreateGameObject()
 {
 	GCGameObject* pGameObject = new GCGameObject( this );
 	pGameObject->m_pSceneNode = m_gameObjectsList.PushBack( pGameObject );
-	GC::GetActiveSceneManager()->AddGameObjectToCreateQueue( pGameObject );
 	return pGameObject;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Creates a GameObject with a given parent.
+/// 
+/// @param pParent A pointer to the GameObject to set as the parent of the new GameObject.
+/// 
+/// @return A pointer to the newly created GameObject.
+/////////////////////////////////////////////////////////////////////////////////////////////
 GCGameObject* GCScene::CreateGameObject( GCGameObject* pParent )
 {
+	ASSERT( pParent != nullptr, LOG_FATAL, "Trying to create a GameObject with a nullptr pParent" );
 	GCGameObject* pGameObject = new GCGameObject( this );
 	pGameObject->m_pParent = pParent;
 	pGameObject->m_pChildNode = pParent->m_childrenList.PushBack( pGameObject );
 	pGameObject->m_globalActive = pParent->IsActive();
-	GC::GetActiveSceneManager()->AddGameObjectToCreateQueue( pGameObject );
 	return pGameObject;
 }
 
@@ -147,13 +151,27 @@ GCGameObject* GCScene::FindGameObjectByID( int ID )
 	}
 	return nullptr;
 }
+/////////////////////////////////////////////////////////////////
+/// @brief Destroys the given GameObject.
+/// 
+/// @param pGameObject A pointer to the GameObject to destroy.
+/////////////////////////////////////////////////////////////////
+void GCScene::DestroyGameObject( GCGameObject* pGameObject )
+{
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to destroy a nullptr pGameObject" );
+	if ( pGameObject->m_pSceneNode != nullptr )
+		pGameObject->RemoveScene();
+	if ( pGameObject->m_pParent != nullptr )
+		pGameObject->RemoveParent();
+	delete pGameObject;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 /// @brief Adds every GameObject in the Scene to the "Deletion Queue".
 /// 
 /// @note The GameObjects will be deleted the next frame.
 /// @note The GameObjects' children will also be added to the "Deletion Queue".
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////// ! TO CHANGE
 void GCScene::DestroyGameObjects()
 {
 	ASSERT( m_gameObjectsList.GetFirstNode() != nullptr, LOG_WARNING, "Trying to destroy GameObjects from an empty Scene" );
@@ -245,5 +263,8 @@ GCScene* GCScene::GetParent() const { return m_pParent; }
 
 
 
+////////////////////////////////////////////////////
+/// @return A pointer to the Scene's main Camera.
+////////////////////////////////////////////////////
 Camera* GCScene::GetMainCamera()
 { return m_pMainCamera; }

@@ -19,6 +19,7 @@ public:
 	static GCScene* Create();
 	void Load();
 	void Unload();
+	void Destroy();
 	
 	void RemoveParent();
 	GCScene* CreateChild();
@@ -29,6 +30,7 @@ public:
 	GCGameObject* CreateGameObject( GCGameObject* pParent );
 	GCGameObject* FindGameObjectByName( const char* name );
 	GCGameObject* FindGameObjectByID( int ID );
+	void DestroyGameObject( GCGameObject* pGameObject );
 	void DestroyGameObjects();
 	
 	void SetParent( GCScene* pParent );
@@ -44,8 +46,6 @@ public:
 	Camera* GetMainCamera();
 
 protected:
-	void Destroy();
-	
 	void MoveGameObjectToScene( GCGameObject* pGameObject );
 	void RemoveGameObjectFromScene( GCGameObject* pGameObject );
 
