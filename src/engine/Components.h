@@ -247,7 +247,6 @@ protected:
 };
 
 
-class GCStateManager;
 
 class Animator : public Component
 {

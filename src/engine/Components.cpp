@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Components.h"
 #include "../Render/pch.h"
-#include "StateManager.h"
 
 using namespace DirectX;
 

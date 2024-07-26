@@ -1,7 +1,5 @@
 #pragma once
 #include "pch.h"
-#include "AnimationManager.h"
-#include "Animation.h"
 
 GCAnimationManager::GCAnimationManager()
 {

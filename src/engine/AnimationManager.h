@@ -1,6 +1,5 @@
 #pragma once
-#include "Vector.h"
-#include "GCString.h"
+#include "../core/pch.h"
 
 class Animation; 
 
