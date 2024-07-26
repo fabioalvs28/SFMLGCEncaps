@@ -41,7 +41,9 @@ class GCMouseInputManager;
 // class GCControllerManager;
 // class GCControllerInputManager;
 
+class GCEvent;
 class GCEventManager;
+
 class GCPhysicManager;
 class GCUpdateManager;
 class GCSceneManager;
@@ -77,6 +79,7 @@ class GCGameObjectTransform;
 #include "GameManager.h"
 #include "Timer.h"
 #include "InputManager.h"
+#include "Event.h"
 #include "EventManager.h"
 #include "PhysicManager.h"
 #include "UpdateManager.h"
