@@ -5,7 +5,7 @@ DirectX::XMFLOAT3 GCUtils::PixelToWorld(float x, float y, UINT windowWidth, UINT
 {
 	float ndcX = (x / windowWidth) * 2.0f - 1.0f;
 	float ndcY = 1.0f - (y / windowHeight) * 2.0f;
-
+	
 	float ndcZ = 0.9f;
 
 	DirectX::XMVECTOR ndcSpacePos = DirectX::XMVectorSet(ndcX, ndcY, ndcZ, 1.0f);
@@ -51,4 +51,20 @@ DirectX::XMMATRIX GCUtils::GCMATRIXToXMMATRIX(const GCMATRIX& mat) {
 		mat._31, mat._32, mat._33, mat._34,
 		mat._41, mat._42, mat._43, mat._44
 	);
+}
+
+
+DirectX::XMMATRIX GCUtils::CreateBillboardMatrix(DirectX::XMVECTOR objectPosition, DirectX::XMVECTOR cameraPosition, DirectX::XMVECTOR cameraUp)
+{
+	DirectX::XMVECTOR lookAt = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(cameraPosition, objectPosition));
+	DirectX::XMVECTOR right = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(cameraUp, lookAt));
+	DirectX::XMVECTOR up = DirectX::XMVector3Cross(lookAt, right);
+
+	DirectX::XMMATRIX billboardMatrix = DirectX::XMMatrixIdentity();
+	billboardMatrix.r[0] = right;
+	billboardMatrix.r[1] = up;
+	billboardMatrix.r[2] = lookAt;
+	billboardMatrix.r[3] = objectPosition;
+
+	return DirectX::XMMatrixTranspose(billboardMatrix);
 }

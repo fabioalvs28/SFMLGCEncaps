@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "GC.h"
 
-#include "GameObject.h"
-#include "Scene.h"
-
 
 
 
@@ -11,7 +8,7 @@
 GCGameManager* GC::CreateGameManager( HINSTANCE hInstance )
 {
     GCGameManager* pGameManager = new GCGameManager( hInstance );
-    pGameManager->m_pNode = m_pGameManagersList.PushBack( pGameManager );
+    pGameManager->m_pNode = m_gameManagersList.PushBack( pGameManager );
     if ( m_pActiveGameManager == nullptr )
         m_pActiveGameManager = pGameManager;
     return pGameManager;
@@ -24,6 +21,9 @@ GCGameManager* GC::GetActiveGameManager()
 
 Window* GC::GetWindow()
 { return m_pActiveGameManager->m_pWindow; }
+
+GCTime* GC::GetActiveTimer()
+{ return m_pActiveGameManager->m_pTimer; }
 
 GCInputSystem* GC::GetActiveInputSystem()
 {
@@ -46,6 +46,9 @@ GCUpdateManager* GC::GetActiveUpdateManager()
 
 GCSceneManager* GC::GetActiveSceneManager()
 { return m_pActiveGameManager->m_pSceneManager; }
+
+GCScene* GC::GetActiveScene()
+{ return m_pActiveGameManager->m_pSceneManager->m_pActiveScene; }
 
 GCRenderManager* GC::GetActiveRenderManager()
 { return m_pActiveGameManager->m_pRenderManager; }

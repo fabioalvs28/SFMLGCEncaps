@@ -1,24 +1,14 @@
 #pragma once
-#include "Define.h"
-#include "Map.h"
+#include "pch.h"
+#include "../core/pch.h"
 
-template <typename T>
-class GCListNode;
-class Script;
 class Window;
-class GCInputSystem;
-class GCEventManager;
-class GCPhysicManager;
-class GCUpdateManager;
-class GCSceneManager;
-class GCRenderManager;
-class GCTime;
 struct HINSTANCE__;
 typedef struct HINSTANCE__ *HINSTANCE;
 
 class GCGameManager
 {
-    friend class GC;
+friend class GC;
 
 public:
     void Run();
@@ -39,18 +29,18 @@ protected:
     void SetActiveGameManager();
 
 protected:
-    GCListNode<GCGameManager*>* m_pNode;
-    Window* m_pWindow;
+    GCListNode<GCGameManager*>* m_pNode; // A pointer to the GameManager's Node in the GC gameManagersList
+    Window* m_pWindow; // A pointer to the GameManager's Window
     
-    GCInputSystem* m_pInputSystem;
-    GCEventManager* m_pEventManager;
-    GCPhysicManager* m_pPhysicManager;
-    GCUpdateManager* m_pUpdateManager;
-    GCSceneManager* m_pSceneManager;
-    GCRenderManager* m_pRenderManager;
-    GCTime* m_Time;
+    GCTime* m_pTimer; // A pointer to the GameManager's Timer
+    GCInputSystem* m_pInputSystem; // A pointer to the GameManager's InputSystem
+    GCEventManager* m_pEventManager; // A pointer to the GameManager's EventManager
+    GCPhysicManager* m_pPhysicManager; // A pointer to the GameManager's PhysicManager
+    GCUpdateManager* m_pUpdateManager; // A pointer to the GameManager's UpdateManager
+    GCSceneManager* m_pSceneManager; // A pointer to the GameManager's SceneManager
+    GCRenderManager* m_pRenderManager; // A pointer to the GameManager's RenderManager
     
-    GCMap<unsigned int, Script*> m_scriptsList;
+    GCMap<unsigned int, Script*> m_scriptsList; // A list of pointers to the GameManager's Scripts
 };
 
 
@@ -58,6 +48,13 @@ protected:
 
 
 
+//////////////////////////////////////////////////////////////////////
+/// @brief Adds a new Script to the GameManager.
+/// 
+/// @tparam ScriptClass The Script class to add to the GameManager.
+/// 
+/// @return A pointer to the newly created Script.
+//////////////////////////////////////////////////////////////////////
 template <class ScriptClass>
 ScriptClass* GCGameManager::AddScript()
 {
@@ -68,6 +65,11 @@ ScriptClass* GCGameManager::AddScript()
     return pScript;
 }
 
+////////////////////////////////////////////////////////////
+/// @tparam ScriptClass The Script class you want to get.
+/// 
+/// @return A pointer to the searched Script.
+////////////////////////////////////////////////////////////
 template <class ScriptClass>
 ScriptClass* GCGameManager::GetScript()
 {
@@ -77,6 +79,11 @@ ScriptClass* GCGameManager::GetScript()
     return nullptr;
 }
 
+///////////////////////////////////////////////////////////////////////////
+/// @brief Removes a Script from the GameManager.
+/// 
+/// @tparam ScriptClass The Script class to remove from the GameManager.
+///////////////////////////////////////////////////////////////////////////
 template <class ScriptClass>
 void GCGameManager::RemoveScript()
 {

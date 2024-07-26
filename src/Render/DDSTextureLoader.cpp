@@ -121,7 +121,7 @@ namespace
 
     typedef public std::unique_ptr<void, handle_closer> ScopedHandle;
 
-    inline HANDLE safe_handle(HANDLE h) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
+    inline HANDLE handle(HANDLE h) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
 
     template<UINT TNameLength>
     inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_ const char(&name)[TNameLength])
@@ -151,13 +151,13 @@ static HRESULT LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
 
     // open the file
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    ScopedHandle hFile(safe_handle(CreateFile2(fileName,
+    ScopedHandle hFile(handle(CreateFile2(fileName,
         GENERIC_READ,
         FILE_SHARE_READ,
         OPEN_EXISTING,
         nullptr)));
 #else
-    ScopedHandle hFile(safe_handle(CreateFileW(fileName,
+    ScopedHandle hFile(handle(CreateFileW(fileName,
         GENERIC_READ,
         FILE_SHARE_READ,
         nullptr,
@@ -2140,6 +2140,8 @@ HRESULT DirectX::CreateDDSTextureFromFile12(
     const wchar_t* szFileName,
     ID3D12Resource** texture,
     ID3D12Resource** textureUploadHeap,
+    int& m_width, 
+    int& m_height,
     size_t maxsize,
     DDS_ALPHA_MODE* alphaMode)
 {
@@ -2180,6 +2182,9 @@ HRESULT DirectX::CreateDDSTextureFromFile12(
         if (alphaMode)
             *alphaMode = GetAlphaMode(header);
     }
+
+    m_width = header->width;
+    m_height = header->height;
 
     return hr;
 }

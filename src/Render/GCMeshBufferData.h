@@ -17,7 +17,6 @@ struct GCMESHBUFFERDATA
     DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
     UINT IndexBufferByteSize = 0;
 
-
     UINT IndexCount = 0;
 
     D3D12_VERTEX_BUFFER_VIEW VertexBufferView()const

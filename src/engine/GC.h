@@ -1,19 +1,14 @@
 #pragma once
-#include "List.h"
-#include "GameManager.h"
+#include "pch.h"
+#include "../core/pch.h"
 
-class GCGameManager;
-class GCPhysicManager;
-class GCUpdateManager;
-class GCEventManager;
-class GCSceneManager;
-class GCRenderManager;
+class Window;
 struct HINSTANCE__;
 typedef struct HINSTANCE__ *HINSTANCE;
 
 class GC
 {
-    friend class GCGameManager;
+friend class GCGameManager;
 
 private:
     GC() = delete;
@@ -24,16 +19,18 @@ public:
 
     static GCGameManager* GetActiveGameManager();
     static Window* GetWindow();
+    static GCTime* GetActiveTimer();
     static GCInputSystem* GetActiveInputSystem();
     static GCEventManager* GetActiveEventManager();
     static GCPhysicManager* GetActivePhysicManager();
     static GCUpdateManager* GetActiveUpdateManager();
     static GCSceneManager* GetActiveSceneManager();
+    static GCScene* GetActiveScene();
     static GCRenderManager* GetActiveRenderManager();
 	static GCTime* GetActiveTimer();
 
 private:
-    inline static GCList<GCGameManager*> m_pGameManagersList = GCList<GCGameManager*>();
+    inline static GCList<GCGameManager*> m_gameManagersList = GCList<GCGameManager*>();
     inline static GCGameManager* m_pActiveGameManager = nullptr;
 
 };

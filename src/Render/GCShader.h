@@ -40,15 +40,18 @@ public:
 	GCRenderContext* m_pRender;
 
 	//
-	ID3D12Resource* m_pRtt = nullptr;
+	ID3D12Resource* m_pRtt;
 
 	// Root parameter dynamic index
-	int m_rootParameter_ConstantBuffer_0 = -1;
-	int m_rootParameter_ConstantBuffer_1 = -1;
-	int m_rootParameter_ConstantBuffer_2 = -1;
-	int m_rootParameter_ConstantBuffer_3 = -1;
-	int m_rootParameter_DescriptorTable_1 = -1;
-	int m_rootParameter_DescriptorTable_2 = -1;
+	int m_rootParameter_ConstantBuffer_0;
+	int m_rootParameter_ConstantBuffer_1;
+	int m_rootParameter_ConstantBuffer_2;
+	int m_rootParameter_ConstantBuffer_3;
+	int m_rootParameter_DescriptorTable_1;
+	int m_rootParameter_DescriptorTable_2;
+	int m_rootParameter_DescriptorTable_3;
+	int m_rootParameter_DescriptorTable_4;
+
 private:
 	// Initialize var
 	D3D12_CULL_MODE m_cullMode;
@@ -70,11 +73,38 @@ private:
 	int m_flagEnabledBits;
 	int m_flagRootParameters;
 
-
-
-
 	//Pso 
-	DXGI_FORMAT m_rtvFormats[4]; 
+	DXGI_FORMAT m_rtvFormats[8]; 
 };
 
+class GCComputeShader
+{
+public:
+	GCComputeShader();
+	~GCComputeShader();
 
+	GC_GRAPHICS_ERROR Initialize(GCRenderContext* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK);
+	void CompileShader();
+	void RootSign();
+	void Pso();
+
+	ID3D12RootSignature* GetRootSign();
+	ID3D12PipelineState* GetPso();
+	ID3DBlob* GetmcsByteCode();
+	ID3DBlob* CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint, const std::string& target);
+	void SaveShaderToFile(ID3DBlob* shaderBlob, const std::wstring& filename);
+	ID3DBlob* LoadShaderFromFile(const std::wstring& filename);
+	void PreCompile(const std::string& filePath, const std::string& csoDestinationPath);
+	GC_GRAPHICS_ERROR Load();
+
+private:
+	ID3D12RootSignature* m_RootSignature;
+	ID3D12PipelineState* m_PSO;
+	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
+	ID3DBlob* m_csByteCode;
+	std::wstring m_csCsoPath;
+	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc;
+	GCRenderContext* m_pRender;
+	int m_flagEnabledBits;
+	D3D12_CULL_MODE m_cullMode;
+};
