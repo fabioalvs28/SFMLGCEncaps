@@ -14,9 +14,11 @@ using namespace DirectX;
 
 Component::Component()
 {
+	m_pGameObject = nullptr;
 	m_globalActive = true;
 	m_selfActive = true;
-	m_pGameObject = nullptr;
+	
+	m_created = false;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
@@ -70,7 +72,7 @@ void Component::Activate()
 	if( m_globalActive == false )
 		return;
 
-	if( IsCreated() == true )
+	if( m_created == true )
 		return;
 
 	RegisterToManagers();
@@ -86,7 +88,7 @@ void Component::Deactivate()
 	if ( m_globalActive == false )
 	    return;
 	
-	if ( IsCreated() == false )
+	if ( m_created == false )
 	    return;
 	
 	UnregisterFromManagers();
@@ -102,7 +104,7 @@ void Component::ActivateGlobal()
 	if ( m_selfActive == false )
 		return;
 	
-	if ( IsCreated() == false )
+	if ( m_created == false )
 		return;
 	
 	RegisterToManagers();
@@ -118,7 +120,7 @@ void Component::DeactivateGlobal()
 	if ( m_selfActive == false )
 		return;
 	
-	if ( IsCreated() == false )
+	if ( m_created == false )
 		return;
 	
 	UnregisterFromManagers();
@@ -132,14 +134,6 @@ void Component::SetActive( bool active )
 		return;
 	}
 	Deactivate();
-}
-
-bool Component::IsCreated()
-{
-	if ( m_pGameObject == nullptr )
-		return true;
-	
-	return m_pGameObject->m_created;
 }
 
 SpriteRenderer::SpriteRenderer()
@@ -159,7 +153,7 @@ SpriteRenderer::SpriteRenderer()
 /////////////////////////////////////////////////
 /// @brief Set Sprite of a GameObject
 /// 
-/// @param texturePath path of the sprite file
+/// @param texturePath name of the sprite file
 /// 
 /// @note The sprite must be in .dds 
 /////////////////////////////////////////////////

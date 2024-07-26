@@ -63,8 +63,6 @@ protected:
     
     void ActivateGlobal();
     void DeactivateGlobal();
-    
-    bool IsCreated();
 
     virtual int GetComponentLayer() { return 0; }
 
@@ -73,6 +71,8 @@ protected:
     GCGameObject* m_pGameObject;
     bool m_globalActive;
     bool m_selfActive;
+    
+    bool m_created;
     
     GCListNode<Component*>* m_pUpdateNode;
     GCListNode<Component*>* m_pPhysicsNode;
