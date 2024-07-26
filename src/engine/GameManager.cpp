@@ -5,6 +5,11 @@
 
 // TODO Timer Implementation
 
+///////////////////////////////////////////////////////////////////
+/// @brief Default constructor for the GameManager class.
+/// 
+/// @param hInstance A pointer to the windows's app's hInstance.
+///////////////////////////////////////////////////////////////////
 GCGameManager::GCGameManager( HINSTANCE hInstance )
 {
     m_pNode = nullptr;
@@ -21,6 +26,11 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Starts this GameManager's GameLoop.
+/// 
+/// @note If there was already an active GameManager, its GameLoop will be stopped by this function.
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCGameManager::Run()
 {
     //! Stop the GameLoop from the old active GameManager if there is one
@@ -28,6 +38,9 @@ void GCGameManager::Run()
     GameLoop();
 }
 
+////////////////////////////
+/// @brief Runs the Game.
+////////////////////////////
 void GCGameManager::GameLoop()
 {
     while ( true )
@@ -43,5 +56,8 @@ void GCGameManager::GameLoop()
 
 
 
+//////////////////////////////////////////////////////////////
+/// @brief Sets this GameManager as the active GameManager.
+//////////////////////////////////////////////////////////////
 void GCGameManager::SetActiveGameManager()
 { GC::m_pActiveGameManager = this; }

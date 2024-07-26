@@ -47,19 +47,19 @@ protected:
 	void RemoveGameObjectFromScene( GCGameObject* pGameObject );
 
 protected:
-	GCListNode<GCScene*>* m_pNode;
-	GCListNode<GCScene*>* m_pLoadedNode;
-	GCListNode<GCScene*>* m_pChildNode;
+	GCListNode<GCScene*>* m_pNode; // A pointer to the Scene's Node in the SceneManager's scenesList
+	GCListNode<GCScene*>* m_pLoadedNode; // A pointer to the Scene's Node in the SceneManager's loadedScenesList
+	GCListNode<GCScene*>* m_pChildNode; // A pointer to the Scene's Node in its Parent's childrenList
 	
-	GCScene* m_pParent;
-	GCList<GCScene*> m_childrenList;
+	GCScene* m_pParent; // A pointer to the Scene's Parent Scene
+	GCList<GCScene*> m_childrenList; // A list of pointers to the Scene's children Scenes
 	
-	const char* m_name;
-	bool m_active;
-	Camera* m_pMainCamera;
+	const char* m_name; // The Scene's name
+	bool m_active; // Whether or not this Scene is the active Scene
+	Camera* m_pMainCamera; // A pointer to the Scene's Main Camera
 	
-	GCList<GCGameObject*> m_gameObjectsList;
-    GCMap<unsigned int, Script*> m_scriptsList;
+	GCList<GCGameObject*> m_gameObjectsList; // A list of pointers to the Scene's GameObjects without Parents
+    GCMap<unsigned int, Script*> m_scriptsList; // A list of pointers to the Scene's Scripts
 
 };
 
@@ -68,6 +68,13 @@ protected:
 
 
 
+////////////////////////////////////////////////////////////////
+/// @brief Adds a new Script to the Scene.
+/// 
+/// @tparam ScriptClass The Script class to add to the Scene.
+/// 
+/// @return A pointer to the newly created Script.
+////////////////////////////////////////////////////////////////
 template <class ScriptClass>
 ScriptClass* GCScene::AddScript()
 {
@@ -78,6 +85,11 @@ ScriptClass* GCScene::AddScript()
     return pScript;
 }
 
+////////////////////////////////////////////////////////////
+/// @tparam ScriptClass The Script class you want to get.
+/// 
+/// @return A pointer to the searched Script.
+////////////////////////////////////////////////////////////
 template <class ScriptClass>
 ScriptClass* GCScene::GetScript()
 {
@@ -87,6 +99,11 @@ ScriptClass* GCScene::GetScript()
     return nullptr;
 }
 
+/////////////////////////////////////////////////////////////////////
+/// @brief Removes a Script from the Scene.
+/// 
+/// @tparam ScriptClass The Script class to remove from the Scene.
+/////////////////////////////////////////////////////////////////////
 template <class ScriptClass>
 void GCScene::RemoveScript()
 {

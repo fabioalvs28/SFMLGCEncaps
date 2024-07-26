@@ -31,6 +31,11 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_transform.m_pGameObject = this;
 }
 
+/////////////////////////////////////////////////////////
+/// @brief Duplicates the GameObject.
+/// 
+/// @return A pointer to the newly created GameObject.
+/////////////////////////////////////////////////////////
 GCGameObject* GCGameObject::Duplicate()
 {
     if ( m_pParent != nullptr )
@@ -48,11 +53,18 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
-        ;
+        it.second->Duplicate();
     
     return pGameObject;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Duplicates the GameObject with a specified Parent.
+/// 
+/// @param pParent A pointer to the GameObject to set as the Parent of this GameObject.
+/// 
+/// @return A pointer to the newly created GameObject.
+//////////////////////////////////////////////////////////////////////////////////////////
 GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
 {
     ASSERT( pParent != nullptr, LOG_FATAL, "Trying to duplicate a GameObject in a nullptr pParent" );
@@ -68,17 +80,14 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
-        ;
+        it.second->Duplicate();
     
     return pGameObject;
 }
 
-//////////////////////////////////////////////////////////////////////
-/// @brief Destroys the GameObject.
-/// 
-/// @note The GameObject's children will also be destroyed.
-/// @note The GameObject will be fully destroyed in the next frame. //? Is it necessary ?
-////////////////////////////////////////////////////////////////////// ! To Change
+///////////////////////////////////////////////////////
+/// @brief Destroys the GameObject and its children.
+///////////////////////////////////////////////////////
 void GCGameObject::Destroy()
 {
 	ClearComponents();
@@ -188,6 +197,9 @@ void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
 
 
 
+///////////////////////////////////////
+/// @brief Activates the GameObject.
+///////////////////////////////////////
 void GCGameObject::Activate()
 {
     if ( IsActive() == false )
@@ -201,6 +213,9 @@ void GCGameObject::Activate()
     }
 }
 
+/////////////////////////////////////////
+/// @brief Deactivates the GameObject.
+/////////////////////////////////////////
 void GCGameObject::Deactivate()
 {
     if ( m_selfActive == true )
@@ -216,6 +231,9 @@ void GCGameObject::Deactivate()
     }
 }
 
+////////////////////////////////////////////////////////////////////
+/// @brief Activates the globalActive property of the GameObject.
+////////////////////////////////////////////////////////////////////
 void GCGameObject::ActivateGlobal()
 {
     if ( m_globalActive == false )
@@ -231,6 +249,9 @@ void GCGameObject::ActivateGlobal()
     }
 }
 
+//////////////////////////////////////////////////////////////////////
+/// @brief Deactivates the globalActive property of the GameObject.
+//////////////////////////////////////////////////////////////////////
 void GCGameObject::DeactivateGlobal()
 {
     if ( m_globalActive == true )
@@ -279,13 +300,13 @@ void GCGameObject::SetParent( GCGameObject* pParent ) //? Why this method ?
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Sets the active state of the GameObject.
+/// @brief Sets the active states of the GameObject.
 /// 
 /// @param active A boolean value indicating whether the GameObject should be active or not.
 /// 
 /// @note The GameObject's children's active state will also be changed.
 ///////////////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::SetActive( const bool active ) //todo If the active argument is true, it should also change the global active state.
+void GCGameObject::SetActive( const bool active )
 {
     if ( active == true )
         Activate();

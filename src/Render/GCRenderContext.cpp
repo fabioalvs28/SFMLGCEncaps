@@ -445,7 +445,7 @@ bool GCRenderContext::PrepareDraw()
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE basicDsv = m_pGCRenderResources->GetDepthStencilViewAddress();
-	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(rtvs.size(), rtvs.data(), FALSE, &basicDsv);
+	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(rtvs.size(), rtvs.data(), FALSE, nullptr);
 
 	
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap };

@@ -31,9 +31,11 @@ private:
 	GCScene* CreateScene();
 
 private:
-    GCScene* m_pActiveScene;
-	GCList<GCScene*> m_scenesList;
-	GCList<GCScene*> m_loadedScenesList;
-	GCList<Component*> m_componentsToCreateList;
-	GCList<Component*> m_componentsToDeleteList;
+    GCScene* m_pActiveScene; // A pointer to the active Scene
+	
+	GCList<GCScene*> m_scenesList; // A list of pointers to every existing Scenes in the Game
+	GCList<GCScene*> m_loadedScenesList; // A list of pointers to every loaded scenes in the Game
+	
+	GCList<Component*> m_componentsToCreateList; // A list of pointers to the Components to create in the next frame
+	GCList<Component*> m_componentsToDeleteList; // A list of pointers to the Components to delete in the next frame
 };

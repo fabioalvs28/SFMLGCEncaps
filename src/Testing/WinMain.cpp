@@ -62,15 +62,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     test3bis->AddComponent<SpriteRenderer>()->SetSprite("gojo.dds");
 
-    test1->m_transform.SetPosition(GCVEC3(2, 0, 0));
+    test1->m_transform.SetPosition(GCVEC3(0, 0, 0));
     
-    test2->m_transform.SetPosition(GCVEC3(-5, 3, 0));
+    test2->m_transform.SetPosition(GCVEC3(0, 0, 0));
     test2->m_transform.SetScale(GCVEC3(5, 8.5, 1));
 
-    test3->m_transform.SetPosition(GCVEC3(5.8, 3, 0));
+    test3->m_transform.SetPosition(GCVEC3(0, 0, 0));
     test3->m_transform.SetScale(GCVEC3(10, 10, 1));
 
-    test3bis->m_transform.SetPosition(GCVEC3(0, -4, 0));
+    test3bis->m_transform.SetPosition(GCVEC3(0, 0, 0));
     test3bis->m_transform.SetScale(GCVEC3(2, 2, 1));
 
     test2->SetLayer(0);

@@ -28,7 +28,7 @@ public:
     static GCRenderManager* GetActiveRenderManager();
 
 private:
-    inline static GCList<GCGameManager*> m_pGameManagersList = GCList<GCGameManager*>();
+    inline static GCList<GCGameManager*> m_gameManagersList = GCList<GCGameManager*>();
     inline static GCGameManager* m_pActiveGameManager = nullptr;
 
 };

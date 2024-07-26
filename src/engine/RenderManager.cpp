@@ -16,13 +16,14 @@ GCRenderManager::~GCRenderManager()
 {
 }
 
-void GCRenderManager::Render() // Render : order by layer, and spriteRenderer before Collider.
+//////////////////////////////////////////////////////////
+/// @brief Calls the Render function of the components.
+//////////////////////////////////////////////////////////
+void GCRenderManager::Render()
 {
     m_pGraphics->StartFrame();
     
     GC::GetActiveScene()->GetMainCamera()->Update();
-
-    // Affichage : premier de la liste au prmeier plan.
 
     for (GCListNode<Component*>* pComponentNode = m_componentList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext())
     {
@@ -32,13 +33,20 @@ void GCRenderManager::Render() // Render : order by layer, and spriteRenderer be
     m_pGraphics->EndFrame();
 }
 
+/////////////////////////////////////////////
+/// @brief Create geometry, (only square).
+/////////////////////////////////////////////
 void GCRenderManager::CreateGeometry()
 {
     m_pPlane = m_pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Blue)).resource;
     //m_pCircle = m_pGraphics->CreateGeometryPrimitive(Circle, XMFLOAT4(Colors::Blue)).resource;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Stores components with RENDER flags, and order them by gameObject Layer and component Layer.
+///
+/// @param pComponent a pointer to the stored component. 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCRenderManager::RegisterComponent( Component* pComponent )
 {   
     GCListNode<Component*>* pFirstNode = m_componentList.GetFirstNode() ;

@@ -8,7 +8,7 @@
 GCGameManager* GC::CreateGameManager( HINSTANCE hInstance )
 {
     GCGameManager* pGameManager = new GCGameManager( hInstance );
-    pGameManager->m_pNode = m_pGameManagersList.PushBack( pGameManager );
+    pGameManager->m_pNode = m_gameManagersList.PushBack( pGameManager );
     if ( m_pActiveGameManager == nullptr )
         m_pActiveGameManager = pGameManager;
     return pGameManager;

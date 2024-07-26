@@ -38,6 +38,11 @@ public:
 
     bool IsKeyPressed(int keyID);
 
+    //////////////////////////////////////////////////
+    /// @brief Return the state of the key
+    ///
+    /// @param keyID key's ID in the keyState list. 
+    //////////////////////////////////////////////////
     BYTE GetKeyState(int keyID) { return m_keyState[keyID]; }
 
     bool GetKeyDown(int key);

@@ -35,12 +35,11 @@ void GCScene::Load() { GC::GetActiveSceneManager()->LoadScene( this ); }
 ////////////////////////////////
 void GCScene::Unload() { GC::GetActiveSceneManager()->UnloadScene( this ); }
 
-/////////////////////////////////////////////////////////////////////////////
-/// @brief Adds the Scene to the "Deletion Queue".
+//////////////////////////////////////////////////////////////////
+/// @brief Destroys the Scene and its children.
 /// 
-/// @note The Scene will be deleted the next frame.
-/// @note The Scene's children will also be added to the "Deletion Queue".
-///////////////////////////////////////////////////////////////////////////// ! TO CHANGE
+/// @note Every GameObject inside of it will also be destroyed.
+//////////////////////////////////////////////////////////////////
 void GCScene::Destroy()
 {
 	DestroyGameObjects(); //? Maybe there will be an issue with destroying every GameObjects including the childs who are already destroyed by their parents.
@@ -50,11 +49,11 @@ void GCScene::Destroy()
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 /// @brief Creates a GameObject.
 /// 
 /// @return A pointer to the newly created GameObject.
-////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 GCGameObject* GCScene::CreateGameObject()
 {
 	GCGameObject* pGameObject = new GCGameObject( this );
@@ -63,9 +62,9 @@ GCGameObject* GCScene::CreateGameObject()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Creates a GameObject with a given parent.
+/// @brief Creates a GameObject with a specified Parent.
 /// 
-/// @param pParent A pointer to the GameObject to set as the parent of the new GameObject.
+/// @param pParent A pointer to the GameObject to set as the Parent of the new GameObject.
 /// 
 /// @return A pointer to the newly created GameObject.
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,12 +160,9 @@ void GCScene::DestroyGameObject( GCGameObject* pGameObject )
 	delete pGameObject;
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-/// @brief Adds every GameObject in the Scene to the "Deletion Queue".
-/// 
-/// @note The GameObjects will be deleted the next frame.
-/// @note The GameObjects' children will also be added to the "Deletion Queue".
-////////////////////////////////////////////////////////////////////////////////// ! TO CHANGE
+/////////////////////////////////////////////////////
+/// @brief Destroys every GameObject in the Scene.
+/////////////////////////////////////////////////////
 void GCScene::DestroyGameObjects()
 {
 	ASSERT( m_gameObjectsList.GetFirstNode() != nullptr, LOG_WARNING, "Trying to destroy GameObjects from an empty Scene" );
@@ -177,9 +173,9 @@ void GCScene::DestroyGameObjects()
 
 
 
-////////////////////////////////////////////////////
-/// @brief Removes itself from it's parent Scene.
-////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+/// @brief Removes the Scene from it's parent Scene.
+///////////////////////////////////////////////////////
 void GCScene::RemoveParent()
 {
     ASSERT( m_pParent != nullptr, LOG_FATAL, "Trying to remove a Scene from a nullptr pParent" );
@@ -209,7 +205,7 @@ GCScene* GCScene::CreateChild()
 /// @warning You can't add the same child twice.
 /// @warning You can't add one of your ancestors as your child.
 /// 
-/// @note It will remove the child previous parent.
+/// @note It will remove the child previous Parent.
 //////////////////////////////////////////////////////////////////
 void GCScene::AddChild( GCScene* pChild )
 {
@@ -228,7 +224,7 @@ void GCScene::AddChild( GCScene* pChild )
 ////////////////////////////////////////////////
 /// @brief Destroys every child of the Scene.
 /// 
-/// @note Does not destroy the parent Scene.
+/// @note Does not destroy the Parent Scene.
 ////////////////////////////////////////////////
 void GCScene::DestroyChildren()
 {
@@ -243,7 +239,7 @@ void GCScene::DestroyChildren()
 ////////////////////////////////////////////////////////
 /// @brief Sets a new parent to this Scene.
 /// 
-/// @param pParent A pointer to the new parent Scene.
+/// @param pParent A pointer to the new Parent Scene.
 ////////////////////////////////////////////////////////
 void GCScene::SetParent( GCScene* pParent )
 {
@@ -252,7 +248,7 @@ void GCScene::SetParent( GCScene* pParent )
 }
 
 ///////////////////////////////////////////////
-/// @return A pointer to the Scene's parent.
+/// @return A pointer to the Scene's Parent.
 ///////////////////////////////////////////////
 GCScene* GCScene::GetParent() const { return m_pParent; }
 
