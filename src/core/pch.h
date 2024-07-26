@@ -15,8 +15,8 @@
 
 // Containers
 template <typename T> class GCQueue;
-template <typename T> class GCList;
 template <typename T> class GCListNode;
+template <typename T> class GCList;
 template <typename T> class GCVector;
 template <typename Key, typename Value> class GCMap;
 
@@ -41,7 +41,7 @@ class GCStateMachine;
 
 // Other
 class GCString;
-class GCColor;
+struct GCColor;
 
 
 
