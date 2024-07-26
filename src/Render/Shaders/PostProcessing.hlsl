@@ -1,5 +1,5 @@
 Texture2D g_texture : register(t0); // Texture d'entrée liée au registre t0
-Texture2D g_meshBufferIdTexture : register(t1); // Deuxième texture d'entrée liée au registre t1
+Texture2D g_pixelIdMapping : register(t1); // Deuxième texture d'entrée liée au registre t1
 SamplerState g_sampler : register(s0); // Sampler lié au registre s0
 
 
@@ -23,7 +23,7 @@ VSOutput VS(float3 posL : POSITION, float2 uv : TEXCOORD)
 float4 PS(VSOutput pin) : SV_Target
 {
     float4 sampledColor = g_texture.Sample(g_sampler, pin.UV);
-    float4 sampledMeshBufferId = g_meshBufferIdTexture.Sample(g_sampler, pin.UV);
+    float4 sampledMeshBufferId = g_pixelIdMapping.Sample(g_sampler, pin.UV);
 
 
     // Decode rgb

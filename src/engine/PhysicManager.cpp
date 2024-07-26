@@ -3,9 +3,6 @@
 
 #include <algorithm>
 
-#include "Log.h"
-#include "GameObject.h"
-
 GCPhysicManager::GCPhysicManager()
 {
 }

@@ -1,9 +1,7 @@
 #pragma once
-#include "Components.h"
+#include "pch.h"
 
 // TODO Turn every methods into private methods
-
-class GCGameObject;
 
 class GCPhysicManager
 {

@@ -2,19 +2,14 @@
 #define NOMINMAX
 #include <windows.h>
 #include <functional>
-#include "../core/framework.h"
-#include "EventManager.h"
+#include "pch.h"
+#include "../core/pch.h"
 
-
-class GCControllerInputManager;
-class GCEventManager;
-class GCInputManager;
 
 
 class GCInputManager
 {
-
-    friend class GCGameManager;
+friend class GCGameManager;
 
 public:
 
@@ -43,6 +38,11 @@ public:
 
     bool IsKeyPressed(int keyID);
 
+    //////////////////////////////////////////////////
+    /// @brief Return the state of the key
+    ///
+    /// @param keyID key's ID in the keyState list. 
+    //////////////////////////////////////////////////
     BYTE GetKeyState(int keyID) { return m_keyState[keyID]; }
 
     bool GetKeyDown(int key);

@@ -140,17 +140,10 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 
 
 // For Release Instance, used in Destructor of resources
-#define SAFE_RELEASE(p) \
-    if ((p) != nullptr) { \
-        (p)->Release(); \
-        (p) = nullptr; \
-    }
 
-#define SAFE_DELETE(p) \
-    if ((p) != nullptr) { \
-        delete (p); \
-        (p) = nullptr; \
-    }
+#define DELETE(p) \
+    delete p; \
+    p = nullptr;
 
 // Define flags
 
@@ -169,6 +162,8 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 #define ROOT_PARAMETER_CB3                      0x08 // 00001000
 #define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1   0x10 // 00010000
 #define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2   0x20 // 00100000
+#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3   0x40 // 01000000
+#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT4   0x80 // 10000000
 
 
 // Check if a specific flag is set
@@ -193,3 +188,6 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 
 // Default Flag
 #define DEFAULT_ROOT_PARAMETER_FLAG 0b00111111 // All Flag
+
+#define RENDER_MODE_2D 0
+#define RENDER_MODE_3D 1

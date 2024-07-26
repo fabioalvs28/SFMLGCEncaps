@@ -1,5 +1,6 @@
 #pragma once
 
+
 class GCRenderContext
 {
 public:
@@ -18,7 +19,8 @@ public:
 	void CreateCommandObjects();
 	void CreateSwapChain();
 
-	void CreatePostProcessingResources();
+	void CreatePostProcessingResources(std::string shaderfilePath, std::string csoDestinationPath);
+	void CreateDeferredLightPassResources();
 
 	// Resize 
 	void ReleasePreviousResources();
@@ -33,8 +35,10 @@ public:
 	bool CloseCommandList();
 
 	bool FlushCommandQueue();
-	void PerformPostProcessing();
-	void PerformPixelIdMapping(GCMesh* pMesh, bool alpha);
+
+	void PerformPostProcessingCS();
+	void PerformDeferredLightPass();
+
 	/**
 	* Pre-Draw.
 	 * @brief
@@ -72,26 +76,72 @@ public:
 	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
 
 
-	void ActiveBasicPostProcessing();
+	void ActiveCSPostProcessing();
 	void ActivePixelIDMapping();
+	void ActiveDeferredLightPass();
 
-	void DesactiveBasicPostProcessing();
+	void DesactiveCSPostProcessing();
 	void DesactivePixelIDMapping();
+	void DesactiveDeferredLightPass();
 
-	// Camera & Light -> Temporarily
+
+	// Camera & Light Upload
 	GCShaderUploadBufferBase* m_pCbCurrentViewProjInstance;
-	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
+	GCUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	inline GCRenderResources* GetRenderResources() { return m_pGCRenderResources; }
+
+	inline void Set2DMode() { m_renderMode = 0; }
+	inline void Set3DMode() { m_renderMode = 1; }
+
+	// DEFERRED SHADING LIGHT RESOURCES
+	// All diferent material used in same frame
+	std::vector<GC_MATERIAL_DSL> m_materialsUsedInFrame;
+	// Upload Material DSL, Send to Deferred Shader
+	GCUploadBuffer<GC_MATERIAL_DSL>* m_pCbMaterialDsl;
+
+	std::string m_PPa;
+	std::string m_PPb;
+	//*
 private:
+	bool m_isPixelIDMappingActivated; 
+	bool m_isDeferredLightPassActivated;
 
-	bool m_isBasicPostProcessingActivated = false;
-	bool m_isPixelIDMappingActivated = false; 
+	bool m_isCSPostProcessingActivated;
 
-	// Post Processing Resources
-	GCShader* m_postProcessingShader;
-	// Object / Layers Buffer Id Resources
-	GCShader* m_objectBufferIdShader;
 
+
+	int m_renderMode = 1; //2D or 3d
+
+	GCShader* m_pPostProcessingShader;
+	GCShader* m_pPixelIdMappingShader;
+	GCShader* m_pDeferredLightPassShader; // need PixelIdMapping pass
+
+	////////////////////////*///////////////////////
+
+	//Post Processing Resources
+	GC_DESCRIPTOR_RESOURCE* m_pPostProcessingRtv;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_postProcessingFrontBufferSrvGpuHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_postProcessingBackBufferSrvGpuHandle;
+
+
+	D3D12_GPU_DESCRIPTOR_HANDLE m_postProcessingUavGpuHandle;
+
+	//Pixel Id Mapping Resources
+	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingBufferRtv; //Rtv Buffer
+	//DSV for PIM -> #TODO Use the principal dsv, in reading 
+	GC_DESCRIPTOR_RESOURCE* m_pPixelIdMappingDepthStencilBuffer; //Rtv Buffer
+
+	// Deferred Shading Light Resources
+	GCUploadBufferBase* m_materialsStructuredBuffer;
+
+	GC_DESCRIPTOR_RESOURCE* m_pDeferredLightPassBufferRtv;
+	GC_DESCRIPTOR_RESOURCE* m_pAlbedoGBuffer;
+	GC_DESCRIPTOR_RESOURCE* m_pWorldPosGBuffer;
+	GC_DESCRIPTOR_RESOURCE* m_pNormalGBuffer;
+
+	////////////////////////*///////////////////////
+
+	// Contain the bare minimum render pipeline resource
 	GCRenderResources* m_pGCRenderResources;
 };

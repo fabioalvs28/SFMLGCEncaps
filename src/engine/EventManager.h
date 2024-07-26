@@ -1,17 +1,10 @@
 #pragma once
 #include <functional>
 
-#include "Event.h"
-#include "Layer.h"
-#include "../core/Map.h"
-#include "../core/Vector.h"
-#include "../core/Queue.h"
-#include "InputManager.h"
+#include "pch.h"
+#include "../core/pch.h"
 
 // TODO Turn every methods into private methods
-
-class GCInputManager;
-class GCKeyboardInputManager;
 
 class GCEventManager
 {

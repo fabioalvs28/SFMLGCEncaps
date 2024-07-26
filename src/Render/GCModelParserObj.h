@@ -1,12 +1,10 @@
 #pragma once
 
-struct ModelInfos;
-
-class GCModelParserObj :public GCModelParser
+class GCModelParserObj :public GCModelParserFactory
 {
 public:
 	GCModelParserObj();
 	~GCModelParserObj();
 
-	ModelInfos* Parse(std::string filePath);
+	GC_MODELINFOS* Parse(std::string filePath);
 };

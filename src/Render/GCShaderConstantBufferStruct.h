@@ -7,6 +7,7 @@ struct GCWORLDCB : GCSHADERCB
 {
     DirectX::XMFLOAT4X4 world; 
     float objectId;
+    float materialId;
 };
 
 struct GCVIEWPROJCB : GCSHADERCB
@@ -25,6 +26,8 @@ struct GCMATERIALPROPERTIES : GCSHADERCB
     float padding[3];
 };
 
+
+
 struct GCLIGHT
 {
     DirectX::XMFLOAT3 position;
@@ -38,7 +41,20 @@ struct GCLIGHT
     float padding3[2];    
 };
 
-struct GCLIGHTSPROPERTIES : GCSHADERCB
+//struct GCLIGHTSPROPERTIES : GCSHADERCB
+//{
+//    GCLIGHT lights[10]; 
+//};
+
+
+//Deferred Shading Light
+struct GC_MATERIAL_DSL : GCSHADERCB
 {
-    GCLIGHT lights[10]; 
+    DirectX::XMFLOAT4 ambientLightColor; // 16 bytes
+    DirectX::XMFLOAT4 ambient;            // 16 bytes
+    DirectX::XMFLOAT4 diffuse;            // 16 bytes
+    DirectX::XMFLOAT4 specular;           // 16 bytes
+    float shininess;                      // 4 bytes
+    float materialId;                    // 4 bytes
+    uint32_t padding[2];                 // Padding to align the size to 16 bytes
 };
