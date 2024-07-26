@@ -1,21 +1,14 @@
 #pragma once
-#include "List.h"
+#include "pch.h"
+#include "../core/pch.h"
 
-class GCGameManager;
 class Window;
-class GCInputSystem;
-class GCPhysicManager;
-class GCUpdateManager;
-class GCEventManager;
-class GCSceneManager;
-class GCScene;
-class GCRenderManager;
 struct HINSTANCE__;
 typedef struct HINSTANCE__ *HINSTANCE;
 
 class GC
 {
-    friend class GCGameManager;
+friend class GCGameManager;
 
 private:
     GC() = delete;

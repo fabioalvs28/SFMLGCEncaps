@@ -1,17 +1,13 @@
 #pragma once
-#include "../core/framework.h"
+#include "pch.h"
+#include "../core/pch.h"
 #include "../Render/pch.h"
-
-#include "GCColor.h"
-#include "Map.h"
 
 using namespace DirectX;
 
 // TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
 // TODO Make sure IDs are handled differently
-
-class GCGameObject;
 
 
 

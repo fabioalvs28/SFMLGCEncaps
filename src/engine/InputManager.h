@@ -2,8 +2,8 @@
 #define NOMINMAX
 #include <windows.h>
 #include <functional>
-#include "../core/framework.h"
-#include "EventManager.h"
+#include "pch.h"
+#include "../core/pch.h"
 
 
 

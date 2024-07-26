@@ -1,11 +1,6 @@
 #include "pch.h"
 #include "GC.h"
 
-#include "GameObject.h"
-#include "Scene.h"
-#include "SceneManager.h"
-#include "GameManager.h"
-
 
 
 

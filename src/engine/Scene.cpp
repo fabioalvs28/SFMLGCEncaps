@@ -1,11 +1,6 @@
 #include "pch.h"
 #include "Scene.h"
 
-#include "Components.h"
-#include "GameObject.h"
-#include "SceneManager.h"
-#include "GC.h"
-
 
 ////////////////////////////////////////////////////////
 /// @brief Default constructor for the GCScene class.

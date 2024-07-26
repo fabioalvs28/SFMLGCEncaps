@@ -1,9 +1,6 @@
 #pragma once
-#include "List.h"
-#include "Map.h"
-
-class Camera;
-class Script;
+#include "pch.h"
+#include "../core/pch.h"
 
 class GCScene
 {

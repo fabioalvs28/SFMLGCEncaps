@@ -1,13 +1,6 @@
 #pragma once
-#include "Define.h"
-#include "Vector.h"
-#include "Map.h"
-#include "List.h"
-#include "GameObjectTransform.h"
-#include "Components.h"
-#include "GC.h"
-
-class GCScene;
+#include "pch.h"
+#include "../core/pch.h"
 
 
 

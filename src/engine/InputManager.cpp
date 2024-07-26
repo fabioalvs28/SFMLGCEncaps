@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "InputManager.h"
+
 #include <xinput.h>
 #include <math.h>
 #pragma comment(lib,"xinput.lib")
-#include "../core/framework.h"
 #include <vector>
 
 

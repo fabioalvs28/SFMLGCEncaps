@@ -6,26 +6,7 @@
 #include <iostream>
  #include <Windows.h>
  #include "Window.h"
- //#include "EventSystem.h"
- #include "Log.h"
-#include "Vectors.h"
-#include "GCColor.h"
-#include "Quaternion.h"
-#include "Matrix.h"
-#include "Transform.h"
-#include "Components.h"
-#include "GameObject.h"
-#include "Scene.h"
-#include "SceneManager.h"
-#include "GameManager.h"
-#include "GC.h"
-#include "RenderManager.h"
-#include "Components.h"
-#include "InputManager.h"
 //#include "SFML/Graphics.hpp"
-
-#include "PhysicManager.h"
-#include "Log.h"
 
 
 CREATE_SCRIPT_START( Example )

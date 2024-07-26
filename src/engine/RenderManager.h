@@ -1,5 +1,5 @@
 #pragma once
-#include "Components.h"
+#include "pch.h"
 #include "../Render/pch.h"
 
 using namespace DirectX;

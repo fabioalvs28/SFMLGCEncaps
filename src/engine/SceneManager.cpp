@@ -1,11 +1,6 @@
 #include "pch.h"
 #include "SceneManager.h"
 
-#include "../core/framework.h"
-#include "Components.h"
-#include "GameObject.h"
-#include "Scene.h"
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

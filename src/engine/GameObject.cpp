@@ -1,13 +1,6 @@
 #include "pch.h"
 #include "GameObject.h"
 
-#include "GameObjectTransform.h"
-#include "Components.h"
-#include "Scene.h"
-#include "SceneManager.h"
-#include "RenderManager.h"
-#include "GC.h"
-
 //todo HasTag( const char* tag )
 
 

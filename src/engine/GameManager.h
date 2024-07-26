@@ -1,23 +1,14 @@
 #pragma once
-#include "Define.h"
-#include "Map.h"
+#include "pch.h"
+#include "../core/pch.h"
 
-template <typename T>
-class GCListNode;
-class Script;
 class Window;
-class GCInputSystem;
-class GCEventManager;
-class GCPhysicManager;
-class GCUpdateManager;
-class GCSceneManager;
-class GCRenderManager;
 struct HINSTANCE__;
 typedef struct HINSTANCE__ *HINSTANCE;
 
 class GCGameManager
 {
-    friend class GC;
+friend class GC;
 
 public:
     void Run();

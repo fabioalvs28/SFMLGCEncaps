@@ -1,9 +1,6 @@
 #pragma once
-#include "Vectors.h"
-#include "Matrix.h"
-#include "Transform.h"
-
-class GCGameObject;
+#include "pch.h"
+#include "../core/pch.h"
 
 struct GCGameObjectTransform: public GCTransform
 {

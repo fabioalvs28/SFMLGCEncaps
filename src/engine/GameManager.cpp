@@ -2,13 +2,6 @@
 #include "GameManager.h"
 
 #include "../Render/pch.h"
-#include "InputManager.h"
-#include "EventManager.h"
-#include "PhysicManager.h"
-#include "UpdateManager.h"
-#include "SceneManager.h"
-#include "RenderManager.h"
-#include "GC.h"
 
 // TODO Timer Implementation
 

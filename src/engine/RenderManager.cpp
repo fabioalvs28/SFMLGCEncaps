@@ -1,11 +1,7 @@
 #include "pch.h"
-#include "../core/framework.h"
-#include "Components.h"
-#include "Scene.h"
 #include "RenderManager.h"
-#include "GC.h"
-#include "GameObject.h"
-#include "../render/pch.h"
+
+#include "../core/pch.h"
 
 using namespace DirectX;
 

@@ -1,7 +1,6 @@
 #pragma once
-#include "List.h"
-
-class Component;
+#include "pch.h"
+#include "../core/pch.h"
 
 class GCUpdateManager
 {

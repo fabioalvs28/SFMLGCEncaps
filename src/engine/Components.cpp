@@ -1,11 +1,5 @@
 #include "pch.h"
 #include "Components.h"
-#include "Log.h"
-#include "UpdateManager.h"
-#include "PhysicManager.h"
-#include "RenderManager.h"
-#include "GC.h"
-#include "GameObject.h"
 #include "../Render/pch.h"
 
 using namespace DirectX;

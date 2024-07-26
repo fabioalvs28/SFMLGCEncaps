@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "UpdateManager.h"
 
-#include "Components.h"
-
 
 
 void GCUpdateManager::Update()

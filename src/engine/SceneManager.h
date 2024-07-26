@@ -1,8 +1,6 @@
 #pragma once
-#include "../core/framework.h"
-
-class Component;
-class GCScene;
+#include "pch.h"
+#include "../core/pch.h"
 
 class GCSceneManager
 {
