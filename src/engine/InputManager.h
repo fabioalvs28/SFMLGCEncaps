@@ -6,15 +6,10 @@
 #include "EventManager.h"
 
 
-class GCControllerInputManager;
-class GCEventManager;
-class GCInputManager;
-
 
 class GCInputManager
 {
-
-    friend class GCGameManager;
+friend class GCGameManager;
 
 public:
 
