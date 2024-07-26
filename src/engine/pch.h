@@ -23,38 +23,9 @@ typedef unsigned __int64 UI64;
 
 
 
-// Singleton
-
-class GC;
-
-
-
-// Managers
-
-class GCGameManager;
-class GCTime;
-
-class GCInputSystem;
-class GCInputManager;
-class GCKeyboardInputManager;
-class GCMouseInputManager;
-// class GCControllerManager;
-// class GCControllerInputManager;
-
-class GCEvent;
-class GCEventManager;
-
-class GCPhysicManager;
-class GCUpdateManager;
-class GCSceneManager;
-class GCRenderManager;
-
-
-
 // Gameplay classes
 
-class GCScene;
-class GCGameObject;
+struct GCGameObjectTransform;
 
 class Component;
 class SpriteRenderer;
@@ -67,28 +38,71 @@ class SoundMixer;
 class Camera;
 class Script;
 
-class GCGameObjectTransform;
+class GCGameObject;
+class GCScene;
+
+
+
+// Managers
+
+class GCRenderManager;
+class GCSceneManager;
+class GCUpdateManager;
+class GCPhysicManager;
+
+class Layer;
+class UILayer;
+enum class GCEventType;
+enum class GCMousebutton;
+class GCEvent;
+class GCEventDispatcher;
+class GCMouseButtonPressed;
+class GCMouseMoveEvent;
+class GCWindowCloseEvent;
+class GCWindowResizeEvent;
+class GCKeyEvent;
+class GCKeyPressedEvent;
+class GCKeyReleasedEvent;
+class ComponentAddedEvent;
+class GCEventManager;
+
+class GCInputManager;
+class GCKeyboardInputManager;
+class GCMouseInputManager;
+// class GCControllerManager;
+// class GCControllerInputManager;
+class GCInputSystem;
+
+class GCTime;
+class GCGameManager;
+
+
+
+// Singleton
+
+class GC;
 
 
 
 
 
 
-#include "GC.h"
+#include "GameObjectTransform.h"
+#include "Components.h"
+#include "GameObject.h"
+#include "Scene.h"
 
-#include "GameManager.h"
-#include "Timer.h"
-#include "InputManager.h"
+#include "RenderManager.h"
+#include "SceneManager.h"
+#include "UpdateManager.h"
+#include "PhysicManager.h"
+#include "Layer.h"
 #include "Event.h"
 #include "EventManager.h"
-#include "PhysicManager.h"
-#include "UpdateManager.h"
-#include "SceneManager.h"
-#include "RenderManager.h"
+#include "InputManager.h"
+#include "Timer.h"
+#include "GameManager.h"
 
-#include "Scene.h"
-#include "GameObject.h"
-#include "Components.h"
-#include "GameObjectTransform.h"
+#include "GC.h"
 
 #endif //ENGINE_PCH_H
