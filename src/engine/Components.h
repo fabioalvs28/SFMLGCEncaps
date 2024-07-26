@@ -1,17 +1,13 @@
 #pragma once
-#include "../core/framework.h"
+#include "pch.h"
+#include "../core/pch.h"
 #include "../Render/pch.h"
-
-#include "GCColor.h"
-#include "Map.h"
 
 using namespace DirectX;
 
 // TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
 // TODO Make sure IDs are handled differently
-
-class GCGameObject;
 
 
 
@@ -63,8 +59,6 @@ protected:
     
     void ActivateGlobal();
     void DeactivateGlobal();
-    
-    bool IsCreated();
 
     virtual int GetComponentLayer() { return 0; }
 
@@ -73,6 +67,8 @@ protected:
     GCGameObject* m_pGameObject;
     bool m_globalActive;
     bool m_selfActive;
+    
+    bool m_created;
     
     GCListNode<Component*>* m_pUpdateNode;
     GCListNode<Component*>* m_pPhysicsNode;
@@ -93,13 +89,11 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
-    
     void SetSprite( std::string fileName);
     void SetColor() {};
     
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }
-
 
 protected:
 	SpriteRenderer();
@@ -175,7 +169,6 @@ public:
     GCVEC2 GetSize() { return m_size; }
     void SetSize( GCVEC2 size ) { m_size = size; }
 
-
 protected:
     BoxCollider();
     ~BoxCollider() override {}
@@ -207,7 +200,6 @@ public:
     float GetRadius() { return m_radius; }
     void SetRadius( float radius ) { m_radius = radius; }
 
-
 protected:
     CircleCollider() {}
     ~CircleCollider() override {}
@@ -238,7 +230,6 @@ public:
     
     void AddForce( GCVEC2 force ) {}
 
-
 protected:
     RigidBody();
     ~RigidBody() override {}
@@ -268,7 +259,6 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-
 protected:
 	Animator() {}
     ~Animator() override {}
@@ -296,7 +286,6 @@ friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
-
 
 protected:
 	SoundMixer() {}
@@ -326,11 +315,11 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-
 protected:
-    Camera() {}
+    Camera();
     ~Camera() override {}
     
+    void Update() override;
     void Destroy() override {}
     Camera* Duplicate() override;
     
@@ -338,6 +327,18 @@ protected:
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
+    
+    GCVEC3 m_position;
+    GCVEC3 m_target;
+    GCVEC3 m_up;
+    
+    float m_nearZ;
+    float m_farZ;
+    float m_viewWidth;
+    float m_viewHeight;
+    
+    GCMATRIX m_viewMatrix;
+    GCMATRIX m_projectionMatrix;
 
 };
 

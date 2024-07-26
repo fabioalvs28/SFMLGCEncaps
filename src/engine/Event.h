@@ -3,8 +3,8 @@
 #include <typeinfo>
 #include <functional>
 
-#include "../core/GCString.h"
-#include "Components.h"
+#include "pch.h"
+#include "../core/pch.h"
 
 //macro to bind the event function
 //Reminders: if use in a class, use GC_BIND_EVENT_FN(ClassName::FunctionName)

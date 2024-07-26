@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "InputManager.h"
+
 #include <xinput.h>
 #include <math.h>
 #pragma comment(lib,"xinput.lib")
-#include "../core/framework.h"
 #include <vector>
 
 
@@ -27,6 +27,9 @@ GCInputSystem::GCInputSystem()
     GetConnectedControllers();
 }
 
+/////////////////////////////////////////////////////////////////////////
+/// @brief Calls the Update function of the differents inputs Manager.
+/////////////////////////////////////////////////////////////////////////
 void GCInputSystem::Update()
 {
     m_pKeyboard->Update();
@@ -53,6 +56,9 @@ void GCInputSystem::GetConnectedControllers()
     }
 }
 
+////////////////////////////////////////////////////////////
+/// @brief Initialize callbacks list of the input manager
+////////////////////////////////////////////////////////////
 void GCInputManager::InitializeCallbacks()
 {
     callbacks = std::vector<std::vector<std::function<void(GCEvent&)>>>(GetStateSize(),
@@ -67,6 +73,13 @@ GCKeyboardInputManager::GCKeyboardInputManager() : GCInputManager()
     m_keyState = std::vector<BYTE>(GetIDSize(), GCKeyboardInputManager::NONE);
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls the Render function of the components.
+///
+/// @param keyID key's ID in the callbacks list and key_state list.
+///
+/// @param keyState the stte of the key when you want the function to be called.
+///////////////////////////////////////////////////////////////////////////////////
 void GCKeyboardInputManager::UnbindAction(int keyID, BYTE keyState)
 {
     if (keyState >= callbacks.size()) {
@@ -82,6 +95,13 @@ void GCKeyboardInputManager::UnbindAction(int keyID, BYTE keyState)
     stateCallbacks[keyID] = nullptr;
 }
 
+////////////////////////////////////////////////////////////////
+/// @brief Update the state of the key in the key_state list.
+///
+/// @param index The index of the pressed key. 
+///
+/// @param sate The new state of the key.
+////////////////////////////////////////////////////////////////
 void GCKeyboardInputManager::SendEvent(int index, BYTE state)
 {
     //if (state == KeyboardState::DOWN)
@@ -95,6 +115,11 @@ void GCKeyboardInputManager::SendEvent(int index, BYTE state)
     m_keyState[index] = state;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls the function if in the callbacks list if a function is bind to the event.
+///
+/// @param ev The called key pressed event. 
+/////////////////////////////////////////////////////////////////////////////////////////////
 void GCKeyboardInputManager::OnKeyPressed(GCKeyPressedEvent& ev)
 {
     auto it = callbacks[ev.GetKeyState()][ev.GetKeyID()];
@@ -102,6 +127,9 @@ void GCKeyboardInputManager::OnKeyPressed(GCKeyPressedEvent& ev)
     it(ev);
 }
 
+//////////////////////////////////////////////////////////
+/// @brief 
+//////////////////////////////////////////////////////////
 void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
 {
     auto it = callbacks[ev.GetKeyState()][ev.GetKeyID()];
@@ -109,6 +137,11 @@ void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
     it(ev);
 }
 
+///////////////////////////////////////////////////////////////////
+/// @brief Suscribe to an event with the event type and the key. 
+///
+/// @param eventmanager a pointer to the eventManager.
+///////////////////////////////////////////////////////////////////
 void GCKeyboardInputManager::SubscriEvent(GCEventManager* eventmanager)
 {
     m_eventManager = eventmanager;
@@ -116,6 +149,9 @@ void GCKeyboardInputManager::SubscriEvent(GCEventManager* eventmanager)
     m_eventManager->Subscribe(GCEventType::KeyReleased, this, &GCKeyboardInputManager::OnKeyReleased); 
 }
 
+////////////////////////////////////////////////////////
+/// @brief Update all the keys in the key_state list.
+////////////////////////////////////////////////////////
 void GCKeyboardInputManager::Update()
 {
     for (int i = 0; i < KeyboardID::KEYIDCOUNT; i++)
@@ -166,7 +202,7 @@ void GCKeyboardInputManager::Update()
 ////////////////////////////////////////////////////////////////////////////////////
 /// @brief Return true if the given key have been pressed or relased in the frame
 /// 
-/// @param keyID : key's index in the list. 
+/// @param keyID key's index in the list. 
 ////////////////////////////////////////////////////////////////////////////////////
 bool GCKeyboardInputManager::IsKeyPressed(int keyID)
 {
@@ -221,6 +257,7 @@ bool GCKeyboardInputManager::GetKeyUp(int key)
 
 #pragma region MouseInput Manager
 
+
 GCMouseInputManager::GCMouseInputManager()
 {
     for (int i = 0 ; i < MouseID::MOUSEIDCOUNT; i++)
@@ -229,6 +266,11 @@ GCMouseInputManager::GCMouseInputManager()
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Return true if the given key have been pressed or relased in the frame
+/// 
+/// @param keyID key's index in the list. 
+////////////////////////////////////////////////////////////////////////////////////
 bool GCMouseInputManager::IsKeyPressed(int keyID)
 {
     if (m_buttonState[keyID] != GCMouseInputManager::NONE)
@@ -236,7 +278,11 @@ bool GCMouseInputManager::IsKeyPressed(int keyID)
     return false;
 }
 
-
+///////////////////////////////////////////////////////
+/// @brief Return true if the given key is DOWN  
+/// 
+/// @param key key's index in the list. 
+///////////////////////////////////////////////////////
 bool GCMouseInputManager::GetKeyDown(int key)
 {
     if (m_buttonState[key] == GCMouseInputManager::DOWN)
@@ -274,12 +320,21 @@ bool GCMouseInputManager::GetKeyUp(int key)
     return false;
 }
 
+////////////////////////////////////////////////////////////////
+/// @brief Update the state of the key in the key_state list.
+///
+/// @param index The index of the pressed key. 
+///
+/// @param sate The new state of the key.
+////////////////////////////////////////////////////////////////
 void GCMouseInputManager::SendEvent(int index, BYTE state)
 {
    m_buttonState[index] = state;
 }
 
-
+/////////////////////////////////////////////////////////
+/// @brief Update all the keys in the buttonList list.
+/////////////////////////////////////////////////////////
 void GCMouseInputManager::Update()
 {
     for (int i = 0; i < MouseID::MOUSEIDCOUNT; i++)

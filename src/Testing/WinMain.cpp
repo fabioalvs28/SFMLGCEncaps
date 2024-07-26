@@ -4,28 +4,10 @@
 
 //
 #include <iostream>
-#include <Windows.h>
-//#include "Window.h"
-//#include "EventSystem.h"
- #include "Log.h"
-#include "Vectors.h"
-#include "GCColor.h"
-#include "Quaternion.h"
-#include "Matrix.h"
-#include "Transform.h"
-#include "Components.h"
-#include "GameObject.h"
-#include "Scene.h"
-#include "SceneManager.h"
-#include "GameManager.h"
-#include "GC.h"
-#include "RenderManager.h"
-#include "Components.h"
-#include "InputManager.h"
-//#include "SFML/Graphics.hpp"
+ #include <Windows.h>
+ #include "Window.h"
 
-#include "PhysicManager.h"
-#include "Log.h"
+//#include "SFML/Graphics.hpp"
 
 
 CREATE_SCRIPT_START( Example )
@@ -44,13 +26,6 @@ CREATE_SCRIPT_END
 #include "../render/pch.h"
 
 using namespace DirectX;
-
-// Définition des variables globales pour la caméra
-XMVECTOR cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
-XMVECTOR cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -89,15 +64,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     test3bis->AddComponent<SpriteRenderer>()->SetSprite("gojo.dds");
 
-    test1->m_transform.SetPosition(GCVEC3(2, 0, 0));
+    test1->m_transform.SetPosition(GCVEC3(0, 0, 0));
     
-    test2->m_transform.SetPosition(GCVEC3(-5, 3, 0));
+    test2->m_transform.SetPosition(GCVEC3(0, 0, 0));
     test2->m_transform.SetScale(GCVEC3(5, 8.5, 1));
 
-    test3->m_transform.SetPosition(GCVEC3(5.8, 3, 0));
+    test3->m_transform.SetPosition(GCVEC3(0, 0, 0));
     test3->m_transform.SetScale(GCVEC3(10, 10, 1));
 
-    test3bis->m_transform.SetPosition(GCVEC3(0, -4, 0));
+    test3bis->m_transform.SetPosition(GCVEC3(0, 0, 0));
     test3bis->m_transform.SetScale(GCVEC3(2, 2, 1));
 
     test2->SetLayer(0);
