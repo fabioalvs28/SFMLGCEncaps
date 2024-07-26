@@ -22,6 +22,9 @@ GCGameManager* GC::GetActiveGameManager()
 Window* GC::GetWindow()
 { return m_pActiveGameManager->m_pWindow; }
 
+GCTime* GC::GetActiveTimer()
+{ return m_pActiveGameManager->m_pTimer; }
+
 GCInputSystem* GC::GetActiveInputSystem()
 { return m_pActiveGameManager->m_pInputSystem; }
 

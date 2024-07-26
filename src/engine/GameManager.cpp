@@ -3,8 +3,6 @@
 
 #include "../Render/pch.h"
 
-// TODO Timer Implementation
-
 ///////////////////////////////////////////////////////////////////
 /// @brief Default constructor for the GameManager class.
 /// 
@@ -16,6 +14,7 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
     m_pWindow = new Window( hInstance );
     m_pWindow->Initialize();
     
+    m_pTimer = new GCTime();
     m_pInputSystem = new GCInputSystem();
     m_pEventManager = new GCEventManager();
     m_pPhysicManager = new GCPhysicManager();
@@ -45,6 +44,7 @@ void GCGameManager::GameLoop()
 {
     while ( true )
     {
+        m_pTimer->Update();
         m_pInputSystem->Update();
         m_pPhysicManager->Update();
         m_pUpdateManager->Update();

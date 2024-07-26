@@ -19,6 +19,7 @@ public:
 
     static GCGameManager* GetActiveGameManager();
     static Window* GetWindow();
+    static GCTime* GetActiveTimer();
     static GCInputSystem* GetActiveInputSystem();
     static GCEventManager* GetActiveEventManager();
     static GCPhysicManager* GetActivePhysicManager();

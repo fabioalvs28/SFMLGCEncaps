@@ -32,6 +32,7 @@ protected:
     GCListNode<GCGameManager*>* m_pNode; // A pointer to the GameManager's Node in the GC gameManagersList
     Window* m_pWindow; // A pointer to the GameManager's Window
     
+    GCTime* m_pTimer; // A pointer to the GameManager's Timer
     GCInputSystem* m_pInputSystem; // A pointer to the GameManager's InputSystem
     GCEventManager* m_pEventManager; // A pointer to the GameManager's EventManager
     GCPhysicManager* m_pPhysicManager; // A pointer to the GameManager's PhysicManager
