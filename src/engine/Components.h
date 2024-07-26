@@ -30,15 +30,20 @@ class Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
     virtual const int GetID() = 0;
     
+    void Activate();
+    void Deactivate();
     void SetActive( bool active );
     bool IsActive() { return m_globalActive && m_selfActive; }
 
     GCGameObject* GetGameObject() { return m_pGameObject; }
+    
+    virtual Component* Duplicate() = 0;
 
 protected:
     Component();
@@ -56,9 +61,12 @@ protected:
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
     
-    void SetGlobalActive( bool active );
+    void ActivateGlobal();
+    void DeactivateGlobal();
+    
+    bool IsCreated();
 
-    virtual int GetLayer() { return 0; }
+    virtual int GetComponentLayer() { return 0; }
 
 protected:
     inline static int componentCount = 0;
@@ -78,6 +86,7 @@ class SpriteRenderer : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -91,16 +100,18 @@ public:
     void GetSprite() {};
     GCColor& GetColor() { return m_color; }
 
+
 protected:
 	SpriteRenderer();
     ~SpriteRenderer() override {}
 
     void Render() override;
     void Destroy() override {}
+    SpriteRenderer* Duplicate() override; 
     
     FLAGS GetFlags() override { return RENDER; }
 
-    virtual int GetLayer() override { return 5; }
+    virtual int GetComponentLayer() override { return 5; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -108,9 +119,6 @@ protected:
 
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
-
-    XMMATRIX* m_worldMatrix;
-
 };
 
 
@@ -119,6 +127,7 @@ class Collider : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 
@@ -138,7 +147,7 @@ public:
 protected:
     FLAGS GetFlags() override { return FIXED_UPDATE | RENDER; }
 
-    virtual int GetLayer() override { return 10; }
+    virtual int GetComponentLayer() override { return 10; }
 
 protected:
     bool m_trigger;
@@ -148,9 +157,6 @@ protected:
 
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
-
-    XMMATRIX* m_worldMatrix;
-
 };
 
 
@@ -159,6 +165,7 @@ class BoxCollider : public Collider
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -168,6 +175,7 @@ public:
     GCVEC2 GetSize() { return m_size; }
     void SetSize( GCVEC2 size ) { m_size = size; }
 
+
 protected:
     BoxCollider();
     ~BoxCollider() override {}
@@ -175,6 +183,7 @@ protected:
     void FixedUpdate() override {}
     void Render() override;
     void Destroy() override {}
+    BoxCollider* Duplicate() override;
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -188,6 +197,7 @@ class CircleCollider : public Collider
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -197,6 +207,7 @@ public:
     float GetRadius() { return m_radius; }
     void SetRadius( float radius ) { m_radius = radius; }
 
+
 protected:
     CircleCollider() {}
     ~CircleCollider() override {}
@@ -204,6 +215,7 @@ protected:
     void FixedUpdate() override {}
     void Render() override {}
     void Destroy() override {}
+    CircleCollider* Duplicate() override;
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -217,6 +229,7 @@ class RigidBody : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
@@ -225,12 +238,14 @@ public:
     
     void AddForce( GCVEC2 force ) {}
 
+
 protected:
     RigidBody();
     ~RigidBody() override {}
     
     void FixedUpdate() override;
     void Destroy() override {}
+    RigidBody* Duplicate() override;
     
     FLAGS GetFlags() override { return FIXED_UPDATE; }
 
@@ -247,6 +262,7 @@ class Animator : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 
@@ -254,13 +270,15 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
+
 protected:
 	Animator() {}
     ~Animator() override {}
     
     void Update() override;
     void Destroy() override {}
-
+    Animator* Duplicate() override;
+    
     FLAGS GetFlags() override { return UPDATE; }
 
     void PlayAnimation();
@@ -280,11 +298,13 @@ class SoundMixer : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
+
 
 protected:
 	SoundMixer() {}
@@ -292,6 +312,7 @@ protected:
     
     void Update() override {}
     void Destroy() override {}
+    SoundMixer* Duplicate() override;
     
     FLAGS GetFlags() override { return UPDATE; }
 
@@ -306,17 +327,20 @@ class Camera : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
+
 protected:
     Camera() {}
     ~Camera() override {}
     
     void Destroy() override {}
+    Camera* Duplicate() override;
     
     FLAGS GetFlags() override { return NONE; }
 
@@ -331,6 +355,7 @@ class Script : public Component
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
+friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 
@@ -354,6 +379,7 @@ protected:
     { \
     friend class GCGameObject; \
     friend class GCUpdateManager; \
+    friend class GCSceneManager; \
     friend class GCPhysicManager; \
     friend class GCRenderManager; \
     public: \

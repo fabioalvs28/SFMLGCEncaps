@@ -64,6 +64,17 @@ void GCScene::Destroy()
 GCGameObject* GCScene::CreateGameObject()
 {
 	GCGameObject* pGameObject = new GCGameObject( this );
+	pGameObject->m_pSceneNode = m_gameObjectsList.PushBack( pGameObject );
+	GC::GetActiveSceneManager()->AddGameObjectToCreateQueue( pGameObject );
+	return pGameObject;
+}
+
+GCGameObject* GCScene::CreateGameObject( GCGameObject* pParent )
+{
+	GCGameObject* pGameObject = new GCGameObject( this );
+	pGameObject->m_pParent = pParent;
+	pGameObject->m_pChildNode = pParent->m_childrenList.PushBack( pGameObject );
+	pGameObject->m_globalActive = pParent->IsActive();
 	GC::GetActiveSceneManager()->AddGameObjectToCreateQueue( pGameObject );
 	return pGameObject;
 }
@@ -225,8 +236,6 @@ void GCScene::SetParent( GCScene* pParent )
 	ASSERT( pParent != nullptr, LOG_FATAL, "Trying to set a nullptr pParent to the Scene" );
 	pParent->AddChild( this );
 }
-
-
 
 ///////////////////////////////////////////////
 /// @return A pointer to the Scene's parent.

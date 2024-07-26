@@ -8,6 +8,8 @@ class GCUpdateManager;
 class GCEventManager;
 class GCSceneManager;
 class GCRenderManager;
+struct HINSTANCE__;
+typedef struct HINSTANCE__ *HINSTANCE;
 
 class GC
 {
@@ -18,17 +20,14 @@ private:
     ~GC() = delete;
 
 public:
-    template <class MainScript>
-    static GCGameManager* CreateGameManager();
-
-    static void Destroy(GCGameObject*& pGameObject);
-    static void Destroy(GCScene*& pScene);
+    static GCGameManager* CreateGameManager( HINSTANCE hInstance );
 
     static GCGameManager* GetActiveGameManager();
-
+    static Window* GetWindow();
+    static GCInputSystem* GetActiveInputSystem();
+    static GCEventManager* GetActiveEventManager();
     static GCPhysicManager* GetActivePhysicManager();
     static GCUpdateManager* GetActiveUpdateManager();
-    static GCEventManager* GetActiveEventManager();
     static GCSceneManager* GetActiveSceneManager();
     static GCRenderManager* GetActiveRenderManager();
     static GCInputSystem* GetActiveInputSystem();
@@ -39,15 +38,3 @@ private:
     inline static GCGameManager* m_pActiveGameManager = nullptr;
 
 };
-
-
-
-template <class MainScript>
-GCGameManager* GC::CreateGameManager()
-{
-    GCGameManager* pGameManager = new GCGameManager();
-    pGameManager->m_pNode = m_pGameManagersList.PushBack(pGameManager);
-    if (m_pActiveGameManager == nullptr)
-        m_pActiveGameManager = pGameManager;
-    return pGameManager;
-}

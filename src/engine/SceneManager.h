@@ -17,6 +17,8 @@ private:
 	void Update();
 	
 	void SetActiveScene( GCScene* pScene );
+	GCScene* GetActiveScene();
+	
 	void LoadScene( GCScene* pScene );
 	void UnloadScene( GCScene* pScene );
 	void DestroyScene( GCScene* pScene );

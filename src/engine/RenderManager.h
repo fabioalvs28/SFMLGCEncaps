@@ -6,14 +6,14 @@ using namespace DirectX;
 
 class GCRenderManager
 {
-    friend class GCGameObject;
+    friend class Component;
 private:
-    GCList<GCGameObject*> m_gameObjectList;
+    GCList<Component*> m_componentList;
 public:
-    GCRenderManager();
+    GCRenderManager( Window* pWindow );
     ~GCRenderManager();
 
-    void RegisterGameObject(GCGameObject* pGameObject);
+    void RegisterComponent(Component* pComponent);
 
     void CreateGeometry();
 
