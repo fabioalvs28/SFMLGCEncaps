@@ -34,11 +34,6 @@ class Logger;
 class GCThread;
 class WinThread;
 
-// State Machine
-class GCState;
-class GCStateMachine;
-// class GCStateManager;
-
 // Other
 class GCString;
 struct GCColor;
@@ -66,10 +61,6 @@ struct GCColor;
 
 // Threading
 #include "Thread.h"
-
-// State Machine
-#include "State.h"
-#include "StateMachine.h"
 
 // Other
 #include "GCString.h"
