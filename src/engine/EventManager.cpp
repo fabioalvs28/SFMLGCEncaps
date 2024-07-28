@@ -1,16 +1,26 @@
 #include "pch.h"
 #include "EventManager.h"
+#include "Log.h"
 
 GCEventManager::GCEventManager()
 {
+    m_eventQueue = GCQueue<GCEvent*>();
     for (int i = 0; i < (int)GCEventType::Count; i++)
     {
         m_eventCallbacks[(GCEventType)i] = std::vector<std::function<void(GCEvent&)>>();
     }
 }
 
+void GCEventManager::Update()
+{
+    PollEvents();
+}
+
 void GCEventManager::PollEvents()
 {
+    if (m_eventQueue.IsEmpty())
+        return;
+
     for (int i = 0; i < m_eventQueue.GetSize(); i++)
     {
         GCEvent* ev = m_eventQueue.Front();

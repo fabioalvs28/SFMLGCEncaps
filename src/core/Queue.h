@@ -12,6 +12,15 @@ class GCQueue
 public:
 	GCQueue() = default;
 
+	GCQueue& operator=(const GCQueue& other)
+	{
+		if (this != &other)
+		{
+			m_Queue = other.m_Queue;
+		}
+		return *this;
+	}
+
 	void Push(const T& value);
 	void Pop();
 	T& Front();

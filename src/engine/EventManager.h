@@ -18,6 +18,8 @@ class GCEventManager
 using GCEventCallback = std::function<void(GCEvent& ev)>;
 public:
 	GCEventManager();
+
+	void Update();
 	/// <summary>
 	/// Polls events from the operating system or framework 
 	/// and dispatches them to the appropriate handlers.
