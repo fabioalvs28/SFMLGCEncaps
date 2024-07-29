@@ -110,10 +110,10 @@ public:
         PAGE_UP   = 33,
         PAGE_DOWN = 34,
         
-        UP_ARROW    = 38, UP    = 38,
-        LEFT_ARROW  = 37, LEFT  = 37,
-        RIGHT_ARROW = 39, RIGHT = 39,
-        DOWN_ARROW  = 40, DOWN  = 40,
+        UP_ARROW    = 38,// UP    = 38,
+        LEFT_ARROW  = 37,// LEFT  = 37,
+        RIGHT_ARROW = 39,// RIGHT = 39,
+        DOWN_ARROW  = 40,// DOWN  = 40,
         
         NUM_LOCK = 144,
         NUMPAD_DIVIDE = 111,
