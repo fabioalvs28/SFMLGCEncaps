@@ -1,6 +1,6 @@
 #pragma once
 
-struct SpriteInfo {
+struct GC_SPRITE_INFO {
     GCVEC2 uvs[4]; 
     int width;     
     int height;   
@@ -10,7 +10,7 @@ struct GC_SPRITESHEET_INFO {
     bool isFlip;
     int width;                 
     int height;                
-    std::map<int, SpriteInfo> spriteUVMap; 
+    std::map<int, GC_SPRITE_INFO> spriteUVMap;
 };
 
 class GCSpriteSheetGeometryLoader {

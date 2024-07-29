@@ -36,7 +36,7 @@ void GCSpriteSheetGeometryLoader::CalculateUVs(int spriteWidth, int spriteHeight
             float u4 = static_cast<float>((x + 1) * spriteWidth) / sheetWidth;
             float v4 = static_cast<float>((y + 1) * spriteHeight) / sheetHeight;
 
-            SpriteInfo spriteInfo;
+            GC_SPRITE_INFO spriteInfo;
             spriteInfo.uvs[0] = GCVEC2(u1, v1); // Bottom-left
             spriteInfo.uvs[1] = GCVEC2(u2, v2); // Top-left
             spriteInfo.uvs[2] = GCVEC2(u3, v3); // Top-right
@@ -55,7 +55,7 @@ void GCSpriteSheetGeometryLoader::SetSpriteUVs(GCGeometry* geometry, int spriteI
     auto it = spriteSheetInfo.spriteUVMap.find(spriteID);
 
     if (it != spriteSheetInfo.spriteUVMap.end()) {
-        const SpriteInfo& spriteInfo = it->second;
+        const GC_SPRITE_INFO& spriteInfo = it->second;
 
         geometry->uv.resize(4);
 

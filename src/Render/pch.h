@@ -54,12 +54,12 @@
 
 //Geometry & Mesh
 struct GCGeometry;
-struct GCMESHBUFFERDATA;
+struct GC_MESH_BUFFER_DATA;
 
 //Shaders
-struct GCSHADERCB;
-struct GCWORLDCB;
-struct GCVIEWPROJCB;
+struct GC_SHADERCB;
+struct GC_WORLDCB;
+struct GC_VIEWPROJCB;
 struct GC_MATERIAL_DSL;
 
 //Geometry

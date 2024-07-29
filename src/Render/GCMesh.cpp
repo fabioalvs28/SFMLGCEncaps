@@ -104,7 +104,7 @@ void GCMesh::UploadGeometryData(int& flagEnabledBits) {
     const UINT vbByteSize = static_cast<UINT>(vertexData.size() * sizeof(float));
     const UINT ibByteSize = static_cast<UINT>(m_pMeshGeometry->indices.size() * sizeof(std::uint16_t));
 
-    m_pBufferGeometryData = new GCMESHBUFFERDATA();
+    m_pBufferGeometryData = new GC_MESH_BUFFER_DATA();
 
     D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
     CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
@@ -210,7 +210,7 @@ void GCMesh::UpdateGeometryData(float deltaTime)
     const UINT vbByteSize = static_cast<UINT>(vertexData.size() * sizeof(float));
     const UINT ibByteSize = static_cast<UINT>(indices.size() * sizeof(std::uint16_t));
 
-    m_pBufferGeometryData = new GCMESHBUFFERDATA();
+    m_pBufferGeometryData = new GC_MESH_BUFFER_DATA();
 
     D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
     CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
