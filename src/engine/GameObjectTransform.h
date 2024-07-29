@@ -1,6 +1,5 @@
 #pragma once
 #include "pch.h"
-#include "../core/pch.h"
 
 struct GCGameObjectTransform: public GCTransform
 {

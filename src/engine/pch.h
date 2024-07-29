@@ -7,20 +7,18 @@
 #ifndef ENGINE_PCH_H
 #define ENGINE_PCH_H
 
-typedef const char* cstr;
-typedef const wchar_t* custr;
-typedef __int8 I8;
-typedef __int16 I16;
-typedef __int32 I32;
-typedef __int64 I64;
-typedef unsigned __int8 UI8;
-typedef unsigned __int16 UI16;
-typedef unsigned __int32 UI32;
-typedef unsigned __int64 UI64;
 
 
+//C++ libraries
+#include <iostream>
+#include <string>
+#include <typeinfo>
+#include <functional>
+#include <Windows.h>
+#include <algorithm>
 
-
+//Core Elements
+#include "../core/framework.h"
 
 
 // Gameplay classes
@@ -44,10 +42,10 @@ class GCScene;
 
 
 // Managers
-
 class GCRenderManager;
-
 class GCSceneManager;
+class GCUpdateManager;
+class GCPhysicManager;
 
 class GCState;
 class GCStateManager;
@@ -56,9 +54,7 @@ class GCFrame;
 class GCAnimation;
 class GCAnimationManager;
 
-class GCUpdateManager;
 
-class GCPhysicManager;
 
 class Layer;
 class UILayer;
@@ -87,15 +83,8 @@ class GCTime;
 
 class GCGameManager;
 
-
-
 // Singleton
-
 class GC;
-
-
-
-
 
 
 #include "GameObjectTransform.h"
@@ -118,7 +107,11 @@ class GC;
 #include "InputManager.h"
 #include "Timer.h"
 #include "GameManager.h"
+#include "Window.h"
 
 #include "GC.h"
+
+//Intermediate file
+#include "GCEngine.h"
 
 #endif //ENGINE_PCH_H

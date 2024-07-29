@@ -1,12 +1,11 @@
 #pragma once
 #include "pch.h"
-#include "../core/pch.h"
 
 
 
 class GCGameObject
 {
-friend class GCGameObjectTransform;
+friend struct GCGameObjectTransform;
 friend class Component;
 friend class GCScene;
 friend class GCSceneManager;
@@ -37,7 +36,7 @@ public:
     void SetScene( GCScene* pScene );
     void SetParent( GCGameObject* pParent );
     void SetActive( const bool active );
-    void SetName( const char const* name );
+    void SetName( const char* name );
     void SetLayer( const int layer );
     
     unsigned int GetID() const;

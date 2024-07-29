@@ -1,8 +1,6 @@
 #pragma once
-#include <functional>
-
 #include "pch.h"
-#include "../core/pch.h"
+
 
 // TODO Turn every methods into private methods
 

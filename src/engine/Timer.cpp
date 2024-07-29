@@ -13,7 +13,7 @@ void GCTime::Reset()
 {
 	// System
 	m_initTime = timeGetTime();
-	m_previousTime = m_initTime;
+	m_previousTime = static_cast<float>(m_initTime);
 	m_isPerformanceTimer = false;
 	m_frequency = 0.0f;
 	LARGE_INTEGER frequency;
@@ -136,7 +136,7 @@ float GCTime::TotalTime() const
 	return m_totalTime;
 }
 
-float GCTime::GetFPS() const
+int GCTime::GetFPS() const
 {
 	return m_fps;
 }

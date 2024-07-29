@@ -24,7 +24,7 @@ public:
 	float FixedDeltaTime() const;
 	float TotalTime() const;
 
-	float GetFPS() const;
+	int GetFPS() const;
 
 private:
 	// Constants

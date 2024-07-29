@@ -1,9 +1,7 @@
 #pragma once
 #define NOMINMAX
-#include <windows.h>
-#include <functional>
+
 #include "pch.h"
-#include "../core/pch.h"
 
 
 

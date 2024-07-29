@@ -1,41 +1,12 @@
 #pragma once
 
-//#include "GCWindow.h"
-//#include "GameManager.h"
-//
-///// <summary>
-///// This class is different from Engine.h
-///// This class is the application class in the engine
-///// </summary>
-//class GCEngine 
-//{
-//public:
-//    static GCEngine& Get()
-//    {
-//        static GCEngine instance;
-//        return instance;
-//    }
-//
-//    void Shutdown();
-//    void Run();
-//
-//    void OnEvent(GCEvent& ev);
-//
-//private:
-//    GCEngine();
-//	~GCEngine();
-//
-//	bool InitWindow();
-//
-//    bool InitEngine();
-//    
-//    //TODO: Initialize D3D12 here
-//    bool InitD3D12();
-//
-//    void Cleanup();
-//
-//private:
-//    GCWindow* m_window = nullptr;
-//
-//    bool m_isRunning = false;
-//};
+#include "GC.h"
+
+#include "GameManager.h"
+#include "Scene.h"
+#include "GameObject.h"
+#include "GameObjectTransform.h"
+#include "Components.h"
+#include "InputManager.h"
+#include "Timer.h"
+
