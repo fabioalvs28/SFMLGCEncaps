@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "GCEngine.h"
+#include "ScriptStart.h"
 
 
 
