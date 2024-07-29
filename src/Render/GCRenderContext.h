@@ -111,7 +111,7 @@ private:
 
 
 
-	int m_renderMode = 1; //2D or 3d
+	int m_renderMode = 0; //2D or 3d
 
 	GCShader* m_pPostProcessingShader;
 	GCShader* m_pPixelIdMappingShader;

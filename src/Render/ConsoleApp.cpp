@@ -34,16 +34,22 @@
 //    SET_FLAG(flagsLightTexture, VERTEX_NORMAL);
 //
 //
-//
 //    // Création des géométries
 //    auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
 //    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
 //    auto geoCubeInner3 = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red));
 //    auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
 //
-//    graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
+//    //graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
+//    //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("Hello");
 //
-//    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("Hello");
+//    auto allSpriteOnSpriteSheet = graphics->m_pSpriteSheetGeometryLoader->
+//        LoadSpriteSheet(4, 6, 823, 823);
+//    auto geoPlaneOneSprite = allSpriteOnSpriteSheet[22];
+//    auto geoPlaneOneSprite2 = allSpriteOnSpriteSheet[1];
+//
+//
+//
 //
 //    // Chargement des shaders personnalisés
 //    std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
@@ -65,10 +71,11 @@
 //    auto meshCubeInner3 = graphics->CreateMeshCustom(geoCubeInner3.resource, flagsLightColor);
 //    auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
 //
-//    auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneAlphabet);
+//    auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneOneSprite);
+//    auto meshPlaneAlphabet2 = graphics->CreateMeshTexture(geoPlaneOneSprite2);
 //
 //    std::string texturePath = "../../../src/Render/Textures/texture.dds";
-//    std::string texturePath2 = "../../../src/Render/Textures/alphabet.dds";
+//    std::string texturePath2 = "../../../src/Render/Textures/sprite_sheet.dds";
 //    auto texture = graphics->CreateTexture(texturePath);
 //    auto texture2 = graphics->CreateTexture(texturePath2);
 //
@@ -95,8 +102,8 @@
 //    GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 //
 //    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
-//    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(-0.0f, 0.0f, -1.0f); // Cube interne centré
-//    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(-10.0f, 0.0f, 0.0f); // Cube interne centré
+//    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(1.0f, 0.0f, 0.0f); // Cube interne centré
+//    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(-1.0f, 0.0f, 0.0f); // Cube interne centré
 //    XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); // Cube interne centré
 //    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
 //
@@ -139,9 +146,11 @@
 //
 //        graphics->UpdateLights(lights);
 //
-//        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2);
+//        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
 //        graphics->GetRender()->DrawObject(meshPlaneAlphabet.resource, materialCubeInner.resource, true);
 //
+//        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2);
+//        graphics->GetRender()->DrawObject(meshPlaneAlphabet2.resource, materialCubeInner.resource, true);
 //        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner3);
 //        //graphics->GetRender()->DrawObject(meshCubeInner3.resource, materialCubeInner.resource, true);
 //
@@ -163,19 +172,6 @@
 
 using namespace DirectX;
 
-XMMATRIX CreateBillboardMatrix(XMVECTOR objectPosition, XMVECTOR cameraPosition, XMVECTOR cameraUp) {
-    XMVECTOR lookAt = XMVector3Normalize(cameraPosition - objectPosition);
-    XMVECTOR right = XMVector3Normalize(XMVector3Cross(cameraUp, lookAt));
-    XMVECTOR up = XMVector3Cross(lookAt, right);
-
-    XMMATRIX billboardMatrix = XMMatrixIdentity();
-    billboardMatrix.r[0] = right;
-    billboardMatrix.r[1] = up;
-    billboardMatrix.r[2] = lookAt;
-    billboardMatrix.r[3] = objectPosition;
-
-    return XMMatrixTranspose(billboardMatrix);
-}
 
 
 

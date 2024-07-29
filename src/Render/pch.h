@@ -91,10 +91,14 @@ class GCUploadBufferBase;
 
 class GCParticleSystem;
 class GCFontGeometryLoader;
+class GCSpriteSheetGeometryLoader;
 class GCUtils;
 class MathHelper;
 class Timer;
 class Window;
+
+struct GCMATRIX;
+struct GCVEC3;
 
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
@@ -125,13 +129,15 @@ class Window;
 #include "GCModelParserObj.h"
 #include "GCParticleSystem.h"
 #include "GCFontGeometryLoader.h"
+#include "GCSpriteSheetGeometryLoader.h"
+#include "GCUtils.h"
 
 #include "GCPrimitiveFactory.h"
 #include "GCTexture.h"
 #include "GCGraphics.h"
 #include "GCTextureFactory.h"
 #include "Timer.h"
-#include "GCUtils.h"
+
 
 
 

@@ -352,6 +352,7 @@ public:
 	std::list<bool> m_lTextureActiveFlags;
 
 	GCFontGeometryLoader* m_pFontGeometryLoader;
+	GCSpriteSheetGeometryLoader* m_pSpriteSheetGeometryLoader;
 
 private:
 	GCRenderContext* m_pRender;

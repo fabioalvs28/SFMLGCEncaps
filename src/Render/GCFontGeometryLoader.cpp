@@ -61,9 +61,8 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
 
     for (char c : text) {
         if (c == ' ') {
-            // Si c'est un espace, avancez l'offset x sans ajouter de géométrie
-            xOffset += spacing; // Ajustez la largeur de l'espace selon vos besoins
-            continue; // Passez au caractère suivant
+            xOffset += spacing; 
+            continue; 
         }
         int startIdx = geometry->pos.size();
 

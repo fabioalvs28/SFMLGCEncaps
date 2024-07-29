@@ -407,9 +407,6 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 
-	/*m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pPixelIdMappingBufferRtv->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pPixelIdMappingDepthStencilBuffer->cpuHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);*/
-
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvs;
 
@@ -417,6 +414,7 @@ bool GCRenderContext::PrepareDraw()
 		// Basic draw
 		D3D12_CPU_DESCRIPTOR_HANDLE basicRtv = m_pGCRenderResources->CurrentBackBufferViewAddress();
 		rtvs.push_back(basicRtv);
+
 		if (m_renderMode == RENDER_MODE_3D) 
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE basicDsv = m_pGCRenderResources->GetDepthStencilViewAddress();
@@ -428,7 +426,6 @@ bool GCRenderContext::PrepareDraw()
 		// Pixel Id Mapping
 		if (m_isPixelIDMappingActivated) {
 			rtvs.push_back(m_pPixelIdMappingBufferRtv->cpuHandle);
-			dsvs.push_back({ 0 });
 		}
 	}
 	
@@ -438,14 +435,11 @@ bool GCRenderContext::PrepareDraw()
 			rtvs.push_back(m_pAlbedoGBuffer->cpuHandle);
 			rtvs.push_back(m_pWorldPosGBuffer->cpuHandle);
 			rtvs.push_back(m_pNormalGBuffer->cpuHandle);
-			dsvs.push_back({ 0 });
-			dsvs.push_back({ 0 });
-			dsvs.push_back({ 0 });
 		}
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE basicDsv = m_pGCRenderResources->GetDepthStencilViewAddress();
-	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(rtvs.size(), rtvs.data(), FALSE, &basicDsv);
+	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(rtvs.size(), rtvs.data(), FALSE, dsvs.data());
 
 	
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap };
