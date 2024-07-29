@@ -77,22 +77,22 @@ void GCShader::CompileShader()
 	m_InputLayout.clear();
 
 	UINT offset = 0; 
-	if (HAS_FLAG(m_flagEnabledBits, VERTEX_POSITION)) {
+	if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_POSITION)) {
 		m_InputLayout.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT3); 
 	}
 
-	if (HAS_FLAG(m_flagEnabledBits, VERTEX_COLOR)) {
+	if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_COLOR)) {
 		m_InputLayout.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT4); 
 	}
 
-	if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
+	if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_UV)) {
 		m_InputLayout.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT2); // Taille des coordonnées de texture
 	}
 
-	if (HAS_FLAG(m_flagEnabledBits, VERTEX_NORMAL)) {
+	if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_NORMAL)) {
 		m_InputLayout.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += sizeof(DirectX::XMFLOAT3); // Taille des coordonnées de texture
 	}
@@ -105,19 +105,19 @@ void GCShader::RootSign()
 
 	UINT numParameters = 0; // Dynamic param attribution
 
-	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB0)) {
+	if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_CB0)) {
 		m_rootParameter_ConstantBuffer_0 = numParameters;
 		slotRootParameter[numParameters++].InitAsConstantBufferView(0);
 	}
-	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB1)) {
+	if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_CB1)) {
 		m_rootParameter_ConstantBuffer_1 = numParameters;
 		slotRootParameter[numParameters++].InitAsConstantBufferView(1);
 	}
-	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB2))  {
+	if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_CB2))  {
 		m_rootParameter_ConstantBuffer_2 = numParameters;
 		slotRootParameter[numParameters++].InitAsConstantBufferView(2);
 	}
-	if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_CB3)) {
+	if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_CB3)) {
 		m_rootParameter_ConstantBuffer_3 = numParameters;
 		slotRootParameter[numParameters++].InitAsConstantBufferView(3);
 	}
@@ -138,30 +138,30 @@ void GCShader::RootSign()
 
 	CD3DX12_ROOT_SIGNATURE_DESC rootSignDesc;
 
-	if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
+	if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_UV)) {
 
-		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1)) {
+		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1)) {
 			m_rootParameter_DescriptorTable_1 = numParameters;
 			CD3DX12_DESCRIPTOR_RANGE srvTable;
 			srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable);
 		}
 		
-		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2)) {
+		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2)) {
 			m_rootParameter_DescriptorTable_2 = numParameters;
 			CD3DX12_DESCRIPTOR_RANGE srvTable2;
 			srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
 			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable2);
 		}
 
-		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
+		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
 			m_rootParameter_DescriptorTable_3 = numParameters;
 			CD3DX12_DESCRIPTOR_RANGE srvTable3;
 			srvTable3.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
 			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable3);
 		}
 
-		if (HAS_FLAG(m_flagRootParameters, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
+		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
 			m_rootParameter_DescriptorTable_4 = numParameters;
 			CD3DX12_DESCRIPTOR_RANGE srvTable4;
 			srvTable4.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);

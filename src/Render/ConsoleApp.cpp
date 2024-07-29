@@ -191,14 +191,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->Initialize(window, 1920, 1080);
 
     int flagsLightColor = 0;
-    SET_FLAG(flagsLightColor, VERTEX_POSITION);
-    SET_FLAG(flagsLightColor, VERTEX_COLOR);
-    SET_FLAG(flagsLightColor, VERTEX_NORMAL);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_NORMAL);
 
     int flagsLightTexture = 0;
-    SET_FLAG(flagsLightTexture, VERTEX_POSITION);
-    SET_FLAG(flagsLightTexture, VERTEX_UV);
-    SET_FLAG(flagsLightTexture, VERTEX_NORMAL);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_NORMAL);
 
 
     // Création des géométries
@@ -284,8 +284,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); // Cube interne centré
     XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
 
+
+
+    float swapChainWidth = 1920.0f;  // Width of the swap chain or screen
+    float swapChainHeight = 1080.0f; // Height of the swap chain or screen
+    float aspectRatio = swapChainWidth / swapChainHeight;
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+    if (aspectRatio > 1.0f) {
+        scaleY = 1.0f / aspectRatio;
+    }
+    else {
+        scaleX = aspectRatio;
+    }
+    XMMATRIX additionalScaleMatrix = XMMatrixScaling(scaleX, scaleY, 1.0f); 
+    XMMATRIX worldMatrixCubeInnerScaled = additionalScaleMatrix * worldMatrixCubeInner; 
+
     GCMATRIX worldCubeOuter = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeOuter);
-    GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner);
+    GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInnerScaled);
     GCMATRIX worldCubeInner2 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner2);
     GCMATRIX worldCubeInner3 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner3);
     GCMATRIX worldSphere = GCUtils::XMMATRIXToGCMATRIX(worldMatrixSphere);
@@ -324,7 +340,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateLights(lights);
 
         graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
-        graphics->GetRender()->DrawObject(meshPlaneAlphabet.resource, materialCubeInner.resource, true);
+        graphics->GetRender()->DrawObject(meshPlaneAlphabet.resource, materialCubeInner.resource, false);
 
         //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2);
         //graphics->GetRender()->DrawObject(meshPlaneAlphabet2.resource, materialCubeInner.resource, true);

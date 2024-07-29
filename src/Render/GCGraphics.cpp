@@ -18,37 +18,37 @@ GCGraphics::~GCGraphics()
 {
     for (auto shader : m_vShaders)
     {
-        DELETE(shader);
+        GC_DELETE(shader);
     }
     m_vShaders.clear();
 
     for (auto material : m_vMaterials)
     {
-        DELETE(material);
+        GC_DELETE(material);
     }
     m_vMaterials.clear();
 
     for (auto mesh : m_vMeshes)
     {
-        DELETE(mesh);
+        GC_DELETE(mesh);
     }
     m_vMeshes.clear();
 
     for (auto texture : m_lTextures)
     {
-        DELETE(texture);
+        GC_DELETE(texture);
     }
     m_lTextures.clear();
 
     for (auto buffer : m_pCbCameraInstances)
     {
-        DELETE(buffer);
+        GC_DELETE(buffer);
     }
     m_pCbCameraInstances.clear();
 
-    DELETE(m_pRender);
-    DELETE(m_pPrimitiveFactory);
-    DELETE(m_pModelParserFactory);
+    GC_DELETE(m_pRender);
+    GC_DELETE(m_pPrimitiveFactory);
+    GC_DELETE(m_pModelParserFactory);
 }
 
 bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
@@ -191,12 +191,12 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
     GCShader* pShader = new GCShader();
 
     int vertexFlags = 0;
-    SET_FLAG(vertexFlags, VERTEX_POSITION);
-    SET_FLAG(vertexFlags, VERTEX_COLOR);
+    GC_SET_FLAG(vertexFlags, GC_VERTEX_POSITION);
+    GC_SET_FLAG(vertexFlags, GC_VERTEX_COLOR);
 
     int rootParametersFlag = 0;
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB0);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB1);
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     if (errorState != 0)
@@ -215,13 +215,13 @@ ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
     GCShader* pShader = new GCShader();
 
     int vertexFlags = 0;
-    SET_FLAG(vertexFlags, VERTEX_POSITION);
-    SET_FLAG(vertexFlags, VERTEX_UV);
+    GC_SET_FLAG(vertexFlags, GC_VERTEX_POSITION);
+    GC_SET_FLAG(vertexFlags, GC_VERTEX_UV);
 
     int rootParametersFlag = 0;
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB0);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB1);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
@@ -275,8 +275,8 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeomet
 ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometry)
 {
     int flagsLightColor = 0;
-    SET_FLAG(flagsLightColor, VERTEX_POSITION);
-    SET_FLAG(flagsLightColor, VERTEX_COLOR);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
 
     // Check if Geometry is valid
     if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
@@ -296,8 +296,8 @@ ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometr
 ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeometry)
 {
     int flagsLightTexture = 0;
-    SET_FLAG(flagsLightTexture, VERTEX_POSITION);
-    SET_FLAG(flagsLightTexture, VERTEX_UV);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
 
     // Check if Geometry is valid
     if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
@@ -463,6 +463,7 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
 bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
+
     cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
     cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
 

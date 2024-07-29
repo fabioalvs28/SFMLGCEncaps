@@ -104,6 +104,7 @@ struct GCVEC3;
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
+#include "../core/framework.h"
 
 
 // Add William 
@@ -112,7 +113,7 @@ struct GCVEC3;
 #include "./GCMeshBufferData.h"
 #include "GCPrimitiveIdEnum.h"
 
-#include "../core/framework.h"
+
 
 
 //

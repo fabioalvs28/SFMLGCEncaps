@@ -104,7 +104,7 @@ public:
 	* 
 	* @return ResourceCreationResult -> bool(success), GCShader(custom), errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCShader*> CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK, int flagRootParameters = DEFAULT_ROOT_PARAMETER_FLAG);
+	ResourceCreationResult<GCShader*> CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK, int flagRootParameters = GC_DEFAULT_ROOT_PARAMETER_FLAG);
 
 	/************************************************************************************************
 	* @brief Creates a material using a shader.

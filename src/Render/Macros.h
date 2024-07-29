@@ -92,7 +92,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 // Debug Only ***
 
 // Variadic Check Ptr with 1 message Error 
-#ifdef _PROFILER
+#ifdef _DEBUG
 #define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
     CheckPointersNull(successMsg, warningMsg, __VA_ARGS__)
 #else
@@ -100,7 +100,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     true
 #endif
 
-#ifdef _PROFILER
+#ifdef _DEBUG
 #define CHECK_FILE(fileName, errorMessage, successMessage) \
     CheckFile(fileName, errorMessage, successMessage)
 #else
@@ -108,7 +108,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     true
 #endif
 
-#ifdef _PROFILER
+#ifdef _DEBUG
 #define CHECK_EXTENSION(filePath, fileExtension) \
     CheckExtension(filePath, fileExtension)
 #else
@@ -116,7 +116,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
     true
 #endif
 
-#ifdef _PROFILER
+#ifdef _DEBUG
 #define CHECK_HRESULT(hr, msg) \
     CheckHResult(hr, msg)
 #else
@@ -125,7 +125,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 #endif
 
 
-#ifdef _PROFILER
+#ifdef _DEBUG
 #define COMPARE_SHADER_MESH_FLAGS(material, mesh) \
     CompareShaderMeshFlags(material, mesh)
 #else
@@ -141,44 +141,35 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 
 // For Release Instance, used in Destructor of resources
 
-#define DELETE(p) \
+#define GC_DELETE(p) \
     delete p; \
     p = nullptr;
 
 // Define flags
 
 // Vertex Input Layout Flags
-#define VERTEX_POSITION  0x01 // 00000001
-#define VERTEX_COLOR     0x02 // 00000010
-#define VERTEX_UV        0x04 // 00000100
-#define VERTEX_NORMAL    0x08 // 00001000
-#define VERTEX_TANGENT   0x10 // 00010000
-#define VERTEX_BINORMAL  0x20 // 00100000
+#define GC_VERTEX_POSITION                         0x01 // 00000001
+#define GC_VERTEX_COLOR                            0x02 // 00000010
+#define GC_VERTEX_UV                               0x04 // 00000100
+#define GC_VERTEX_NORMAL                           0x08 // 00001000
+#define GC_VERTEX_TANGENT                          0x10 // 00010000
+#define GC_VERTEX_BINORMAL                         0x20 // 00100000
 
 // Root Parameter Flags
-#define ROOT_PARAMETER_CB0                      0x01 // 00000001
-#define ROOT_PARAMETER_CB1                      0x02 // 00000010
-#define ROOT_PARAMETER_CB2                      0x04 // 00000100
-#define ROOT_PARAMETER_CB3                      0x08 // 00001000
-#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1   0x10 // 00010000
-#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2   0x20 // 00100000
-#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3   0x40 // 01000000
-#define ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT4   0x80 // 10000000
+#define GC_ROOT_PARAMETER_CB0                      0x01 // 00000001
+#define GC_ROOT_PARAMETER_CB1                      0x02 // 00000010
+#define GC_ROOT_PARAMETER_CB2                      0x04 // 00000100
+#define GC_ROOT_PARAMETER_CB3                      0x08 // 00001000
+#define GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1   0x10 // 00010000
+#define GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2   0x20 // 00100000
+#define GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3   0x40 // 01000000
+#define GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT4   0x80 // 10000000
 
-
-// Check if a specific flag is set
-#define HAS_FLAG(flags, flag) (((flags) & (flag)) != 0)
-
-// Set a specific flag
-#define SET_FLAG(flags, flag) ((flags) |= (flag))
-
-// Unset a specific flag
-#define UNSET_FLAG(flags, flag) ((flags) &= ~(flag))
 
 // Lights Type
-#define LIGHT_TYPE_DIRECTIONAL 0
-#define LIGHT_TYPE_SPOT 1
-#define LIGHT_TYPE_POINT 2
+#define GC_LIGHT_TYPE_DIRECTIONAL                   0
+#define GC_LIGHT_TYPE_SPOT                          1
+#define GC_LIGHT_TYPE_POINt                         2
 
 // 
 #ifndef ReleaseCom
@@ -187,7 +178,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 
 
 // Default Flag
-#define DEFAULT_ROOT_PARAMETER_FLAG 0b00111111 // All Flag
+#define GC_DEFAULT_ROOT_PARAMETER_FLAG          0b00111111 // All Flag
 
-#define RENDER_MODE_2D 0
-#define RENDER_MODE_3D 1
+#define GC_RENDER_MODE_2D 0
+#define GC_RENDER_MODE_3D 1
