@@ -13,7 +13,7 @@ GCFile::GCFile(const char* filename, const char* mode)
 		this->mode = mode;
 
 		// needed to get file size but cause issues for PNGs for unholy reasons
-		fseek(file, 0L, SEEK_END); 
+		fseek(file, 0L, SEEK_END);
 		fgetpos(file, &size);
 		fseek(file, 0, SEEK_SET);
 	}

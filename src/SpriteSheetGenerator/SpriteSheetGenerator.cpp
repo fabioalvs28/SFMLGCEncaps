@@ -300,8 +300,6 @@ int SpriteSheetGenerator::Packer()
         }
     }
 
-
-
     data["totalTextureCount"] = textureIndex + 1;
     std::string textureName;
     switch (saveFormat)
@@ -336,10 +334,58 @@ int SpriteSheetGenerator::Packer()
     }
     data["textures"][textureIndex]["textureName"] = textureName;
 
-    std::ofstream myfile;
-    myfile.open(m_outputPath.string() + "spritSheetData.json");
-    myfile << data.dump(4);
-    myfile.close();
+    std::ofstream jsonFile;
+    jsonFile.open(m_outputPath.string() + "spritSheetData.json");
+    jsonFile << data.dump(4);
+    jsonFile.close();
+
+
+    Metadata::Data metadata = Metadata::jsonToMetadataFile(data);
+
+    GCFile metadataFile((m_outputPath.string() + "spritSheetData.ssdg").c_str(), "wb");
+
+    std::vector<uint8_t> buffer;
+
+    buffer.resize(sizeof(Metadata::Header));
+    std::memcpy(buffer.data(), &metadata.header, buffer.size());
+    metadataFile.Write(buffer);
+
+    for (int i = 0; i < metadata.textures.size(); i++)
+    {
+        Metadata::Texture tex = metadata.textures[i];
+        buffer.resize(tex.textureName.length() + 1);
+        std::memcpy(buffer.data(), tex.textureName.c_str(), buffer.size());
+        buffer[tex.textureName.length()] = 0x00;
+        metadataFile.Write(buffer);
+
+        buffer.resize(sizeof(uint16_t));
+        std::memcpy(buffer.data(), &tex.texturesize, buffer.size());
+        metadataFile.Write(buffer);
+
+        buffer.resize(sizeof(uint32_t));
+        std::memcpy(buffer.data(), &tex.imageCount, buffer.size());
+        metadataFile.Write(buffer);
+
+        for (size_t j = 0; j < tex.imageCount; j++)
+        {
+            Metadata::Image img = tex.images[j];
+
+            buffer.resize(img.filename.length() + 1 + 4 * sizeof(uint16_t) + sizeof(uint8_t));
+            std::memcpy(buffer.data(), img.filename.c_str(), img.filename.length());
+            buffer[img.filename.length()] = 0x00;
+            std::memcpy(buffer.data() + img.filename.length() + 1 + 0 * sizeof(uint16_t), &img.x, sizeof(uint16_t));
+            std::memcpy(buffer.data() + img.filename.length() + 1 + 1 * sizeof(uint16_t), &img.y, sizeof(uint16_t));
+            std::memcpy(buffer.data() + img.filename.length() + 1 + 2 * sizeof(uint16_t), &img.w, sizeof(uint16_t));
+            std::memcpy(buffer.data() + img.filename.length() + 1 + 3 * sizeof(uint16_t), &img.h, sizeof(uint16_t));
+            std::memcpy(buffer.data() + img.filename.length() + 1 + 4 * sizeof(uint16_t), &img.rotated, sizeof(uint8_t));
+            metadataFile.Write(buffer);
+        }
+    }
+    metadataFile.Close();
+
+    GCFile metadataFile2 = GCFile((m_outputPath.string() + "spritSheetData.ssdg").c_str(), "rb");
+    Metadata::Data metadata2;
+    Metadata::MetadataFileToStruct(metadataFile, metadata);
 
     return 0;
 }

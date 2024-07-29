@@ -6,8 +6,7 @@
 #include <tuple>
 #include <iostream>
 #include "GCImage.h"
-#include "nlohmann/json.hpp"
-using json = nlohmann::ordered_json;
+#include "metadata.h"
 namespace fs = std::filesystem;
 
 struct Sprite
