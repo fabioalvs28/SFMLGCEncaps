@@ -29,6 +29,7 @@
 #include <memory>
 #include <algorithm>
 #include <array>
+#include <map>
 #include <unordered_map>
 #include <cstdint>
 #include <fstream>

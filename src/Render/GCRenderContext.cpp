@@ -35,6 +35,7 @@ bool GCRenderContext::Initialize(Window* pWindow, int renderWidth, int renderHei
 
 	InitDX12RenderPipeline();
 
+
 	return true;
 }
 
@@ -68,8 +69,14 @@ bool GCRenderContext::InitDX12RenderPipeline()
 
 	CreateDXGIFactory1(IID_PPV_ARGS(&m_pGCRenderResources->m_dxgiFactory));
 
+
+
 	// Try to create hardware device.
 	HRESULT hardwareResult = D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_pGCRenderResources->m_d3dDevice));
+
+
+
+	//exit(0);
 
 	// Fallback to WARP device.
 	if (FAILED(hardwareResult))
@@ -403,9 +410,12 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	/*m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);*/
+
+	if (m_pDeferredLightPassShader)
+		m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+		m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+		m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	
 
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvs;
@@ -696,14 +706,13 @@ void GCRenderContext::PerformPostProcessingCS()
 
 void GCRenderContext::EnableDebugController()
 {
-#if defined(DEBUG) || defined(_DEBUG) 
-	// Enable the D3D12 debug layer.
-	{
-		ID3D12Debug* debugController;
-		D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
-		debugController->EnableDebugLayer();
-	}
-#endif
+	#if defined(DEBUG) || defined(_DEBUG) 
+		// Enable the D3D12 debug layer.
+		{
+			D3D12GetDebugInterface(IID_PPV_ARGS(&m_pGCRenderResources->m_pDebugController));
+			m_pGCRenderResources->m_pDebugController->EnableDebugLayer();
+		}
+	#endif
 }
 
 void GCRenderContext::LogAdapters()

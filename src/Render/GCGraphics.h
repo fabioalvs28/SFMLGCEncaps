@@ -341,8 +341,13 @@ public:
 	************************************************************************************************/
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 	void Resize(int width, int height);
+
+	// Loaders
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
 	GCModelParserFactory* GetModelParserFactory() const { return m_pModelParserFactory; }
+
+	GCFontGeometryLoader* GetFontGeometryLoader() const { return m_pFontGeometryLoader; }
+	GCSpriteSheetGeometryLoader* GetSpriteSheetGeometryLoader() const { return m_pSpriteSheetGeometryLoader; }
 
 	//Other
 	GCShaderUploadBufferBase* GetCbLightPropertiesInstance() const { return m_pCbLightPropertiesInstance; }
