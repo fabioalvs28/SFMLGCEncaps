@@ -403,9 +403,9 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	/*m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);*/
 
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvs;

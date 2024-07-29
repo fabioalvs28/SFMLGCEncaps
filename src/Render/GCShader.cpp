@@ -174,9 +174,13 @@ void GCShader::RootSign()
 	ID3DBlob* serializedRootSig = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 	HRESULT hr = D3D12SerializeRootSignature(&rootSignDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &errorBlob);
+	if (hr)
+	{
+		MessageBoxA(0, (char*)errorBlob->GetBufferPointer(), std::to_string(numParameters).c_str(), 0);
+	}
 
 	if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-    if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    //if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
 
     m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature));
 }

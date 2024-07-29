@@ -684,7 +684,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     graphics->GetRender()->CreatePostProcessingResources("../../../src/Render/Shaders/test.hlsl", "../../../src/Render/CsoCompiled/test");
     //graphics->GetRender()->ActiveCSPostProcessing();
-    graphics->GetRender()->ActiveDeferredLightPass();
+    //graphics->GetRender()->ActiveDeferredLightPass();
 
     int flagsLightColor = 0;
     SET_FLAG(flagsLightColor, VERTEX_POSITION);

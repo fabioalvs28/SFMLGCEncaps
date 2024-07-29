@@ -33,6 +33,5 @@ struct GCMATRIX
 	void Translation(float x, float y, float z); //translation la matrice
 	void Rotation(GCVEC3 position, float angle); //rotation la matrice
 	void Scale(float x, float y, float z); //scale la matrice
-	
-
 };
+
