@@ -6,6 +6,7 @@
 #include <iostream>
  #include <Windows.h>
  #include "Window.h"
+
 //#include "SFML/Graphics.hpp"
 
 
@@ -28,11 +29,11 @@ using namespace DirectX;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-    // Initialisation des ressources graphiques
-
+    
     GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
+    
 
-    GCKeyboardInputManager* keys = new GCKeyboardInputManager();
+    // Initialisation des ressources graphiques
     //int flagsLightColor = 0;
     //SET_FLAG(flagsLightColor, HAS_POSITION);
     //SET_FLAG(flagsLightColor, HAS_COLOR);
@@ -44,6 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
     GCScene* pScene = GCScene::Create();
+
     GCGameObject* test1 = pScene->CreateGameObject();
     GCGameObject* test3 = pScene->CreateGameObject();
     GCGameObject* test3bis = pScene->CreateGameObject();
