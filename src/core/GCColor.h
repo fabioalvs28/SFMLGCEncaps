@@ -1,12 +1,14 @@
 #pragma once
 #include <corecrt_math.h>
 
+typedef unsigned __int8 UI8;
+
 struct GCColor {
 
-	int r;
-	int g;
-	int b;
-	int a;
+	UI8 r;
+	UI8 g;
+	UI8 b;
+	UI8 a;
 
 	// Default Constructor
 	GCColor();
@@ -18,7 +20,7 @@ struct GCColor {
 	/// <param name="g">Green element of the color</param>
 	/// <param name="b">Blue element of the color</param>
 	/// <param name="a">Alpha element of the color</param>
-	GCColor(int r, int g, int b, int a);
+	GCColor(UI8 r, UI8 g, UI8 b, UI8 a);
 
 	/// <summary>
 	///  Constructor using hexadecimal code parameters

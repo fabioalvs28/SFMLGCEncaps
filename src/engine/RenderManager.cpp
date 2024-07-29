@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "RenderManager.h"
 
-#include "../core/pch.h"
-
 using namespace DirectX;
 
 GCRenderManager::GCRenderManager( Window* pWindow )

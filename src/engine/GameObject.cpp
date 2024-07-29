@@ -321,7 +321,7 @@ void GCGameObject::SetActive( const bool active )
 /// 
 /// @note The name doesn't have to be unique within the Scene.
 //////////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::SetName( const char const* name ) { m_name = name; }
+void GCGameObject::SetName( const char* name ) { m_name = name; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief Sets the layer of the GameObject.

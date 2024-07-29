@@ -1,7 +1,5 @@
 #include "pch.h"
-#include "PhysicManager.h"
 
-#include <algorithm>
 
 GCPhysicManager::GCPhysicManager()
 {

@@ -15,12 +15,14 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
     m_pWindow->Initialize();
     
     m_pTimer = new GCTime();
-    m_pInputSystem = new GCInputSystem();
     m_pEventManager = new GCEventManager();
+    m_pInputSystem = new GCInputSystem();
     m_pPhysicManager = new GCPhysicManager();
     m_pUpdateManager = new GCUpdateManager();
     m_pSceneManager = new GCSceneManager();
     m_pRenderManager = new GCRenderManager( m_pWindow );
+
+    m_pInputSystem->SetEventManager(m_pEventManager);
 }
 
 
@@ -46,6 +48,7 @@ void GCGameManager::GameLoop()
     {
         m_pTimer->Update();
         m_pInputSystem->Update();
+        m_pEventManager->Update();
         m_pPhysicManager->Update();
         m_pUpdateManager->Update();
         m_pSceneManager->Update();

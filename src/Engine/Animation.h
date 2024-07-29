@@ -1,6 +1,5 @@
 #pragma once
-#include "pch.h"
-#include "../core/pch.h"
+#include "../core/framework.h"
 
 class Animation
 {
@@ -13,11 +12,11 @@ public:
 	void IncrementFrame();
 	void Reset();
 	const GCFrame* GetCurrentFrame() const;
-	int GetNumberOfFrames() const { return m_frames.GetSize(); }
+	int GetNumberOfFrames() const { return static_cast<int>(m_frames.GetSize()); }
 	int GetCurrentFrameIndex() const { return m_currentFrameIndex; }
 
 private:
 	GCVector<GCFrame> m_frames;
-	size_t m_currentFrameIndex;
-	int m_currentFrameTime;
+	int m_currentFrameIndex;
+	float m_currentFrameTime;
 };

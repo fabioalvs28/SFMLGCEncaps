@@ -1,7 +1,7 @@
 #pragma once
 #include "math.h"
 
-
+typedef __int8 I8;
 
 struct GCVEC2
 {
@@ -34,7 +34,7 @@ struct GCVEC2
     bool IsDistanceLessThan( const GCVEC2& other, const float& distance ) const;
     bool IsDistanceMoreThan( const GCVEC2& other, const float& distance ) const;
     bool IsDistanceEqualTo( const GCVEC2& other, const float& distance ) const;
-    int DistanceCompare( const GCVEC2& other, const float& distance ) const;
+    I8 DistanceCompare( const GCVEC2& other, float distance ) const;
     
     GCVEC2 operator+( const GCVEC2& other ) const;
     GCVEC2 operator-( const GCVEC2& other ) const;
@@ -98,7 +98,7 @@ struct GCVEC3
     bool IsDistanceLessThan( const GCVEC3& other, const float& distance ) const;
     bool IsDistanceMoreThan( const GCVEC3& other, const float& distance ) const;
     bool IsDistanceEqualTo( const GCVEC3& other, const float& distance ) const;
-    int DistanceCompare( const GCVEC3& other, const float& distance ) const;
+    I8 DistanceCompare( const GCVEC3& other, const float& distance ) const;
     
     GCVEC3 operator+( const GCVEC3& other ) const;
     GCVEC3 operator-( const GCVEC3& other ) const;
