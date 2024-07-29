@@ -209,11 +209,11 @@ bool GCVEC2::IsDistanceEqualTo( const GCVEC2& other, const float& distance ) con
 /// @return  0 if both distances are equal.
 /// @return  1 if the real distance is greater than the given distance.
 //////////////////////////////////////////////////////////////////////////////////////////////////
-int GCVEC2::DistanceCompare( const GCVEC2& other, const float& distance ) const
+I8 GCVEC2::DistanceCompare( const GCVEC2& other, float distance ) const
 {
     float distanceSquared = distance * distance;
     float realDistanceSquared = DistanceToSquared( other );
-    return realDistanceSquared > distanceSquared - realDistanceSquared < distanceSquared;
+    return static_cast<I8>(realDistanceSquared > distanceSquared) - static_cast<I8>(realDistanceSquared < distanceSquared);
 }
 
 
@@ -668,11 +668,11 @@ bool GCVEC3::IsDistanceEqualTo( const GCVEC3& other, const float& distance ) con
 /// @return  0 if both distances are equal.
 /// @return  1 if the real distance is greater than the given distance.
 //////////////////////////////////////////////////////////////////////////////////////////////////
-int GCVEC3::DistanceCompare( const GCVEC3& other, const float& distance ) const
+I8 GCVEC3::DistanceCompare( const GCVEC3& other, const float& distance ) const
 {
     float distanceSquared = distance * distance;
     float realDistanceSquared = DistanceToSquared( other );
-    return realDistanceSquared > distanceSquared - realDistanceSquared < distanceSquared;
+    return static_cast<I8>(realDistanceSquared > distanceSquared) - static_cast<I8>(realDistanceSquared < distanceSquared);
 }
 
 

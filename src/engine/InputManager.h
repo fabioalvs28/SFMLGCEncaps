@@ -1,9 +1,7 @@
 #pragma once
 #define NOMINMAX
-#include <windows.h>
-#include <functional>
+
 #include "pch.h"
-#include "../core/pch.h"
 
 
 
@@ -23,7 +21,7 @@ public:
 protected:
     void InitializeCallbacks();
     std::vector<std::vector<std::function<void(GCEvent&)>>> callbacks;
-    GCEventManager* m_eventManager = nullptr;
+    GCEventManager* m_eventManager;
 };
 
 class GCKeyboardInputManager : public GCInputManager
@@ -141,7 +139,7 @@ public:
 
     int GetStateSize() const override { return KeyboardState::KEYSTATECOUNT; };
 
-    void SubscriEvent(GCEventManager* eventmanager);
+    void RegisterForKeyEvents();
 
     /// <summary>
     /// Bind a function to a specific key and key state
@@ -330,6 +328,9 @@ private:
 class GCInputSystem
 {
     friend class GCGameManager;
+
+public:
+    void SetEventManager(GCEventManager* eventMananger);
 
 public:
     GCKeyboardInputManager* m_pKeyboard;

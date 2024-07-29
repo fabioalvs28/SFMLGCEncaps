@@ -12,6 +12,12 @@
 
 
 
+void GCInputSystem::SetEventManager(GCEventManager* eventMananger)
+{
+    m_pKeyboard->m_eventManager = eventMananger;
+    m_pKeyboard->RegisterForKeyEvents();
+}
+
 GCInputSystem::GCInputSystem()
 {
     m_pKeyboard = new GCKeyboardInputManager();
@@ -103,14 +109,14 @@ void GCKeyboardInputManager::UnbindAction(int keyID, BYTE keyState)
 ////////////////////////////////////////////////////////////////
 void GCKeyboardInputManager::SendEvent(int index, BYTE state)
 {
-    //if (state == KeyboardState::DOWN)
-    //{
-    //    m_eventManager->QueueEvent(new GCKeyPressedEvent(index, state));
-    //}
-    //else if (state == KeyboardState::UP)
-    //{
-    //    m_eventManager->QueueEvent(new GCKeyReleasedEvent(index, state));
-    //}
+    if (state == KeyboardState::DOWN)
+    {
+        m_eventManager->QueueEvent(new GCKeyPressedEvent(index, state));
+    }
+    else if (state == KeyboardState::UP)
+    {
+        m_eventManager->QueueEvent(new GCKeyReleasedEvent(index, state));
+    }
     m_keyState[index] = state;
 }
 
@@ -141,9 +147,8 @@ void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
 ///
 /// @param eventmanager a pointer to the eventManager.
 ///////////////////////////////////////////////////////////////////
-void GCKeyboardInputManager::SubscriEvent(GCEventManager* eventmanager)
+void GCKeyboardInputManager::RegisterForKeyEvents()
 {
-    m_eventManager = eventmanager;
     m_eventManager->Subscribe(GCEventType::KeyPressed, this, &GCKeyboardInputManager::OnKeyPressed);
     m_eventManager->Subscribe(GCEventType::KeyReleased, this, &GCKeyboardInputManager::OnKeyReleased); 
 }

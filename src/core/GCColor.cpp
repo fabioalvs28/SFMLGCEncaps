@@ -9,7 +9,7 @@ GCColor::GCColor() {
     a = 255;
 }
 
-GCColor::GCColor(int r, int g, int b, int a = 255) {
+GCColor::GCColor(UI8 r, UI8 g, UI8 b, UI8 a = 255) {
     this->r = r;
     this->g = g;
     this->b = b;
@@ -45,17 +45,17 @@ GCColor::GCColor(const char* hexaCode) {
 GCColor::GCColor(float hue, float saturation, float light, float alpha = 1.0f) 
 {
     if (saturation == 0) {
-        r = g = b = light * 255;
-        a = alpha * 255;
+        r = g = b = static_cast<UI8>(light * 255);
+        a = static_cast<UI8>(alpha * 255);
     }
     else
     {
         float const q = light < 0.5f ? light * (1 + saturation) : light + saturation - light * saturation;
         float const p = 2 * light - q;
-        r = round(HSLToRGB(p, q, hue + 1.f / 3) * 255);
-        g = round(HSLToRGB(p, q, hue) * 255);
-        b = round(HSLToRGB(p, q, hue - 1.f / 3) * 255);
-        a = alpha * 255;
+        r = static_cast<UI8>(round(HSLToRGB(p, q, hue + 1.f / 3) * 255));
+        g = static_cast<UI8>(round(HSLToRGB(p, q, hue) * 255));
+        b = static_cast<UI8>(round(HSLToRGB(p, q, hue - 1.f / 3) * 255));
+        a = static_cast<UI8>(alpha * 255);
     }
 }
 
