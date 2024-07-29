@@ -56,7 +56,7 @@ void Window::Set4xMsaaState(bool value)
 	}
 }
 
-int Window::Run(GCRenderContext* pRender)
+bool Window::Run(GCRenderContext* pRender)
 {
 	MSG msg = { 0 };
 	mTimer.Reset();
@@ -75,9 +75,10 @@ int Window::Run(GCRenderContext* pRender)
 			mTimer.Tick();
 			CalculateFrameStats();
 		}
+		return true;
 	}
 
-	return (int)msg.wParam;
+	return false;
 }
 
 bool Window::Initialize()

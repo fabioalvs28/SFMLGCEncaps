@@ -18,7 +18,7 @@ public:
 	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
 	//Render format
 	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
-
+	inline int GetCurrBackBuffer() const { return m_CurrBackBuffer; }
 	//Msaa
 	inline bool Get4xMsaaState() const { return m_4xMsaaState; }
 	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
@@ -49,7 +49,6 @@ public:
 
 	inline UINT GetRenderWidth() const { return m_renderWidth; }
 	inline UINT GetRenderHeight() const { return m_renderHeight; }
-
 	// Setter 
 	inline void ResizeRender(int width, int height) { m_renderWidth = width;  m_renderHeight = height; }
 private:
@@ -101,6 +100,7 @@ private:
 	//Format
 	DXGI_FORMAT m_DepthStencilFormat;
 	DXGI_FORMAT m_BackBufferFormat;
+	DXGI_FORMAT m_rgbaFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
 	//Msaa
 	bool m_4xMsaaState;    // 4X MSAA enabled
@@ -112,17 +112,6 @@ private:
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSample;
 
-	//Post Processing Resources
-	ID3D12Resource* m_pPostProcessingRtv;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE m_pPostProcessingRtvAddress;
-
-	//Pixel Id Mapping Resources
-	ID3D12Resource* m_ObjectIdBufferRtv; //Rtv Buffer
-	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdBufferRtvAddress; //Cpu Handle Address
-	//#TODO Use the principal dsv, in reading 
-	ID3D12Resource* m_ObjectIdDepthStencilBuffer; //Rtv Buffer
-	CD3DX12_CPU_DESCRIPTOR_HANDLE m_ObjectIdDepthStencilBufferAddress; //Cpu Handle Address
-
 	//Descriptor Heap Creation
 	void CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** ppDescriptorHeap);
 
@@ -132,12 +121,26 @@ private:
 	GC_DESCRIPTOR_RESOURCE* CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE, D3D12_CLEAR_VALUE* clearValue = nullptr);
 
 	//Srv Manager
-	int m_srvOffsetCount = 300;
+	int m_srvStaticOffsetCount = 300;
+	int m_srvDynamicOffsetCount = 320;
 	std::list<CD3DX12_GPU_DESCRIPTOR_HANDLE> m_lShaderResourceView;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateDynamicSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateStaticSrvWithTexture(ID3D12Resource* textureResource, DXGI_FORMAT format);
+
+	//Uav Manager
+	int m_uavOffsetCount = 400;
+	std::list<CD3DX12_CPU_DESCRIPTOR_HANDLE> m_lUnorderedAccessView;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CreateUavTexture(ID3D12Resource* textureResource);
 
 	//Dsv Manager
 	int m_dsvOffsetCount = 0;
 	std::list<GC_DESCRIPTOR_RESOURCE*> m_lDepthStencilView;
 	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags);
+	
+	GCShader* m_postProcessingShader;
+	GCComputeShader* m_postProcessingShaderCS;
+	// Object / Layers Buffer Id Resources
+	GCShader* m_objectBufferIdShader;
 };
+
+// #TODO optimiser les srv dynamic, les passer en statique?

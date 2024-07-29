@@ -2,18 +2,14 @@
 #define NOMINMAX
 #include <windows.h>
 #include <functional>
-#include "../core/framework.h"
-#include "EventManager.h"
+#include "pch.h"
+#include "../core/pch.h"
 
 
-class GCControllerInputManager;
-class GCEventManager;
-class GCInputManager;
 
 class GCInputManager
 {
-
-    friend class GCGameManager;
+friend class GCGameManager;
 
 public:
 
@@ -42,6 +38,11 @@ public:
 
     bool IsKeyPressed(int keyID);
 
+    //////////////////////////////////////////////////
+    /// @brief Return the state of the key
+    ///
+    /// @param keyID key's ID in the keyState list. 
+    //////////////////////////////////////////////////
     BYTE GetKeyState(int keyID) { return m_keyState[keyID]; }
 
     bool GetKeyDown(int key);
@@ -206,106 +207,97 @@ private:
     
 };
 
-//
-//class GCControllerManager : public GCInputManager
-//{
-//
-//public: 
-//
-//    GCControllerManager();
-//    ~GCControllerManager();
-//    void GetConnectedControllers();
-//    void Update();
-//
-//    GCVector<GCControllerInputManager*> m_pControllerList;
-//};
-//
-//
-//class GCControllerInputManager : public GCControllerManager
-//{
-//
-//public: 
-//
-//    GCControllerInputManager();
-//    GCControllerInputManager(int id);
-//
-//
-//    enum ControllerID
-//    {
-//        A,B,X,Y,
-//        RSHOULDER, LSHOULDER, 
-//        LTRIGGER, RTRIGGER, 
-//        CROSS_UP,CROSSDOWN,CROSSLEFT,CROSSRIGHT,
-//        START, BACK,
-//        LJOYSTICK, RJOYSTICK,
-//        CONTROLLERIDCOUNT
-//    };
-//
-//    enum ControllerState
-//    {
-//        NONE, // NOT PRESSED
-//        STAY, // STAY PRESSED
-//        UP,   // RELEASED
-//        DOWN, // PRESSED ONCE
-//        CONTROLLERSTATECOUNT
-//    };
-//
-//    int GetIDSize() const override { return ControllerID::CONTROLLERIDCOUNT; };
-//
-//    int GetStateSize() const override { return ControllerState::CONTROLLERSTATECOUNT; };
-//
-//    void UpdateController();
-//
-//    GCVEC2* GetControllerLeftJoyStick(int controllerID) { return &m_pControllersLeftAxis; }
-//    GCVEC2* GetControllerRightJoyStick(int controllerID) { return &m_pControllersRightAxis; }
-//    float GetControllerLeftAxisX(int controllerID) { return m_pControllersLeftAxis.x; }
-//    float GetControllerLeftAxisY(int controllerID) { return m_pControllersLeftAxis.y; }
-//
-//
-//    float GetControllerRightAxisX(int controllerID) { return m_pControllersRightAxis.x; }
-//    float GetControllerRightAxisY(int controllerID) { return m_pControllersRightAxis.y; }
-//
-//    float GetControllerLeftTriggerState(int controllerID) { return m_pControllerTrigger.x; }
-//    float GetControllerRightTriggerState(int controllerID) { return m_pControllerTrigger.y; }
-//
-//    bool GetControllerButtonDown(int vButton);
-//    bool GetControllerButtonStay(int vButton);
-//    bool GetControllerButtonUp(int vButton);
-//
-//    GCVector<BYTE> m_buttonState;
-//private:
-//
-//
-//
-//    void UpdateJoySticksinput();
-//    void UpdateControllerInput();
-//    void UpdateTriggers();
-//
-//    void SendEvent(int index, BYTE state);
-//
-//    int m_ID;
-//    GCVEC2 m_pControllersLeftAxis;
-//    GCVEC2 m_pControllersRightAxis;
-//    GCVEC2 m_pControllerTrigger; // 0 - left, 1 - Right ;
-//
-//    GCVector<int> m_updatedControllerKeys;
-//
-//
-//};
+
+class GCControllerInputManager : public GCInputManager
+{
+
+public: 
+
+    GCControllerInputManager();
+    GCControllerInputManager(int id);
+
+
+    enum ControllerID
+    {
+        A,B,X,Y,
+        RSHOULDER, LSHOULDER, 
+        LTRIGGER, RTRIGGER, 
+        CROSS_UP,CROSSDOWN,CROSSLEFT,CROSSRIGHT,
+        START, BACK,
+        LJOYSTICK, RJOYSTICK,
+        CONTROLLERIDCOUNT
+    };
+
+    enum ControllerState
+    {
+        NONE, // NOT PRESSED
+        STAY, // STAY PRESSED
+        UP,   // RELEASED
+        DOWN, // PRESSED ONCE
+        CONTROLLERSTATECOUNT
+    };
+
+    int GetIDSize() const override { return ControllerID::CONTROLLERIDCOUNT; };
+
+    int GetStateSize() const override { return ControllerState::CONTROLLERSTATECOUNT; };
+
+    void UpdateController();
+
+    GCVEC2* GetControllerLeftJoyStick(int controllerID) { return &m_pControllersLeftAxis; }
+    GCVEC2* GetControllerRightJoyStick(int controllerID) { return &m_pControllersRightAxis; }
+    float GetControllerLeftAxisX(int controllerID) { return m_pControllersLeftAxis.x; }
+    float GetControllerLeftAxisY(int controllerID) { return m_pControllersLeftAxis.y; }
+
+
+    float GetControllerRightAxisX(int controllerID) { return m_pControllersRightAxis.x; }
+    float GetControllerRightAxisY(int controllerID) { return m_pControllersRightAxis.y; }
+
+    float GetControllerLeftTriggerState(int controllerID) { return m_pControllerTrigger.x; }
+    float GetControllerRightTriggerState(int controllerID) { return m_pControllerTrigger.y; }
+
+    bool GetControllerButtonDown(int vButton);
+    bool GetControllerButtonStay(int vButton);
+    bool GetControllerButtonUp(int vButton);
+
+    GCVector<BYTE> m_buttonState;
+private:
+
+
+
+    void UpdateJoySticksinput();
+    void UpdateControllerInput();
+    void UpdateTriggers();
+
+    void SendEvent(int index, BYTE state);
+
+    int m_ID;
+    GCVEC2 m_pControllersLeftAxis;
+    GCVEC2 m_pControllersRightAxis;
+    GCVEC2 m_pControllerTrigger; // 0 - left, 1 - Right ;
+
+    GCVector<int> m_updatedControllerKeys;
+
+
+};
 
 
 class GCInputSystem
 {
     friend class GCGameManager;
+
 public:
     void SetEventManager(GCEventManager* eventMananger);
 
 public:
     GCKeyboardInputManager* m_pKeyboard;
     GCMouseInputManager* m_pMouse;
+    std::vector<GCControllerInputManager*> m_pControllerList;
+
 protected:
     GCInputSystem();
     ~GCInputSystem() {}
 
+    void GetConnectedControllers();
     void Update();
+
 };

@@ -1,14 +1,13 @@
 #pragma once
-#include "../core/framework.h"
-
-class GCGameObject;
-class GCScene;
+#include "pch.h"
+#include "../core/pch.h"
 
 class GCSceneManager
 {
 friend class GCGameObject;
 friend class GCScene;
 friend class GCGameManager;
+friend class GC;
 
 private:
     GCSceneManager() = default;
@@ -23,18 +22,20 @@ private:
 	void UnloadScene( GCScene* pScene );
 	void DestroyScene( GCScene* pScene );
 	
-	void CreateGameObject( GCGameObject* pGameObject );
-	void DestroyGameObject( GCGameObject* pGameObject );
+	void CreateComponent( Component* pComponent );
+	void DestroyComponent( Component* pComponent );
 	
-	void AddGameObjectToDeleteQueue( GCGameObject* pGameObject );
-	void AddGameObjectToCreateQueue( GCGameObject* pGameObject );
+	void AddComponentToCreateQueue( Component* pComponent );
+	void AddComponentToDeleteQueue( Component* pComponent );
 	
 	GCScene* CreateScene();
 
 private:
-    GCScene* m_pActiveScene;
-	GCList<GCScene*> m_scenesList;
-	GCList<GCScene*> m_loadedScenesList;
-	GCList<GCGameObject*> m_gameObjectsToDeleteList;
-	GCList<GCGameObject*> m_gameObjectsToCreateList;
+    GCScene* m_pActiveScene; // A pointer to the active Scene
+	
+	GCList<GCScene*> m_scenesList; // A list of pointers to every existing Scenes in the Game
+	GCList<GCScene*> m_loadedScenesList; // A list of pointers to every loaded scenes in the Game
+	
+	GCList<Component*> m_componentsToCreateList; // A list of pointers to the Components to create in the next frame
+	GCList<Component*> m_componentsToDeleteList; // A list of pointers to the Components to delete in the next frame
 };

@@ -2,22 +2,19 @@
 #include "GameManager.h"
 
 #include "../Render/pch.h"
-#include "InputManager.h"
-#include "EventManager.h"
-#include "PhysicManager.h"
-#include "UpdateManager.h"
-#include "SceneManager.h"
-#include "RenderManager.h"
-#include "GC.h"
 
-// TODO Timer Implementation
-
+///////////////////////////////////////////////////////////////////
+/// @brief Default constructor for the GameManager class.
+/// 
+/// @param hInstance A pointer to the windows's app's hInstance.
+///////////////////////////////////////////////////////////////////
 GCGameManager::GCGameManager( HINSTANCE hInstance )
 {
     m_pNode = nullptr;
     m_pWindow = new Window( hInstance );
     m_pWindow->Initialize();
     
+    m_pTimer = new GCTime();
     m_pEventManager = new GCEventManager();
     m_pInputSystem = new GCInputSystem();
     m_pPhysicManager = new GCPhysicManager();
@@ -30,6 +27,11 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Starts this GameManager's GameLoop.
+/// 
+/// @note If there was already an active GameManager, its GameLoop will be stopped by this function.
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCGameManager::Run()
 {
     //! Stop the GameLoop from the old active GameManager if there is one
@@ -37,10 +39,14 @@ void GCGameManager::Run()
     GameLoop();
 }
 
+////////////////////////////
+/// @brief Runs the Game.
+////////////////////////////
 void GCGameManager::GameLoop()
 {
     while ( true )
     {
+        m_pTimer->Update();
         m_pInputSystem->Update();
         m_pEventManager->Update();
         m_pPhysicManager->Update();
@@ -53,5 +59,8 @@ void GCGameManager::GameLoop()
 
 
 
+//////////////////////////////////////////////////////////////
+/// @brief Sets this GameManager as the active GameManager.
+//////////////////////////////////////////////////////////////
 void GCGameManager::SetActiveGameManager()
 { GC::m_pActiveGameManager = this; }
