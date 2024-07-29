@@ -1,17 +1,10 @@
 ﻿#include "pch.h"
-//
-//
+#include "../engine/pch.h"
+#include "../Render/pch.h"
+#include "ScriptStart.h"
 
-//
 #include <iostream>
- #include <Windows.h>
- #include "Window.h"
-
-//#include "SFML/Graphics.hpp"
-
-
-CREATE_SCRIPT_START( Example )
-CREATE_SCRIPT_END
+#include <Windows.h>
 
 
 //void CreateConsole()
@@ -23,7 +16,6 @@ CREATE_SCRIPT_END
 //    freopen_s(&fp, "CONIN$", "r", stdin);
 //}
 
-#include "../render/pch.h"
 
 using namespace DirectX;
 
@@ -31,6 +23,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 {
     
     GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
+    GCScene* pScene = GCScene::Create();
+    GCGameObject* pMario = pScene->CreateGameObject();
+    GCGameObject* pCAOW = pScene->CreateGameObject();
+    //pCAOW->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    //pCAOW->AddComponent<BoxCollider>()->SetVisible( true );
+    //pMario->AddComponent<SpriteRenderer>()->SetSprite( "GoofyMario.dds" );
+    //pMario->AddComponent<BoxCollider>()->SetVisible( true );
+    pMario->m_transform.SetScale({ 5 , 5 , 0 });
+    pCAOW->m_transform.SetScale({ 5,5,0 });
+    ScriptStart* pScriptStart = pMario->AddComponent<ScriptStart>();
+    pScriptStart->pKeyboard = GC::GetActiveInputSystem()->m_pKeyboard;
+    pScriptStart->pMouse = GC::GetActiveInputSystem()->m_pMouse;
+    pGameManager->Run();
     
 
     // Initialisation des ressources graphiques
@@ -44,45 +49,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //SET_FLAG(flagsLightTexture, HAS_UV);
     //SET_FLAG(flagsLightTexture, HAS_NORMAL);
 
-    GCScene* pScene = GCScene::Create();
+    //GCScene* pScene = GCScene::Create();
 
-    GCGameObject* test1 = pScene->CreateGameObject();
-    GCGameObject* test3 = pScene->CreateGameObject();
-    GCGameObject* test3bis = pScene->CreateGameObject();
-    GCGameObject* test2 = pScene->CreateGameObject();
+    //GCGameObject* test1 = pScene->CreateGameObject();
+    //GCGameObject* test3 = pScene->CreateGameObject();
+    //GCGameObject* test3bis = pScene->CreateGameObject();
+    //GCGameObject* test2 = pScene->CreateGameObject();
 
-    test3->SetLayer(10);
-    test2->SetLayer(40);
-    test3bis->SetLayer(15);
+    //test3->SetLayer(10);
+    //test2->SetLayer(40);
+    //test3bis->SetLayer(15);
 
-    //test1->AddComponent<BoxCollider>();
-    test2->AddComponent<BoxCollider>()->SetVisible(true);
-    test2->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
+    ////test1->AddComponent<BoxCollider>();
+    //test2->AddComponent<BoxCollider>()->SetVisible(true);
+    //test2->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
 
-    test3->AddComponent<BoxCollider>()->SetVisible(true);
-    test3->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
+    //test3->AddComponent<BoxCollider>()->SetVisible(true);
+    //test3->AddComponent<SpriteRenderer>()->SetSprite("Captain_Flameheart_Art.dds");
 
-    test3bis->AddComponent<SpriteRenderer>()->SetSprite("gojo.dds");
+    //test3bis->AddComponent<SpriteRenderer>()->SetSprite("gojo.dds");
 
-    test1->m_transform.SetPosition(GCVEC3(0, 0, 0));
-    
-    test2->m_transform.SetPosition(GCVEC3(0, 0, 0));
-    test2->m_transform.SetScale(GCVEC3(5, 8.5, 1));
+    //test1->m_transform.SetPosition(GCVEC3(0, 0, 0));
+    //
+    //test2->m_transform.SetPosition(GCVEC3(0, 0, 0));
+    //test2->m_transform.SetScale(GCVEC3(5, 8.5, 1));
 
-    test3->m_transform.SetPosition(GCVEC3(0, 0, 0));
-    test3->m_transform.SetScale(GCVEC3(10, 10, 1));
+    //test3->m_transform.SetPosition(GCVEC3(0, 0, 0));
+    //test3->m_transform.SetScale(GCVEC3(10, 10, 1));
 
-    test3bis->m_transform.SetPosition(GCVEC3(0, 0, 0));
-    test3bis->m_transform.SetScale(GCVEC3(2, 2, 1));
+    //test3bis->m_transform.SetPosition(GCVEC3(0, 0, 0));
+    //test3bis->m_transform.SetScale(GCVEC3(2, 2, 1));
 
-    test2->SetLayer(0);
+    //test2->SetLayer(0);
 
-    //auto startTime = std::chrono::steady_clock::now();
-    
-    int counter = 0;
-    GCInputSystem* pInputs = GC::GetActiveInputSystem();
+    ////auto startTime = std::chrono::steady_clock::now();
+    //
+    //int counter = 0;
+    //GCInputSystem* pInputs = GC::GetActiveInputSystem();
 
-    pGameManager->Run();
+    //pGameManager->Run();
     
     //if (pInputs->m_pMouse->GetKeyDown(GCMouseInputManager::LEFT))
     //    std::cout << "aaaaa";
