@@ -1,5 +1,7 @@
 #pragma once
 
+class GCTexture;
+
 class GCFrame
 {
 public:
@@ -15,6 +17,7 @@ public:
 	bool IsFlipingX() const;
 	bool IsFlipingY() const;
 
+	void SetTexture(std::string flieName);
 
 private:
 	int m_x;
@@ -24,4 +27,7 @@ private:
 	float m_displayTime;
 	bool m_isFlipingX;
 	bool m_isFlipingY;
+
+	GCMesh* m_pMesh;
+
 };

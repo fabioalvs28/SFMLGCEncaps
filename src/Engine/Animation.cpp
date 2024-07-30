@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "../Render/pch.h"
 
 Animation::Animation() : m_frames(0), m_currentFrameIndex(0), m_currentFrameTime(0) {}
 
@@ -42,4 +43,10 @@ const GCFrame* Animation::GetCurrentFrame() const
 		return &m_frames[m_currentFrameIndex];
 	}
 	return nullptr;
+}
+
+
+void Animation::SetSpriteSheet(std::string fileName)
+{
+	
 }

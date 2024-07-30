@@ -15,23 +15,27 @@ void GCAnimationManager::Init()
 
 void GCAnimationManager::AddAnimation(const Animation& animation, GCString animationName)
 {
-	m_animationList.PushBack(animation);
+	m_animationList.Insert(animationName, animation);
 	m_numberOfFrames = animation.GetNumberOfFrames();
 	m_currentFrameIndex = animation.GetCurrentFrameIndex();
 	m_timeToDisplay = animation.GetCurrentFrame()->GetDisplayTime();
-	m_animationName = animationName;
+}
+
+void GCAnimationManager::SetActiveAnimation(GCString animationName)
+{
+	m_activeAnimation = animationName; 
 }
 
 
 
 int GCAnimationManager::GetNumberOfFrames() const
 {
-	return m_numberOfFrames;
+	return m_animationList.GetValue(m_activeAnimation).GetNumberOfFrames();
 }
 
 int GCAnimationManager::GetCurrentFrameIndex() const
 {
-	return m_currentFrameIndex;
+	return m_animationList.GetValue(m_activeAnimation).GetCurrentFrameIndex();
 }
 
 float GCAnimationManager::GetTimeToDisplay() const

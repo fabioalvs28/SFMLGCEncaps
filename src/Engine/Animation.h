@@ -1,6 +1,7 @@
 #pragma once
 #include "../core/framework.h"
 
+
 class Animation
 {
 public:
@@ -15,7 +16,10 @@ public:
 	int GetNumberOfFrames() const { return static_cast<int>(m_frames.GetSize()); }
 	int GetCurrentFrameIndex() const { return m_currentFrameIndex; }
 
+	void SetSpriteSheet(std::string fileName);
+
 private:
+
 	GCVector<GCFrame> m_frames;
 	int m_currentFrameIndex;
 	float m_currentFrameTime;

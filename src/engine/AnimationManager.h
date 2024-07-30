@@ -12,15 +12,16 @@ public:
 
 	void Init();
 	void AddAnimation(const Animation& animation, GCString animationName);
+	void SetActiveAnimation(GCString animationName);
 
 	int GetNumberOfFrames() const;
 	int GetCurrentFrameIndex() const;
 	float GetTimeToDisplay() const;
 
 private:
-	GCVector<Animation> m_animationList;
-	GCString m_animationName;
+	GCMap<GCString, Animation> m_animationList;
 	float m_timeToDisplay;
 	int m_numberOfFrames;
 	int m_currentFrameIndex;
+	GCString m_activeAnimation;
 };

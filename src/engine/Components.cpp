@@ -133,8 +133,10 @@ SpriteRenderer::SpriteRenderer()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
+	m_pGeometry = pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Blue)).resource;
+
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshColor(GC::GetActiveRenderManager()->m_pPlane).resource;
+	m_pMesh = pGraphics->CreateMeshColor(m_pGeometry).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 	GCShader* shaderColor = pGraphics->CreateShaderColor().resource;
@@ -155,12 +157,12 @@ void SpriteRenderer::SetSprite(std::string fileName)
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture(GC::GetActiveRenderManager()->m_pPlane).resource;
+	m_pMesh = pGraphics->CreateMeshTexture(m_pGeometry).resource;
 	GCTexture* texture = pGraphics->CreateTexture( std::string("../../../src/Textures/") + fileName).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
-	ResourceCreationResult<GCShader*> shaderTexture = pGraphics->CreateShaderTexture();
-	ResourceCreationResult<GCMaterial*> mat = pGraphics->CreateMaterial(shaderTexture.resource);
+	GC_RESOURCE_CREATION_RESULT<GCShader*> shaderTexture = pGraphics->CreateShaderTexture();
+	GC_RESOURCE_CREATION_RESULT<GCMaterial*> mat = pGraphics->CreateMaterial(shaderTexture.resource);
 	m_pMaterial = mat.resource;
 	m_pMaterial->SetTexture(texture);
 
@@ -178,7 +180,8 @@ SpriteRenderer* SpriteRenderer::Duplicate()
 	pNewComponent->m_color = m_color; 
 	*(pNewComponent->m_pMesh) = *m_pMesh;
 	*(pNewComponent->m_pMaterial) = *m_pMaterial;
-	
+	*(pNewComponent->m_pGeometry) = *m_pGeometry;
+
 	return pNewComponent;
 }
 
@@ -224,8 +227,10 @@ BoxCollider::BoxCollider()
 
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
+	m_pGeometry = pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Blue)).resource;
+
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture(GC::GetActiveRenderManager()->m_pPlane).resource;
+	m_pMesh = pGraphics->CreateMeshTexture(m_pGeometry).resource;
 	GCTexture* texture = pGraphics->CreateTexture("../../../src/Textures/BoxColliderSquare.dds").resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
@@ -246,6 +251,7 @@ BoxCollider* BoxCollider::Duplicate()
 
 	*(pNewComponent->m_pMesh) = *m_pMesh;
 	*(pNewComponent->m_pMaterial) = *m_pMaterial;
+	*(pNewComponent->m_pGeometry) = *m_pGeometry;
 	pNewComponent->m_trigger = m_trigger;
 	pNewComponent->m_visible = m_visible;
 
@@ -380,7 +386,7 @@ void Camera::Update()
 	if ( dirty == false )
 		return;
 	
-	GC::GetActiveRenderManager()->m_pGraphics->CreateViewProjConstantBuffer( m_pGameObject->m_transform.m_position, m_target, m_pGameObject->m_transform.m_up, 0.0f, 0.0f, m_nearZ, m_farZ, m_viewWidth, m_viewHeight, GC_PROJECTIONTYPE::ORTHOGRAPHIC, m_projectionMatrix, m_viewMatrix );
+	GC::GetActiveRenderManager()->m_pGraphics->CreateViewProjConstantBuffer( m_pGameObject->m_transform.m_position, m_target, m_pGameObject->m_transform.m_up, 0.0f, 0.0f, m_nearZ, m_farZ, m_viewWidth, m_viewHeight, GC_PROJECTION_TYPE::ORTHOGRAPHIC, m_projectionMatrix, m_viewMatrix );
 }
 
 

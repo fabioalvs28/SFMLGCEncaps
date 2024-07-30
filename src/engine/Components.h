@@ -111,6 +111,7 @@ protected:
     inline static const int m_ID = ++Component::componentCount;
     GCColor m_color;
 
+    GCGeometry* m_pGeometry;
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
 };
@@ -149,6 +150,7 @@ protected:
     
     GCListNode<Collider*>* m_pColliderNode;
 
+    GCGeometry* m_pGeometry;
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
 };
