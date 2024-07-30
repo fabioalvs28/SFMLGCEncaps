@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "RenderManager.h"
+#include "../core/pch.h"
 
 using namespace DirectX;
 

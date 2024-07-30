@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "GameObject.h"
 
 //todo HasTag( const char* tag )
 
@@ -90,8 +89,10 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
 ///////////////////////////////////////////////////////
 void GCGameObject::Destroy()
 {
-	ClearComponents();
-    DestroyChildren();
+	if ( m_componentsList.GetSize() != 0 )
+        ClearComponents();
+    if ( m_childrenList.GetFirstNode() != nullptr )
+        DestroyChildren();
     m_pScene->DestroyGameObject( this );
 }
 
