@@ -18,6 +18,8 @@ protected:
     ~GCGameObject() = default;
 
 public:
+    void Destroy();
+    
     GCGameObject* Duplicate();
     GCGameObject* Duplicate( GCGameObject* pParent );
     
@@ -57,8 +59,6 @@ public:
     void ClearComponents();
 
 protected:
-    void Destroy();
-    
     void RemoveTag( int index );
     
     void ActivateGlobal();
