@@ -385,7 +385,7 @@ int SpriteSheetGenerator::Packer()
 
     GCFile metadataFile2 = GCFile((m_outputPath.string() + "spritSheetData.ssdg").c_str(), "rb");
     Metadata::Data metadata2;
-    Metadata::MetadataFileToStruct(metadataFile, metadata);
+    Metadata::MetadataFileToStruct(metadataFile2, metadata2);
 
     return 0;
 }
