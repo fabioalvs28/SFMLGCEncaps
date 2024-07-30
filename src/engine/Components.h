@@ -38,8 +38,6 @@ public:
     bool IsActive() { return m_globalActive && m_selfActive; }
 
     GCGameObject* GetGameObject() { return m_pGameObject; }
-    
-    virtual Component* Duplicate() = 0;
 
 protected:
     Component();
@@ -47,6 +45,9 @@ protected:
     
     virtual void RegisterToManagers();
     virtual void UnregisterFromManagers();
+    
+    virtual Component* Duplicate() = 0;
+    virtual void Copy( Component *pNewComponent );
     
     virtual void Start() {}
     virtual void Update() {}
@@ -90,27 +91,24 @@ public:
     const int GetID() override { return m_ID; }
     
     void SetSprite( std::string fileName);
-    void SetColor() {};
     
     void GetSprite() {};
-    GCColor& GetColor() { return m_color; }
 
 protected:
 	SpriteRenderer();
     ~SpriteRenderer() override {}
 
-    void Render() override;
-    void Destroy() override {}
     SpriteRenderer* Duplicate() override; 
+    
+    void Render() override;
     
     FLAGS GetFlags() override { return RENDER; }
 
-    virtual int GetComponentLayer() override { return 5; }
+    int GetComponentLayer() override { return 5; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    GCColor m_color;
-
+    
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
 };
@@ -131,6 +129,8 @@ public:
     
     void RegisterToManagers() override;
     void UnregisterFromManagers() override;
+    
+    void Copy( Component* pComponent ) override;
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -170,10 +170,9 @@ protected:
     BoxCollider();
     ~BoxCollider() override {}
 
-    void FixedUpdate() override {}
-    void Render() override;
-    void Destroy() override {}
     BoxCollider* Duplicate() override;
+    
+    void Render() override;
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -197,9 +196,6 @@ protected:
     CircleCollider() {}
     ~CircleCollider() override {}
     
-    void FixedUpdate() override {}
-    void Render() override {}
-    void Destroy() override {}
     CircleCollider* Duplicate() override;
 
 protected:
@@ -226,9 +222,9 @@ protected:
     RigidBody();
     ~RigidBody() override {}
     
-    void FixedUpdate() override;
-    void Destroy() override {}
     RigidBody* Duplicate() override;
+    
+    void FixedUpdate() override;
     
     FLAGS GetFlags() override { return FIXED_UPDATE; }
 
@@ -256,14 +252,9 @@ protected:
 	Animator() {}
     ~Animator() override {}
     
-    void Update() override {}
-    void Destroy() override {}
     Animator* Duplicate() override;
     
     FLAGS GetFlags() override { return UPDATE; }
-
-    void PlayAnimation();
-    void StopAnimation();
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -290,9 +281,9 @@ protected:
 	SoundMixer() {}
     ~SoundMixer() override {}
     
-    void Update() override {}
-    void Destroy() override {}
     SoundMixer* Duplicate() override;
+    
+    void Update() override {}
     
     FLAGS GetFlags() override { return UPDATE; }
 
@@ -318,9 +309,9 @@ protected:
     Camera();
     ~Camera() override {}
     
-    void Update() override;
-    void Destroy() override {}
     Camera* Duplicate() override;
+    
+    void Update() override;
     
     FLAGS GetFlags() override { return NONE; }
 
@@ -383,6 +374,7 @@ protected:
         ~Script##CLASS_NAME() = default; \
          \
         Script##CLASS_NAME* Duplicate() override; \
+         \
         /*void Start() override; \
         void Update() override; \
         void FixedUpdate() override; \
