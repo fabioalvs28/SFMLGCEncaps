@@ -180,6 +180,10 @@ XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
+
+    
+
+
     // Initialisation des ressources graphiques
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
     profiler.InitializeConsole();
@@ -212,11 +216,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
     //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("Hello");
 
-    // Load Sprite Sheet
-    GC_SPRITESHEET_INFO spriteSheetInfo = graphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheet(4, 6, 823, 823);
-    // Set Sprite Sheet Uv on plane or Square
-    graphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(geoPlane.resource, 22, spriteSheetInfo);
 
+    // Load Sprite Sheet
+    GC_SPRITESHEET_DATA spriteSheetInfo = graphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheet("../../../src/Render/SpriteSheet/SS_data.ssdg");
+
+    graphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(geoPlane.resource, 0, 1, spriteSheetInfo);
 
 
 
@@ -246,7 +250,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //auto meshPlaneAlphabet2 = graphics->CreateMeshTexture(geoPlaneOneSprite2);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
-    std::string texturePath2 = "../../../src/Render/Textures/sprite_sheet.dds";
+    std::string texturePath2 = "../../../src/Render/Textures/sprite_sheet_0.dds";
     auto texture = graphics->CreateTexture(texturePath);
     auto texture2 = graphics->CreateTexture(texturePath2);
 
@@ -280,7 +284,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 
-
+    // #TODO Update for each object - Scaling Ratio
     float scaleX = 1.0f;
     float scaleY = 1.0f;
     float aspectRatio = window->AspectRatio();
@@ -299,6 +303,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCMATRIX worldCubeInner2 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner2);
     GCMATRIX worldCubeInner3 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner3);
     GCMATRIX worldSphere = GCUtils::XMMATRIXToGCMATRIX(worldMatrixSphere);
+
+    // #TODO FEATURE SCALING ETIREMENT SPRITE
 
     auto startTime = std::chrono::steady_clock::now();
 
