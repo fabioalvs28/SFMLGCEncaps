@@ -86,6 +86,7 @@ void Component::Activate()
 		return;
 
 	RegisterToManagers();
+	OnActivate();
 }
 
 void Component::Deactivate()
@@ -102,6 +103,7 @@ void Component::Deactivate()
 	    return;
 	
 	UnregisterFromManagers();
+	OnDeactivate();
 }
 
 void Component::ActivateGlobal()
@@ -118,6 +120,7 @@ void Component::ActivateGlobal()
 		return;
 	
 	RegisterToManagers();
+	OnActivate();
 }
 
 void Component::DeactivateGlobal()
@@ -134,6 +137,7 @@ void Component::DeactivateGlobal()
 		return;
 	
 	UnregisterFromManagers();
+	OnDeactivate();
 }
 
 void Component::SetActive( bool active )

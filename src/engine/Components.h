@@ -53,6 +53,8 @@ protected:
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
+    virtual void OnActivate() {}
+    virtual void OnDeactivate() {}
     virtual void Destroy() {}
     
     virtual FLAGS GetFlags() = 0;
