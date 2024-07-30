@@ -34,6 +34,8 @@ public:
 	inline ID3D12CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
 	inline ID3D12CommandAllocator* GetCommandAllocator() const { return m_DirectCmdListAlloc; }
 	inline ID3D12Fence* GetFence() { return m_Fence; }
+	inline ID3D12Debug* GetDebugController() { return m_pDebugController; }
+
 
 	//Descriptor Heaps
 	inline ID3D12DescriptorHeap* GetRtvHeap() { return m_pRtvHeap; }
@@ -82,6 +84,9 @@ private:
 	//Fence
 	ID3D12Fence* m_Fence;
 	UINT64 m_CurrentFence;
+
+	//Debug Controller
+	ID3D12Debug* m_pDebugController;
 
 	//Descriptor heaps
 	ID3D12DescriptorHeap* m_pRtvHeap;

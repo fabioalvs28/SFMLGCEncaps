@@ -1,4 +1,4 @@
-struct GCMESHBUFFERDATA
+struct GC_MESH_BUFFER_DATA
 {
     // System memory copies.  Use Blobs because the vertex/index format can be generic.
     // It is up to the client to cast appropriately.  

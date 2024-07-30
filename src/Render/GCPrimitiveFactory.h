@@ -25,7 +25,6 @@ public:
 		std::vector<DirectX::XMFLOAT2>& uvs,
 		std::vector<DirectX::XMFLOAT3>& normals);
 
-	//std::vector<DirectX::XMFLOAT3> GenerateNormal(const std::vector<uint16_t>& index, const std::vector<DirectX::XMFLOAT3>& pos);
 	GC_GRAPHICS_ERROR BuildGeometry(GC_PRIMITIVE_ID index, DirectX::XMFLOAT4 color, GCGeometry* pGeometry);
 
 private:

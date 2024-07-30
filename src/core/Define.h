@@ -11,6 +11,18 @@ enum LogLevel{
     LOG_FATAL
 };
 
+
+// Flags Byte Structure
+
+// Check if a specific flag is set
+#define GC_HAS_FLAG(flags, flag) (((flags) & (flag)) != 0)
+// Set a specific flag
+#define GC_SET_FLAG(flags, flag) ((flags) |= (flag))
+// Unset a specific flag
+#define GC_UNSET_FLAG(flags, flag) ((flags) &= ~(flag))
+
+//*
+
 //Use Example:
 // int x = 5;
 // ASSERT( x == 5, LOG_WARNING, "x should be 5");
