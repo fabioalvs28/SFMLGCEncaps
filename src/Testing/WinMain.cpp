@@ -8,20 +8,17 @@ using namespace DirectX;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-    
     GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
     GCScene* pScene = GCScene::Create();
     GCGameObject* pMario = pScene->CreateGameObject();
+    pMario->AddComponent<ScriptStart>();
+    GCGameObjectTransform& transform = pMario->m_transform;
     GCGameObject* pCAOW = pScene->CreateGameObject();
     //pCAOW->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
     //pCAOW->AddComponent<BoxCollider>()->SetVisible( true );
     //pMario->AddComponent<SpriteRenderer>()->SetSprite( "GoofyMario.dds" );
     //pMario->AddComponent<BoxCollider>()->SetVisible( true );
-    pMario->m_transform.SetScale({ 5 , 5 , 0 });
-    pCAOW->m_transform.SetScale({ 5,5,0 });
-    ScriptStart* pScriptStart = pMario->AddComponent<ScriptStart>();
-    pScriptStart->pKeyboard = GC::GetActiveInputSystem()->m_pKeyboard;
-    pScriptStart->pMouse = GC::GetActiveInputSystem()->m_pMouse;
+    pCAOW->m_transform.SetScale( GCVEC3( 5, 5, 0 ) );
     pGameManager->Run();
     
 
