@@ -222,12 +222,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 
-
-    //auto geoPlaneOneSprite2 = allSpriteOnSpriteSheet[1];
-
-
-
-
     // Chargement des shaders personnalisés
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
@@ -278,27 +272,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCMATRIX storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
     GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 
-    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
-    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(1.0f, 0.0f, 0.0f); // Cube interne centré
-    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(-1.0f, 0.0f, 0.0f); // Cube interne centré
-    XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); // Cube interne centré
-    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
+    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); 
+    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(1.0f, 0.0f, 0.0f); 
+    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(-1.0f, 0.0f, 0.0f); 
+    XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); 
+    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); 
 
 
 
-    float swapChainWidth = 1920.0f;  // Width of the swap chain or screen
-    float swapChainHeight = 1080.0f; // Height of the swap chain or screen
-    float aspectRatio = swapChainWidth / swapChainHeight;
+
     float scaleX = 1.0f;
     float scaleY = 1.0f;
+    float aspectRatio = window->AspectRatio();
+
     if (aspectRatio > 1.0f) {
-        scaleY = 1.0f / aspectRatio;
+        scaleX = 1.0f / aspectRatio;
     }
     else {
-        scaleX = aspectRatio;
+        scaleY = aspectRatio;
     }
     XMMATRIX additionalScaleMatrix = XMMatrixScaling(scaleX, scaleY, 1.0f); 
-    XMMATRIX worldMatrixCubeInnerScaled = additionalScaleMatrix * worldMatrixCubeInner; 
+    XMMATRIX worldMatrixCubeInnerScaled = worldMatrixCubeInner * additionalScaleMatrix;
 
     GCMATRIX worldCubeOuter = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeOuter);
     GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInnerScaled);

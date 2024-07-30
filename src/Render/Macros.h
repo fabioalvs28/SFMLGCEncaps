@@ -169,7 +169,7 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 // Lights Type
 #define GC_LIGHT_TYPE_DIRECTIONAL                   0
 #define GC_LIGHT_TYPE_SPOT                          1
-#define GC_LIGHT_TYPE_POINt                         2
+#define GC_LIGHT_TYPE_POINT                         2
 
 // 
 #ifndef ReleaseCom
