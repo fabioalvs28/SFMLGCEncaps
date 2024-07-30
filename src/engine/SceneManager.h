@@ -3,6 +3,7 @@
 
 class GCSceneManager
 {
+friend class Component;
 friend class GCGameObject;
 friend class GCScene;
 friend class GCGameManager;

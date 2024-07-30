@@ -117,6 +117,7 @@ void GCSceneManager::CreateComponent( Component* pComponent )
 		pComponent->m_created = true;
 		pComponent->RegisterToManagers();
 	}
+	pComponent->Start();
 }
 
 ///////////////////////////////////////////////////////////////
