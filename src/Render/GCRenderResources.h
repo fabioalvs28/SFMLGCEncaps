@@ -147,5 +147,3 @@ private:
 	// Object / Layers Buffer Id Resources
 	GCShader* m_objectBufferIdShader;
 };
-
-// #TODO optimiser les srv dynamic, les passer en statique?

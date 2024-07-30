@@ -9,5 +9,4 @@ enum GC_PRIMITIVE_ID
 	Sphere,
 	Quad,
 	PlaneBorders,
-	Square,
 };

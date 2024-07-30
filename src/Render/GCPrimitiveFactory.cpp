@@ -348,48 +348,6 @@ void GCPrimitiveFactory::GenerateCubeSkybox(std::vector<DirectX::XMFLOAT3>& vert
     normals.assign(cubeNormals, cubeNormals + 24); // Assign 24 normals
 }
 
-void GCPrimitiveFactory::GenerateSquare(std::vector<DirectX::XMFLOAT3>& vertices,
-    std::vector<uint16_t>& indices,
-    std::vector<DirectX::XMFLOAT2>& uvs,
-    std::vector<DirectX::XMFLOAT3>& normals)
-{
-    // Define vertices for the square (4 vertices)
-    DirectX::XMFLOAT3 positions[4] = {
-        { -0.5f, -0.5f, 0.0f }, // 0 (Bottom-left)
-        {  0.5f, -0.5f, 0.0f }, // 1 (Bottom-right)
-        {  0.5f,  0.5f, 0.0f }, // 2 (Top-right)
-        { -0.5f,  0.5f, 0.0f }  // 3 (Top-left)
-    };
-
-    // Define indices for two triangles to form the square
-    uint16_t squareIndices[6] = {
-        0, 1, 2, // Bottom-right triangle
-        0, 2, 3  // Top-left triangle
-    };
-
-    // Define UVs for each vertex (4 vertices)
-    DirectX::XMFLOAT2 squareUVs[4] = {
-        { 0.0f, 1.0f }, // Bottom-left
-        { 1.0f, 1.0f }, // Bottom-right
-        { 1.0f, 0.0f }, // Top-right
-        { 0.0f, 0.0f }  // Top-left
-    };
-
-    // Define normals for each vertex (4 vertices)
-    DirectX::XMFLOAT3 squareNormals[4] = {
-        { 0.0f, 0.0f, 1.0f }, // Normal facing out of the screen
-        { 0.0f, 0.0f, 1.0f },
-        { 0.0f, 0.0f, 1.0f },
-        { 0.0f, 0.0f, 1.0f }
-    };
-
-    // Copy vertices, indices, UVs, and normals into the provided vectors
-    vertices.assign(positions, positions + 4);
-    indices.assign(squareIndices, squareIndices + 6);
-    uvs.assign(squareUVs, squareUVs + 4);
-    normals.assign(squareNormals, squareNormals + 4);
-}
-
 bool GCPrimitiveFactory::Initialize() 
 {
     // Create circle vertices, uvs and indices
@@ -428,13 +386,6 @@ bool GCPrimitiveFactory::Initialize()
     std::vector<DirectX::XMFLOAT3> cubeSkyboxNormals;
 
     GenerateCubeSkybox(cubeSkyboxVertices, cubeSkyboxIndices, cubeSkyboxUvs, cubeSkyboxNormals);
-    
-    std::vector<DirectX::XMFLOAT3> squareVertices;
-    std::vector<DirectX::XMFLOAT2> squareUvs;
-    std::vector<uint16_t> squareIndices;
-    std::vector<DirectX::XMFLOAT3> squareNormals;
-
-    GenerateCubeSkybox(squareVertices, squareIndices, squareUvs, squareNormals);
 
     //Put all data in map
     m_primitiveInfos = 
@@ -515,12 +466,6 @@ bool GCPrimitiveFactory::Initialize()
             {L"uvs", planeBordersUvs},
             {L"normals", planeBordersNormals},
         },
-        { //Square
-            {L"index", squareIndices},
-            {L"pos", squareVertices},
-            {L"uvs", squareUvs},
-            {L"normals", squareNormals},
-        }
     };
 
     return true;
