@@ -4,8 +4,11 @@
 #include <vector>
 #include <iostream>
 #include <GCFile.h>
+#ifndef NOJSON
 #include "nlohmann/json.hpp"
 using json = nlohmann::ordered_json;
+#endif // NOJSON
+
 
 class Metadata
 {
@@ -19,7 +22,6 @@ public:
         uint16_t w;
         uint16_t h;
         uint8_t rotated;
-        auto operator<=>(const Image&) const = default;
     };
 
     struct Texture
@@ -28,7 +30,6 @@ public:
         uint16_t texturesize;
         uint32_t imageCount;
         std::vector<Image> images;
-        auto operator<=>(const Texture&) const = default;
     };
 
     struct Header
@@ -36,16 +37,17 @@ public:
         uint32_t magic;
         uint32_t totalImageCount;
         uint32_t texturesCount;
-        auto operator<=>(const Header&) const = default;
     };
 
     struct Data
     {
         Header header{};
         std::vector<Texture> textures;
-        auto operator<=>(const Data&) const = default;
     };
 
+#ifndef NOJSON
     static Data jsonToMetadataFile(json data);
+#endif // NOJSON
+
     static bool MetadataFileToStruct(GCFile file, Metadata::Data& metadata);
 };
