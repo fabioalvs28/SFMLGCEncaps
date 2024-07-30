@@ -4,7 +4,6 @@
 using namespace DirectX;
 
 
-
 Component::Component()
 {
 	m_pGameObject = nullptr;
@@ -183,6 +182,19 @@ SpriteRenderer* SpriteRenderer::Duplicate()
 	*(pNewComponent->m_pGeometry) = *m_pGeometry;
 
 	return pNewComponent;
+}
+
+void SpriteRenderer::SetAnimatedSprite(GCGeometry* pGeometry, GCTexture* pTexture)
+{
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+	m_pGeometry = pGeometry;
+	pGraphics->InitializeGraphicsResourcesStart();
+	m_pMesh = pGraphics->CreateMeshTexture(m_pGeometry).resource;
+	pGraphics->InitializeGraphicsResourcesEnd();
+
+	GC_RESOURCE_CREATION_RESULT<GCShader*> shaderTexture = pGraphics->CreateShaderTexture();
+	m_pMaterial = pGraphics->CreateMaterial(shaderTexture.resource).resource;
+	m_pMaterial->SetTexture(pTexture);
 }
 
 
@@ -401,3 +413,18 @@ Camera* Camera::Duplicate()
 
 	return pNewComponent;
 }
+
+
+void Animator::PlayAnimation(GCString animationName)
+{
+	m_activeAnimation = animationName;
+}
+
+void Animator::Update()
+{
+	/*if ( m_currentAnimation->Update() )
+	{
+		m_pGameObject->GetComponent<SpriteRenderer>()->SetAnimatedSprite(m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture());
+	}*/
+}
+

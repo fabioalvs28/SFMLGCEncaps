@@ -85,6 +85,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class Animator;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -106,6 +107,8 @@ protected:
     FLAGS GetFlags() override { return RENDER; }
 
     virtual int GetComponentLayer() override { return 5; }
+
+    void SetAnimatedSprite(GCGeometry* pGeometry, GCTexture* pTexture);
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -258,21 +261,23 @@ protected:
 	Animator() {}
     ~Animator() override {}
     
-    void Update() override {}
+    void Update() override;
     void Destroy() override {}
     Animator* Duplicate() override;
+    GCString GetActiveAnimation() { return m_activeAnimation;  }
     
     FLAGS GetFlags() override { return UPDATE; }
 
-    void PlayAnimation();
+    void PlayAnimation(GCString animationName);
     void StopAnimation();
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
     
 private:
-    GCStateManager* m_pGlobalState;
 
+    GCString m_activeAnimation;
+    //Animation* m_currentAnimation;
 };
 
 

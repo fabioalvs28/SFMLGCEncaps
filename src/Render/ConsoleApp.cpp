@@ -219,9 +219,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 
 
-
-
-
     // Chargement des shaders personnalisés
     std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
     std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";

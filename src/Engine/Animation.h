@@ -1,6 +1,7 @@
 #pragma once
 #include "../core/framework.h"
 
+struct GCGeometry;
 
 class Animation
 {
@@ -8,17 +9,23 @@ public:
 	Animation();
 	~Animation() = default;
 
-	void AddFrame(int x, int y, int width, int height, float displayTime, bool isFlipingX, bool isFlipingY);
-	bool Update(float deltaTime);
+	void AddFrame( int frameID, float displayTime = 0, bool isFlipingX = false, bool isFlipingY = false);
+	bool Update();
 	void IncrementFrame();
 	void Reset();
 	const GCFrame* GetCurrentFrame() const;
 	int GetNumberOfFrames() const { return static_cast<int>(m_frames.GetSize()); }
 	int GetCurrentFrameIndex() const { return m_currentFrameIndex; }
+	GCGeometry* GetGeometry() { return m_pGeometry; }
+	GCTexture* GetTexture() { return m_pTexture; }
 
-	void SetSpriteSheet(std::string fileName);
+	void SetSpriteSheet(std::string fileName, int rowNumber, int colNumber, int sheetWidth, int sheetHeight );
 
 private:
+
+	GC_SPRITESHEET_INFO m_spriteSheetInfos;
+	GCGeometry* m_pGeometry; 
+	GCTexture* m_pTexture;
 
 	GCVector<GCFrame> m_frames;
 	int m_currentFrameIndex;
