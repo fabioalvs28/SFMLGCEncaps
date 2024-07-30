@@ -1,7 +1,5 @@
 #pragma once
-#include "List.h"
-
-class Component;
+#include "pch.h"
 
 class GCUpdateManager
 {
@@ -17,6 +15,6 @@ private:
     void RegisterComponent( Component* pComponent );
 
 private:
-    GCList<Component*> m_registeredComponents;
+    GCList<Component*> m_registeredComponents; // A list of pointers to the registered Components that wants to be updated.
 
 };

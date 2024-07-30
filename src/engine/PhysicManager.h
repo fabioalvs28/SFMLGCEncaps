@@ -1,9 +1,7 @@
 #pragma once
-#include "Components.h"
+#include "pch.h"
 
 // TODO Turn every methods into private methods
-
-class GCGameObject;
 
 class GCPhysicManager
 {
@@ -30,12 +28,12 @@ public:
 	void Update();
 
 private:
-	bool CheckCollision(Collider& collider1, Collider& collider2);
+	bool CheckCollision( Collider* pFirst, Collider* pSecond );
 };
 
 namespace GCPhysic
 {
-	bool CheckBox2DvsBox2D(Collider& collider1, Collider& collider2);
-	bool CheckBox2DvsCircle(Collider& collider1, Collider& collider2);
-	bool CheckCirclevsCircle(Collider& collider1, Collider& collider2);
+	bool CheckBox2DvsBox2D( BoxCollider* pFirst, BoxCollider* pSecond );
+	bool CheckBox2DvsCircle( BoxCollider* pBox, CircleCollider* pCircle );
+	bool CheckCirclevsCircle( CircleCollider* pFirst, CircleCollider* pSecond );
 }

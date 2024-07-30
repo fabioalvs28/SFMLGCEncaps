@@ -2,8 +2,10 @@
 
 GCGraphicsLogger* GCGraphicsLogger::s_instance = nullptr;
 
-GCGraphicsLogger::GCGraphicsLogger() 
+GCGraphicsLogger::GCGraphicsLogger()
+    : m_consoleHandle(nullptr)
 {
+    s_instance = nullptr;
     InitializeConsole();
 }
 

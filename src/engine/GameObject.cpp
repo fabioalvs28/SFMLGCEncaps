@@ -1,12 +1,4 @@
 #include "pch.h"
-#include "GameObject.h"
-
-#include "GameObjectTransform.h"
-#include "Components.h"
-#include "Scene.h"
-#include "SceneManager.h"
-#include "RenderManager.h"
-#include "GC.h"
 
 //todo HasTag( const char* tag )
 
@@ -29,9 +21,6 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_pScene = pScene;
     m_pParent = nullptr;
     
-    m_created = false;
-    m_deleted = false;
-    
     m_globalActive = true;
     m_selfActive = true;
     
@@ -41,6 +30,11 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_transform.m_pGameObject = this;
 }
 
+/////////////////////////////////////////////////////////
+/// @brief Duplicates the GameObject.
+/// 
+/// @return A pointer to the newly created GameObject.
+/////////////////////////////////////////////////////////
 GCGameObject* GCGameObject::Duplicate()
 {
     if ( m_pParent != nullptr )
@@ -58,11 +52,18 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
-        ;
+        it.second->Duplicate();
     
     return pGameObject;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Duplicates the GameObject with a specified Parent.
+/// 
+/// @param pParent A pointer to the GameObject to set as the Parent of this GameObject.
+/// 
+/// @return A pointer to the newly created GameObject.
+//////////////////////////////////////////////////////////////////////////////////////////
 GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
 {
     ASSERT( pParent != nullptr, LOG_FATAL, "Trying to duplicate a GameObject in a nullptr pParent" );
@@ -78,23 +79,21 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
-        ;
+        it.second->Duplicate();
     
     return pGameObject;
 }
 
-//////////////////////////////////////////////////////////////////////
-/// @brief Destroys the GameObject.
-/// 
-/// @note The GameObject's children will also be destroyed.
-/// @note The GameObject will be fully destroyed in the next frame. //? Is it necessary ?
-//////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+/// @brief Destroys the GameObject and its children.
+///////////////////////////////////////////////////////
 void GCGameObject::Destroy()
 {
-    ASSERT( m_deleted == false, LOG_FATAL, "Trying to destroy a GameObject that is already going to be destroyed in the next frame" );
-    m_deleted = true;
-    DestroyChildren();
-    GC::GetActiveSceneManager()->AddGameObjectToDeleteQueue( this );
+	if ( m_componentsList.GetSize() != 0 )
+        ClearComponents();
+    if ( m_childrenList.GetFirstNode() != nullptr )
+        DestroyChildren();
+    m_pScene->DestroyGameObject( this );
 }
 
 
@@ -199,6 +198,9 @@ void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
 
 
 
+///////////////////////////////////////
+/// @brief Activates the GameObject.
+///////////////////////////////////////
 void GCGameObject::Activate()
 {
     if ( IsActive() == false )
@@ -212,6 +214,9 @@ void GCGameObject::Activate()
     }
 }
 
+/////////////////////////////////////////
+/// @brief Deactivates the GameObject.
+/////////////////////////////////////////
 void GCGameObject::Deactivate()
 {
     if ( m_selfActive == true )
@@ -227,6 +232,9 @@ void GCGameObject::Deactivate()
     }
 }
 
+////////////////////////////////////////////////////////////////////
+/// @brief Activates the globalActive property of the GameObject.
+////////////////////////////////////////////////////////////////////
 void GCGameObject::ActivateGlobal()
 {
     if ( m_globalActive == false )
@@ -242,6 +250,9 @@ void GCGameObject::ActivateGlobal()
     }
 }
 
+//////////////////////////////////////////////////////////////////////
+/// @brief Deactivates the globalActive property of the GameObject.
+//////////////////////////////////////////////////////////////////////
 void GCGameObject::DeactivateGlobal()
 {
     if ( m_globalActive == true )
@@ -290,13 +301,13 @@ void GCGameObject::SetParent( GCGameObject* pParent ) //? Why this method ?
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Sets the active state of the GameObject.
+/// @brief Sets the active states of the GameObject.
 /// 
 /// @param active A boolean value indicating whether the GameObject should be active or not.
 /// 
 /// @note The GameObject's children's active state will also be changed.
 ///////////////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::SetActive( const bool active ) //todo If the active argument is true, it should also change the global active state.
+void GCGameObject::SetActive( const bool active )
 {
     if ( active == true )
         Activate();
@@ -311,7 +322,7 @@ void GCGameObject::SetActive( const bool active ) //todo If the active argument 
 /// 
 /// @note The name doesn't have to be unique within the Scene.
 //////////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::SetName( const char const* name ) { m_name = name; }
+void GCGameObject::SetName( const char* name ) { m_name = name; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief Sets the layer of the GameObject.
@@ -392,8 +403,8 @@ void GCGameObject::RemoveComponent( int ID )
 {
     Component* pComponent;
     ASSERT( m_componentsList.Find( ID, pComponent ) == true, LOG_FATAL, "Trying to remove a Component from a GameObject that doesn't have it" ); //? The .Find() is necessary for the method to work but it's in an ASSERT ?
-    delete pComponent;
-    m_componentsList.Remove( ID );
+    m_componentsList.Remove( ID ); //? To See ?
+    GC::GetActiveSceneManager()->AddComponentToDeleteQueue( pComponent );
 }
 
 ///////////////////////////////////////////////////////////

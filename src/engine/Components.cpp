@@ -1,11 +1,4 @@
 #include "pch.h"
-#include "Components.h"
-#include "Log.h"
-#include "UpdateManager.h"
-#include "PhysicManager.h"
-#include "RenderManager.h"
-#include "GC.h"
-#include "GameObject.h"
 #include "../Render/pch.h"
 
 using namespace DirectX;
@@ -14,9 +7,11 @@ using namespace DirectX;
 
 Component::Component()
 {
+	m_pGameObject = nullptr;
 	m_globalActive = true;
 	m_selfActive = true;
-	m_pGameObject = nullptr;
+	
+	m_created = false;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
@@ -60,6 +55,23 @@ void Component::UnregisterFromManagers()
 
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Copies the values of this Component into the given Component.
+/// 
+/// @param pNewComponent The Component that will receive the values.
+/// 
+/// @note The m_pGameObject won't be passed to the new Component as a GameObject can't have more than one Component of the same ID.
+/// @note The m_globalActive won't be passed to the new Component as it doesn't have any GameObject.
+/// @note The new Component won't be registered to the Managers as it will be registered the next frame.
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void Component::Copy( Component *pNewComponent )
+{
+	pNewComponent->m_selfActive = m_selfActive;
+	GC::GetActiveSceneManager()->AddComponentToCreateQueue( pNewComponent );
+}
+
+
+
 void Component::Activate()
 {
 	if( m_selfActive == true )
@@ -70,10 +82,11 @@ void Component::Activate()
 	if( m_globalActive == false )
 		return;
 
-	if( IsCreated() == true )
+	if( m_created == true )
 		return;
 
 	RegisterToManagers();
+	OnActivate();
 }
 
 void Component::Deactivate()
@@ -86,10 +99,11 @@ void Component::Deactivate()
 	if ( m_globalActive == false )
 	    return;
 	
-	if ( IsCreated() == false )
+	if ( m_created == false )
 	    return;
 	
 	UnregisterFromManagers();
+	OnDeactivate();
 }
 
 void Component::ActivateGlobal()
@@ -102,10 +116,11 @@ void Component::ActivateGlobal()
 	if ( m_selfActive == false )
 		return;
 	
-	if ( IsCreated() == false )
+	if ( m_created == false )
 		return;
 	
 	RegisterToManagers();
+	OnActivate();
 }
 
 void Component::DeactivateGlobal()
@@ -118,10 +133,11 @@ void Component::DeactivateGlobal()
 	if ( m_selfActive == false )
 		return;
 	
-	if ( IsCreated() == false )
+	if ( m_created == false )
 		return;
 	
 	UnregisterFromManagers();
+	OnDeactivate();
 }
 
 void Component::SetActive( bool active )
@@ -134,13 +150,10 @@ void Component::SetActive( bool active )
 	Deactivate();
 }
 
-bool Component::IsCreated()
-{
-	if ( m_pGameObject == nullptr )
-		return true;
-	
-	return m_pGameObject->m_created;
-}
+
+
+
+
 
 SpriteRenderer::SpriteRenderer()
 {
@@ -156,10 +169,29 @@ SpriteRenderer::SpriteRenderer()
 
 
 
+SpriteRenderer* SpriteRenderer::Duplicate()
+{
+	SpriteRenderer* pNewComponent = new SpriteRenderer();
+	Copy( pNewComponent );
+	*(pNewComponent->m_pMesh) = *m_pMesh; //! Need to ask Render if this will work
+	*(pNewComponent->m_pMaterial) = *m_pMaterial; //! Need to ask Render if this will work
+	return pNewComponent;
+}
+
+void SpriteRenderer::Render()
+{
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.m_worldMatrix);
+	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
+
+}
+
+
+
 /////////////////////////////////////////////////
 /// @brief Set Sprite of a GameObject
 /// 
-/// @param texturePath path of the sprite file
+/// @param texturePath name of the sprite file
 /// 
 /// @note The sprite must be in .dds 
 /////////////////////////////////////////////////
@@ -176,33 +208,6 @@ void SpriteRenderer::SetSprite(std::string fileName)
 	ResourceCreationResult<GCMaterial*> mat = pGraphics->CreateMaterial(shaderTexture.resource);
 	m_pMaterial = mat.resource;
 	m_pMaterial->SetTexture(texture);
-
-	
-}
-
-SpriteRenderer* SpriteRenderer::Duplicate()
-{
-	SpriteRenderer* pNewComponent = new SpriteRenderer();
-
-	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
-	pNewComponent->m_globalActive = m_globalActive;
-	pNewComponent->m_selfActive = m_selfActive;
-
-	pNewComponent->m_color = m_color; 
-	*(pNewComponent->m_pMesh) = *m_pMesh;
-	*(pNewComponent->m_pMaterial) = *m_pMaterial;
-	
-	return pNewComponent;
-}
-
-
-void SpriteRenderer::Render()
-{
-	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-
-	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.m_worldMatrix);
-	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
-
 }
 
 
@@ -215,6 +220,8 @@ Collider::Collider()
 	m_trigger = false;
 	m_visible = false;
 }
+
+
 
 void Collider::RegisterToManagers()
 {
@@ -230,12 +237,23 @@ void Collider::UnregisterFromManagers()
 
 
 
+void Collider::Copy( Component* pComponent )
+{
+	Component::Copy( pComponent );
+	Collider* pCollider = static_cast<Collider*>( pComponent );
+	pCollider->m_trigger = m_trigger;
+	pCollider->m_visible = m_visible;
+	*(pCollider->m_pMesh) = *m_pMesh; //! Need to ask Render if this will work
+	*(pCollider->m_pMaterial) = *m_pMaterial; //! Need to ask Render if this will work
+}
+
+
+
 
 
 
 BoxCollider::BoxCollider()
 {
-
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
@@ -247,23 +265,14 @@ BoxCollider::BoxCollider()
 	auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
 	m_pMaterial = mat.resource;
 	m_pMaterial->SetTexture(texture);
-
 }
+
+
 
 BoxCollider* BoxCollider::Duplicate()
 {
 	BoxCollider* pNewComponent = new BoxCollider();
-
-	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
-	pNewComponent->m_globalActive = m_globalActive;
-	pNewComponent->m_selfActive = m_selfActive;
-
-	*(pNewComponent->m_pMesh) = *m_pMesh;
-	*(pNewComponent->m_pMaterial) = *m_pMaterial;
-	pNewComponent->m_trigger = m_trigger;
-	pNewComponent->m_visible = m_visible;
-	pNewComponent->m_size = m_size;
-
+	Copy( pNewComponent );
 	return pNewComponent;
 }
 
@@ -281,22 +290,18 @@ void BoxCollider::Render()
 
 
 
+
+
+
 CircleCollider* CircleCollider::Duplicate()
 {
 	CircleCollider* pNewComponent = new CircleCollider();
-
-	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
-	pNewComponent->m_globalActive = m_globalActive;
-	pNewComponent->m_selfActive = m_selfActive;
-
-	*(pNewComponent->m_pMesh) = *m_pMesh;
-	*(pNewComponent->m_pMaterial) = *m_pMaterial;
-	pNewComponent->m_trigger = m_trigger;
-	pNewComponent->m_visible = m_visible;
-	pNewComponent->m_radius = m_radius;
-
+	Copy( pNewComponent );
 	return pNewComponent;
 }
+
+
+
 
 
 
@@ -307,6 +312,14 @@ RigidBody::RigidBody()
 
 
 
+RigidBody* RigidBody::Duplicate()
+{
+	RigidBody* pNewComponent = new RigidBody();
+	Copy( pNewComponent );
+	pNewComponent->m_velocity = m_velocity;
+	return pNewComponent;
+}
+
 void RigidBody::FixedUpdate()
 {
 	// Apply velocity
@@ -315,53 +328,81 @@ void RigidBody::FixedUpdate()
 
 
 
-RigidBody* RigidBody::Duplicate()
-{
-	RigidBody* pNewComponent = new RigidBody();
-
-	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
-	pNewComponent->m_globalActive = m_globalActive;
-	pNewComponent->m_selfActive = m_selfActive;
-
-	pNewComponent->m_velocity = m_velocity;
-
-	return pNewComponent;
-}
 
 
 
 Animator* Animator::Duplicate()
 {
 	Animator* pNewComponent = new Animator();
-
-	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
-	pNewComponent->m_globalActive = m_globalActive;
-	pNewComponent->m_selfActive = m_selfActive;
-
+	Copy( pNewComponent );
 	return pNewComponent;
 }
+
+
+
 
 
 
 SoundMixer* SoundMixer::Duplicate()
 {
 	SoundMixer* pNewComponent = new SoundMixer();
-
-	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
-	pNewComponent->m_globalActive = m_globalActive;
-	pNewComponent->m_selfActive = m_selfActive;
-
+	Copy( pNewComponent );
 	return pNewComponent;
 }
+
+
+
+
+
+
+Camera::Camera()
+{
+	m_position.SetZero();
+	m_target.SetZero();
+	m_up.SetZero();
+	
+	m_viewWidth = 20.0f;
+	m_viewHeight = 20.0f;
+	m_nearZ = 1.0f;
+	m_farZ = 1000.0f;
+	
+	m_viewMatrix.SetIdentity();
+	m_projectionMatrix.SetIdentity();
+}
+
 
 
 Camera* Camera::Duplicate()
 {
 	Camera* pNewComponent = new Camera();
-
-	pNewComponent->m_pGameObject = m_pGameObject; // Attention set a new gameobject after use
-	pNewComponent->m_globalActive = m_globalActive;
-	pNewComponent->m_selfActive = m_selfActive;
-
+	Copy( pNewComponent );
+	pNewComponent->m_nearZ = m_nearZ;
+    pNewComponent->m_farZ = m_farZ;
+    pNewComponent->m_viewWidth = m_viewWidth;
+    pNewComponent->m_viewHeight = m_viewHeight;
 	return pNewComponent;
 }
+
+void Camera::Update()
+{
+	bool dirty = false;
+	
+	if ( m_position != m_pGameObject->m_transform.m_position )
+	{
+		m_position = m_pGameObject->m_transform.m_position;
+		dirty = true;
+	}
+	
+	if ( m_up != m_pGameObject->m_transform.m_up )
+	{
+		m_up = m_pGameObject->m_transform.m_up;
+		dirty = true;
+	}
+	
+	if ( dirty == false )
+		return;
+	
+	GC::GetActiveRenderManager()->m_pGraphics->CreateViewProjConstantBuffer( m_pGameObject->m_transform.m_position, m_target, m_pGameObject->m_transform.m_up, 0.0f, 0.0f, m_nearZ, m_farZ, m_viewWidth, m_viewHeight, GC_PROJECTIONTYPE::ORTHOGRAPHIC, m_projectionMatrix, m_viewMatrix );
+}
+
+

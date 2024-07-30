@@ -1,23 +1,16 @@
 #pragma once
-#include <functional>
+#include "pch.h"
 
-#include "Event.h"
-#include "Layer.h"
-#include "../core/Map.h"
-#include "../core/Vector.h"
-#include "../core/Queue.h"
-#include "InputManager.h"
 
 // TODO Turn every methods into private methods
-
-class GCInputManager;
-class GCKeyboardInputManager;
 
 class GCEventManager
 {
 using GCEventCallback = std::function<void(GCEvent& ev)>;
 public:
 	GCEventManager();
+
+	void Update();
 	/// <summary>
 	/// Polls events from the operating system or framework 
 	/// and dispatches them to the appropriate handlers.

@@ -1,5 +1,5 @@
 #pragma once
-#include "Components.h"
+#include "pch.h"
 #include "../Render/pch.h"
 
 using namespace DirectX;
@@ -28,7 +28,5 @@ public:
     XMVECTOR m_cameraPosition ;
     XMVECTOR m_cameraTarget ;
     XMVECTOR m_cameraUp ;
-    GCMATRIX m_storedProjectionMatrix;
-    GCMATRIX m_storedViewMatrix;
 
 };

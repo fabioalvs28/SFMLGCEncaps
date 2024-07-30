@@ -1,17 +1,13 @@
 #pragma once
-#include "../core/framework.h"
+#include "pch.h"
 #include "../Render/pch.h"
-
-#include "GCColor.h"
-#include "Map.h"
 
 using namespace DirectX;
 
 // TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
 // TODO Make sure IDs are handled differently
-
-class GCGameObject;
+// TODO À faire dans le Duplicate() : Start()
 
 
 
@@ -42,8 +38,6 @@ public:
     bool IsActive() { return m_globalActive && m_selfActive; }
 
     GCGameObject* GetGameObject() { return m_pGameObject; }
-    
-    virtual Component* Duplicate() = 0;
 
 protected:
     Component();
@@ -52,10 +46,15 @@ protected:
     virtual void RegisterToManagers();
     virtual void UnregisterFromManagers();
     
+    virtual Component* Duplicate() = 0;
+    virtual void Copy( Component *pNewComponent );
+    
     virtual void Start() {}
     virtual void Update() {}
     virtual void FixedUpdate() {}
     virtual void Render() {}
+    virtual void OnActivate() {}
+    virtual void OnDeactivate() {}
     virtual void Destroy() {}
     
     virtual FLAGS GetFlags() = 0;
@@ -63,8 +62,6 @@ protected:
     
     void ActivateGlobal();
     void DeactivateGlobal();
-    
-    bool IsCreated();
 
     virtual int GetComponentLayer() { return 0; }
 
@@ -73,6 +70,8 @@ protected:
     GCGameObject* m_pGameObject;
     bool m_globalActive;
     bool m_selfActive;
+    
+    bool m_created;
     
     GCListNode<Component*>* m_pUpdateNode;
     GCListNode<Component*>* m_pPhysicsNode;
@@ -93,30 +92,25 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
-    
     void SetSprite( std::string fileName);
-    void SetColor() {};
     
     void GetSprite() {};
-    GCColor& GetColor() { return m_color; }
-
 
 protected:
 	SpriteRenderer();
     ~SpriteRenderer() override {}
 
-    void Render() override;
-    void Destroy() override {}
     SpriteRenderer* Duplicate() override; 
+    
+    void Render() override;
     
     FLAGS GetFlags() override { return RENDER; }
 
-    virtual int GetComponentLayer() override { return 5; }
+    int GetComponentLayer() override { return 5; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    GCColor m_color;
-
+    
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
 };
@@ -137,6 +131,8 @@ public:
     
     void RegisterToManagers() override;
     void UnregisterFromManagers() override;
+    
+    void Copy( Component* pComponent ) override;
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -172,22 +168,16 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-    GCVEC2 GetSize() { return m_size; }
-    void SetSize( GCVEC2 size ) { m_size = size; }
-
-
 protected:
     BoxCollider();
     ~BoxCollider() override {}
 
-    void FixedUpdate() override {}
-    void Render() override;
-    void Destroy() override {}
     BoxCollider* Duplicate() override;
+    
+    void Render() override;
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    GCVEC2 m_size;
 
 };
 
@@ -203,23 +193,15 @@ friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
-    
-    float GetRadius() { return m_radius; }
-    void SetRadius( float radius ) { m_radius = radius; }
-
 
 protected:
     CircleCollider() {}
     ~CircleCollider() override {}
     
-    void FixedUpdate() override {}
-    void Render() override {}
-    void Destroy() override {}
     CircleCollider* Duplicate() override;
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    float m_radius;
 
 };
 
@@ -238,14 +220,13 @@ public:
     
     void AddForce( GCVEC2 force ) {}
 
-
 protected:
     RigidBody();
     ~RigidBody() override {}
     
-    void FixedUpdate() override;
-    void Destroy() override {}
     RigidBody* Duplicate() override;
+    
+    void FixedUpdate() override;
     
     FLAGS GetFlags() override { return FIXED_UPDATE; }
 
@@ -264,23 +245,24 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
-
 
 protected:
 	Animator() {}
     ~Animator() override {}
     
-    void Update() override {}
-    void Destroy() override {}
     Animator* Duplicate() override;
     
     FLAGS GetFlags() override { return UPDATE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
+    
+private:
+    GCStateManager* m_pGlobalState;
 
 };
 
@@ -297,14 +279,13 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-
 protected:
 	SoundMixer() {}
     ~SoundMixer() override {}
     
-    void Update() override {}
-    void Destroy() override {}
     SoundMixer* Duplicate() override;
+    
+    void Update() override {}
     
     FLAGS GetFlags() override { return UPDATE; }
 
@@ -326,18 +307,30 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-
 protected:
-    Camera() {}
+    Camera();
     ~Camera() override {}
     
-    void Destroy() override {}
     Camera* Duplicate() override;
+    
+    void Update() override;
     
     FLAGS GetFlags() override { return NONE; }
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
+    
+    GCVEC3 m_position;
+    GCVEC3 m_target;
+    GCVEC3 m_up;
+    
+    float m_nearZ;
+    float m_farZ;
+    float m_viewWidth;
+    float m_viewHeight;
+    
+    GCMATRIX m_viewMatrix;
+    GCMATRIX m_projectionMatrix;
 
 };
 
@@ -379,8 +372,10 @@ protected:
         const int GetID() override { return m_ID; } \
      \
     protected: \
-        Script##CLASS_NAME() = default; \
+        Script##CLASS_NAME() = default; /* Calling Method to be overritten */ \
         ~Script##CLASS_NAME() = default; \
+         \
+        Script##CLASS_NAME* Duplicate() override; \
          \
         /*void Start() override; \
         void Update() override; \

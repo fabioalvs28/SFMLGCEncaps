@@ -8,20 +8,37 @@ public:
 
     GC_GRAPHICS_ERROR Initialize(GCRenderContext* pRender, GCGeometry* pGeometry, int& flagEnabledBits);
 
-    void UploadGeometryData(GCGeometry* pGeometry, int& flagEnabledBits);
-    ID3D12Resource* UpdateBuffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, ID3D12Resource* uploadBuffer);
+    void UpdateGeometryData(float deltaTime);
 
     inline GCMESHBUFFERDATA* GetBufferGeometryData() { return  m_pBufferGeometryData; }
     inline int GetFlagEnabledBits() const { return m_flagEnabledBits; }
 
-    void TestUpdateANewGeometry(GCGeometry* pGeometry);
+    void AddGeometry(DirectX::XMFLOAT3 position);
+    void DeleteGeometryAt(int index);
+    void EditGeometryPositionAt(int index, DirectX::XMFLOAT3 newPosition);
 
 private:
+    void UploadGeometryData(int& flagEnabledBits);
+
     GCRenderContext* m_pRender;
     GCMESHBUFFERDATA* m_pBufferGeometryData;
 
-    int m_flagEnabledBits;
+    GCGeometry* m_pMeshGeometry;
+    std::vector<DirectX::XMFLOAT3> m_geometryPositions;
 
-    ID3D12Resource* CreateDefaultBuffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, ID3D12Resource* uploadBuffer);
+    int m_flagEnabledBits;
+    int m_geoAmount;
+
+    int m_currentVertexUploadBufferSize;
+    int m_currentIndexUploadBufferSize;
+
+    GCUploadBufferBase* m_vertexBuffer;
+    GCUploadBufferBase* m_indexBuffer;
+
+    ID3D12Resource* CreateDefaultBuffer(ID3D12Device* device,
+        ID3D12GraphicsCommandList* cmdList,
+        const void* initData,
+        UINT64 byteSize,
+        ID3D12Resource* uploadBuffer);
 };
 

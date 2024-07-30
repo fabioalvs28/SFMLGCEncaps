@@ -1,18 +1,11 @@
 #pragma once
-#include "Define.h"
-#include "Vector.h"
-#include "Map.h"
-#include "List.h"
-#include "GameObjectTransform.h"
-#include "Components.h"
-
-class GCScene;
+#include "pch.h"
 
 
 
 class GCGameObject
 {
-friend class GCGameObjectTransform;
+friend struct GCGameObjectTransform;
 friend class Component;
 friend class GCScene;
 friend class GCSceneManager;
@@ -43,7 +36,7 @@ public:
     void SetScene( GCScene* pScene );
     void SetParent( GCGameObject* pParent );
     void SetActive( const bool active );
-    void SetName( const char const* name );
+    void SetName( const char* name );
     void SetLayer( const int layer );
     
     unsigned int GetID() const;
@@ -88,9 +81,6 @@ protected:
     GCGameObject* m_pParent; // The GameObject's Parent.
     GCList<GCGameObject*> m_childrenList; // The list of children the GameObject has.
     
-    bool m_created; // A boolean value indicating if the GameObject is fully created.
-    bool m_deleted; // A boolean value indicating that the GameObject is going to be deleted in the next frame.
-    
     bool m_globalActive; // The global active state of the GameObject ( Usually its Parent active state ).
     bool m_selfActive; // The active state of the GameObject.
     
@@ -117,11 +107,9 @@ T* GCGameObject::AddComponent()
     ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a Component to a GameObject that already has it" );
     T* pComponent = new T();
     pComponent->m_pGameObject = this;
-    bool gameObjectActive = IsActive();
-    pComponent->m_globalActive = gameObjectActive;
-    if ( gameObjectActive == true && m_created == true )
-        pComponent->RegisterToManagers();
-    m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    pComponent->m_globalActive = IsActive();
+    m_componentsList.Insert( T::GetIDStatic(), pComponent ); //! To See
+    GC::GetActiveSceneManager()->AddComponentToCreateQueue( pComponent );
     return pComponent;
 }
 

@@ -1,8 +1,4 @@
 #include "pch.h"
-#include "GameObjectTransform.h"
-
-#include "GameObject.h"
-#include "List.h"
 
 // TODO AddChild doesn't use worldMatrix to recalculate the matrix and instead uses the matrix to calculate the worldMatrix
 

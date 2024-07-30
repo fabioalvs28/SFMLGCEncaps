@@ -4,6 +4,8 @@
 #include <profileapi.h>
 #include <timeapi.h>
 
+typedef __int64 I64;
+
 class GCTime
 {
 public:
@@ -22,7 +24,7 @@ public:
 	float FixedDeltaTime() const;
 	float TotalTime() const;
 
-	float GetFPS() const;
+	int GetFPS() const;
 
 private:
 	// Constants

@@ -51,38 +51,46 @@
 
 
 
+//Geometry & Mesh
 struct GCGeometry;
 struct GCMESHBUFFERDATA;
 
-
+//Shaders
 struct GCSHADERCB;
 struct GCWORLDCB;
 struct GCVIEWPROJCB;
+struct GC_MATERIAL_DSL;
 
+//Geometry
 enum GC_PRIMITIVE_ID;
 struct GC_MODELINFOS;
+enum GC_EXTENSIONS;
 
-// Add William 
+//Logger
 class GCGraphicsLogger;
 enum GC_GRAPHICS_ERROR;
 
 struct GC_DESCRIPTOR_RESOURCE;
-//
 
-
+struct GCPARTICLE;
 
 class GCGraphics;
 class GCMaterial;
 class GCMesh;
-class GCModelParser;
+class GCModelParserFactory;
 class GCModelParserObj;
 class GCPrimitiveFactory;
 class GCRenderContext;
 class GCRenderResources;
 class GCShader;
+class GCComputeShader;
 class GCTexture;
 class GCTextureFactory;
-class GCShaderUploadBufferBase; // 
+class GCShaderUploadBufferBase; 
+class GCUploadBufferBase;
+
+class GCParticleSystem;
+class GCFontGeometryLoader;
 class GCUtils;
 class MathHelper;
 class Timer;
@@ -113,8 +121,10 @@ class Window;
 #include "GCMesh.h"
 #include "GCShader.h"
 #include "GCMaterial.h"
-#include "GCModelParser.h"
+#include "GCModelParserFactory.h"
 #include "GCModelParserObj.h"
+#include "GCParticleSystem.h"
+#include "GCFontGeometryLoader.h"
 
 #include "GCPrimitiveFactory.h"
 #include "GCTexture.h"

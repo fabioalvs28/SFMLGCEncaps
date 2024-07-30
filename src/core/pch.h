@@ -6,7 +6,72 @@
 
 #ifndef CORE_PCH_H
 #define CORE_PCH_H
-// add headers that you want to pre-compile here
+#include "Define.h"
+
 #include "framework.h"
+
+typedef const char* cstr;
+typedef const wchar_t* custr;
+typedef __int8 I8;
+typedef __int16 I16;
+typedef __int32 I32;
+typedef __int64 I64;
+typedef unsigned __int8 UI8;
+typedef unsigned __int16 UI16;
+typedef unsigned __int32 UI32;
+typedef unsigned __int64 UI64;
+
+// Containers
+template <typename T> class GCQueue;
+template <typename T> class GCListNode;
+template <typename T> class GCList;
+template <typename T> class GCVector;
+template <typename Key, typename Value> class GCMap;
+
+// Math
+struct GCVEC2;
+struct GCVEC3;
+struct GCQUATERNION;
+struct GCMATRIX;
+struct GCTransform;
+
+// Logger
+class Logger;
+
+// Threading
+class GCThread;
+class WinThread;
+
+// Other
+class GCString;
+struct GCColor;
+
+
+
+
+
+
+// Containers
+#include "Queue.h"
+#include "List.h"
+#include "Vector.h"
+#include "Map.h"
+
+// Math
+#include "Vectors.h"
+#include "Quaternion.h"
+#include "Matrix.h"
+#include "Transform.h"
+
+// Logger
+#include "Log.h"
+#include "Logger.h"
+
+// Threading
+#include "Thread.h"
+
+// Other
+#include "GCString.h"
+#include "GCColor.h"
 
 #endif

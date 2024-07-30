@@ -46,13 +46,13 @@ GCModelParserObj::~GCModelParserObj()
 {
 }
 
-ModelInfos* GCModelParserObj::Parse(std::string filePath)
+GC_MODELINFOS* GCModelParserObj::Parse(std::string filePath)
 {
 	//Parses the file into a vector with the coordinates, the triangles and the uvs
 	std::ifstream objFile(filePath);
 	std::string line;
 
-	ModelInfos* parsedModel = new ModelInfos();
+	GC_MODELINFOS* parsedModel = new GC_MODELINFOS();
 
 	while (!objFile.eof()) {
 
