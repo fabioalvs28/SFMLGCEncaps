@@ -1,6 +1,4 @@
 #include "pch.h"
-#include "EventManager.h"
-#include "Log.h"
 
 GCEventManager::GCEventManager()
 {

@@ -7,6 +7,7 @@ using namespace DirectX;
 // TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
 // TODO Make sure IDs are handled differently
+// TODO À faire dans le Duplicate() : Start()
 
 
 
@@ -165,9 +166,6 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-    GCVEC2 GetSize() { return m_size; }
-    void SetSize( GCVEC2 size ) { m_size = size; }
-
 protected:
     BoxCollider();
     ~BoxCollider() override {}
@@ -179,7 +177,6 @@ protected:
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    GCVEC2 m_size;
 
 };
 
@@ -195,9 +192,6 @@ friend class GCRenderManager;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
-    
-    float GetRadius() { return m_radius; }
-    void SetRadius( float radius ) { m_radius = radius; }
 
 protected:
     CircleCollider() {}
@@ -210,7 +204,6 @@ protected:
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    float m_radius;
 
 };
 
@@ -386,9 +379,10 @@ protected:
         const int GetID() override { return m_ID; } \
      \
     protected: \
-        Script##CLASS_NAME() = default; \
+        Script##CLASS_NAME() = default; /* Calling Method to be overritten */ \
         ~Script##CLASS_NAME() = default; \
          \
+        Script##CLASS_NAME* Duplicate() override; \
         /*void Start() override; \
         void Update() override; \
         void FixedUpdate() override; \

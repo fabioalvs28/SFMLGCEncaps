@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "Components.h"
 #include "../Render/pch.h"
 
 using namespace DirectX;
@@ -187,7 +186,6 @@ SpriteRenderer* SpriteRenderer::Duplicate()
 void SpriteRenderer::Render()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-
 	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.m_worldMatrix);
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
@@ -250,7 +248,6 @@ BoxCollider* BoxCollider::Duplicate()
 	*(pNewComponent->m_pMaterial) = *m_pMaterial;
 	pNewComponent->m_trigger = m_trigger;
 	pNewComponent->m_visible = m_visible;
-	pNewComponent->m_size = m_size;
 
 	return pNewComponent;
 }
@@ -281,7 +278,6 @@ CircleCollider* CircleCollider::Duplicate()
 	*(pNewComponent->m_pMaterial) = *m_pMaterial;
 	pNewComponent->m_trigger = m_trigger;
 	pNewComponent->m_visible = m_visible;
-	pNewComponent->m_radius = m_radius;
 
 	return pNewComponent;
 }

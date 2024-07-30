@@ -1,6 +1,4 @@
 #include "pch.h"
-#include "GameManager.h"
-
 #include "../Render/pch.h"
 
 ///////////////////////////////////////////////////////////////////
@@ -44,7 +42,7 @@ void GCGameManager::Run()
 ////////////////////////////
 void GCGameManager::GameLoop()
 {
-    while ( true )
+    while ( m_pWindow->Run(m_pRenderManager->m_pGraphics->GetRender()) )
     {
         m_pTimer->Update();
         m_pInputSystem->Update();
@@ -53,7 +51,6 @@ void GCGameManager::GameLoop()
         m_pUpdateManager->Update();
         m_pSceneManager->Update();
         m_pRenderManager->Render();
-        m_pWindow->Run( m_pRenderManager->m_pGraphics->GetRender() );
     }
 }
 
