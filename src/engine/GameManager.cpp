@@ -34,6 +34,8 @@ void GCGameManager::Run()
 {
     //! Stop the GameLoop from the old active GameManager if there is one
     SetActiveGameManager();
+    if ( m_pSceneManager->GetActiveScene() == nullptr )
+        GCScene::Create();
     GameLoop();
 }
 
