@@ -60,6 +60,8 @@ bool SpriteSheetGenerator::sortBySpriteHeight(const Sprite& a, const Sprite& b)
 
 int SpriteSheetGenerator::Packer()
 {
+    bool logging = false;
+
     SaveFormat saveFormat = SaveFormat::DDS;
 
     json data = json::parse(R"({})");
@@ -387,34 +389,39 @@ int SpriteSheetGenerator::Packer()
     Metadata::Data metadata2;
     Metadata::MetadataFileToStruct(metadataFile2, metadata2);
 
+    if (logging)
+    {
+        std::cout << "Header Magic : " << metadata2.header.magic << std::endl;
+        std::cout << "Header Textures Count : " << metadata2.header.texturesCount << std::endl;
+        std::cout << "Header Total Image Count : " << metadata2.header.totalImageCount << std::endl;
 
-    std::cout << "Header Magic : " << metadata2.header.magic << std::endl;
-    std::cout << "Header Textures Count : " << metadata2.header.texturesCount << std::endl;
-    std::cout << "Header Total Image Count : " << metadata2.header.totalImageCount << std::endl;
-
-    std::cout << std::endl;
-
+        std::cout << std::endl;
+    }
     for (size_t i = 0; i < metadata2.header.texturesCount; i++)
     {
         Metadata::Texture tex = metadata2.textures[i];
+        if (logging)
+        {
+            std::cout << "Texture " << i << " Texture Name : " << tex.textureName.c_str() << std::endl;
+            std::cout << "Texture " << i << " Texture Size : " << tex.texturesize << std::endl;
+            std::cout << "Texture " << i << " Image Count : " << tex.imageCount << std::endl;
 
-        std::cout << "Texture " << i << " Texture Name : " << tex.textureName.c_str() << std::endl;
-        std::cout << "Texture " << i << " Texture Size : " << tex.texturesize << std::endl;
-        std::cout << "Texture " << i << " Image Count : " << tex.imageCount << std::endl;
-
-        std::cout << std::endl;
+            std::cout << std::endl;
+        }
 
         for (size_t j = 0; j < tex.imageCount; j++)
         {
             Metadata::Image img = tex.images[j];
-
-            std::cout << "Image " << j << " Image Name : " << img.filename.c_str() << std::endl;
-            std::cout << "Image " << j << " Image X pos : " << img.x << std::endl;
-            std::cout << "Image " << j << " Image Y pos : " << img.y << std::endl;
-            std::cout << "Image " << j << " Image Width : " << img.w << std::endl;
-            std::cout << "Image " << j << " Image Height : " << img.h << std::endl;
-            std::cout << "Image " << j << " Rotated : " << bool(img.rotated) << std::endl;
-            std::cout << std::endl;
+            if (logging)
+            {
+                std::cout << "Image " << j << " Image Name : " << img.filename.c_str() << std::endl;
+                std::cout << "Image " << j << " Image X pos : " << img.x << std::endl;
+                std::cout << "Image " << j << " Image Y pos : " << img.y << std::endl;
+                std::cout << "Image " << j << " Image Width : " << img.w << std::endl;
+                std::cout << "Image " << j << " Image Height : " << img.h << std::endl;
+                std::cout << "Image " << j << " Rotated : " << bool(img.rotated) << std::endl;
+                std::cout << std::endl;
+            }
         }
     }
 
