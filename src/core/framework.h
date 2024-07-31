@@ -9,11 +9,7 @@
 #include "Map.h"
 #include "Transform.h"
 #include "Logger.h"
-
 #include "Queue.h"
 #include "GCString.h"
 #include "GCColor.h"
 #include "Log.h"
-
-#include "GCFile.h"
-
