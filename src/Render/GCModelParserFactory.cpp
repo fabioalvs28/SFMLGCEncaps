@@ -16,7 +16,7 @@ bool GCModelParserFactory::Parse(std::string fileName, GC_EXTENSIONS fileExtensi
 	switch (fileExtension)
 	{
 	case 0:
-		if (CHECK_EXTENSION(fileName, "obj") == false) return false;
+		if (GC_CHECK_EXTENSION(fileName, "obj") == false) return false;
 
 		m_ParsedModel = dynamic_cast<GCModelParserObj*>(this)->Parse(fileName);
 
@@ -27,9 +27,9 @@ bool GCModelParserFactory::Parse(std::string fileName, GC_EXTENSIONS fileExtensi
 
 GC_GRAPHICS_ERROR GCModelParserFactory::BuildModel(std::string fileName, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtension, GCGeometry* pGeometry)
 {
-	if (CHECK_POINTERSNULL("Model geometry loaded successfully", "Model Geometry is empty", pGeometry) == false)
+	if (GC_CHECK_POINTERSNULL("Model geometry loaded successfully", "Model Geometry is empty", pGeometry) == false)
 		return GCRENDER_ERROR_POINTER_NULL;
-	if (CHECK_FILE(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully")) == false)
+	if (GC_CHECK_FILE(fileName, ("Model file not found: " + fileName), ("Model file:" + fileName + " loaded successfully")) == false)
 		return GCRENDER_ERROR_FILEPATH_NOT_FOUND;
 
 

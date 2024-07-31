@@ -53,7 +53,7 @@ GCGraphics::~GCGraphics()
 
 bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
 {
-    if (CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow) == false)
+    if (GC_CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow) == false)
         return false;
 
     //Creates Primitive and parser instances
@@ -122,7 +122,7 @@ bool GCGraphics::EndFrame()
 
 bool GCGraphics::InitializeGraphicsResourcesStart() {
     HRESULT hr = m_pRender->GetRenderResources()->GetCommandList()->Reset(m_pRender->GetRenderResources()->GetCommandAllocator(), nullptr);
-    if (!CHECK_HRESULT(hr, "CommandList->Reset()")) {
+    if (!GC_CHECK_HRESULT(hr, "CommandList->Reset()")) {
         return false;
     };
 
@@ -131,7 +131,7 @@ bool GCGraphics::InitializeGraphicsResourcesStart() {
 bool GCGraphics::InitializeGraphicsResourcesEnd() {
     HRESULT hr;
     hr = m_pRender->GetRenderResources()->GetCommandList()->Close();
-    if (!CHECK_HRESULT(hr, "CommandList()->Close()")) {
+    if (!GC_CHECK_HRESULT(hr, "CommandList()->Close()")) {
         return false;
     };
     m_pRender->ExecuteCommandList();
@@ -176,8 +176,10 @@ GC_RESOURCE_CREATION_RESULT<GCTexture*> GCGraphics::CreateTexture(const std::str
         m_lTextureActiveFlags.push_back(true);
     }
 
+    INT intIndex = static_cast<INT>(index);
+
     // Initialize the texture with the specified index
-    GC_GRAPHICS_ERROR errorState = texture->Initialize(filePath, this, index);
+    GC_GRAPHICS_ERROR errorState = texture->Initialize(filePath, this, intIndex);
     if (errorState != GCRENDER_SUCCESS_OK) {
         return GC_RESOURCE_CREATION_RESULT<GCTexture*>(false, nullptr, errorState);
     }
@@ -255,7 +257,7 @@ GC_RESOURCE_CREATION_RESULT<GCShader*> GCGraphics::CreateShaderCustom(std::strin
 
 GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits)
 {
-    if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
     {
         return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
     }
@@ -279,7 +281,7 @@ GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGe
     GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
 
     // Check if Geometry is valid
-    if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
         return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMesh* pMesh = new GCMesh();
@@ -300,7 +302,7 @@ GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* p
     GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
 
     // Check if Geometry is valid
-    if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
         return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMesh* pMesh = new GCMesh();
@@ -318,7 +320,7 @@ GC_RESOURCE_CREATION_RESULT<GCGeometry*> GCGraphics::CreateGeometryPrimitive(con
 {
     GCGeometry* pGeometry = new GCGeometry();
 
-    if (CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
         return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GC_GRAPHICS_ERROR errorState = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, pGeometry);
@@ -334,7 +336,7 @@ GC_RESOURCE_CREATION_RESULT<GCGeometry*> GCGraphics::CreateGeometryModelParser(c
 {
     GCGeometry* pGeometry = new GCGeometry;
 
-    if (CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
         return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GC_GRAPHICS_ERROR errorState = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, pGeometry);
@@ -348,7 +350,7 @@ GC_RESOURCE_CREATION_RESULT<GCGeometry*> GCGraphics::CreateGeometryModelParser(c
 
 GC_RESOURCE_CREATION_RESULT<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pShader)
 {
-    if (CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader) == false)
+    if (GC_CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader) == false)
         return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMaterial* material = new GCMaterial();
@@ -385,13 +387,13 @@ std::list<GCTexture*> GCGraphics::GetTextures()
 
 GC_GRAPHICS_ERROR GCGraphics::RemoveShader(GCShader* pShader)
 {
-    if (CHECK_POINTERSNULL("Ptr for RemoveShader is not null", "Can't remove shader, pShader is null", pShader) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for RemoveShader is not null", "Can't remove shader, pShader is null", pShader) == false)
         return GCRENDER_ERROR_POINTER_NULL;
 
     // Removes Shader both from vector and the shader itself
     auto it = std::find(m_vShaders.begin(), m_vShaders.end(), pShader);
 
-    if (LOG_REMOVE_RESOURCE(it, "Shader", m_vShaders))
+    if (GC_LOG_REMOVE_RESOURCE(it, "Shader", m_vShaders))
     {
         m_vShaders.erase(it);
         delete pShader;
@@ -402,12 +404,12 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveShader(GCShader* pShader)
 
 GC_GRAPHICS_ERROR GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 {
-    if (CHECK_POINTERSNULL("Ptr for RemoveMaterial is not null", "Can't remove material, pMaterial is null", pMaterial) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for RemoveMaterial is not null", "Can't remove material, pMaterial is null", pMaterial) == false)
         return GCRENDER_ERROR_POINTER_NULL;
 
     auto it = std::find(m_vMaterials.begin(), m_vMaterials.end(), pMaterial);
 
-    if (LOG_REMOVE_RESOURCE(it, "Material", m_vMaterials))
+    if (GC_LOG_REMOVE_RESOURCE(it, "Material", m_vMaterials))
     {
         m_vMaterials.erase(it);
         delete pMaterial;
@@ -418,13 +420,13 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 
 GC_GRAPHICS_ERROR GCGraphics::RemoveMesh(GCMesh* pMesh)
 {
-    if (CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh) == false)
         return GCRENDER_ERROR_POINTER_NULL;
 
     // Removes Mesh
     auto it = std::find(m_vMeshes.begin(), m_vMeshes.end(), pMesh);
 
-    if (LOG_REMOVE_RESOURCE(it, "Mesh", m_vMeshes))
+    if (GC_LOG_REMOVE_RESOURCE(it, "Mesh", m_vMeshes))
     {
         m_vMeshes.erase(it);
         delete pMesh;
@@ -527,7 +529,7 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
 // Update per object constant buffer
 bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId)
 {
-    if (CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
 
     if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
@@ -542,6 +544,7 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
     // Update 
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 
+    return true;
 }
 
 //Update Camera and Object Constant Buffer / But They can also send their own structure
@@ -568,7 +571,7 @@ void GCGraphics::Resize(int width, int height) {
 
 bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES& objectData)
 {
-    if (CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
 
     pMaterial->ambientLightColor = objectData.ambientLightColor;
@@ -583,7 +586,7 @@ bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPE
 
 bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4& ambientLightColor, DirectX::XMFLOAT4& ambient, DirectX::XMFLOAT4& diffuse, DirectX::XMFLOAT4& specular, float shininess)
 {
-    if (CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
 
     GCMATERIALPROPERTIES materialData;

@@ -205,7 +205,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GC_SET_FLAG(flagsLightTexture, GC_VERTEX_NORMAL);
 
 
-    // Création des géométries
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
     auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
     auto geoCubeInner3 = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red));
@@ -213,16 +212,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     auto geoPlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
 
-    //graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
-    //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("Hello");
-
 
     // Load Sprite Sheet
     GC_SPRITESHEET_DATA spriteSheetInfo = graphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheet("../../../src/Render/SpriteSheet/SS_data.ssdg");
-
-    graphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(geoPlane.resource, 0, 1, spriteSheetInfo);
-
-
+    // Set uv on plane
+    graphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(geoPlane.resource, 0, 151, spriteSheetInfo);
 
 
 

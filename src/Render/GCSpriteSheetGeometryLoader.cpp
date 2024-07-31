@@ -102,7 +102,7 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
     std::memcpy(&metadata.header.texturesCount, buffer.data() + offset, sizeof(uint32_t));
     offset += sizeof(uint32_t);
 
-    for (int i = 0; i < metadata.header.texturesCount; i++)
+    for (uint32_t i = 0; i < metadata.header.texturesCount; i++)
     {
         Metadata::Texture tex;
 
@@ -122,7 +122,7 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
         std::memcpy(&tex.imageCount, buffer.data() + offset, sizeof(uint32_t));
         offset += sizeof(uint32_t);
 
-        for (int j = 0; j < tex.imageCount; j++)
+        for (uint32_t j = 0; j < tex.imageCount; j++)
         {
             Metadata::Image img;
 
