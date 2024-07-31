@@ -261,13 +261,13 @@ public:
     void PlayAnimation(std::string animationName);
     void StopAnimation();
 
-    void LoadSpriteSheet( int row , int col , int width , int height );
-    void CreateAnimation(std::string animationName, int firstFrame, int frameNumber );
+    void LoadSpriteSheet(std::string fileName, int row , int col , int width , int height );
+    Animation* CreateAnimation(std::string animationName, int firstFrame, int frameNumber );
 
     std::string GetActiveAnimation() { return m_activeAnimation;  }
 
 protected:
-	Animator() {}
+    Animator();
     ~Animator() override {}
     
     void Update() override;
@@ -281,7 +281,9 @@ protected:
     inline static const int m_ID = ++Component::componentCount;
     
 private:
+    std::string m_spritesheetName;
     GC_SPRITESHEET_INFO m_spriteSheetInfo;
+    SpriteRenderer* m_pSpriteRenderer;
 
     std::string m_activeAnimation;
     Animation* m_currentAnimation;

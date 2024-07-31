@@ -13,6 +13,12 @@ void Animation::AddFrame(int frameID, float displayTime, bool isFlipingX, bool i
 	m_frames.PushBack(frame);
 }
 
+void Animation::StartAnimation()
+{
+	m_currentFrameIndex = 0;
+	GC::GetActiveRenderManager()->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_frames[ m_currentFrameIndex ].GetID() , m_spriteSheetInfos );
+}
+
 bool Animation::Update()
 {
 	if (m_frames.GetSize() > 0)
@@ -51,10 +57,10 @@ const GCFrame* Animation::GetCurrentFrame() const
 }
 
 
-void Animation::SetSpriteSheet(std::string fileName,int rowNumber, int colNumber, int sheetWidth, int sheetHeight)
+void Animation::SetSpriteSheet( std::string fileName , GC_SPRITESHEET_INFO* spriteSheet )
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	m_spriteSheetInfos = pGraphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheet(rowNumber, colNumber, sheetWidth, sheetHeight);
+	m_spriteSheetInfos = *spriteSheet;
 
 	pGraphics->InitializeGraphicsResourcesStart();
 	m_pTexture = pGraphics->CreateTexture("../../../src/Textures/" + fileName).resource;

@@ -415,10 +415,19 @@ Camera* Camera::Duplicate()
 }
 
 
+Animator::Animator()
+{
+	m_pSpriteRenderer = m_pGameObject->GetComponent<SpriteRenderer>();
+	if ( m_pSpriteRenderer == nullptr )
+		m_pSpriteRenderer = m_pGameObject->AddComponent<SpriteRenderer>();
+}
+
 void Animator::PlayAnimation(std::string animationName)
 {
 	m_activeAnimation = animationName;
 	m_currentAnimation = GC::GetActiveRenderManager()->GetAnimation( animationName );
+	m_currentAnimation->StartAnimation();
+	m_pSpriteRenderer->SetAnimatedSprite( m_currentAnimation->GetGeometry() , m_currentAnimation->GetTexture() );
 }
 
 void Animator::StopAnimation()
@@ -431,17 +440,26 @@ void Animator::Update()
 {
 	if ( m_currentAnimation->Update() )
 	{
-		m_pGameObject->GetComponent<SpriteRenderer>()->SetAnimatedSprite(m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture());
+		m_pSpriteRenderer->SetAnimatedSprite(m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture());
 	}
 }
 
-void Animator::LoadSpriteSheet( int row , int col , int width , int height )
+void Animator::LoadSpriteSheet(std::string fileName, int row , int col , int width , int height )
 {
+	m_spritesheetName = fileName;
 	GCSpriteSheetGeometryLoader loader;
 	m_spriteSheetInfo = loader.LoadSpriteSheet( row , col , width , height );
 }
 
-void Animator::CreateAnimation( std::string fileName, int firstFrame, int frameNumber )
+Animation* Animator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber )
 {
-	
+	Animation newAnimation;
+	newAnimation.SetSpriteSheet( m_spritesheetName , &m_spriteSheetInfo );
+	for ( int i = firstFrame; i < firstFrame + frameNumber; i++ )
+	{
+		newAnimation.AddFrame( i );
+	}
+	GC::GetActiveRenderManager()->AddAnimation( newAnimation , animationName );
+
+	return &newAnimation;
 }

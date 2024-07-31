@@ -9,7 +9,8 @@ public:
 	Animation();
 	~Animation() = default;
 
-	void AddFrame( int frameID, float displayTime = 0, bool isFlipingX = false, bool isFlipingY = false);
+	void AddFrame( int frameID, float displayTime = 3.2f, bool isFlipingX = false, bool isFlipingY = false);
+	void StartAnimation();
 	bool Update();
 	void IncrementFrame();
 	void Reset();
@@ -19,7 +20,7 @@ public:
 	GCGeometry* GetGeometry() { return m_pGeometry; }
 	GCTexture* GetTexture() { return m_pTexture; }
 
-	void SetSpriteSheet(std::string fileName, int rowNumber, int colNumber, int sheetWidth, int sheetHeight );
+	void SetSpriteSheet(std::string fileName, GC_SPRITESHEET_INFO* spriteSheet );
 
 private:
 
