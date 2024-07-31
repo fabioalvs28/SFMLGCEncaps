@@ -28,6 +28,7 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_layer = 0;
     
     m_transform.m_pGameObject = this;
+    m_transform.UpdateWorldMatrixFromParent();
 }
 
 /////////////////////////////////////////////////////////

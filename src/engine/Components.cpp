@@ -181,7 +181,7 @@ SpriteRenderer* SpriteRenderer::Duplicate()
 void SpriteRenderer::Render()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.m_worldMatrix);
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix());
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
 }
@@ -283,7 +283,7 @@ void BoxCollider::Render()
 
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
-	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.m_worldMatrix);
+	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix());
 	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
 
 }
