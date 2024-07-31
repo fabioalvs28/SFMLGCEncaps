@@ -13,15 +13,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCScene* pScene = GCScene::Create();
     GCGameObject* pMario = pScene->CreateGameObject();
     GCGameObject* pCAOW = pScene->CreateGameObject();
+
     //pCAOW->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
     //pCAOW->AddComponent<BoxCollider>()->SetVisible( true );
     //pMario->AddComponent<SpriteRenderer>()->SetSprite( "GoofyMario.dds" );
     //pMario->AddComponent<BoxCollider>()->SetVisible( true );
+
+    //Animated Character Test
+    GCGameObject* pHero = pScene->CreateGameObject();
+    pHero->AddComponent<SpriteRenderer>()->SetSprite("sprite_sheet.dds");
+    pHero->GetComponent<SpriteRenderer>()->LoadSpriteInfo(4, 6, 823, 823);
+    //pHero->AddComponent<SpriteRenderer>()->SetSpriteUVs(1);
+    pHero->AddComponent<BoxCollider>()->SetVisible(true);
+    pHero->m_transform.SetScale({5,5,0});
+
     pMario->m_transform.SetScale({ 5 , 5 , 0 });
     pCAOW->m_transform.SetScale({ 5,5,0 });
     ScriptStart* pScriptStart = pMario->AddComponent<ScriptStart>();
     pScriptStart->pKeyboard = GC::GetActiveInputSystem()->m_pKeyboard;
     pScriptStart->pMouse = GC::GetActiveInputSystem()->m_pMouse;
+
+
+
+
+
+
+
+    std::string texturePath2 = "../../../src/Render/Textures/sprite_sheet.dds";
+
+
+
+
+
+
     pGameManager->Run();
     
 

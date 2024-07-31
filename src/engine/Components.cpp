@@ -144,6 +144,18 @@ SpriteRenderer::SpriteRenderer()
 
 
 
+void SpriteRenderer::LoadSpriteInfo(int row, int col, int width, int height)
+{
+    GCSpriteSheetGeometryLoader loader;
+    m_spriteSheetInfo = loader.LoadSpriteSheet(row, col, width, height);
+}
+
+void SpriteRenderer::SetAnimatedFrame(int frameID)
+{
+    GCSpriteSheetGeometryLoader loader;
+    loader.SetSpriteUVs(m_pGeometry, frameID, m_spriteSheetInfo);
+}
+
 /////////////////////////////////////////////////
 /// @brief Set Sprite of a GameObject
 /// 

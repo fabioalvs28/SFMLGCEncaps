@@ -90,6 +90,8 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
+    void LoadSpriteInfo(int row, int col, int width, int height);
+    void SetSpriteUVs(int spriteID);
     void SetSprite( std::string fileName);
     void SetColor() {};
     
@@ -117,6 +119,8 @@ protected:
     GCGeometry* m_pGeometry;
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
+
+    GC_SPRITESHEET_INFO m_spriteSheetInfo;
 };
 
 
