@@ -152,7 +152,7 @@ int SpriteSheetGenerator::Packer()
                 w = temp;
                 rotated = true;
             }
-            Sprite sprite = Sprite(image, w, h, rotated, filename); //filename.split('.')[0]
+            Sprite sprite = Sprite(image, w, h, rotated, filename.substr(0, filename.find('.'))); //filename.split('.')[0]
             imageList.emplace_back(sprite);
             totalSize += (w + m_padding * 2) * (h + m_padding * 2);
         }
@@ -239,21 +239,21 @@ int SpriteSheetGenerator::Packer()
                 if (spriteSheetSize == 4096)
                 {
                     std::string textureName;
+                    std::string outfilePath;
                     switch (saveFormat)
                     {
                     case SpriteSheetGenerator::BMP:
-                        textureName = std::to_string(textureIndex) + ".bmp";
+                        outfilePath = m_outputPath.string() + std::to_string(textureIndex) + ".bmp";
                         break;
                     case SpriteSheetGenerator::PNG:
-                        textureName = std::to_string(textureIndex) + ".png";
+                        outfilePath = m_outputPath.string() + std::to_string(textureIndex) + ".png";
                         break;
                     case SpriteSheetGenerator::DDS:
-                        textureName = std::to_string(textureIndex) + ".dds";
+                        outfilePath = m_outputPath.string() + std::to_string(textureIndex) + ".dds";
                         break;
                     default:
                         break;
                     }
-                    std::string outfilePath = m_outputPath.string() + textureName;
                     GCFile outfile = GCFile(outfilePath.c_str(), "wb");
                     switch (saveFormat)
                     {
@@ -269,7 +269,7 @@ int SpriteSheetGenerator::Packer()
                     default:
                         break;
                     }
-                    data["textures"][textureIndex]["textureName"] = textureName;
+                    data["textures"][textureIndex]["textureName"] = std::to_string(textureIndex);
                     textureIndex++;
                     startImageIndex = imageIndex;
                     auto start = imageList.begin() + startImageIndex;
@@ -302,21 +302,21 @@ int SpriteSheetGenerator::Packer()
 
     data["totalTextureCount"] = textureIndex + 1;
     std::string textureName;
+    std::string outfilePath;
     switch (saveFormat)
     {
     case SpriteSheetGenerator::BMP:
-        textureName = std::to_string(textureIndex) + ".bmp";
+        outfilePath = m_outputPath.string() + std::to_string(textureIndex) + ".bmp";
         break;
     case SpriteSheetGenerator::PNG:
-        textureName = std::to_string(textureIndex) + ".png";
+        outfilePath = m_outputPath.string() + std::to_string(textureIndex) + ".png";
         break;
     case SpriteSheetGenerator::DDS:
-        textureName = std::to_string(textureIndex) + ".dds";
+        outfilePath = m_outputPath.string() + std::to_string(textureIndex) + ".dds";
         break;
     default:
         break;
     }
-    std::string outfilePath = m_outputPath.string() + textureName;
     GCFile outfile = GCFile(outfilePath.c_str(), "wb");
     switch (saveFormat)
     {
@@ -332,7 +332,7 @@ int SpriteSheetGenerator::Packer()
     default:
         break;
     }
-    data["textures"][textureIndex]["textureName"] = textureName;
+    data["textures"][textureIndex]["textureName"] = std::to_string(textureIndex);
 
     std::ofstream jsonFile;
     jsonFile.open(m_outputPath.string() + "spritSheetData.json");
@@ -386,6 +386,37 @@ int SpriteSheetGenerator::Packer()
     GCFile metadataFile2 = GCFile((m_outputPath.string() + "spritSheetData.ssdg").c_str(), "rb");
     Metadata::Data metadata2;
     Metadata::MetadataFileToStruct(metadataFile2, metadata2);
+
+
+    std::cout << "Header Magic : " << metadata2.header.magic << std::endl;
+    std::cout << "Header Textures Count : " << metadata2.header.texturesCount << std::endl;
+    std::cout << "Header Total Image Count : " << metadata2.header.totalImageCount << std::endl;
+
+    std::cout << std::endl;
+
+    for (size_t i = 0; i < metadata2.header.texturesCount; i++)
+    {
+        Metadata::Texture tex = metadata2.textures[i];
+
+        std::cout << "Texture " << i << " Texture Name : " << tex.textureName.c_str() << std::endl;
+        std::cout << "Texture " << i << " Texture Size : " << tex.texturesize << std::endl;
+        std::cout << "Texture " << i << " Image Count : " << tex.imageCount << std::endl;
+
+        std::cout << std::endl;
+
+        for (size_t j = 0; j < tex.imageCount; j++)
+        {
+            Metadata::Image img = tex.images[j];
+
+            std::cout << "Image " << j << " Image Name : " << img.filename.c_str() << std::endl;
+            std::cout << "Image " << j << " Image X pos : " << img.x << std::endl;
+            std::cout << "Image " << j << " Image Y pos : " << img.y << std::endl;
+            std::cout << "Image " << j << " Image Width : " << img.w << std::endl;
+            std::cout << "Image " << j << " Image Height : " << img.h << std::endl;
+            std::cout << "Image " << j << " Rotated : " << bool(img.rotated) << std::endl;
+            std::cout << std::endl;
+        }
+    }
 
     return 0;
 }
