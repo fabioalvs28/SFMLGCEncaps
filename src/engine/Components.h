@@ -267,9 +267,10 @@ public:
     std::string GetActiveAnimation() { return m_activeAnimation;  }
 
 protected:
-    Animator();
+    Animator() {};
     ~Animator() override {}
     
+    void Start() override;
     void Update() override;
     void Destroy() override {}
     Animator* Duplicate() override;

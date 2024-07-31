@@ -415,12 +415,6 @@ Camera* Camera::Duplicate()
 }
 
 
-Animator::Animator()
-{
-	m_pSpriteRenderer = m_pGameObject->GetComponent<SpriteRenderer>();
-	if ( m_pSpriteRenderer == nullptr )
-		m_pSpriteRenderer = m_pGameObject->AddComponent<SpriteRenderer>();
-}
 
 void Animator::PlayAnimation(std::string animationName)
 {
@@ -434,6 +428,13 @@ void Animator::StopAnimation()
 {
 	m_activeAnimation = "";
 	m_currentAnimation = nullptr;
+}
+
+void Animator::Start()
+{
+	SpriteRenderer* pSpriteRenderer = m_pGameObject->GetComponent<SpriteRenderer>();
+	ASSERT( pSpriteRenderer != nullptr , LOG_FATAL , "Trying to add Animator without a SpriteRenderer" );
+	m_pSpriteRenderer = pSpriteRenderer;
 }
 
 void Animator::Update()

@@ -9,7 +9,7 @@ public:
 	Animation();
 	~Animation() = default;
 
-	void AddFrame( int frameID, float displayTime = 3.2f, bool isFlipingX = false, bool isFlipingY = false);
+	void AddFrame( int frameID, float displayTime = 2.0f, bool isFlipingX = false, bool isFlipingY = false);
 	void StartAnimation();
 	bool Update();
 	void IncrementFrame();

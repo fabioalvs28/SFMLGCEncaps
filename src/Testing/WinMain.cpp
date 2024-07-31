@@ -17,6 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //Animated Character Test
     GCGameObject* pHero = pScene->CreateGameObject();
     pHero->m_transform.Scale( GCVEC3(3 , 3 , 3) );
+    pHero->AddComponent<SpriteRenderer>();
     pHero->AddComponent<Animator>()->LoadSpriteSheet( "sprite_sheet.dds", 4, 6, 823, 823);
     pHero->GetComponent<Animator>()->CreateAnimation( "WalkHero" , 0 , 6 );
     pHero->GetComponent<Animator>()->PlayAnimation( "WalkHero" );
