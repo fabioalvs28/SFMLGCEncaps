@@ -9,7 +9,7 @@ using namespace DirectX;
 // TODO Make sure IDs are handled differently
 // TODO À faire dans le Duplicate() : Start()
 
-
+class Animation;
 
 enum FLAGS
 {
@@ -90,8 +90,6 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
-    void LoadSpriteInfo(int row, int col, int width, int height);
-    void SetSpriteUVs(int spriteID);
     void SetSprite( std::string fileName);
     void SetColor() {};
     
@@ -120,7 +118,6 @@ protected:
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
 
-    GC_SPRITESHEET_INFO m_spriteSheetInfo;
 };
 
 
@@ -261,6 +258,14 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
+    void PlayAnimation(std::string animationName);
+    void StopAnimation();
+
+    void LoadSpriteSheet( int row , int col , int width , int height );
+    void CreateAnimation(std::string animationName, int firstFrame, int frameNumber );
+
+    std::string GetActiveAnimation() { return m_activeAnimation;  }
+
 protected:
 	Animator() {}
     ~Animator() override {}
@@ -268,20 +273,19 @@ protected:
     void Update() override;
     void Destroy() override {}
     Animator* Duplicate() override;
-    GCString GetActiveAnimation() { return m_activeAnimation;  }
     
     FLAGS GetFlags() override { return UPDATE; }
 
-    void PlayAnimation(GCString animationName);
-    void StopAnimation();
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
     
 private:
+    GC_SPRITESHEET_INFO m_spriteSheetInfo;
 
-    GCString m_activeAnimation;
-    //Animation* m_currentAnimation;
+    std::string m_activeAnimation;
+    Animation* m_currentAnimation;
+
 };
 
 

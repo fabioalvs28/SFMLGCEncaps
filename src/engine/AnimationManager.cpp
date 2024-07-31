@@ -3,9 +3,3 @@
 
 GCAnimationManager::GCAnimationManager()
 {}
-
-
-void GCAnimationManager::AddAnimation(const Animation& animation, std::string animationName)
-{
-	m_animationList.Insert(animationName, animation);
-}

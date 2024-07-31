@@ -102,3 +102,7 @@ void GCRenderManager::RegisterComponent( Component* pComponent )
 }
 
 
+void GCRenderManager::AddAnimation( const Animation& animation , std::string animationName )
+{
+    m_animationList.Insert( animationName , animation );
+}

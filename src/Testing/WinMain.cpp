@@ -21,8 +21,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     //Animated Character Test
     GCGameObject* pHero = pScene->CreateGameObject();
-    pHero->AddComponent<SpriteRenderer>()->SetSprite("sprite_sheet.dds");
-    pHero->GetComponent<SpriteRenderer>()->LoadSpriteInfo(4, 6, 823, 823);
     //pHero->AddComponent<SpriteRenderer>()->SetSpriteUVs(1);
     pHero->AddComponent<BoxCollider>()->SetVisible(true);
     pHero->m_transform.SetScale({5,5,0});

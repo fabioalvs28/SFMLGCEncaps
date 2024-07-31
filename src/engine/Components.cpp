@@ -143,19 +143,6 @@ SpriteRenderer::SpriteRenderer()
 }
 
 
-
-void SpriteRenderer::LoadSpriteInfo(int row, int col, int width, int height)
-{
-    GCSpriteSheetGeometryLoader loader;
-    m_spriteSheetInfo = loader.LoadSpriteSheet(row, col, width, height);
-}
-
-void SpriteRenderer::SetAnimatedFrame(int frameID)
-{
-    GCSpriteSheetGeometryLoader loader;
-    loader.SetSpriteUVs(m_pGeometry, frameID, m_spriteSheetInfo);
-}
-
 /////////////////////////////////////////////////
 /// @brief Set Sprite of a GameObject
 /// 
@@ -163,6 +150,7 @@ void SpriteRenderer::SetAnimatedFrame(int frameID)
 /// 
 /// @note The sprite must be in .dds 
 /////////////////////////////////////////////////
+
 void SpriteRenderer::SetSprite(std::string fileName)
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
@@ -427,16 +415,33 @@ Camera* Camera::Duplicate()
 }
 
 
-void Animator::PlayAnimation(GCString animationName)
+void Animator::PlayAnimation(std::string animationName)
 {
 	m_activeAnimation = animationName;
+	m_currentAnimation = GC::GetActiveRenderManager()->GetAnimation( animationName );
+}
+
+void Animator::StopAnimation()
+{
+	m_activeAnimation = "";
+	m_currentAnimation = nullptr;
 }
 
 void Animator::Update()
 {
-	/*if ( m_currentAnimation->Update() )
+	if ( m_currentAnimation->Update() )
 	{
 		m_pGameObject->GetComponent<SpriteRenderer>()->SetAnimatedSprite(m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture());
-	}*/
+	}
 }
 
+void Animator::LoadSpriteSheet( int row , int col , int width , int height )
+{
+	GCSpriteSheetGeometryLoader loader;
+	m_spriteSheetInfo = loader.LoadSpriteSheet( row , col , width , height );
+}
+
+void Animator::CreateAnimation( std::string fileName, int firstFrame, int frameNumber )
+{
+	
+}
