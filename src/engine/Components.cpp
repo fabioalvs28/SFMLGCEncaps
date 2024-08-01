@@ -64,11 +64,8 @@ void Component::UnregisterFromManagers()
 /// @note The m_globalActive won't be passed to the new Component as it doesn't have any GameObject.
 /// @note The new Component won't be registered to the Managers as it will be registered the next frame.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Component::Copy( Component *pNewComponent )
-{
-	pNewComponent->m_selfActive = m_selfActive;
-	GC::GetActiveSceneManager()->AddComponentToCreateQueue( pNewComponent );
-}
+void Component::CopyTo( Component* pDestination )
+{ pDestination->m_selfActive = m_selfActive; }
 
 
 
@@ -169,13 +166,12 @@ SpriteRenderer::SpriteRenderer()
 
 
 
-SpriteRenderer* SpriteRenderer::Duplicate()
+void SpriteRenderer::CopyTo( Component* pDestination )
 {
-	SpriteRenderer* pNewComponent = new SpriteRenderer();
-	Copy( pNewComponent );
-	*(pNewComponent->m_pMesh) = *m_pMesh; //! Need to ask Render if this will work
-	*(pNewComponent->m_pMaterial) = *m_pMaterial; //! Need to ask Render if this will work
-	return pNewComponent;
+	Component::CopyTo( pDestination );
+	SpriteRenderer* pSpriteRenderer = static_cast<SpriteRenderer*>( pDestination );
+	*(pSpriteRenderer->m_pMesh) = *m_pMesh; //! Need to ask Render if this will work
+	*(pSpriteRenderer->m_pMaterial) = *m_pMaterial; //! Need to ask Render if this will work
 }
 
 void SpriteRenderer::Render()
@@ -237,10 +233,10 @@ void Collider::UnregisterFromManagers()
 
 
 
-void Collider::Copy( Component* pComponent )
+void Collider::CopyTo( Component* pDestination )
 {
-	Component::Copy( pComponent );
-	Collider* pCollider = static_cast<Collider*>( pComponent );
+	Component::CopyTo( pDestination );
+	Collider* pCollider = static_cast<Collider*>( pDestination );
 	pCollider->m_trigger = m_trigger;
 	pCollider->m_visible = m_visible;
 	*(pCollider->m_pMesh) = *m_pMesh; //! Need to ask Render if this will work
@@ -269,12 +265,8 @@ BoxCollider::BoxCollider()
 
 
 
-BoxCollider* BoxCollider::Duplicate()
-{
-	BoxCollider* pNewComponent = new BoxCollider();
-	Copy( pNewComponent );
-	return pNewComponent;
-}
+void BoxCollider::CopyTo( Component* pDestination )
+{ Collider::CopyTo( pDestination ); }
 
 void BoxCollider::Render()
 {
@@ -293,12 +285,8 @@ void BoxCollider::Render()
 
 
 
-CircleCollider* CircleCollider::Duplicate()
-{
-	CircleCollider* pNewComponent = new CircleCollider();
-	Copy( pNewComponent );
-	return pNewComponent;
-}
+void CircleCollider::CopyTo( Component* pDestination )
+{ Collider::CopyTo( pDestination ); }
 
 
 
@@ -312,12 +300,11 @@ RigidBody::RigidBody()
 
 
 
-RigidBody* RigidBody::Duplicate()
+void RigidBody::CopyTo( Component* pDestination )
 {
-	RigidBody* pNewComponent = new RigidBody();
-	Copy( pNewComponent );
-	pNewComponent->m_velocity = m_velocity;
-	return pNewComponent;
+	Component::CopyTo( pDestination );
+	RigidBody* pRigidBody = static_cast<RigidBody*>( pDestination );
+	pRigidBody->m_velocity = m_velocity;
 }
 
 void RigidBody::FixedUpdate()
@@ -331,24 +318,16 @@ void RigidBody::FixedUpdate()
 
 
 
-Animator* Animator::Duplicate()
-{
-	Animator* pNewComponent = new Animator();
-	Copy( pNewComponent );
-	return pNewComponent;
-}
+void Animator::CopyTo( Component* pDestination )
+{ Component::CopyTo( pDestination ); }
 
 
 
 
 
 
-SoundMixer* SoundMixer::Duplicate()
-{
-	SoundMixer* pNewComponent = new SoundMixer();
-	Copy( pNewComponent );
-	return pNewComponent;
-}
+void SoundMixer::CopyTo( Component* pDestination )
+{ Component::CopyTo( pDestination ); }
 
 
 
@@ -372,15 +351,14 @@ Camera::Camera()
 
 
 
-Camera* Camera::Duplicate()
+void Camera::CopyTo( Component* pDestination )
 {
-	Camera* pNewComponent = new Camera();
-	Copy( pNewComponent );
-	pNewComponent->m_nearZ = m_nearZ;
-    pNewComponent->m_farZ = m_farZ;
-    pNewComponent->m_viewWidth = m_viewWidth;
-    pNewComponent->m_viewHeight = m_viewHeight;
-	return pNewComponent;
+	Component::CopyTo( pDestination );
+	Camera* pCamera = static_cast<Camera*>( pDestination );
+	pCamera->m_nearZ = m_nearZ;
+    pCamera->m_farZ = m_farZ;
+    pCamera->m_viewWidth = m_viewWidth;
+    pCamera->m_viewHeight = m_viewHeight;
 }
 
 void Camera::Update()

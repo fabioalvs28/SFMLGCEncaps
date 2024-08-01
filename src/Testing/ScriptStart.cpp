@@ -18,11 +18,10 @@ void ScriptStart::Update()
     }
 }
 
-ScriptStart* ScriptStart::Duplicate()
+void ScriptStart::CopyTo( Component* pDestination )
 {
-    ScriptStart* pNewScript = new ScriptStart();
-    Copy( pNewScript );
-    pNewScript->pKeyboard = pKeyboard;
-    pNewScript->pMouse = pMouse;
-    return pNewScript;
+    Component::CopyTo( pDestination );
+    ScriptStart* pScript = static_cast<ScriptStart*>( pDestination );
+    pScript->pKeyboard = pKeyboard;
+    pScript->pMouse = pMouse;
 }

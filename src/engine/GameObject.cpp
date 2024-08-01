@@ -53,7 +53,16 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
-        it.second->Duplicate();
+    {
+        Component* pComponent = it.second;
+        Component* pNewComponent = pComponent->Duplicate();
+        pNewComponent->m_pGameObject = pGameObject;
+        pNewComponent->Start();
+        pComponent->CopyTo( pNewComponent );
+        pNewComponent->m_globalActive = pGameObject->IsActive();
+        pGameObject->m_componentsList.Insert( pNewComponent->GetID(), pNewComponent );
+        GC::GetActiveSceneManager()->AddToCreateQueue( pNewComponent );
+    }
     
     return pGameObject;
 }
