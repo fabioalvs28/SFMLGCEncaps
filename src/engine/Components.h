@@ -260,12 +260,13 @@ public:
     void StopAnimation();
 
     void LoadSpriteSheet(std::string fileName, int row , int col , int width , int height );
-    Animation* CreateAnimation(std::string animationName, int firstFrame, int frameNumber );
+    Animation* CreateAnimation(std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime = 0.1f );
+    Animation* CreateAnimationWithCustomFrames( std::string animationName, std::vector<int> frameList, float frameDisplayTime = 0.1f );
 
-    std::string GetActiveAnimation() { return m_activeAnimation;  }
+    std::string GetActiveAnimation() { return m_activeAnimationName;  }
 
 protected:
-    Animator() {};
+    Animator();
     ~Animator() override {}
     
     void Start() override;
@@ -280,10 +281,10 @@ protected:
     
 private:
     std::string m_spritesheetName;
-    GC_SPRITESHEET_INFO m_spriteSheetInfo;
+    GC_SPRITESHEET_INFO* m_pSpriteSheetInfo;
     SpriteRenderer* m_pSpriteRenderer;
 
-    std::string m_activeAnimation;
+    std::string m_activeAnimationName;
     Animation* m_currentAnimation;
 
 };

@@ -22,8 +22,8 @@ public:
 
     void Render();
 
-    void AddAnimation( const Animation& animation , std::string animationName );
-    Animation* GetAnimation( std::string animationName ) { return &m_animationList[ animationName ]; }
+    void AddAnimation( Animation* animation , std::string animationName );
+    Animation* GetAnimation( std::string animationName );
 
     GCGraphics* m_pGraphics; 
     GCGeometry* m_pPlane;
@@ -36,6 +36,6 @@ public:
     XMVECTOR m_cameraUp ;
 
 protected:
-    GCMap<std::string , Animation> m_animationList;
+    GCMap<std::string , Animation*> m_animationList;
 
 };

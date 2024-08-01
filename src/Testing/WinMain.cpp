@@ -19,17 +19,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     pHero->m_transform.Scale( GCVEC3(3 , 3 , 3) );
     pHero->AddComponent<SpriteRenderer>();
     pHero->AddComponent<Animator>()->LoadSpriteSheet( "sprite_sheet.dds", 4, 6, 823, 823);
-    pHero->GetComponent<Animator>()->CreateAnimation( "WalkHero" , 0 , 6 );
-    pHero->GetComponent<Animator>()->PlayAnimation( "WalkHero" );
-
-
-
-
-
-    std::string texturePath2 = "../../../src/Render/Textures/sprite_sheet.dds";
-
-
-
+    pHero->AddComponent<ScriptStart>();
+    pHero->GetComponent<Animator>()->CreateAnimation( "WalkForward", 0, 6, 0.01f );
+    pHero->GetComponent<Animator>()->CreateAnimation( "WalkHeroL", 6, 6, 0.01f );
+    pHero->GetComponent<Animator>()->CreateAnimation( "WalkHeroR", 12, 6, 0.01f );
+    pHero->GetComponent<Animator>()->CreateAnimation( "WalkBackward", 18, 6, 0.01f );
+    pHero->AddComponent<BoxCollider>()->SetVisible( true );
 
 
 

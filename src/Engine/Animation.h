@@ -15,7 +15,7 @@ public:
 	void IncrementFrame();
 	void Reset();
 	const GCFrame* GetCurrentFrame() const;
-	int GetNumberOfFrames() const { return static_cast<int>(m_frames.GetSize()); }
+	int GetNumberOfFrames() const { return static_cast<int>(m_pFrames.size()); }
 	int GetCurrentFrameIndex() const { return m_currentFrameIndex; }
 	GCGeometry* GetGeometry() { return m_pGeometry; }
 	GCTexture* GetTexture() { return m_pTexture; }
@@ -28,7 +28,7 @@ private:
 	GCGeometry* m_pGeometry; 
 	GCTexture* m_pTexture;
 
-	GCVector<GCFrame> m_frames;
+	std::vector<GCFrame*> m_pFrames;
 	int m_currentFrameIndex;
 	float m_currentFrameTime;
 };

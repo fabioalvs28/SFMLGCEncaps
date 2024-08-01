@@ -10,16 +10,16 @@ public:
 	~GCFrame() = default;
 
 	float GetDisplayTime() const;
-	bool IsFlipingX() const;
-	bool IsFlipingY() const;
+	bool IsFlippingX() const;
+	bool IsFlippingY() const;
 
-	int GetID() { return m_frameID; }
+	int GetFrameID() const;
 
 private:
 
 	float m_displayTime;
-	bool m_isFlipingX;
-	bool m_isFlipingY;
+	bool m_isFlippingX;
+	bool m_isFlippingY;
 
 	int m_frameID;
 };
