@@ -218,11 +218,11 @@ public:
     enum MouseID
     {
         LEFT = 1,
-        RIGHT,
+        RIGHT = 2,
         MIDDLE = 4,
-        THUMB_1,
-        THUMB_2,
-        MOUSEIDCOUNT
+        BACKWARD = 5,
+        FORWARD = 6,
+        MOUSEIDCOUNT = 7,
     };
 
     enum MouseState
