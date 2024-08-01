@@ -117,7 +117,6 @@ void GCSceneManager::CreateComponent( Component* pComponent )
 		pComponent->m_created = true;
 		pComponent->RegisterToManagers();
 	}
-	pComponent->Start();
 }
 
 ///////////////////////////////////////////////////////////////
@@ -139,7 +138,7 @@ void GCSceneManager::DestroyComponent( Component* pComponent )
 /// 
 /// @param pComponent A pointer to the Component to add to the queue.
 ////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddComponentToCreateQueue( Component* pComponent )
+void GCSceneManager::AddToCreateQueue( Component* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to add a nullptr pComponent to the Creation Queue" );
 	m_componentsToCreateList.PushBack( pComponent );
@@ -150,7 +149,7 @@ void GCSceneManager::AddComponentToCreateQueue( Component* pComponent )
 /// 
 /// @param pComponent A pointer to the Component to add to the queue.
 ////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddComponentToDeleteQueue( Component* pComponent )
+void GCSceneManager::AddToDeleteQueue( Component* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to add a nullptr pComponent to the Deletion Queue" );
 	m_componentsToDeleteList.PushBack( pComponent );

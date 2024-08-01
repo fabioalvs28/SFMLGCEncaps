@@ -107,9 +107,10 @@ T* GCGameObject::AddComponent()
     ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a Component to a GameObject that already has it" );
     T* pComponent = new T();
     pComponent->m_pGameObject = this;
+	pComponent->Start();
     pComponent->m_globalActive = IsActive();
-    m_componentsList.Insert( T::GetIDStatic(), pComponent ); //! To See
-    GC::GetActiveSceneManager()->AddComponentToCreateQueue( pComponent );
+    m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    GC::GetActiveSceneManager()->AddToCreateQueue( pComponent );
     return pComponent;
 }
 

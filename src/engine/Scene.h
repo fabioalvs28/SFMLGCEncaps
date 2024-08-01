@@ -79,8 +79,9 @@ ScriptClass* GCScene::AddScript()
 {
     ASSERT( GetScript<ScriptClass>() == nullptr, LOG_FATAL, "Trying to add a Script to a Scene that it already has it" );
     ScriptClass* pScript = new ScriptClass();
-    pScript->RegisterToManagers();
-    m_scriptsList.Insert( ScriptClass->GetIDStatic(), pScript );
+	pScript->Start();
+    m_scriptsList.Insert( ScriptClass::GetIDStatic(), pScript );
+    GC::GetActiveSceneManager()->AddToCreateQueue( pScript );
     return pScript;
 }
 
@@ -92,9 +93,9 @@ ScriptClass* GCScene::AddScript()
 template <class ScriptClass>
 ScriptClass* GCScene::GetScript()
 {
-    ScriptClass* pScript;
+    Script* pScript;
     if ( m_scriptsList.Find( ScriptClass::GetIDStatic(), pScript ) == true )
-        return (ScriptClass*) pScript;
+        return static_cast<ScriptClass*>(pScript);
     return nullptr;
 }
 

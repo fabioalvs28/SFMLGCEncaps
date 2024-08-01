@@ -25,8 +25,8 @@ private:
 	void CreateComponent( Component* pComponent );
 	void DestroyComponent( Component* pComponent );
 	
-	void AddComponentToCreateQueue( Component* pComponent );
-	void AddComponentToDeleteQueue( Component* pComponent );
+	void AddToCreateQueue( Component* pComponent );
+	void AddToDeleteQueue( Component* pComponent );
 	
 	GCScene* CreateScene();
 

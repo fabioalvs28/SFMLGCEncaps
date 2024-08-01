@@ -3,7 +3,6 @@
 
 void ScriptStart::Start()
 {
-    m_pGameObject->m_transform.SetScale( GCVEC3( 5 , 5 , 0 ) );
     pKeyboard = GC::GetActiveInputSystem()->m_pKeyboard;
     pMouse = GC::GetActiveInputSystem()->m_pMouse;
 }

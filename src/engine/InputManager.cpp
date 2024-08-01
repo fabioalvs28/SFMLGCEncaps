@@ -266,7 +266,7 @@ GCMouseInputManager::GCMouseInputManager()
 {
     for (int i = 0 ; i < MouseID::MOUSEIDCOUNT; i++)
     {
-        m_buttonState.PushBack(GCMouseInputManager::NONE);
+        m_buttonState.push_back(GCMouseInputManager::NONE);
     }
 }
 

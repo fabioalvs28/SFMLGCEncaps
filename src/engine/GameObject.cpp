@@ -405,7 +405,7 @@ void GCGameObject::RemoveComponent( int ID )
     Component* pComponent;
     ASSERT( m_componentsList.Find( ID, pComponent ) == true, LOG_FATAL, "Trying to remove a Component from a GameObject that doesn't have it" ); //? The .Find() is necessary for the method to work but it's in an ASSERT ?
     m_componentsList.Remove( ID ); //? To See ?
-    GC::GetActiveSceneManager()->AddComponentToDeleteQueue( pComponent );
+    GC::GetActiveSceneManager()->AddToDeleteQueue( pComponent );
 }
 
 ///////////////////////////////////////////////////////////

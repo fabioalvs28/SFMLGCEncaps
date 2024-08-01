@@ -339,10 +339,12 @@ protected:
 class Script : public Component
 {
 friend class GCGameObject;
+friend class GCScene;
 friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class GCGameManager;
 
 protected:
     Script() {}
@@ -363,10 +365,12 @@ protected:
     class Script##CLASS_NAME : public Script##INHERITANCE \
     { \
     friend class GCGameObject; \
+    friend class GCScene; \
     friend class GCUpdateManager; \
     friend class GCSceneManager; \
     friend class GCPhysicManager; \
     friend class GCRenderManager; \
+    friend class GCGameManager; \
     public: \
         static const int GetIDStatic() { return m_ID; } \
         const int GetID() override { return m_ID; } \
