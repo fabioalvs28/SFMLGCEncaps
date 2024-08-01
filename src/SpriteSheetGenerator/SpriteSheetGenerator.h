@@ -52,6 +52,7 @@ class SpriteSheetGenerator
     fs::path m_outputPath = "";
     int m_padding = 0;
     bool m_allowRotate = false;
+    bool m_allowTrimming = false;
     bool m_tryRefillPrevRow = false;
 
     static int getSmallestSheetSize(int remainingSize);
@@ -72,11 +73,14 @@ public:
     void setAllowRotate(bool allowRotate) { m_allowRotate = allowRotate; }
     bool getAllowRotate() { return m_allowRotate; }
 
+    void setAllowTrimming(bool allowTrimming) { m_allowTrimming = allowTrimming; }
+    bool getAllowTrimming() { return m_allowTrimming; }
+
     void setTryRefillPrevRow(bool tryRefillPrevRow) { m_tryRefillPrevRow = tryRefillPrevRow; }
     bool getTryRefillPrevRow() { return m_tryRefillPrevRow; }
 
     void setPadding(int padding) { m_padding = padding; }
     int getPadding() { return m_padding; }
 
-
+    static GCImage trimImage(GCImage image);
 };

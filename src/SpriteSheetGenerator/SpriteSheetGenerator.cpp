@@ -58,6 +58,32 @@ bool SpriteSheetGenerator::sortBySpriteHeight(const Sprite& a, const Sprite& b)
     return (a.h > b.h);
 }
 
+GCImage SpriteSheetGenerator::trimImage(GCImage image)
+{
+    int width = image.GetWidth();
+    int height = image.GetHeight();
+    int top = height;
+    int bottom = 0;
+    int left = width;
+    int right = 0;
+    for (int x = 0; x < width; x++) 
+    {
+        for (int y = 0; y < height; y++) 
+        {
+            if (image.GetPixelRGBA(x, y) != 0) 
+            {
+                top = std::min(top, y);
+                bottom = std::max(bottom, y);
+                left = std::min(left, x);
+                right = std::max(right, x);
+            }
+        }
+    }
+    GCImage croppedImage(right - left + 1, bottom - top + 1);
+    croppedImage.Copy(0, 0, &image, left, top, right - left + 1, bottom - top + 1);
+    return croppedImage;
+}
+
 int SpriteSheetGenerator::Packer()
 {
     bool logging = false;
@@ -142,6 +168,11 @@ int SpriteSheetGenerator::Packer()
                 }
             }
 
+            if (m_allowTrimming)
+            {
+                image = trimImage(image);
+            }
+
             int h = image.GetHeight();
             int w = image.GetWidth();
 
@@ -154,7 +185,7 @@ int SpriteSheetGenerator::Packer()
                 w = temp;
                 rotated = true;
             }
-            Sprite sprite = Sprite(image, w, h, rotated, filename.substr(0, filename.find('.'))); //filename.split('.')[0]
+            Sprite sprite = Sprite(image, w, h, rotated, filename.substr(0, filename.find('.')));
             imageList.emplace_back(sprite);
             totalSize += (w + m_padding * 2) * (h + m_padding * 2);
         }
