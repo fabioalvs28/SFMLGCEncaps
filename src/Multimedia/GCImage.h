@@ -2,6 +2,10 @@
 #include <vector>
 #include <string>
 #include <GCFile.h>
+#include <iostream>
+#include <fstream>
+#include <cstdint>
+#include <cstring>
 
 
 enum DrawQuality {
@@ -111,11 +115,11 @@ public:
 	bool Save(GCFile* path, int type = BMP, int* pOutSize = nullptr, int width = -1, int height = -1);
 	// Save image to file, path is the path of the file and type is the type of the file
 	bool Save(cstr path, int type = BMP, int* pOutSize = nullptr);
-	// Save image to BMP file, path is the path of the file and Outsize is the size of the file
+	// Save image to BMP pFile, pOutSize is the size of the file
 	bool SaveBMP(GCFile* pFile, int* pOutSize = nullptr);
-	// Save image to PNG file, path is the path of the file, pOutSize and gray is the gray flag
+	// Save image to PNG pFile, pOutSize is the size of the file and gray is the gray flag
 	bool SavePNG(GCFile* pFile, int* pOutSize = nullptr, bool gray = false);
-
+	// Save image to DDS pFile, pOutSize is the size of the file
 	bool SaveDDS(GCFile* pFile, int* pOutSize = nullptr);
 	// Close the image
 	void Close();
@@ -151,23 +155,19 @@ public:
 	int GetBitDepth() { return m_bitDepth; }
 
 	// get RGBA of the image
-	std::vector<uint8_t> GetRGBA() { return m_rgba; }
-	// get RGBA of the image
-	inline uint8_t GetRGBA(int x, int y);
+	std::vector<uint8_t> GetPixelData() { return m_rgba; }
+	// get Pixel (RGB) from the image
+	COLORREF GetPixelRGB(int x, int y);
+	// get Pixel (RGBA) from the image
+	COLORREF GetPixelRGBA(int x, int y);
 	// check if the pixel is valid
-	inline bool IsValidPixel(int x, int y);
+	bool IsValidPixel(int x, int y);
 	// get Index of the pixel
-	inline int GetIndex(int x, int y);
+	int GetIndex(int x, int y);
 	// set Pixel of the image
 	void SetPixel(int x, int y, int r, int g, int b, int a);
-	// get Pixel of the image
-	COLORREF GetPixel(int x, int y);
-	// write a pixel to the image
-	void WritePixel(int x, int y, int r, int g, int b, int a, int d = 0, int id = -1);
-	// get pixel alpha of the image
-	uint8_t GetPixelA(int x, int y);
 	// get pixel depth of the image
-	int GetPixelDepth(int x, int y);
+	int GetPixelDepth();
 	// get pixel color of the image
 	bool GetPixels(std::vector<uint8_t> pTarget, int x, int y, int w, int h);
 	// count how many pixel of this color are in the image
@@ -176,7 +176,7 @@ public:
 	// Create Empty Image, w and h are the width and height, bpp is the bits per pixel (24 or 32)
 	void CreateEmptyImage(int w, int h, int bpp);
 
-	void WritePixel(int x, int y, COLORREF color, int d = 0, int id = -1);
+	void WritePixel(int x, int y, COLORREF color);
 	void DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	void DrawLineLow(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	void DrawLineHigh(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
