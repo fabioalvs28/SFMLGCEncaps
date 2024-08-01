@@ -13,6 +13,7 @@ protected:
 
 public:
 	static GCScene* Create();
+	void SetActive();
 	void Load();
 	void Unload();
 	void Destroy();

@@ -22,17 +22,26 @@ GCScene::GCScene()
 /// 
 /// @return A pointer to the newly created Scene.
 ////////////////////////////////////////////////////
-GCScene* GCScene::Create() { return GC::GetActiveSceneManager()->CreateScene(); }
+GCScene* GCScene::Create()
+{ return GC::GetActiveSceneManager()->CreateScene(); }
+
+//////////////////////////////////////////////////
+/// @brief Sets this Scene as the active Scene.
+//////////////////////////////////////////////////
+void GCScene::SetActive()
+{ GC::GetActiveSceneManager()->SetActiveScene( this ); }
 
 //////////////////////////////
 /// @brief Loads the Scene.
 //////////////////////////////
-void GCScene::Load() { GC::GetActiveSceneManager()->LoadScene( this ); }
+void GCScene::Load()
+{ GC::GetActiveSceneManager()->LoadScene( this ); }
 
 ////////////////////////////////
 /// @brief Unloads the Scene.
 ////////////////////////////////
-void GCScene::Unload() { GC::GetActiveSceneManager()->UnloadScene( this ); }
+void GCScene::Unload()
+{ GC::GetActiveSceneManager()->UnloadScene( this ); }
 
 //////////////////////////////////////////////////////////////////
 /// @brief Destroys the Scene and its children.
