@@ -81,6 +81,8 @@ protected:
     GCGameObject* m_pParent; // The GameObject's Parent.
     GCList<GCGameObject*> m_childrenList; // The list of children the GameObject has.
     
+    bool m_destroyed; // A boolean value indicating if the GameObject will be destroyed the next frame.
+    
     bool m_globalActive; // The global active state of the GameObject ( Usually its Parent active state ).
     bool m_selfActive; // The active state of the GameObject.
     

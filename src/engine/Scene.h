@@ -44,7 +44,6 @@ public:
 protected:
 	void MoveGameObjectToScene( GCGameObject* pGameObject );
 	void RemoveGameObjectFromScene( GCGameObject* pGameObject );
-	void DestroyGameObject( GCGameObject* pGameObject );
 
 protected:
 	GCListNode<GCScene*>* m_pNode; // A pointer to the Scene's Node in the SceneManager's scenesList

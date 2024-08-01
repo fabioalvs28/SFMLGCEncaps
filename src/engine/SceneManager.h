@@ -25,8 +25,12 @@ private:
 	void CreateComponent( Component* pComponent );
 	void DestroyComponent( Component* pComponent );
 	
+	void DestroyGameObject( GCGameObject* pGameObject );
+	
 	void AddToCreateQueue( Component* pComponent );
 	void AddToDeleteQueue( Component* pComponent );
+	
+	void AddToDeleteQueue( GCGameObject* pGameObject );
 	
 	GCScene* CreateScene();
 
@@ -38,4 +42,6 @@ private:
 	
 	GCList<Component*> m_componentsToCreateList; // A list of pointers to the Components to create in the next frame
 	GCList<Component*> m_componentsToDeleteList; // A list of pointers to the Components to delete in the next frame
+	
+	GCList<GCGameObject*> m_gameObjectsToDeleteList; // A list of pointers of the GameObjects to delete in the next frame
 };

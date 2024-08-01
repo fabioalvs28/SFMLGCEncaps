@@ -153,20 +153,6 @@ GCGameObject* GCScene::FindGameObjectByID( int ID )
 	}
 	return nullptr;
 }
-/////////////////////////////////////////////////////////////////
-/// @brief Destroys the given GameObject.
-/// 
-/// @param pGameObject A pointer to the GameObject to destroy.
-/////////////////////////////////////////////////////////////////
-void GCScene::DestroyGameObject( GCGameObject* pGameObject )
-{
-	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to destroy a nullptr pGameObject" );
-	if ( pGameObject->m_pSceneNode != nullptr )
-		pGameObject->RemoveScene();
-	if ( pGameObject->m_pParent != nullptr )
-		pGameObject->RemoveParent();
-	delete pGameObject;
-}
 
 /////////////////////////////////////////////////////
 /// @brief Destroys every GameObject in the Scene.

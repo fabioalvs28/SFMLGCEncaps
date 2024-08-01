@@ -21,6 +21,8 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_pScene = pScene;
     m_pParent = nullptr;
     
+    m_destroyed = false;
+    
     m_globalActive = true;
     m_selfActive = true;
     
@@ -99,11 +101,13 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
 ///////////////////////////////////////////////////////
 void GCGameObject::Destroy()
 {
+    ASSERT( m_destroyed == false, LOG_FATAL, "Trying to destroy a GameObject that was already destroyed" );
 	if ( m_componentsList.GetSize() != 0 )
         ClearComponents();
     if ( m_childrenList.GetFirstNode() != nullptr )
         DestroyChildren();
-    m_pScene->DestroyGameObject( this );
+    m_destroyed = true;
+    GC::GetActiveSceneManager()->AddToDeleteQueue( this );
 }
 
 
