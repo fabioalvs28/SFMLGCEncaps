@@ -331,14 +331,6 @@ void RigidBody::FixedUpdate()
 
 
 
-void Animator::CopyTo( Component* pDestination )
-{ Component::CopyTo( pDestination ); }
-
-
-
-
-
-
 void SoundMixer::CopyTo( Component* pDestination )
 { Component::CopyTo( pDestination ); }
 
@@ -400,21 +392,22 @@ void Camera::Update()
 
 
 
-Animator::Animator() :
-	m_currentAnimation( nullptr ) ,
-	m_activeAnimationName( "" ) ,
-	m_spritesheetName( "" ) ,
-	m_pSpriteRenderer( nullptr ) ,
-	m_pSpriteSheetInfo( nullptr )
-{}
-
-
-
-Animator* Animator::Duplicate()
+Animator::Animator()
 {
-	Animator* pNewComponent = new Animator();
-	Copy( pNewComponent );
-	return pNewComponent;
+	m_currentAnimation = nullptr;
+	m_activeAnimationName = "";
+	m_spritesheetName = "";
+	m_pSpriteRenderer = nullptr;
+	m_pSpriteSheetInfo = nullptr;
+}
+
+
+
+void Animator::CopyTo( Component* pDestination )
+{
+	Component::CopyTo( pDestination );
+	Animator* pAnimator = static_cast<Animator*>( pDestination );
+	// todo
 }
 
 void Animator::Start()
