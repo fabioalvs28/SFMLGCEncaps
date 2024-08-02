@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Windows.h>
+#include "framework.h"
+
 #include "GC.h"
 
 #include "GameManager.h"
