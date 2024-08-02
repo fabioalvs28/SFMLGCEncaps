@@ -7,7 +7,7 @@ void ScriptStart::Update()
 {
     for (int i = 0; i < 256 ; i++ )
     {
-        if (pKeyboard->GetKeyDown(i))
+        if (KEYBOARD::GetKeyDown(KEYBOARD::A))
         {
             std::cout << "Key Down: " << i << std::endl;
         }

@@ -20,8 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     pMario->m_transform.SetScale({ 5 , 5 , 0 });
     pCAOW->m_transform.SetScale({ 5,5,0 });
     ScriptStart* pScriptStart = pMario->AddComponent<ScriptStart>();
-    pScriptStart->pKeyboard = GC::GetActiveInputSystem()->m_pKeyboard;
-    pScriptStart->pMouse = GC::GetActiveInputSystem()->m_pMouse;
+    
     pGameManager->Run();
     
 

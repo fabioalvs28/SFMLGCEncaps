@@ -10,7 +10,8 @@
 #include "InputManager.h"
 #include "Timer.h"
 
-
+namespace GCInput
+{
 /// <summary>
 /// Bind a function based on key ID and key state
 /// </summary>
@@ -19,7 +20,7 @@
 /// <param name="state"></param>
 /// <param name="func"></param>
 template<typename Func>
-void BindKey(GCKeyboardInputManager::KeyboardID keyId, GCKeyboardInputManager::KeyboardState state, Func&& func)
+void BindKey(KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state, Func&& func)
 {
     GC::GetActiveInputSystem()->m_pKeyboard->BindAction(keyId, state, func);
 }
@@ -32,8 +33,11 @@ void BindKey(GCKeyboardInputManager::KeyboardID keyId, GCKeyboardInputManager::K
 /// <param name="state"></param>
 /// <param name="func"></param>
 template<typename Func>
-void UnbindKey(GCKeyboardInputManager::KeyboardID keyId, GCKeyboardInputManager::KeyboardState state, Func&& func)
+void UnbindKey(KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state, Func&& func)
 {
     GC::GetActiveInputSystem()->m_pKeyboard->UnbindAction(keyId, state, func);
 }
+};
+
+
 
