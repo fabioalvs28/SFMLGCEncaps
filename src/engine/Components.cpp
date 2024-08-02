@@ -422,7 +422,7 @@ void Animator::Update()
 	if ( m_currentAnimation == nullptr )
 		return;
 
-	if ( m_currentAnimation->Update() )
+	if ( m_currentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
 	{
 		m_pSpriteRenderer->SetAnimatedSprite(m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture());
 	}
