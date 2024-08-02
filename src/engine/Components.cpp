@@ -399,6 +399,8 @@ Animator::Animator()
 	m_spritesheetName = "";
 	m_pSpriteRenderer = nullptr;
 	m_pSpriteSheetInfo = nullptr;
+	m_currentFrameIndex = 0;
+	m_currentFrameTime = 0.0f;
 }
 
 
