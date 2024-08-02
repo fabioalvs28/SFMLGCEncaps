@@ -399,6 +399,8 @@ Animator::Animator()
 	m_spritesheetName = "";
 	m_pSpriteRenderer = nullptr;
 	m_pSpriteSheetInfo = nullptr;
+	m_currentFrameIndex = 0;
+	m_currentFrameTime = 0.0f;
 }
 
 
@@ -422,7 +424,7 @@ void Animator::Update()
 	if ( m_currentAnimation == nullptr )
 		return;
 
-	if ( m_currentAnimation->Update() )
+	if ( m_currentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
 	{
 		m_pSpriteRenderer->SetAnimatedSprite(m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture());
 	}

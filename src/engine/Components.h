@@ -255,29 +255,29 @@ protected:
 
 class Animator : public Component
 {
-friend class GCGameObject;
-friend class GCUpdateManager;
-friend class GCSceneManager;
-friend class GCPhysicManager;
-friend class GCRenderManager;
+    friend class GCGameObject;
+    friend class GCUpdateManager;
+    friend class GCSceneManager;
+    friend class GCPhysicManager;
+    friend class GCRenderManager;
 
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-    void PlayAnimation(std::string animationName);
+    void PlayAnimation( std::string animationName );
     void StopAnimation();
 
-    void LoadSpriteSheet(std::string fileName, int row , int col , int width , int height );
-    Animation* CreateAnimation(std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime = 0.1f );
-    Animation* CreateAnimationWithCustomFrames( std::string animationName, std::vector<int> frameList, float frameDisplayTime = 0.1f );
+    void LoadSpriteSheet( std::string fileName , int row , int col , int width , int height );
+    Animation* CreateAnimation( std::string animationName , int firstFrame , int frameNumber , float frameDisplayTime = 0.1f );
+    Animation* CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList , float frameDisplayTime = 0.1f );
 
-    std::string GetActiveAnimation() { return m_activeAnimationName;  }
+    std::string GetActiveAnimation() { return m_activeAnimationName; }
 
 protected:
     Animator();
     ~Animator() override {}
-    
+
     Animator* Duplicate() override { return new Animator(); }
     void CopyTo( Component* pDestination ) override;
     
@@ -288,7 +288,7 @@ protected:
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    
+
 private:
     std::string m_spritesheetName;
     GC_SPRITESHEET_INFO* m_pSpriteSheetInfo;
@@ -297,6 +297,8 @@ private:
     std::string m_activeAnimationName;
     Animation* m_currentAnimation;
 
+    int m_currentFrameIndex;
+    float m_currentFrameTime;
 };
 
 

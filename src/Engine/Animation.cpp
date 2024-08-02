@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "../Render/pch.h"
 
-Animation::Animation() : m_pFrames(0), m_currentFrameIndex(0), m_currentFrameTime(0) 
+Animation::Animation() : m_pFrames(0)
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 	m_pGeometry = pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green)).resource;
@@ -15,43 +15,37 @@ void Animation::AddFrame(int frameID, float displayTime, bool isFlipingX, bool i
 
 void Animation::StartAnimation()
 {
-	m_currentFrameIndex = 0;
-	GC::GetActiveRenderManager()->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_pFrames[ m_currentFrameIndex ]->GetFrameID(), m_spriteSheetInfos );
+	GC::GetActiveRenderManager()->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_pFrames[ 0 ]->GetFrameID(), m_spriteSheetInfos );
 }
 
-bool Animation::Update()
+bool Animation::Update( int* currentFrameIndex, float* currentFrameTime )
 {
 	if (m_pFrames.size() > 0)
 	{
-		m_currentFrameTime += GC::GetActiveTimer()->DeltaTime();
+		*currentFrameTime += GC::GetActiveTimer()->DeltaTime();
 
-		if (m_currentFrameTime >= m_pFrames[m_currentFrameIndex]->GetDisplayTime())
+		if ( *currentFrameTime >= m_pFrames[ *currentFrameIndex ]->GetDisplayTime())
 		{
-			m_currentFrameTime = 0;
-			IncrementFrame();
-			GC::GetActiveRenderManager()->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(m_pGeometry, m_pFrames[m_currentFrameIndex]->GetFrameID(), m_spriteSheetInfos);
+			*currentFrameTime = 0;
+			IncrementFrame( currentFrameIndex );
+			GC::GetActiveRenderManager()->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(m_pGeometry, m_pFrames[ *currentFrameIndex ]->GetFrameID(), m_spriteSheetInfos);
 			return true;
 		}
 	}
 	return false;
 }
 
-void Animation::IncrementFrame()
+void Animation::IncrementFrame( int* currentFrameIndex )
 {
-	m_currentFrameIndex = (m_currentFrameIndex + 1) % m_pFrames.size();
+	*currentFrameIndex = ( *currentFrameIndex + 1) % m_pFrames.size();
 }
 
-void Animation::Reset()
-{
-	m_currentFrameIndex = 0;
-	m_currentFrameTime = 0;
-}
 
-const GCFrame* Animation::GetCurrentFrame() const
+const GCFrame* Animation::GetCurrentFrame( int currentFrameIndex ) const
 {
 	if (m_pFrames.size() > 0)
 	{
-		return m_pFrames[m_currentFrameIndex];
+		return m_pFrames[ currentFrameIndex ];
 	}
 	return nullptr;
 }
