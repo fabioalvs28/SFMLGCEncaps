@@ -22,6 +22,11 @@ public:
         uint16_t w;
         uint16_t h;
         uint8_t rotated;
+        uint8_t cropped;
+        uint16_t crop_x;
+        uint16_t crop_y;
+        uint16_t original_w;
+        uint16_t original_h;
     };
 
     struct Texture
@@ -46,8 +51,8 @@ public:
     };
 
 #ifndef NOJSON
-    static Data jsonToMetadataFile(json data);
+    static Data jsonToMetadataStruct(json data);
 #endif // NOJSON
 
-    static bool MetadataFileToStruct(GCFile file, Metadata::Data& metadata);
+    static bool MetadataFileToMetadataStruct(GCFile file, Metadata::Data& metadata);
 };

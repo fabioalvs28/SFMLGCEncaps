@@ -1,6 +1,6 @@
 #include "metadata.h"
 
-Metadata::Data Metadata::jsonToMetadataFile(json data)
+Metadata::Data Metadata::jsonToMetadataStruct(json data)
 {
     Metadata::Data metadata;
     unsigned char buffer[] = { 0x53, 0x53, 0x44, 0x47 };
@@ -22,6 +22,11 @@ Metadata::Data Metadata::jsonToMetadataFile(json data)
             image.w = data["textures"][i]["images"][j]["w"];
             image.h = data["textures"][i]["images"][j]["h"];
             image.rotated = data["textures"][i]["images"][j]["rotated"];
+            image.crop_x = data["textures"][i]["images"][j]["crop_x"];
+            image.crop_y = data["textures"][i]["images"][j]["crop_y"];
+            image.original_w = data["textures"][i]["images"][j]["original_w"];
+            image.original_h = data["textures"][i]["images"][j]["original_h"];
+            image.cropped = data["textures"][i]["images"][j]["cropped"];
             texture.images.emplace_back(image);
         }
         metadata.textures.emplace_back(texture);
@@ -30,7 +35,7 @@ Metadata::Data Metadata::jsonToMetadataFile(json data)
     return metadata;
 }
 
-bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
+bool Metadata::MetadataFileToMetadataStruct(GCFile file, Metadata::Data& metadata)
 {
     size_t offset = 0;
 
@@ -59,7 +64,7 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
     std::memcpy(&metadata.header.texturesCount, buffer.data() + offset, sizeof(uint32_t));
     offset += sizeof(uint32_t);
 
-    for (int i = 0; i < metadata.header.texturesCount; i++)
+    for (uint32_t i = 0; i < metadata.header.texturesCount; i++)
     {
         Metadata::Texture tex;
 
@@ -79,7 +84,7 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
         std::memcpy(&tex.imageCount, buffer.data() + offset, sizeof(uint32_t));
         offset += sizeof(uint32_t);
 
-        for (int j = 0; j < tex.imageCount; j++)
+        for (uint32_t j = 0; j < tex.imageCount; j++)
         {
             Metadata::Image img;
 
@@ -101,9 +106,20 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
             offset += sizeof(uint16_t);
             std::memcpy(&img.h, buffer.data() + offset, sizeof(uint16_t));
             offset += sizeof(uint16_t);
-
             std::memcpy(&img.rotated, buffer.data() + offset, sizeof(uint8_t));
             offset += sizeof(uint8_t);
+
+            std::memcpy(&img.cropped, buffer.data() + offset, sizeof(uint8_t));
+            offset += sizeof(uint8_t);
+            std::memcpy(&img.crop_x, buffer.data() + offset, sizeof(uint16_t));
+            offset += sizeof(uint16_t);
+            std::memcpy(&img.crop_y, buffer.data() + offset, sizeof(uint16_t));
+            offset += sizeof(uint16_t);
+            std::memcpy(&img.original_w, buffer.data() + offset, sizeof(uint16_t));
+            offset += sizeof(uint16_t);
+            std::memcpy(&img.original_h, buffer.data() + offset, sizeof(uint16_t));
+            offset += sizeof(uint16_t);
+
             tex.images.emplace_back(img);
         }
         metadata.textures.emplace_back(tex);

@@ -6,6 +6,11 @@ struct Image
     u16 w;
     u16 h;
     bool rotated;
+    bool cropped;
+    u16 crop_x;
+    u16 crop_y;
+    u16 original_w;
+    u16 original_h;
 };
 
 struct Texture

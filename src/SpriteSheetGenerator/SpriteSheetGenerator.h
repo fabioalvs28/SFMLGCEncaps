@@ -16,6 +16,8 @@ struct Sprite
     int h;
     bool rotated;
     std::string filename;
+    bool cropped = false;
+    REC2 cropRect = REC2(0, 0, 0, 0);
 };
 struct Pos
 {
@@ -82,5 +84,5 @@ public:
     void setPadding(int padding) { m_padding = padding; }
     int getPadding() { return m_padding; }
 
-    static GCImage trimImage(GCImage image);
+    static GCImage trimImage(GCImage image, REC2& outCropRect);
 };
