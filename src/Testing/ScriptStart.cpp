@@ -9,12 +9,28 @@ void ScriptStart::Start()
 
 void ScriptStart::Update()
 {
-    for (int i = 0; i < 256 ; i++ )
+    GCKeyboardInputManager* pKeyboard = GC::GetActiveInputSystem()->m_pKeyboard;
+    GCMouseInputManager* pMouse = GC::GetActiveInputSystem()->m_pMouse;
+    Animator* pAnimator = m_pGameObject->GetComponent<Animator>();
+    if ( pKeyboard->GetKeyStay( pKeyboard->Q ) )
     {
-        if (pKeyboard->GetKeyDown(i))
-        {
-            std::cout << "Key Down: " << i << std::endl;
-        }
+        m_pGameObject->m_transform.Translate( GCVEC3( -0.01 , 0 , 0 ) );
+        pAnimator->PlayAnimation( "WalkHeroL" );
+    }
+    if ( pKeyboard->GetKeyStay( pKeyboard->D ) )
+    {
+        m_pGameObject->m_transform.Translate( GCVEC3( 0.01, 0 , 0 ) );
+        pAnimator->PlayAnimation( "WalkHeroR" );
+    }
+    if ( pKeyboard->GetKeyStay( pKeyboard->Z ) )
+    {
+        m_pGameObject->m_transform.Translate( GCVEC3( 0,0.01 , 0 ) );
+        pAnimator->PlayAnimation( "WalkBackward" );
+    }
+    if ( pKeyboard->GetKeyStay( pKeyboard->S ) )
+    {
+        m_pGameObject->m_transform.Translate( GCVEC3( 0, -0.01, 0 ) );
+        pAnimator->PlayAnimation( "WalkForward" );
     }
 }
 

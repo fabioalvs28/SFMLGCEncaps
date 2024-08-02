@@ -30,7 +30,7 @@ GCMesh::~GCMesh()
         m_pBufferGeometryData->IndexBufferByteSize = 0;
         m_pBufferGeometryData->IndexCount = 0;
 
-        DELETE(m_pBufferGeometryData);
+        GC_DELETE(m_pBufferGeometryData);
     }
 }
 
@@ -71,30 +71,30 @@ void GCMesh::UploadGeometryData(int& flagEnabledBits) {
     size_t vertexSize = 0;
 
     // Manage offset bits size for reserve vector
-    if (HAS_FLAG(m_flagEnabledBits, VERTEX_POSITION)) vertexSize += 3;
-    if (HAS_FLAG(m_flagEnabledBits, VERTEX_COLOR)) vertexSize += 4;
-    if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) vertexSize += 2;
-    if (HAS_FLAG(m_flagEnabledBits, VERTEX_NORMAL)) vertexSize += 3;
+    if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_POSITION)) vertexSize += 3;
+    if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_COLOR)) vertexSize += 4;
+    if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_UV)) vertexSize += 2;
+    if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_NORMAL)) vertexSize += 3;
 
     vertexData.reserve(m_pMeshGeometry->pos.size() * vertexSize);
 
     for (size_t i = 0; i < m_pMeshGeometry->pos.size(); ++i) {
-        if (HAS_FLAG(m_flagEnabledBits, VERTEX_POSITION)) {
+        if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_POSITION)) {
             vertexData.push_back(m_pMeshGeometry->pos[i].x);
             vertexData.push_back(m_pMeshGeometry->pos[i].y);
             vertexData.push_back(m_pMeshGeometry->pos[i].z);
         }
-        if (HAS_FLAG(m_flagEnabledBits, VERTEX_COLOR)) {
+        if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_COLOR)) {
             vertexData.push_back(m_pMeshGeometry->color[i].x);
             vertexData.push_back(m_pMeshGeometry->color[i].y);
             vertexData.push_back(m_pMeshGeometry->color[i].z);
             vertexData.push_back(m_pMeshGeometry->color[i].w);
         }
-        if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
+        if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_UV)) {
             vertexData.push_back(m_pMeshGeometry->uv[i].x);
             vertexData.push_back(m_pMeshGeometry->uv[i].y);
         }
-        if (HAS_FLAG(m_flagEnabledBits, VERTEX_NORMAL)) {
+        if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_NORMAL)) {
             vertexData.push_back(m_pMeshGeometry->normals[i].x);
             vertexData.push_back(m_pMeshGeometry->normals[i].y);
             vertexData.push_back(m_pMeshGeometry->normals[i].z);
@@ -104,7 +104,7 @@ void GCMesh::UploadGeometryData(int& flagEnabledBits) {
     const UINT vbByteSize = static_cast<UINT>(vertexData.size() * sizeof(float));
     const UINT ibByteSize = static_cast<UINT>(m_pMeshGeometry->indices.size() * sizeof(std::uint16_t));
 
-    m_pBufferGeometryData = new GCMESHBUFFERDATA();
+    m_pBufferGeometryData = new GC_MESH_BUFFER_DATA();
 
     D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
     CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
@@ -164,32 +164,32 @@ void GCMesh::UpdateGeometryData(float deltaTime)
     size_t vertexSize = 0;
 
     // Manage offset bits size for reserve vector
-    if (HAS_FLAG(m_flagEnabledBits, VERTEX_POSITION)) vertexSize += 3;
-    if (HAS_FLAG(m_flagEnabledBits, VERTEX_COLOR)) vertexSize += 4;
-    if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) vertexSize += 2;
-    if (HAS_FLAG(m_flagEnabledBits, VERTEX_NORMAL)) vertexSize += 3;
+    if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_POSITION)) vertexSize += 3;
+    if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_COLOR)) vertexSize += 4;
+    if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_UV)) vertexSize += 2;
+    if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_NORMAL)) vertexSize += 3;
 
     vertexData.reserve(m_pMeshGeometry->pos.size() * vertexSize * m_geoAmount);
 
     for (int instance = 0; instance < m_geoAmount; ++instance) {
 
         for (size_t i = 0; i < m_pMeshGeometry->pos.size(); ++i) {
-            if (HAS_FLAG(m_flagEnabledBits, VERTEX_POSITION)) {
+            if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_POSITION)) {
                 vertexData.push_back(m_pMeshGeometry->pos[i].x + m_geometryPositions[instance].x);
                 vertexData.push_back(m_pMeshGeometry->pos[i].y + m_geometryPositions[instance].y);
                 vertexData.push_back(m_pMeshGeometry->pos[i].z + m_geometryPositions[instance].z);
             }
-            if (HAS_FLAG(m_flagEnabledBits, VERTEX_COLOR)) {
+            if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_COLOR)) {
                 vertexData.push_back(m_pMeshGeometry->color[i].x);
                 vertexData.push_back(m_pMeshGeometry->color[i].y);
                 vertexData.push_back(m_pMeshGeometry->color[i].z);
                 vertexData.push_back(m_pMeshGeometry->color[i].w);
             }
-            if (HAS_FLAG(m_flagEnabledBits, VERTEX_UV)) {
+            if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_UV)) {
                 vertexData.push_back(m_pMeshGeometry->uv[i].x);
                 vertexData.push_back(m_pMeshGeometry->uv[i].y);
             }
-            if (HAS_FLAG(m_flagEnabledBits, VERTEX_NORMAL)) {
+            if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_NORMAL)) {
                 vertexData.push_back(m_pMeshGeometry->normals[i].x);
                 vertexData.push_back(m_pMeshGeometry->normals[i].y);
                 vertexData.push_back(m_pMeshGeometry->normals[i].z);
@@ -210,7 +210,7 @@ void GCMesh::UpdateGeometryData(float deltaTime)
     const UINT vbByteSize = static_cast<UINT>(vertexData.size() * sizeof(float));
     const UINT ibByteSize = static_cast<UINT>(indices.size() * sizeof(std::uint16_t));
 
-    m_pBufferGeometryData = new GCMESHBUFFERDATA();
+    m_pBufferGeometryData = new GC_MESH_BUFFER_DATA();
 
     D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
     CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);

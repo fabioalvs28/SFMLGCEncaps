@@ -1,5 +1,7 @@
 #pragma once
 
+// Tous passer en GCVector
+
 struct GCGeometry 
 {
 public:

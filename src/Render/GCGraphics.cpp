@@ -18,37 +18,37 @@ GCGraphics::~GCGraphics()
 {
     for (auto shader : m_vShaders)
     {
-        DELETE(shader);
+        GC_DELETE(shader);
     }
     m_vShaders.clear();
 
     for (auto material : m_vMaterials)
     {
-        DELETE(material);
+        GC_DELETE(material);
     }
     m_vMaterials.clear();
 
     for (auto mesh : m_vMeshes)
     {
-        DELETE(mesh);
+        GC_DELETE(mesh);
     }
     m_vMeshes.clear();
 
     for (auto texture : m_lTextures)
     {
-        DELETE(texture);
+        GC_DELETE(texture);
     }
     m_lTextures.clear();
 
     for (auto buffer : m_pCbCameraInstances)
     {
-        DELETE(buffer);
+        GC_DELETE(buffer);
     }
     m_pCbCameraInstances.clear();
 
-    DELETE(m_pRender);
-    DELETE(m_pPrimitiveFactory);
-    DELETE(m_pModelParserFactory);
+    GC_DELETE(m_pRender);
+    GC_DELETE(m_pPrimitiveFactory);
+    GC_DELETE(m_pModelParserFactory);
 }
 
 bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
@@ -60,6 +60,7 @@ bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
     m_pFontGeometryLoader = new GCFontGeometryLoader();
+    m_pSpriteSheetGeometryLoader = new GCSpriteSheetGeometryLoader;
 
     m_pPrimitiveFactory->Initialize();
 
@@ -142,7 +143,7 @@ bool GCGraphics::InitializeGraphicsResourcesEnd() {
 }
 
 
-ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& filePath) {
+GC_RESOURCE_CREATION_RESULT<GCTexture*> GCGraphics::CreateTexture(const std::string& filePath) {
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 
     // Creates and initializes a texture using a path
@@ -178,188 +179,188 @@ ResourceCreationResult<GCTexture*> GCGraphics::CreateTexture(const std::string& 
     // Initialize the texture with the specified index
     GC_GRAPHICS_ERROR errorState = texture->Initialize(filePath, this, index);
     if (errorState != GCRENDER_SUCCESS_OK) {
-        return ResourceCreationResult<GCTexture*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCTexture*>(false, nullptr, errorState);
     }
 
     // Return the result of the creation operation
-    return ResourceCreationResult<GCTexture*>(true, texture, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCTexture*>(true, texture, errorState);
 }
 
-ResourceCreationResult<GCShader*> GCGraphics::CreateShaderColor()
+GC_RESOURCE_CREATION_RESULT<GCShader*> GCGraphics::CreateShaderColor()
 {
     GCShader* pShader = new GCShader();
 
     int vertexFlags = 0;
-    SET_FLAG(vertexFlags, VERTEX_POSITION);
-    SET_FLAG(vertexFlags, VERTEX_COLOR);
+    GC_SET_FLAG(vertexFlags, GC_VERTEX_POSITION);
+    GC_SET_FLAG(vertexFlags, GC_VERTEX_COLOR);
 
     int rootParametersFlag = 0;
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB0);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB1);
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     if (errorState != 0)
-        return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCShader*>(false, nullptr, errorState);
     errorState = pShader->Load();
     if (errorState != 0)
-        return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCShader*>(false, nullptr, errorState);
 
     m_vShaders.push_back(pShader);
 
-    return ResourceCreationResult<GCShader*>(true, pShader, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCShader*>(true, pShader, errorState);
 }
 
-ResourceCreationResult<GCShader*> GCGraphics::CreateShaderTexture()
+GC_RESOURCE_CREATION_RESULT<GCShader*> GCGraphics::CreateShaderTexture()
 {
     GCShader* pShader = new GCShader();
 
     int vertexFlags = 0;
-    SET_FLAG(vertexFlags, VERTEX_POSITION);
-    SET_FLAG(vertexFlags, VERTEX_UV);
+    GC_SET_FLAG(vertexFlags, GC_VERTEX_POSITION);
+    GC_SET_FLAG(vertexFlags, GC_VERTEX_UV);
 
     int rootParametersFlag = 0;
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
-    SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB0);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB1);
+    GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
     if (errorState != 0)
-        return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCShader*>(false, nullptr, errorState);
     errorState = pShader->Load();
     if (errorState != 0)
-        return ResourceCreationResult<GCShader*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCShader*>(false, nullptr, errorState);
 
     m_vShaders.push_back(pShader);
 
-    return ResourceCreationResult<GCShader*>(true, pShader, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCShader*>(true, pShader, errorState);
 }
 
 // Specify the path, with the name of the shader at the file creation , example : CsoCompiled/texture, texture is the name of the file in Cso Compiled Folder
-ResourceCreationResult<GCShader*> GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode, int flagRootParameters)
+GC_RESOURCE_CREATION_RESULT<GCShader*> GCGraphics::CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode, int flagRootParameters)
 {
     GCShader* pShader = new GCShader();
 
     GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, filePath, compiledShaderDestinationPath, flagEnabledBits, cullMode, flagRootParameters);
     if (errorState != 0)
-        ResourceCreationResult<GCShader*>(false, nullptr, errorState);
+        GC_RESOURCE_CREATION_RESULT<GCShader*>(false, nullptr, errorState);
     errorState = pShader->Load();
     if (errorState != 0)
-        ResourceCreationResult<GCShader*>(false, nullptr, errorState);
+        GC_RESOURCE_CREATION_RESULT<GCShader*>(false, nullptr, errorState);
 
     m_vShaders.push_back(pShader);
 
-    return ResourceCreationResult<GCShader*>(true, pShader, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCShader*>(true, pShader, errorState);
 }
 
-ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits)
+GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits)
 {
     if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
     {
-        return ResourceCreationResult<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
+        return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
     }
 
     GCMesh* pMesh = new GCMesh();
 
     GC_GRAPHICS_ERROR errorState = pMesh->Initialize(m_pRender, pGeometry, flagEnabledBits);
     if (errorState != 0)
-        return ResourceCreationResult<GCMesh*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, errorState);
 
     m_vMeshes.push_back(pMesh);
 
-    return ResourceCreationResult<GCMesh*>(true, pMesh, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCMesh*>(true, pMesh, errorState);
 
 }
 
-ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometry)
+GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGeometry)
 {
     int flagsLightColor = 0;
-    SET_FLAG(flagsLightColor, VERTEX_POSITION);
-    SET_FLAG(flagsLightColor, VERTEX_COLOR);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
 
     // Check if Geometry is valid
     if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
-        return ResourceCreationResult<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
+        return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMesh* pMesh = new GCMesh();
 
     GC_GRAPHICS_ERROR errorState = pMesh->Initialize(m_pRender, pGeometry, flagsLightColor);
     if (errorState != 0)
-        return ResourceCreationResult<GCMesh*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, errorState);
 
     m_vMeshes.push_back(pMesh);
 
-    return ResourceCreationResult<GCMesh*>(true, pMesh, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCMesh*>(true, pMesh, errorState);
 }
 
-ResourceCreationResult<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeometry)
+GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* pGeometry)
 {
     int flagsLightTexture = 0;
-    SET_FLAG(flagsLightTexture, VERTEX_POSITION);
-    SET_FLAG(flagsLightTexture, VERTEX_UV);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
 
     // Check if Geometry is valid
     if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
-        return ResourceCreationResult<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
+        return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMesh* pMesh = new GCMesh();
 
     GC_GRAPHICS_ERROR errorState = pMesh->Initialize(m_pRender, pGeometry, flagsLightTexture);
     if (errorState != 0)
-        return ResourceCreationResult<GCMesh*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, errorState);
 
     m_vMeshes.push_back(pMesh);
 
-    return ResourceCreationResult<GCMesh*>(true, pMesh, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCMesh*>(true, pMesh, errorState);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)
+GC_RESOURCE_CREATION_RESULT<GCGeometry*> GCGraphics::CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color)
 {
     GCGeometry* pGeometry = new GCGeometry();
 
     if (CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
-        return ResourceCreationResult<GCGeometry*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
+        return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GC_GRAPHICS_ERROR errorState = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, pGeometry);
     if (errorState != 0)
-        return ResourceCreationResult<GCGeometry*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(false, nullptr, errorState);
 
 
 
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(true, pGeometry, errorState);
 }
 
-ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtensionType)
+GC_RESOURCE_CREATION_RESULT<GCGeometry*> GCGraphics::CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtensionType)
 {
     GCGeometry* pGeometry = new GCGeometry;
 
     if (CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
-        return ResourceCreationResult<GCGeometry*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
+        return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GC_GRAPHICS_ERROR errorState = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, pGeometry);
     if (errorState != 0)
-        return ResourceCreationResult<GCGeometry*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(false, nullptr, errorState);
 
 
 
-    return ResourceCreationResult<GCGeometry*>(true, pGeometry, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(true, pGeometry, errorState);
 }
 
-ResourceCreationResult<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pShader)
+GC_RESOURCE_CREATION_RESULT<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pShader)
 {
     if (CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader) == false)
-        return ResourceCreationResult<GCMaterial*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
+        return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMaterial* material = new GCMaterial();
 
     GC_GRAPHICS_ERROR errorState = material->Initialize(pShader);
     if (errorState != 0)
-        return ResourceCreationResult<GCMaterial*>(false, nullptr, errorState);
+        return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(false, nullptr, errorState);
 
     material->m_materialId = m_vMaterials.size();
     m_vMaterials.push_back(material);
 
-    return ResourceCreationResult<GCMaterial*>(true, material, errorState);
+    return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(true, material, errorState);
 }
 
 std::vector<GCShader*> GCGraphics::GetShaders() 
@@ -462,6 +463,7 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
 bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
+
     cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
     cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
 
@@ -480,7 +482,7 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
     float farZ,
     float viewWidth,   // Ajoutez ces paramètres
     float viewHeight,  // Ajoutez ces paramètres
-    GC_PROJECTIONTYPE projType,
+    GC_PROJECTION_TYPE projType,
     GCMATRIX& projectionMatrix,
     GCMATRIX& viewMatrix)
 {

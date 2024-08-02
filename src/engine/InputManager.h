@@ -104,7 +104,7 @@ public:
         RWINDOW = 92,
         
         INSERT    = 45,
-        DELETE    = 46, DEL = 46,
+        /*DELETE = 46,*/ DEL = 46,
         HOME      = 36,
         END       = 35,
         PAGE_UP   = 33,
