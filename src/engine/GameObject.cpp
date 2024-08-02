@@ -21,6 +21,8 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_pScene = pScene;
     m_pParent = nullptr;
     
+    m_destroyed = false;
+    
     m_globalActive = true;
     m_selfActive = true;
     
@@ -28,6 +30,7 @@ GCGameObject::GCGameObject( GCScene* pScene )
     m_layer = 0;
     
     m_transform.m_pGameObject = this;
+    m_transform.UpdateWorldMatrixFromParent();
 }
 
 /////////////////////////////////////////////////////////
@@ -52,7 +55,16 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
-        it.second->Duplicate();
+    {
+        Component* pComponent = it.second;
+        Component* pNewComponent = pComponent->Duplicate();
+        pNewComponent->m_pGameObject = pGameObject;
+        pNewComponent->Start();
+        pComponent->CopyTo( pNewComponent );
+        pNewComponent->m_globalActive = pGameObject->IsActive();
+        pGameObject->m_componentsList.Insert( pNewComponent->GetID(), pNewComponent );
+        GC::GetActiveSceneManager()->AddToCreateQueue( pNewComponent );
+    }
     
     return pGameObject;
 }
@@ -89,11 +101,13 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
 ///////////////////////////////////////////////////////
 void GCGameObject::Destroy()
 {
+    ASSERT( m_destroyed == false, LOG_FATAL, "Trying to destroy a GameObject that was already destroyed" );
 	if ( m_componentsList.GetSize() != 0 )
         ClearComponents();
     if ( m_childrenList.GetFirstNode() != nullptr )
         DestroyChildren();
-    m_pScene->DestroyGameObject( this );
+    m_destroyed = true;
+    GC::GetActiveSceneManager()->AddToDeleteQueue( this );
 }
 
 
@@ -404,7 +418,7 @@ void GCGameObject::RemoveComponent( int ID )
     Component* pComponent;
     ASSERT( m_componentsList.Find( ID, pComponent ) == true, LOG_FATAL, "Trying to remove a Component from a GameObject that doesn't have it" ); //? The .Find() is necessary for the method to work but it's in an ASSERT ?
     m_componentsList.Remove( ID ); //? To See ?
-    GC::GetActiveSceneManager()->AddComponentToDeleteQueue( pComponent );
+    GC::GetActiveSceneManager()->AddToDeleteQueue( pComponent );
 }
 
 ///////////////////////////////////////////////////////////

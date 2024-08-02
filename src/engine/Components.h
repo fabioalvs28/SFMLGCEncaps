@@ -29,6 +29,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+
 public:
     virtual const int GetID() = 0;
     
@@ -47,7 +48,7 @@ protected:
     virtual void UnregisterFromManagers();
     
     virtual Component* Duplicate() = 0;
-    virtual void Copy( Component *pNewComponent );
+    virtual void CopyTo( Component *pDestination );
     
     virtual void Start() {}
     virtual void Update() {}
@@ -89,6 +90,7 @@ friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
 friend class Animator;
+
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -101,7 +103,8 @@ protected:
 	SpriteRenderer();
     ~SpriteRenderer() override {}
 
-    SpriteRenderer* Duplicate() override; 
+    SpriteRenderer* Duplicate() override { return new SpriteRenderer(); }
+    void CopyTo( Component* pDestination ) override;
     
     void Render() override;
     
@@ -137,7 +140,7 @@ public:
     void RegisterToManagers() override;
     void UnregisterFromManagers() override;
     
-    void Copy( Component* pComponent ) override;
+    void CopyTo( Component* pDestination ) override;
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -170,6 +173,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -178,7 +182,8 @@ protected:
     BoxCollider();
     ~BoxCollider() override {}
 
-    BoxCollider* Duplicate() override;
+    BoxCollider* Duplicate() override { return new BoxCollider(); }
+    void CopyTo( Component* pDestination ) override;
     
     void Render() override;
 
@@ -196,6 +201,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -204,7 +210,8 @@ protected:
     CircleCollider() {}
     ~CircleCollider() override {}
     
-    CircleCollider* Duplicate() override;
+    CircleCollider* Duplicate() override { return new CircleCollider(); }
+    void CopyTo( Component* pDestination ) override;
 
 protected:
     inline static const int m_ID = ++Component::componentCount;
@@ -220,6 +227,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -230,7 +238,8 @@ protected:
     RigidBody();
     ~RigidBody() override {}
     
-    RigidBody* Duplicate() override;
+    RigidBody* Duplicate() override { return new RigidBody(); }
+    void CopyTo( Component* pDestination ) override;
     
     void FixedUpdate() override;
     
@@ -269,10 +278,11 @@ protected:
     Animator();
     ~Animator() override {}
     
+    Animator* Duplicate() override { return new Animator(); }
+    void CopyTo( Component* pDestination ) override;
+    
     void Start() override;
     void Update() override;
-
-    Animator* Duplicate() override;
     
     FLAGS GetFlags() override { return UPDATE; }
 
@@ -298,6 +308,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -306,7 +317,8 @@ protected:
 	SoundMixer() {}
     ~SoundMixer() override {}
     
-    SoundMixer* Duplicate() override;
+    SoundMixer* Duplicate() override { return new SoundMixer(); }
+    void CopyTo( Component* pDestination ) override;
     
     void Update() override {}
     
@@ -326,6 +338,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -334,7 +347,8 @@ protected:
     Camera();
     ~Camera() override {}
     
-    Camera* Duplicate() override;
+    Camera* Duplicate() override { return new Camera(); }
+    void CopyTo( Component* pDestination ) override;
     
     void Update() override;
     
@@ -362,10 +376,12 @@ protected:
 class Script : public Component
 {
 friend class GCGameObject;
+friend class GCScene;
 friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class GCGameManager;
 
 protected:
     Script() {}
@@ -386,10 +402,12 @@ protected:
     class Script##CLASS_NAME : public Script##INHERITANCE \
     { \
     friend class GCGameObject; \
+    friend class GCScene; \
     friend class GCUpdateManager; \
     friend class GCSceneManager; \
     friend class GCPhysicManager; \
     friend class GCRenderManager; \
+    friend class GCGameManager; \
     public: \
         static const int GetIDStatic() { return m_ID; } \
         const int GetID() override { return m_ID; } \
@@ -398,7 +416,8 @@ protected:
         Script##CLASS_NAME() = default; /* Calling Method to be overritten */ \
         ~Script##CLASS_NAME() = default; \
          \
-        Script##CLASS_NAME* Duplicate() override; \
+        Script##CLASS_NAME* Duplicate() override { return new Script##CLASS_NAME(); } \
+        void CopyTo( Component* pDestination ) override; \
          \
         /*void Start() override; \
         void Update() override; \

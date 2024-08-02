@@ -124,5 +124,7 @@ struct GCVEC3
     bool operator>=( const GCVEC3& other ) const;
     // int operator<=>( const GCVEC3& other ) const;
     
+    operator GCVEC2() const { return GCVEC2( x, y ); }
+    
     bool IsZero() const;
 };

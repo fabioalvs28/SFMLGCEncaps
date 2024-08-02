@@ -3,7 +3,8 @@
 
 void ScriptStart::Start()
 {
-
+    pKeyboard = GC::GetActiveInputSystem()->m_pKeyboard;
+    pMouse = GC::GetActiveInputSystem()->m_pMouse;
 }
 
 void ScriptStart::Update()
@@ -33,4 +34,10 @@ void ScriptStart::Update()
     }
 }
 
-ScriptStart* ScriptStart::Duplicate() { return nullptr; }
+void ScriptStart::CopyTo( Component* pDestination )
+{
+    Component::CopyTo( pDestination );
+    ScriptStart* pScript = static_cast<ScriptStart*>( pDestination );
+    pScript->pKeyboard = pKeyboard;
+    pScript->pMouse = pMouse;
+}
