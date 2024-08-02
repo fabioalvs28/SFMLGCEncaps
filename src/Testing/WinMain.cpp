@@ -13,15 +13,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCScene* pScene = GCScene::Create();
     GCGameObject* pMario = pScene->CreateGameObject();
     GCGameObject* pCAOW = pScene->CreateGameObject();
-    //pCAOW->AddComponent<SpriteRenderer>()->SetSprite("caow.dds");
-    //pCAOW->AddComponent<BoxCollider>()->SetVisible( true );
-    //pMario->AddComponent<SpriteRenderer>()->SetSprite( "GoofyMario.dds" );
-    //pMario->AddComponent<BoxCollider>()->SetVisible( true );
-    pMario->m_transform.SetScale({ 5 , 5 , 0 });
-    pCAOW->m_transform.SetScale({ 5,5,0 });
-    ScriptStart* pScriptStart = pMario->AddComponent<ScriptStart>();
-    pScriptStart->pKeyboard = GC::GetActiveInputSystem()->m_pKeyboard;
-    pScriptStart->pMouse = GC::GetActiveInputSystem()->m_pMouse;
+
+    //Animated Character Test
+    GCGameObject* pHero = pScene->CreateGameObject();
+    pHero->m_transform.Scale( GCVEC3(3 , 3 , 3) );
+    pHero->AddComponent<SpriteRenderer>();
+    pHero->AddComponent<Animator>()->LoadSpriteSheet( "sprite_sheet.dds", 4, 6, 823, 823);
+    pHero->AddComponent<ScriptStart>();
+    pHero->GetComponent<Animator>()->CreateAnimation( "WalkForward", 0, 6, 0.01f );
+    pHero->GetComponent<Animator>()->CreateAnimation( "WalkHeroL", 6, 6, 0.01f );
+    pHero->GetComponent<Animator>()->CreateAnimation( "WalkHeroR", 12, 6, 0.01f );
+    pHero->GetComponent<Animator>()->CreateAnimation( "WalkBackward", 18, 6, 0.01f );
+    pHero->AddComponent<BoxCollider>()->SetVisible( true );
+
+
+
     pGameManager->Run();
     
 

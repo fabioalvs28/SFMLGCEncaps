@@ -9,7 +9,7 @@ using namespace DirectX;
 // TODO Make sure IDs are handled differently
 // TODO À faire dans le Duplicate() : Start()
 
-
+class Animation;
 
 enum FLAGS
 {
@@ -88,6 +88,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class Animator;
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
@@ -108,11 +109,15 @@ protected:
 
     int GetComponentLayer() override { return 5; }
 
+    void SetAnimatedSprite(GCGeometry* pGeometry, GCTexture* pTexture);
+
 protected:
     inline static const int m_ID = ++Component::componentCount;
-    
+
+    GCGeometry* m_pGeometry;
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
+
 };
 
 
@@ -151,6 +156,7 @@ protected:
     
     GCListNode<Collider*>* m_pColliderNode;
 
+    GCGeometry* m_pGeometry;
     GCMesh* m_pMesh;
     GCMaterial* m_pMaterial;
 };
@@ -250,10 +256,22 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
+    void PlayAnimation(std::string animationName);
+    void StopAnimation();
+
+    void LoadSpriteSheet(std::string fileName, int row , int col , int width , int height );
+    Animation* CreateAnimation(std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime = 0.1f );
+    Animation* CreateAnimationWithCustomFrames( std::string animationName, std::vector<int> frameList, float frameDisplayTime = 0.1f );
+
+    std::string GetActiveAnimation() { return m_activeAnimationName;  }
+
 protected:
-	Animator() {}
+    Animator();
     ~Animator() override {}
     
+    void Start() override;
+    void Update() override;
+
     Animator* Duplicate() override;
     
     FLAGS GetFlags() override { return UPDATE; }
@@ -262,7 +280,12 @@ protected:
     inline static const int m_ID = ++Component::componentCount;
     
 private:
-    GCStateManager* m_pGlobalState;
+    std::string m_spritesheetName;
+    GC_SPRITESHEET_INFO* m_pSpriteSheetInfo;
+    SpriteRenderer* m_pSpriteRenderer;
+
+    std::string m_activeAnimationName;
+    Animation* m_currentAnimation;
 
 };
 

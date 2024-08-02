@@ -17,13 +17,13 @@ enum GC_GRAPHICS_ERROR {
 };
 
 template<typename ResourcePtr>
-struct ResourceCreationResult {
+struct GC_RESOURCE_CREATION_RESULT {
 	bool success;
 	ResourcePtr resource;
 	GC_GRAPHICS_ERROR errorState = GCRENDER_ERROR_UNKNOWN;
 };
 
-enum GC_PROJECTIONTYPE {
+enum GC_PROJECTION_TYPE {
 	ORTHOGRAPHIC,
 	PERSPECTIVE
 };
@@ -81,16 +81,16 @@ public:
 	/************************************************************************************************
 	* @brief Creates a shader color using color.hlsl (template).
 	*
-	* @return ResourceCreationResult -> bool(success), GCShader(color), errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCShader(color), errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCShader*> CreateShaderColor();
+	GC_RESOURCE_CREATION_RESULT<GCShader*> CreateShaderColor();
 
 	/************************************************************************************************
 	* @brief Creates a shader texture using texture.hlsl (template).
 	*
-	* @return ResourceCreationResult -> bool(success), GCShader(texture), errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCShader(texture), errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCShader*> CreateShaderTexture();
+	GC_RESOURCE_CREATION_RESULT<GCShader*> CreateShaderTexture();
 
 
 	/************************************************************************************************
@@ -102,27 +102,27 @@ public:
 	* @param[in] D3D12_CULL_MODE cullMode -> Back by default
 	* @param[in] int flagRootParameters -> set flag for shader parameter, options, all are possible by default
 	* 
-	* @return ResourceCreationResult -> bool(success), GCShader(custom), errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCShader(custom), errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCShader*> CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK, int flagRootParameters = DEFAULT_ROOT_PARAMETER_FLAG);
+	GC_RESOURCE_CREATION_RESULT<GCShader*> CreateShaderCustom(std::string& filePath, std::string& compiledShaderDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode = D3D12_CULL_MODE_BACK, int flagRootParameters = GC_DEFAULT_ROOT_PARAMETER_FLAG);
 
 	/************************************************************************************************
 	* @brief Creates a material using a shader.
 	* 
 	* @param[in] GCShader*, shader that'll be used by the material
 	*
-	* @return ResourceCreationResult -> bool(success), GCMaterial, errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCMaterial, errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCMaterial*> CreateMaterial(GCShader* pShader);
+	GC_RESOURCE_CREATION_RESULT<GCMaterial*> CreateMaterial(GCShader* pShader);
 
 	/************************************************************************************************
 	* @brief Creates a texture from filePath.
 	*
 	* @param[in] const std::string&, filePath -> ex : ./Textures/cow.dds
 	*
-	* @return ResourceCreationResult -> bool(success), GCTexture, errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCTexture, errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCTexture*> CreateTexture(const std::string& filePath);
+	GC_RESOURCE_CREATION_RESULT<GCTexture*> CreateTexture(const std::string& filePath);
 
 	/************************************************************************************************
 	* @brief Creates a geometry from Primitive Factory, it generate all entry, vertex, color, uv, normal.
@@ -130,11 +130,11 @@ public:
 	* @param[in] const GC_PRIMITIVE_ID primitiveIndex, define the primitive need be loaded
 	* @param[in] const DirectX::XMFLOAT4& color, define geometry color, if it will be used by mesh after
 	*
-	* @return ResourceCreationResult -> bool(success), GCGeometry, errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCGeometry, errorState
 	* 
 	* @note the primitive list can be find in GC_PRIMITIVE_ID, there are 3D and 2D primitive
 	************************************************************************************************/
-	ResourceCreationResult<GCGeometry*> CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color);
+	GC_RESOURCE_CREATION_RESULT<GCGeometry*> CreateGeometryPrimitive(const GC_PRIMITIVE_ID primitiveIndex, const DirectX::XMFLOAT4& color);
 
 	/************************************************************************************************
 	* @brief Creates a geometry from Model Parser Factory, it generate all entry, vertex, color, uv, normal.
@@ -143,9 +143,9 @@ public:
 	* @param[in] const DirectX::XMFLOAT4& color, define geometry color, if it will be used by mesh after
 	* @param[in] GC_EXTENSIONS fileExtensionType -> obj/fbx -> only obj available, only triangulated 3d model
 	*
-	* @return ResourceCreationResult -> bool(success), GCGeometry, errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCGeometry, errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCGeometry*> CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtensionType);
+	GC_RESOURCE_CREATION_RESULT<GCGeometry*> CreateGeometryModelParser(const std::string& filePath, DirectX::XMFLOAT4 color, GC_EXTENSIONS fileExtensionType);
 
 	/************************************************************************************************
 	* @brief Creates mesh custom from a geometry, we can create many mesh from the same geometry because mesh describe the geometry entry we want use, 
@@ -154,27 +154,27 @@ public:
 	* @param[in] GCGeometry pGeometry
 	* @param[in] int& flagEnabledBits, set your flag to chose which entry you want to describe the mesh
 	*
-	* @return ResourceCreationResult -> bool(success), GCMesh, errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCMesh, errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCMesh*> CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits);
+	GC_RESOURCE_CREATION_RESULT<GCMesh*> CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits);
 
 	/************************************************************************************************
 	* @brief Creates mesh color from a geometry, color template
 	*
 	* @param[in] GCGeometry pGeometry
 	*
-	* @return ResourceCreationResult -> bool(success), GCMesh, errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCMesh, errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCMesh*> CreateMeshColor(GCGeometry* pGeometry);
+	GC_RESOURCE_CREATION_RESULT<GCMesh*> CreateMeshColor(GCGeometry* pGeometry);
 
 	/************************************************************************************************
 	* @brief Creates mesh texture from a geometry, texture template
 	*
 	* @param[in] GCGeometry pGeometry
 	*
-	* @return ResourceCreationResult -> bool(success), GCMesh, errorState
+	* @return GC_RESOURCE_CREATION_RESULT -> bool(success), GCMesh, errorState
 	************************************************************************************************/
-	ResourceCreationResult<GCMesh*> CreateMeshTexture(GCGeometry* pGeometry);
+	GC_RESOURCE_CREATION_RESULT<GCMesh*> CreateMeshTexture(GCGeometry* pGeometry);
 
 	/************************************************************************************************
 	* @brief Update View & Projection Matrix using GCVIEWPROJCB derived from GCSHADERCB, -> using for Camera, you can update at any moment, each frame if you want make move camera, 
@@ -192,7 +192,7 @@ public:
 		float farZ, 
 		float viewWidth,  
 		float viewHeight,  
-		GC_PROJECTIONTYPE projType,
+		GC_PROJECTION_TYPE projType,
 		GCMATRIX& projectionMatrix,
 		GCMATRIX& viewMatrix);
 
@@ -341,8 +341,13 @@ public:
 	************************************************************************************************/
 	void UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance);
 	void Resize(int width, int height);
+
+	// Loaders
 	GCPrimitiveFactory* GetPrimitiveFactory() const { return m_pPrimitiveFactory; }
 	GCModelParserFactory* GetModelParserFactory() const { return m_pModelParserFactory; }
+
+	GCFontGeometryLoader* GetFontGeometryLoader() const { return m_pFontGeometryLoader; }
+	GCSpriteSheetGeometryLoader* GetSpriteSheetGeometryLoader() const { return m_pSpriteSheetGeometryLoader; }
 
 	//Other
 	GCShaderUploadBufferBase* GetCbLightPropertiesInstance() const { return m_pCbLightPropertiesInstance; }
@@ -352,6 +357,7 @@ public:
 	std::list<bool> m_lTextureActiveFlags;
 
 	GCFontGeometryLoader* m_pFontGeometryLoader;
+	GCSpriteSheetGeometryLoader* m_pSpriteSheetGeometryLoader;
 
 private:
 	GCRenderContext* m_pRender;

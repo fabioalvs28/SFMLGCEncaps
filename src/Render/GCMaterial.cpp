@@ -15,11 +15,11 @@ GCMaterial::GCMaterial()
 
 GCMaterial::~GCMaterial()
 {
-    DELETE(m_pCbMaterialPropertiesInstance);
+    GC_DELETE(m_pCbMaterialPropertiesInstance);
 
     for (auto* cb : m_pCbObjectInstances)
     {
-        DELETE(cb);
+        GC_DELETE(cb);
     }
     m_pCbObjectInstances.clear();
 }
@@ -57,7 +57,7 @@ void GCMaterial::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 
 bool GCMaterial::UpdateTexture()
 {
-    if (HAS_FLAG(m_pShader->GetFlagEnabledBits(), VERTEX_UV))
+    if (GC_HAS_FLAG(m_pShader->GetFlagEnabledBits(), GC_VERTEX_UV))
     {
         if (m_pTexture)
         {

@@ -39,41 +39,13 @@ public:
 	void PerformPostProcessingCS();
 	void PerformDeferredLightPass();
 
-	/**
-	* Pre-Draw.
-	 * @brief
-	 *
-	 * This function always needs to be called right before drawing!
-	 *
-	 * @return True if the preparation was a success/false otherwise.
-	 */
 	bool PrepareDraw();
 
 	bool DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alpha);
 
-	/**
-	* Post-Draw.
-	 * @brief
-	 *
-	 * This function always needs to be called right after drawing!
-	 *
-	 * @return True if the execution of the drawing was a success/false otherwise.
-	 */
 	bool CompleteDraw();
-	/**
-	*  Draws an object(sends the data to the commandlist to be exact).
-	 * @brief
-	 *
-	 * This function takes into account the mesh you want to draw as well as the material you want to use to draw it.
-	 * Always call PrepareDraw before starting drawing/PostDraw after finishing drawing(you can call DrawObject multiple times in between the two PrepareDraw/PostDraw calls)
-	 *
-	 * @param Mesh.
-	 * @param Material.
-	 * @param Alpha(true for transparency,false for opaque).
-	 * @return True if the drawing was a success/false otherwise.
-	 */
 
-	void OnResize(); // #TODO -> Remove from Window and Allow to Engine to use it when they want resize, and allow graphic creation specify dimensions for swapchain / viewport
+	void OnResize(); 
 
 
 	void ActiveCSPostProcessing();
@@ -111,7 +83,7 @@ private:
 
 
 
-	int m_renderMode = 1; //2D or 3d
+	int m_renderMode = 0; //2D or 3d
 
 	GCShader* m_pPostProcessingShader;
 	GCShader* m_pPixelIdMappingShader;
