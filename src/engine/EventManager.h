@@ -5,23 +5,50 @@
 
 using GCEventCallback = std::function<void(GCEvent& ev)>;
 
-class EventHandler
+struct EventHandler
 {
-public:
-	EventHandler(std::function<void()> cb);
-	EventHandler(const EventHandler& other);
-	EventHandler(EventHandler&& other) noexcept;
+	EventHandler(std::function<void()> cb)
+	{
+		count++;
+        callback = cb;
+	}
 
-	EventHandler& operator=(const EventHandler& other);
-	EventHandler& operator=(EventHandler&& other) noexcept;
+	EventHandler(const EventHandler& other)
+	{
+		count++;
+	}
 
-	static int GetCount();
-	void AddCallback(std::function<void()> callback);
-    void Execute();
+	EventHandler(EventHandler&& other) noexcept
+	{
+		count++;
+	}
 
-private:
-	inline static int count = 0;
-	std::function<void()> callback = nullptr;
+	EventHandler& operator=(const EventHandler& other)
+	{
+		if (this != &other)
+		{
+			count++;
+		}
+		return *this;
+	}
+
+	EventHandler& operator=(EventHandler&& other) noexcept
+	{
+		if (this != &other)
+		{
+			count++;
+		}
+		return *this;
+	}
+    static int GetCount() { return count; }
+
+	void AddCallback(std::function<void()> callback)
+	{
+		this->callback = callback;
+	}
+
+    inline static int count = 0;
+    std::function<void()> callback = nullptr;
 };
 
 class GCEventManager
