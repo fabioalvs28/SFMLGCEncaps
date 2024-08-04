@@ -10,6 +10,7 @@ void ScriptStart::Update()
         if (KEYBOARD::GetKeyDown(KEYBOARD::A))
         {
             std::cout << "Key Down: " << i << std::endl;
+
         }
     }
 }

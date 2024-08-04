@@ -38,6 +38,11 @@ void GCEventManager::Unsubscribe(GCEventType type)
 
 }
 
+void GCEventManager::CallHandler(int handlerID)
+{
+    Exec(handlerID);
+}
+
 void GCEventManager::OnEvent(GCEvent& e)
 {
     auto listeners = m_eventCallbacks[e.GetEventType()];
@@ -46,3 +51,15 @@ void GCEventManager::OnEvent(GCEvent& e)
         listener(e);
     }
 }
+
+void GCEventManager::Exec(int handlerID)
+{
+    for (auto& handler : m_eventHandlers)
+    {
+        if (handler->GetCount() == handlerID)
+        {
+            handler->callback();
+        }
+    }
+}
+

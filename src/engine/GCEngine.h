@@ -9,6 +9,8 @@
 #include "Components.h"
 #include "InputManager.h"
 #include "Timer.h"
+#include "Event.h"
+#include "EventManager.h"
 
 namespace GCInput
 {
@@ -39,5 +41,17 @@ void UnbindKey(KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state
 }
 };
 
+namespace Event
+{
+//int CreateEventHandler(EventHandler* handler)
+//{
+//    return GC::GetActiveEventManager()->AddHandler(handler);
+//}
+//
+//void CallEventHandler(int handlerID)
+//{
+//    GC::GetActiveEventManager()->CallHandler(handlerID);
+//}
 
+};
 

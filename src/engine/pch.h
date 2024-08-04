@@ -16,6 +16,7 @@
 #include <functional>
 #include <Windows.h>
 #include <algorithm>
+#include <tuple>
 
 //Core Elements
 #include "../core/framework.h"

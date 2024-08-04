@@ -143,7 +143,7 @@ void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
 }
 
 ///////////////////////////////////////////////////////////////////
-/// @brief Suscribe to an event with the event type and the key. 
+/// @brief Subscribe to an event with the event type and the key. 
 ///
 /// @param eventmanager a pointer to the eventManager.
 ///////////////////////////////////////////////////////////////////

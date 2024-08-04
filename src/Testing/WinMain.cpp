@@ -3,8 +3,12 @@
 #include "ScriptStart.h"
 
 
-
 using namespace DirectX;
+
+void Hello()
+{
+    std::cout << "Hello" << std::endl;
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -20,7 +24,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     pMario->m_transform.SetScale({ 5 , 5 , 0 });
     pCAOW->m_transform.SetScale({ 5,5,0 });
     ScriptStart* pScriptStart = pMario->AddComponent<ScriptStart>();
-    
+    //int myID = Event::CreateEventHandler(new EventHandler([]() { Hello(); }));
+    //Event::CallEventHandler(myID);
     pGameManager->Run();
     
 
