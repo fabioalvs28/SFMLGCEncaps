@@ -341,8 +341,6 @@ ResourceCreationResult<GCGeometry*> GCGraphics::CreateGeometryModelParser(const 
     if (errorState != 0)
         return ResourceCreationResult<GCGeometry*>(false, nullptr, errorState);
 
-
-
     return ResourceCreationResult<GCGeometry*>(true, pGeometry, errorState);
 }
 

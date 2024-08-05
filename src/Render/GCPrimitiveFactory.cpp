@@ -434,7 +434,7 @@ bool GCPrimitiveFactory::Initialize()
     std::vector<uint16_t> squareIndices;
     std::vector<DirectX::XMFLOAT3> squareNormals;
 
-    GenerateCubeSkybox(squareVertices, squareIndices, squareUvs, squareNormals);
+    GenerateSquare(squareVertices, squareIndices, squareUvs, squareNormals);
 
     //Put all data in map
     m_primitiveInfos = 
@@ -541,7 +541,7 @@ GC_GRAPHICS_ERROR GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, Direc
     pGeometry->vertexNumber = std::get<std::vector<DirectX::XMFLOAT3>>(m_primitiveInfos[index][L"pos"]).size();
 
     for (int i = 0; i < pGeometry->vertexNumber; i++)
-    pGeometry->color.push_back(color);
+        pGeometry->color.push_back(color);
 
     pGeometry->uv = std::get<std::vector<DirectX::XMFLOAT2>>(m_primitiveInfos[index][L"uvs"]);
 

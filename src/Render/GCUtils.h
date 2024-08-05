@@ -7,5 +7,6 @@ public:
 	static GCMATRIX XMMATRIXToGCMATRIX(const DirectX::XMMATRIX& mat);
 	static DirectX::XMMATRIX GCMATRIXToXMMATRIX(const GCMATRIX& mat);
 	static DirectX::XMMATRIX CreateBillboardMatrix(DirectX::XMVECTOR objectPosition, DirectX::XMVECTOR cameraPosition, DirectX::XMVECTOR cameraUp);
+	static DirectX::XMVECTOR GCVEC3ToXMVECTOR(const GCVEC3& mat);
 };
 
