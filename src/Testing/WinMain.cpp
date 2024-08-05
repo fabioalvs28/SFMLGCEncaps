@@ -4,11 +4,39 @@
 
 
 using namespace DirectX;
+///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////Custom Event Example/////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+
+int heroHP = 100;
+
+class TakeDamage : public CustomEvent<int> {
+public:
+    TakeDamage(int x) : m_upcomingDamage(x), CustomEvent(x) {}
+
+    static GCEventType GetStaticType() { return GCEventType::Custom; }
+    GCEventType GetEventType() { return GetStaticType(); }
+    const char* GetName() const override { return "Damage Event"; }
+
+    int GetDamage() { return m_upcomingDamage; }
+private:
+    int m_upcomingDamage;
+};
 
 void Hello()
 {
     std::cout << "Hello" << std::endl;
+    GC::GetActiveEventManager()->QueueEvent(new TakeDamage(10));
 }
+
+void OnDamageTaken(TakeDamage& dm) 
+{
+    heroHP -= dm.GetDamage();
+    std::cout << heroHP << std::endl;
+}
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -24,8 +52,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     pMario->m_transform.SetScale({ 5 , 5 , 0 });
     pCAOW->m_transform.SetScale({ 5,5,0 });
     ScriptStart* pScriptStart = pMario->AddComponent<ScriptStart>();
-    //int myID = Event::CreateEventHandler(new EventHandler([]() { Hello(); }));
-    //Event::CallEventHandler(myID);
+    //int myID = EVENT::CreateEventHandler(new EventHandler(Hello));
+    //EVENT::CallEventHandler(myID);
+    //EVENT::CallEventHandler(myID);
+    EVENT::Subscribe(GCEventType::Custom, OnDamageTaken);
+    GCINPUT::BindKey(KEYBOARD::SPACE, GCKeyboardInputManager::KeyboardState::DOWN, Hello);
+    EVENT::PushEvent(new TakeDamage(10));
     pGameManager->Run();
     
 
