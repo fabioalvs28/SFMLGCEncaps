@@ -82,6 +82,16 @@ public:
 		m_eventCallbacks[eventType].push_back([=](GCEvent& ev) { func(ev); });
 	}
 
+	template<typename Event>
+	void Subscribe(GCEventType eventType, void (*function)(Event&)) 
+	{
+		auto callback = [function](GCEvent& ev) {
+			Event& event = static_cast<Event&>(ev);
+			function(event);
+			};
+		m_eventCallbacks[eventType].push_back(callback);
+	}
+
 	/// <summary>
 	/// Registers a callback based on event type,
 	/// Callback does not need any ar
