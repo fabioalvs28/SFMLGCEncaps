@@ -562,10 +562,10 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
     }
 
     // Additional scaling for Screen Ratio not equilibrate, not ponderate
-    GCMATRIX matrix = UpdateScalingRatio(worldMatrix);
+    //GCMATRIX matrix = UpdateScalingRatio(worldMatrix);
 
     GCWORLDCB worldData;
-    worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(matrix);
+    worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
     worldData.objectId = meshId;
     worldData.materialId = pMaterial->m_materialId;
 
