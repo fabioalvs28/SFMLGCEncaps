@@ -18,6 +18,8 @@ public:
 	GCGeometry* GetGeometry() { return m_pGeometry; }
 	GCTexture* GetTexture() { return m_pTexture; }
 
+	int GetLastFrameIndex() { return m_pFrames.size() - 1; }
+
 	void SetSpriteSheet(std::string fileName, GC_SPRITESHEET_INFO* spriteSheet );
 
 private:
