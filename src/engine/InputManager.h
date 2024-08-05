@@ -3,7 +3,113 @@
 
 #include "pch.h"
 
+namespace KEYBOARD
+{
+enum Keys
+{
+    ESCAPE = 27, ESC = 27,
 
+    F1 = 112, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
+
+    SCROLL_LOCK = 145,
+    PAUSE = 19,
+
+    SQUARE = 222,
+    KEY1 = 49, AMPERSAND = 49,
+    KEY2 = 50, E_ACUTE = 50, TILDE = 50,
+    KEY3 = 51, DOUBLE_QUOTATION = 51, HASHTAG = 51,
+    KEY4 = 52, SINGLE_QUOTATION = 52, LCURLY_BRACKET = 52,
+    KEY5 = 53, LPARENTHESE = 53, LSQUARE_BRACKET = 53,
+    KEY6 = 54, MINUS = 54, VERTICAL_BAR = 54,
+    KEY7 = 55, E_GRAVE = 55, GRAVE_ACCENT = 55,
+    KEY8 = 56, UNDERSCORE = 56, BACKSLASH = 56,
+    KEY9 = 57, C_CEDILLA = 57,//CIRCUMFLEX      = 57,
+    KEY0 = 58, A_GRAVE = 58, AT = 58,
+    DEGREE = 219, RPARENTHESE = 219, RSQUARE_BRACKET = 219,
+    PLUS = 187, EQUALS = 187, RCURLY_BRACKET = 187,
+    DIAERESIS = 221, CIRCUMFLEX = 221,
+    POUND = 186, DOLLAR = 186,// CURRENCY = 186,
+    PERCENTAGE = 192, U_GRAVE = 192,
+    MU = 220, ASTERISK = 220,
+    INTERROGATION = 188, COMMA = 188,
+    PERIOD = 190, SEMICOLON = 190,
+    SLASH = 191, COLON = 191,
+    SECTION = 223, EXCLAMATION = 223,
+
+    A = 65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
+
+    BACKSPACE = 8,
+    ENTER = 13,
+    TAB = 9,
+    CAPS_LOCK = 20,
+    SPACE = 32, SPACEBAR = 32,
+    MENU = 93,
+    ANGLE_BRACKETS = 226,
+
+    CTRL = 17,
+    LCTRL = 162,
+    RCTRL = 163,
+
+    SHIFT = 16,
+    LSHIFT = 160,
+    RSHIFT = 161,
+
+    ALTS = 18,
+    LALT = 164, ALT = 164,
+    RALT = 165, ALTGR = 165,
+
+    LWINDOW = 91,
+    RWINDOW = 92,
+
+    INSERT = 45,
+    /*DELETE = 46,*/ DEL = 46,
+    HOME = 36,
+    END = 35,
+    PAGE_UP = 33,
+    PAGE_DOWN = 34,
+
+    UP_ARROW = 38,// UP    = 38,
+    LEFT_ARROW = 37,// LEFT  = 37,
+    RIGHT_ARROW = 39,// RIGHT = 39,
+    DOWN_ARROW = 40,// DOWN  = 40,
+
+    NUM_LOCK = 144,
+    NUMPAD_DIVIDE = 111,
+    NUMPAD_MULTIPLY = 106,
+    NUMPAD_SUBSTRACT = 109,
+    NUMPAD_ADD = 107,
+    NUMPAD_PERIOD = 110,
+    NUMPAD0 = 96, NUMPAD1, NUMPAD2, NUMPAD3, NUMPAD4, NUMPAD5, NUMPAD6, NUMPAD7, NUMPAD8, NUMPAD9,
+
+    KEYIDCOUNT = 257
+};
+
+bool GetKeyDown(Keys keyId);
+
+bool GetKeyUp(Keys keyId);
+
+bool GetKeyStay(Keys keyId);
+
+};
+
+namespace MOUSE
+{
+enum Buttons
+{
+    LEFT = 1,
+    RIGHT,
+    MIDDLE = 4,
+    THUMB_1,
+    THUMB_2,
+    MOUSEIDCOUNT
+};
+
+bool GetMouseKeyDown(Buttons keyId);
+
+bool GetMouseKeyUp(Buttons keyId);
+
+bool GetMouseKeyStay(Buttons keyId);
+};
 
 class GCInputManager
 {
@@ -47,84 +153,7 @@ public:
     bool GetKeyStay(int key);
     bool GetKeyUp(int key);
     
-    enum KeyboardID
-    {
-        ESCAPE = 27, ESC = 27,
-        
-        F1 = 112, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
-        
-        SCROLL_LOCK = 145,
-        PAUSE = 19,
-        
-        SQUARE        = 222,
-        KEY1          = 49,  AMPERSAND        = 49,
-        KEY2          = 50,  E_ACUTE          = 50,  TILDE           = 50,
-        KEY3          = 51,  DOUBLE_QUOTATION = 51,  HASHTAG         = 51,
-        KEY4          = 52,  SINGLE_QUOTATION = 52,  LCURLY_BRACKET  = 52,
-        KEY5          = 53,  LPARENTHESE      = 53,  LSQUARE_BRACKET = 53,
-        KEY6          = 54,  MINUS            = 54,  VERTICAL_BAR    = 54,
-        KEY7          = 55,  E_GRAVE          = 55,  GRAVE_ACCENT    = 55,
-        KEY8          = 56,  UNDERSCORE       = 56,  BACKSLASH       = 56,
-        KEY9          = 57,  C_CEDILLA        = 57,//CIRCUMFLEX      = 57,
-        KEY0          = 58,  A_GRAVE          = 58,  AT              = 58,
-        DEGREE        = 219, RPARENTHESE      = 219, RSQUARE_BRACKET = 219,
-        PLUS          = 187, EQUALS           = 187, RCURLY_BRACKET  = 187,
-        DIAERESIS     = 221, CIRCUMFLEX       = 221,
-        POUND         = 186, DOLLAR           = 186, CURRENCY        = 186,
-        PERCENTAGE    = 192, U_GRAVE          = 192,
-        MU            = 220, ASTERISK         = 220,
-        INTERROGATION = 188, COMMA            = 188,
-        PERIOD        = 190, SEMICOLON        = 190,
-        SLASH         = 191, COLON            = 191,
-        SECTION       = 223, EXCLAMATION      = 223,
-        
-        A = 65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
-        
-        BACKSPACE = 8,
-        ENTER = 13,
-        TAB = 9,
-        CAPS_LOCK = 20,
-        SPACE = 32, SPACEBAR = 32,
-        MENU = 93,
-        ANGLE_BRACKETS = 226,
-        
-        CTRL  = 17,
-        LCTRL = 162,
-        RCTRL = 163,
-        
-        SHIFT  = 16,
-        LSHIFT = 160,
-        RSHIFT = 161,
-        
-        ALTS = 18,
-        LALT = 164, ALT   = 164,
-        RALT = 165, ALTGR = 165,
-        
-        LWINDOW = 91,
-        RWINDOW = 92,
-        
-        INSERT    = 45,
-        /*DELETE = 46,*/ DEL = 46,
-        HOME      = 36,
-        END       = 35,
-        PAGE_UP   = 33,
-        PAGE_DOWN = 34,
-        
-        UP_ARROW    = 38,// UP    = 38,
-        LEFT_ARROW  = 37,// LEFT  = 37,
-        RIGHT_ARROW = 39,// RIGHT = 39,
-        DOWN_ARROW  = 40,// DOWN  = 40,
-        
-        NUM_LOCK = 144,
-        NUMPAD_DIVIDE = 111,
-        NUMPAD_MULTIPLY = 106,
-        NUMPAD_SUBSTRACT = 109,
-        NUMPAD_ADD = 107,
-        NUMPAD_PERIOD = 110,
-        NUMPAD0 = 96, NUMPAD1, NUMPAD2, NUMPAD3, NUMPAD4, NUMPAD5, NUMPAD6, NUMPAD7, NUMPAD8, NUMPAD9,
-
-        KEYIDCOUNT = 257
-    };
+    
     
     enum KeyboardState
     {
@@ -135,7 +164,7 @@ public:
         KEYSTATECOUNT
     };
 
-    int GetIDSize() const override { return KeyboardID::KEYIDCOUNT; };
+    int GetIDSize() const override { return KEYBOARD::KEYIDCOUNT; };
 
     int GetStateSize() const override { return KeyboardState::KEYSTATECOUNT; };
 
@@ -214,17 +243,6 @@ public:
     bool GetKeyStay(int key);
     bool GetKeyUp(int key);
 
-
-    enum MouseID
-    {
-        LEFT = 1,
-        RIGHT = 2,
-        MIDDLE = 4,
-        BACKWARD = 5,
-        FORWARD = 6,
-        MOUSEIDCOUNT = 7,
-    };
-
     enum MouseState
     {
         NONE, // NOT PRESSED
@@ -240,10 +258,9 @@ private:
 
     void Update();
 
-    int GetIDSize() const override { return MouseID::MOUSEIDCOUNT; };
+    int GetIDSize() const override { return MOUSE::MOUSEIDCOUNT; };
 
     int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
-    
 
     std::vector<BYTE> m_buttonState;
 
