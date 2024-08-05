@@ -143,7 +143,7 @@ void GCKeyboardInputManager::OnKeyReleased(GCKeyReleasedEvent& ev)
 }
 
 ///////////////////////////////////////////////////////////////////
-/// @brief Suscribe to an event with the event type and the key. 
+/// @brief Subscribe to an event with the event type and the key. 
 ///
 /// @param eventmanager a pointer to the eventManager.
 ///////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ void GCKeyboardInputManager::RegisterForKeyEvents()
 ////////////////////////////////////////////////////////
 void GCKeyboardInputManager::Update()
 {
-    for (int i = 0; i < KeyboardID::KEYIDCOUNT; i++)
+    for (int i = 0; i < KEYBOARD::KEYIDCOUNT; i++)
     {
 
         if (GetAsyncKeyState(i) != 0)
@@ -264,9 +264,9 @@ bool GCKeyboardInputManager::GetKeyUp(int key)
 
 GCMouseInputManager::GCMouseInputManager()
 {
-    for (int i = 0 ; i < MouseID::MOUSEIDCOUNT; i++)
+    for (int i = 0 ; i < MOUSE::MOUSEIDCOUNT; i++)
     {
-        m_buttonState.PushBack(GCMouseInputManager::NONE);
+        m_buttonState.push_back(GCMouseInputManager::NONE);
     }
 }
 
@@ -341,7 +341,7 @@ void GCMouseInputManager::SendEvent(int index, BYTE state)
 /////////////////////////////////////////////////////////
 void GCMouseInputManager::Update()
 {
-    for (int i = 0; i < MouseID::MOUSEIDCOUNT; i++)
+    for (int i = 0; i < MOUSE::MOUSEIDCOUNT; i++)
     {
 
         if (GetAsyncKeyState(i) != 0)
@@ -625,3 +625,33 @@ void GCControllerInputManager::UpdateTriggers()
     }
 }
 #pragma endregion
+
+bool KEYBOARD::GetKeyDown(Keys keyId)
+{
+    return GC::GetActiveInputSystem()->m_pKeyboard->GetKeyDown(keyId);
+}
+
+bool KEYBOARD::GetKeyUp(Keys keyId)
+{
+    return GC::GetActiveInputSystem()->m_pKeyboard->GetKeyUp(keyId);
+}
+
+bool KEYBOARD::GetKeyStay(Keys keyId)
+{
+    return GC::GetActiveInputSystem()->m_pKeyboard->GetKeyStay(keyId);
+}
+
+bool MOUSE::GetMouseKeyDown(Buttons keyId)
+{
+    return GC::GetActiveInputSystem()->m_pMouse->GetKeyDown(keyId);
+}
+
+bool MOUSE::GetMouseKeyUp(Buttons keyId)
+{
+    return GC::GetActiveInputSystem()->m_pMouse->GetKeyUp(keyId);
+}
+
+bool MOUSE::GetMouseKeyStay(Buttons keyId)
+{
+    return GC::GetActiveInputSystem()->m_pMouse->GetKeyStay(keyId);
+}

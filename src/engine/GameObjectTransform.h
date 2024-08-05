@@ -6,13 +6,7 @@ struct GCGameObjectTransform: public GCTransform
 friend class GCGameObject;
 friend class Component;
 
-	GCVEC3 m_worldScale;
-	GCVEC3 m_worldPosition;
-	GCMATRIX m_worldRotationMatrix;
-	
-	GCMATRIX m_worldMatrix;
-	GCGameObject* m_pGameObject;
-	
+public:
 	void Translate( const GCVEC3& translation );
 	void SetPosition( const GCVEC3& position );
 	
@@ -30,8 +24,18 @@ friend class Component;
 	void SetRotationY( float angle ) {}; //! FAIS LE
 	void SetRotationZ( float angle ) {};
 
+	GCMATRIX& GetWorldMatrix();
+
 protected:
 	void UpdateWorldMatrixFromParent();
 	void UpdateLocalMatrixFromWorld();
     void UpdateChildren();
+
+protected:
+	GCVEC3 m_worldScale;
+	GCVEC3 m_worldPosition;
+	GCMATRIX m_worldRotationMatrix;
+	
+	GCMATRIX m_worldMatrix;
+	GCGameObject* m_pGameObject;
 };

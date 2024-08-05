@@ -1,3 +1,5 @@
+#include "Utils.hlsl"
+
 #define LIGHT_TYPE_DIRECTIONAL 0
 #define LIGHT_TYPE_SPOT 1
 #define LIGHT_TYPE_POINT 2
@@ -5,6 +7,7 @@
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld; // World matrix
+    float objectId;
 };
 
 cbuffer cbPerCamera : register(b1)
@@ -53,20 +56,21 @@ struct VertexOut
     float3 WorldPos : POSITION; // Position in world space
 };
 
-
 // Vertex shader
 VertexOut VS(VertexIn vin)
 {
     VertexOut vout;
 
+    float4x4 gWorldTransposed = TransposeMatrix(gWorld);
+    
     // Transform position to world space
-    float4 posW = mul(float4(vin.PosL, 1.0f), gWorld);
+    float4 posW = mul(float4(vin.PosL, 1.0f), gWorldTransposed);
 
     // Transform position to homogeneous clip space using gWorld, gView, and gProj matrices.
     vout.PosH = mul(mul(posW, gView), gProj);
 
     // Transform normal to world space
-    vout.NormalW = normalize(mul(vin.Normal, (float3x3) gWorld));
+    vout.NormalW = normalize(mul(vin.Normal, (float3x3) gWorldTransposed));
 
     // Pass vertex color to the pixel shader.
     vout.Color = vin.Color;
@@ -77,57 +81,17 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-// Function to calculate ambient color
-float4 ComputeAmbient(float4 ambientLightColor, float4 materialAmbient, float4 vertexColor)
+struct PSOutput
 {
-    return ambientLightColor * materialAmbient * vertexColor;
-}
-
-// Function to calculate diffuse color
-float3 ComputeDiffuse(float3 lightDirection, float3 normal, float3 lightColor, float4 materialDiffuse)
-{
-    float3 normalizedNormal = normalize(normal); // Normalize normal
-    float diffuseFactor = max(0.0f, dot(normalizedNormal, lightDirection));
-    return lightColor * materialDiffuse.rgb * diffuseFactor;
-}
-
-// Function to calculate specular color using Phong model
-float3 ComputePhongSpecular(float3 lightDirection, float3 normal, float3 viewDirection, float3 lightColor, float4 materialSpecular, float shininess)
-{
-    float3 reflectDirection = reflect(-lightDirection, normal); // Calculate reflection vector
-    float specularFactor = pow(max(dot(viewDirection, reflectDirection), 0.0f), shininess); // Calculate specular factor
-    return lightColor * materialSpecular.rgb * specularFactor; // Final specular color
-}
-
-// Function to calculate specular color using Blinn-Phong model
-float3 ComputeBlinnPhongSpecular(float3 lightDirection, float3 normal, float3 viewDirection, float3 lightColor, float4 materialSpecular, float shininess)
-{
-    float3 halfwayDir = normalize(lightDirection + viewDirection); // Calculate "halfway" vector
-    float specularFactor = pow(max(dot(normal, halfwayDir), 0.0f), shininess); // Calculate specular factor
-    return lightColor * materialSpecular.rgb * specularFactor; // Final specular color
-}
-
-// Function to calculate spotlight intensity based on cone angle
-float ComputeSpotIntensity(float3 lightPosition, float3 lightDirection, float3 surfacePosition, float spotAngle)
-{
-    float3 toLight = normalize(lightPosition - surfacePosition);
-    float cosAngle = dot(-toLight, lightDirection);
-    float minCos = cos(spotAngle);
-    float maxCos = (minCos + 1.0f) / 2.0f;
-    return saturate((cosAngle - minCos) / (maxCos - minCos));
-}
-
-// Function to calculate point light intensity based on distance attenuation
-float ComputePointLightIntensity(float3 lightPosition, float3 surfacePosition, float lightIntensity)
-{
-    float distance = length(lightPosition - surfacePosition);
-    float attenuation = 1.0f / (distance * distance); // Simple inverse square law for attenuation
-    return lightIntensity * attenuation;
-}
+    float4 color1 : SV_Target0;
+    float4 color2 : SV_Target1;
+};
 
 // Pixel shader
-float4 PS(VertexOut pin) : SV_Target
+PSOutput PS(VertexOut pin) : SV_Target
 {
+    PSOutput output;
+    
     float3x3 invViewMatrix = (float3x3) transpose(gView); // Transpose of view matrix
     float3 cameraPosition = -mul(invViewMatrix, gView[3].xyz); // Camera position in world space
 
@@ -185,6 +149,14 @@ float4 PS(VertexOut pin) : SV_Target
     finalColor.rgb += diffuseColor * pin.Color.rgb;
     finalColor.rgb += specularColor * pin.Color.rgb;
     finalColor.a = pin.Color.a;
-
-    return finalColor;
+    
+    output.color1 = finalColor;
+    
+    float r = float(objectId % 256) / 255.0f;
+    output.color2 = float4(r, 0.0f, 0.0f, 1.0f);
+    
+    return output;
 }
+
+
+

@@ -29,6 +29,7 @@
 #include <memory>
 #include <algorithm>
 #include <array>
+#include <map>
 #include <unordered_map>
 #include <cstdint>
 #include <fstream>
@@ -53,12 +54,12 @@
 
 //Geometry & Mesh
 struct GCGeometry;
-struct GCMESHBUFFERDATA;
+struct GC_MESH_BUFFER_DATA;
 
 //Shaders
-struct GCSHADERCB;
-struct GCWORLDCB;
-struct GCVIEWPROJCB;
+struct GC_SHADERCB;
+struct GC_WORLDCB;
+struct GC_VIEWPROJCB;
 struct GC_MATERIAL_DSL;
 
 //Geometry
@@ -91,14 +92,19 @@ class GCUploadBufferBase;
 
 class GCParticleSystem;
 class GCFontGeometryLoader;
+class GCSpriteSheetGeometryLoader;
 class GCUtils;
 class MathHelper;
 class Timer;
 class Window;
 
+struct GCMATRIX;
+struct GCVEC3;
+
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
+#include "../core/framework.h"
 
 
 // Add William 
@@ -107,7 +113,7 @@ class Window;
 #include "./GCMeshBufferData.h"
 #include "GCPrimitiveIdEnum.h"
 
-#include "../core/framework.h"
+
 
 
 //
@@ -125,13 +131,15 @@ class Window;
 #include "GCModelParserObj.h"
 #include "GCParticleSystem.h"
 #include "GCFontGeometryLoader.h"
+#include "GCSpriteSheetGeometryLoader.h"
+#include "GCUtils.h"
 
 #include "GCPrimitiveFactory.h"
 #include "GCTexture.h"
 #include "GCGraphics.h"
 #include "GCTextureFactory.h"
 #include "Timer.h"
-#include "GCUtils.h"
+
 
 
 

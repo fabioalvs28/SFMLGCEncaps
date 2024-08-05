@@ -465,7 +465,7 @@ bool GCPrimitiveFactory::Initialize()
             {L"pos", planeBordersVertices},
             {L"uvs", planeBordersUvs},
             {L"normals", planeBordersNormals},
-        }
+        },
     };
 
     return true;

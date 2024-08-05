@@ -11,6 +11,7 @@ enum class GCEventType
 	KeyInput, KeyPressed, KeyReleased,
 	MouseButtonPressed, MouseButtonReleased, MouseMove, MouseScrolled,
 	ComponentAdded, ComponentRemove,
+	Custom,
     Count //Keep this at the end
 };
 
@@ -164,6 +165,7 @@ public:
 class GCKeyReleasedEvent : public GCKeyEvent
 {
 public:
+
     GCKeyReleasedEvent(int id, BYTE state) : GCKeyEvent(id, state) {};
 
     static GCEventType GetStaticType() { return GCEventType::KeyReleased; }
@@ -188,4 +190,30 @@ public:
 
 private:
 	Component* m_component;
+};
+
+template<typename... Args>
+class CustomEvent : public GCEvent
+{
+public:
+	CustomEvent(Args... args) : m_data(std::make_tuple(args...))
+	{
+		++m_eventID;
+	}
+
+	static GCEventType GetStaticType() { return GCEventType::Custom; }
+	GCEventType GetEventType() const override { return GetStaticType(); }
+
+	template<std::size_t Index>
+	auto GetData() const -> decltype(std::get<Index>(this->m_data))
+	{
+		return std::get<Index>(this->m_data);
+	}
+
+private:
+	std::tuple<Args...> m_data;
+
+protected:
+	inline static const int m_ID = 0;
+	int m_eventID;
 };
