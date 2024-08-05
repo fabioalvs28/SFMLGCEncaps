@@ -7,7 +7,7 @@
 #ifndef ENGINE_PCH_H
 #define ENGINE_PCH_H
 
-
+#include "Define.h"
 
 //C++ libraries
 #include <iostream>
@@ -16,6 +16,7 @@
 #include <functional>
 #include <Windows.h>
 #include <algorithm>
+#include <tuple>
 
 //Core Elements
 #include "../core/framework.h"
