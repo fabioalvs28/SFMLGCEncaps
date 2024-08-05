@@ -12,7 +12,7 @@
 #include "Event.h"
 #include "EventManager.h"
 
-namespace GCInput
+namespace GCINPUT
 {
 /// <summary>
 /// Bind a function based on key ID and key state
@@ -41,17 +41,16 @@ void UnbindKey(KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state
 }
 };
 
-namespace Event
+namespace EVENT
 {
-//int CreateEventHandler(EventHandler* handler)
-//{
-//    return GC::GetActiveEventManager()->AddHandler(handler);
-//}
-//
-//void CallEventHandler(int handlerID)
-//{
-//    GC::GetActiveEventManager()->CallHandler(handlerID);
-//}
+    int CreateEventHandler(EventHandler* handler);
+    void CallEventHandler(int handlerID);
+    void PushEvent(GCEvent* ev);
 
+    template<typename Event>
+    void Subscribe(GCEventType eventType, void (*function)(Event&))
+    {
+        GC::GetActiveEventManager()->Subscribe(eventType, function);
+    }
 };
 
