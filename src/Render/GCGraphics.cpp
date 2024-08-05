@@ -462,6 +462,31 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
     return GCRENDER_ERROR_RESOURCE_TO_REMOVE_DONT_FIND;
 }
 
+GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
+    // Obtenez le rapport d'aspect
+    float aspectRatio = m_pRender->GetRenderResources()->GetCurrentWindow()->AspectRatio();
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+
+    // Calculer les facteurs de mise à l'échelle
+    if (aspectRatio > 1.0f) {
+        scaleX = 1.0f / aspectRatio;
+    }
+    else {
+        scaleY = aspectRatio;
+    }
+
+    DirectX::XMMATRIX xmWorldMatrix = GCUtils::GCMATRIXToXMMATRIX(worldMatrix);
+
+    DirectX::XMMATRIX xmAdditionalScaleMatrix = DirectX::XMMatrixScaling(scaleX, scaleY, 1.0f);
+
+    DirectX::XMMATRIX xmWorldMatrixScaled = xmWorldMatrix * xmAdditionalScaleMatrix;
+
+    GCMATRIX scaledWorldMatrix = GCUtils::XMMATRIXToGCMATRIX(xmWorldMatrixScaled);
+
+    return scaledWorldMatrix;
+}
+
 bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
@@ -536,8 +561,11 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
         pMaterial->AddCbPerObject<GCWORLDCB>();
     }
 
+    // Additional scaling for Screen Ratio not equilibrate, not ponderate
+    GCMATRIX matrix = UpdateScalingRatio(worldMatrix);
+
     GCWORLDCB worldData;
-    worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
+    worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(matrix);
     worldData.objectId = meshId;
     worldData.materialId = pMaterial->m_materialId;
 

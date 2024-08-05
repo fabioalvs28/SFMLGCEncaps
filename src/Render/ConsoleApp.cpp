@@ -1,173 +1,6 @@
-﻿﻿// 2D BASIC
-
-#include "pch.h";
-
-
-using namespace DirectX;
-
-// Définition des variables globales pour la caméra
-XMVECTOR cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
-XMVECTOR cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
-    // Initialisation des ressources graphiques
-
-    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
-    profiler.InitializeConsole();
-
-
-
-    Window* window = new Window(hInstance);
-    window->Initialize();
-
-
-
-    GCGraphics* graphics = new GCGraphics();
-    graphics->Initialize(window, 1920, 1080);
-
-
-
-    int flagsLightColor = 0;
-    GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
-    GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
-    GC_SET_FLAG(flagsLightColor, GC_VERTEX_NORMAL);
-
-    int flagsLightTexture = 0;
-    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_POSITION);
-    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
-    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_NORMAL);
-
-    auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
-    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
-    auto geoCubeInner3 = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red));
-    auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
-
-    graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
-
-    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("gta , buy now");
-
-    std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
-    std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
-    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
-
-    std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
-    std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
-    auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
-
-    auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
-
-    auto shaderTexture = graphics->CreateShaderTexture();
-
-    graphics->InitializeGraphicsResourcesStart();
-
-    auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
-    auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
-    auto meshCubeInner3 = graphics->CreateMeshCustom(geoCubeInner3.resource, flagsLightColor);
-    auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
-
-    auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneAlphabet);
-
-    std::string texturePath = "../../../src/Render/Textures/texture.dds";
-    std::string texturePath2 = "../../../src/Render/Textures/alphabet.dds";
-    auto texture = graphics->CreateTexture(texturePath);
-    auto texture2 = graphics->CreateTexture(texturePath2);
-
-
-    graphics->InitializeGraphicsResourcesEnd();
-
-    auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
-
-
-    auto materialCubeInner = graphics->CreateMaterial(shaderTexture.resource);
-    materialCubeInner.resource->SetTexture(texture2.resource);
-
-
-
-    auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
-    materialSphere.resource->SetTexture(texture.resource);
-
-    float viewWidth = 20.0f;
-    float viewHeight = 20.0f;
-    XMMATRIX projectionMatrix = XMMatrixOrthographicLH(viewWidth, viewHeight, 1.0f, 1000.0f);
-    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
-    XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
-    XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
-    GCMATRIX storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
-    GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
-
-    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
-    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(-0.0f, 0.0f, -1.0f); // Cube interne centré
-    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(-10.0f, 0.0f, 0.0f); // Cube interne centré
-    XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); // Cube interne centré
-    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
-
-    GCMATRIX worldCubeOuter = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeOuter);
-    GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner);
-    GCMATRIX worldCubeInner2 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner2);
-    GCMATRIX worldCubeInner3 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner3);
-    GCMATRIX worldSphere = GCUtils::XMMATRIXToGCMATRIX(worldMatrixSphere);
-
-    auto startTime = std::chrono::steady_clock::now();
-
-    while (true) {
-
-        //graphics->GetRender()->GetRenderResources()->GetDebugController()->ReportLiveObjects();
-        auto currentTime = std::chrono::steady_clock::now();
-        float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
-
-
-        graphics->StartFrame();
-        graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-
-        std::vector<GCLIGHT> lights;
-        GCLIGHT light2;
-        light2.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Position en 2D (x, y, 0)
-        light2.direction = DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f); // Direction vers le bas en 2D
-        light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
-        light2.spotAngle = 10.0f; // Angle du spot si applicable
-        light2.lightIntensity = 3.2f;
-        light2.lightType = 1; // Type de lumière ponctuelle
-        GCLIGHT pointLight;
-        pointLight.position = DirectX::XMFLOAT3(6.0f, 1.0f, 0.0f); // Position en 2D (x, y, 0)
-        pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Direction vers le bas en 2D
-        pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
-        pointLight.spotAngle = 0.0f; // Angle du spot si applicable
-        pointLight.lightIntensity = 2.4f;
-        pointLight.lightType = 2; // Type de lumière ponctuelle
-
-
-
-        lights.push_back(light2);
-        lights.push_back(pointLight);
-
-        graphics->UpdateLights(lights);
-
-        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2);
-        graphics->GetRender()->DrawObject(meshPlaneAlphabet.resource, materialCubeInner.resource, false);
-
-        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner3);
-        //graphics->GetRender()->DrawObject(meshCubeInner3.resource, materialCubeInner.resource, true);
-
-
-        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
-        //graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource , true);
-
-        graphics->EndFrame();
-        window->Run(graphics->GetRender());
-
-    }
-
-
-
-    return 0;
-}
-
-//// 2D SPRITE SHEET
+﻿//﻿// 2D BASIC
 //
-//#include "pch.h"
+//#include "pch.h";
 //
 //
 //using namespace DirectX;
@@ -180,19 +13,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 //float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
 //
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
-//
-//    
-//
-//
 //    // Initialisation des ressources graphiques
+//
 //    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
 //    profiler.InitializeConsole();
+//
+//
 //
 //    Window* window = new Window(hInstance);
 //    window->Initialize();
 //
+//
+//
 //    GCGraphics* graphics = new GCGraphics();
 //    graphics->Initialize(window, 1920, 1080);
+//
+//
 //
 //    int flagsLightColor = 0;
 //    GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
@@ -204,23 +40,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 //    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
 //    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_NORMAL);
 //
-//
 //    auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
 //    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
 //    auto geoCubeInner3 = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red));
 //    auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
 //
-//    auto geoPlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
+//    graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
 //
+//    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("gta , buy now");
 //
-//    // Load Sprite Sheet
-//    GC_SPRITESHEET_DATA spriteSheetInfo = graphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheet("../../../src/Render/SpriteSheet/SS_data.ssdg");
-//    // Set uv on plane
-//    graphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(geoPlane.resource, 0, 151, spriteSheetInfo);
-//
-//
-//
-//    // Chargement des shaders personnalisés
 //    std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
 //    std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
 //    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
@@ -240,13 +68,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 //    auto meshCubeInner3 = graphics->CreateMeshCustom(geoCubeInner3.resource, flagsLightColor);
 //    auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
 //
-//    auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlane.resource);
-//    //auto meshPlaneAlphabet2 = graphics->CreateMeshTexture(geoPlaneOneSprite2);
+//    auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneAlphabet);
 //
 //    std::string texturePath = "../../../src/Render/Textures/texture.dds";
-//    std::string texturePath2 = "../../../src/Render/Textures/sprite_sheet_0.dds";
+//    std::string texturePath2 = "../../../src/Render/Textures/alphabet.dds";
 //    auto texture = graphics->CreateTexture(texturePath);
 //    auto texture2 = graphics->CreateTexture(texturePath2);
+//
 //
 //    graphics->InitializeGraphicsResourcesEnd();
 //
@@ -270,39 +98,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 //    GCMATRIX storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
 //    GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
 //
-//    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); 
-//    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(1.0f, 0.0f, 0.0f); 
-//    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(-1.0f, 0.0f, 0.0f); 
-//    XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); 
-//    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); 
-//
-//
-//
-//    // #TODO Update for each object - Scaling Ratio
-//    float scaleX = 1.0f;
-//    float scaleY = 1.0f;
-//    float aspectRatio = window->AspectRatio();
-//
-//    if (aspectRatio > 1.0f) {
-//        scaleX = 1.0f / aspectRatio;
-//    }
-//    else {
-//        scaleY = aspectRatio;
-//    }
-//    XMMATRIX additionalScaleMatrix = XMMatrixScaling(scaleX, scaleY, 1.0f); 
-//    XMMATRIX worldMatrixCubeInnerScaled = worldMatrixCubeInner * additionalScaleMatrix;
+//    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); // Cube externe (skybox)
+//    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(-0.0f, 0.0f, -1.0f); // Cube interne centré
+//    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(-10.0f, 0.0f, 0.0f); // Cube interne centré
+//    XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); // Cube interne centré
+//    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); // Sphère déplacée dans le cube interne
 //
 //    GCMATRIX worldCubeOuter = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeOuter);
-//    GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInnerScaled);
+//    GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner);
 //    GCMATRIX worldCubeInner2 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner2);
 //    GCMATRIX worldCubeInner3 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner3);
 //    GCMATRIX worldSphere = GCUtils::XMMATRIXToGCMATRIX(worldMatrixSphere);
 //
-//    // #TODO FEATURE SCALING ETIREMENT SPRITE
-//
 //    auto startTime = std::chrono::steady_clock::now();
 //
 //    while (true) {
+//
+//        //graphics->GetRender()->GetRenderResources()->GetDebugController()->ReportLiveObjects();
 //        auto currentTime = std::chrono::steady_clock::now();
 //        float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
 //
@@ -327,17 +139,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 //        pointLight.lightType = 2; // Type de lumière ponctuelle
 //
 //
-//        
+//
 //        lights.push_back(light2);
 //        lights.push_back(pointLight);
 //
 //        graphics->UpdateLights(lights);
 //
-//        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
+//        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2);
 //        graphics->GetRender()->DrawObject(meshPlaneAlphabet.resource, materialCubeInner.resource, false);
 //
-//        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2);
-//        //graphics->GetRender()->DrawObject(meshPlaneAlphabet2.resource, materialCubeInner.resource, true);
 //        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner3);
 //        //graphics->GetRender()->DrawObject(meshCubeInner3.resource, materialCubeInner.resource, true);
 //
@@ -347,10 +157,184 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 //
 //        graphics->EndFrame();
 //        window->Run(graphics->GetRender());
+//
 //    }
+//
+//
 //
 //    return 0;
 //}
+
+// 2D SPRITE SHEET
+
+#include "pch.h"
+
+
+using namespace DirectX;
+
+// Définition des variables globales pour la caméra
+XMVECTOR cameraPosition = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
+XMVECTOR cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+float cameraMoveSpeed = 0.05f; // Vitesse de déplacement de la caméra
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
+
+    
+
+
+    // Initialisation des ressources graphiques
+    GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
+    profiler.InitializeConsole();
+
+    Window* window = new Window(hInstance);
+    window->Initialize();
+
+    GCGraphics* graphics = new GCGraphics();
+    graphics->Initialize(window, 1920, 1080);
+
+    int flagsLightColor = 0;
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_NORMAL);
+
+    int flagsLightTexture = 0;
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_NORMAL);
+
+
+    auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
+    auto geoCubeInner = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
+    auto geoCubeInner3 = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Red));
+    auto geoSphere = graphics->CreateGeometryPrimitive(Sphere, XMFLOAT4(Colors::Yellow));
+
+    auto geoPlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Green));
+
+
+    // Load Sprite Sheet
+    GC_SPRITESHEET_DATA spriteSheetInfo = graphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheet("../../../src/Render/SpriteSheet/SS_data.ssdg");
+    // Set uv on plane
+    graphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(geoPlane.resource, 0, 190, spriteSheetInfo);
+
+
+    std::string shaderFilePath1 = "../../../src/Render/Shaders/LightColor.hlsl";
+    std::string csoDestinationPath1 = "../../../src/Render/CsoCompiled/LightColor";
+    auto shaderLightColor = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_BACK);
+
+    std::string shaderFilePath2 = "../../../src/Render/Shaders/LightTexture.hlsl";
+    std::string csoDestinationPath2 = "../../../src/Render/CsoCompiled/LightTexture";
+    auto shaderLightTexture = graphics->CreateShaderCustom(shaderFilePath2, csoDestinationPath2, flagsLightTexture, D3D12_CULL_MODE_BACK);
+
+    auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
+
+    auto shaderTexture = graphics->CreateShaderTexture();
+
+    graphics->InitializeGraphicsResourcesStart();
+
+    auto meshCubeOuter = graphics->CreateMeshCustom(geoCubeOuter.resource, flagsLightColor);
+    auto meshCubeInner = graphics->CreateMeshCustom(geoCubeInner.resource, flagsLightColor);
+    auto meshCubeInner3 = graphics->CreateMeshCustom(geoCubeInner3.resource, flagsLightColor);
+    auto meshSphere = graphics->CreateMeshCustom(geoSphere.resource, flagsLightTexture);
+
+    auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlane.resource);
+    //auto meshPlaneAlphabet2 = graphics->CreateMeshTexture(geoPlaneOneSprite2);
+
+    std::string texturePath = "../../../src/Render/Textures/texture.dds";
+    std::string texturePath2 = "../../../src/Render/Textures/sprite_sheet_0.dds";
+    auto texture = graphics->CreateTexture(texturePath);
+    auto texture2 = graphics->CreateTexture(texturePath2);
+
+    graphics->InitializeGraphicsResourcesEnd();
+
+    auto materialCubeOuter = graphics->CreateMaterial(shaderLightSkyBox.resource);
+
+
+    auto materialCubeInner = graphics->CreateMaterial(shaderTexture.resource);
+    materialCubeInner.resource->SetTexture(texture2.resource);
+
+
+
+    auto materialSphere = graphics->CreateMaterial(shaderLightTexture.resource);
+    materialSphere.resource->SetTexture(texture.resource);
+
+    float viewWidth = 20.0f;
+    float viewHeight = 20.0f;
+    XMMATRIX projectionMatrix = XMMatrixOrthographicLH(viewWidth, viewHeight, 1.0f, 1000.0f);
+    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
+    XMMATRIX transposedProjectionMatrix = XMMatrixTranspose(projectionMatrix);
+    XMMATRIX transposedViewMatrix = XMMatrixTranspose(viewMatrix);
+    GCMATRIX storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
+    GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
+
+    XMMATRIX worldMatrixCubeOuter = XMMatrixScaling(20.0f, 20.0f, 20.0f) * XMMatrixTranslation(0.0f, -3.0f, 0.0f); 
+    XMMATRIX worldMatrixCubeInner = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(1.0f, 0.0f, 0.0f); 
+    XMMATRIX worldMatrixCubeInner2 = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(-1.0f, 0.0f, 0.0f); 
+    XMMATRIX worldMatrixCubeInner3 = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(2.0f, -2.0f, -1.0f); 
+    XMMATRIX worldMatrixSphere = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(3.0f, 5.0f, -2.0f); 
+
+
+    GCMATRIX worldCubeOuter = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeOuter);
+    GCMATRIX worldCubeInner = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner);
+    GCMATRIX worldCubeInner2 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner2);
+    GCMATRIX worldCubeInner3 = GCUtils::XMMATRIXToGCMATRIX(worldMatrixCubeInner3);
+    GCMATRIX worldSphere = GCUtils::XMMATRIXToGCMATRIX(worldMatrixSphere);
+
+    // #TODO FEATURE SCALING ETIREMENT SPRITE
+
+    auto startTime = std::chrono::steady_clock::now();
+
+    while (true) {
+        auto currentTime = std::chrono::steady_clock::now();
+        float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
+
+
+        graphics->StartFrame();
+        graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+
+        std::vector<GCLIGHT> lights;
+        GCLIGHT light2;
+        light2.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Position en 2D (x, y, 0)
+        light2.direction = DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f); // Direction vers le bas en 2D
+        light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+        light2.spotAngle = 10.0f; // Angle du spot si applicable
+        light2.lightIntensity = 3.2f;
+        light2.lightType = 1; // Type de lumière ponctuelle
+        GCLIGHT pointLight;
+        pointLight.position = DirectX::XMFLOAT3(6.0f, 1.0f, 0.0f); // Position en 2D (x, y, 0)
+        pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Direction vers le bas en 2D
+        pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+        pointLight.spotAngle = 0.0f; // Angle du spot si applicable
+        pointLight.lightIntensity = 2.4f;
+        pointLight.lightType = 2; // Type de lumière ponctuelle
+
+
+        
+        lights.push_back(light2);
+        lights.push_back(pointLight);
+
+        graphics->UpdateLights(lights);
+
+        graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
+
+        graphics->GetRender()->DrawObject(meshPlaneAlphabet.resource, materialCubeInner.resource, false);
+
+        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner2);
+        //graphics->GetRender()->DrawObject(meshPlaneAlphabet2.resource, materialCubeInner.resource, true);
+        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner3);
+        //graphics->GetRender()->DrawObject(meshCubeInner3.resource, materialCubeInner.resource, true);
+
+
+        //graphics->UpdateWorldConstantBuffer(materialCubeInner.resource, worldCubeInner);
+        //graphics->GetRender()->DrawObject(meshCubeInner.resource, materialCubeInner.resource , true);
+
+        graphics->EndFrame();
+        window->Run(graphics->GetRender());
+    }
+
+    return 0;
+}
 
 
 //// 3D DEFERRED SHADING

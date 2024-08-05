@@ -196,6 +196,9 @@ public:
 		GCMATRIX& projectionMatrix,
 		GCMATRIX& viewMatrix);
 
+	// No comment
+	GCMATRIX UpdateScalingRatio(const GCMATRIX& worldMatrix);
+
 	/************************************************************************************************
 	* @brief Update one object data, using GCWORLDCB Struct, template for update object matrix, and object/layer id in for PixelIdMapping
 	*
