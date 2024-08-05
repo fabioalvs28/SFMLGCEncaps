@@ -174,6 +174,8 @@ int SpriteSheetGenerator::Packer()
                     return 1;
                 }
             }
+            int original_w = image.GetWidth();
+            int original_h = image.GetHeight();
 
             REC2 outCropRect;
             if (m_allowTrimming)
@@ -181,27 +183,32 @@ int SpriteSheetGenerator::Packer()
                 image = trimImage(image, outCropRect);
             }
 
-            int h = image.GetHeight();
-            int w = image.GetWidth();
+            bool usefulCrop = outCropRect != REC2(0, 0, original_w, original_h);
 
             bool rotated = false;
-            if (w > h and m_allowRotate)
+            if (original_w > original_h and m_allowRotate)
             {
                 image.Rotate(90);
-                int temp = h;
-                h = w;
-                w = temp;
+                int temp = original_h;
+                original_h = original_w;
+                original_w = temp;
                 rotated = true;
             }
             filename = filename.substr(0, filename.find('.'));
 
             Sprite sprite;
-            if (m_allowTrimming)
-                sprite = Sprite(image, w, h, rotated, filename, true, outCropRect);
+            
+            if (usefulCrop)
+            {
+                sprite = Sprite(image, original_w, original_h, rotated, filename, true, outCropRect);
+                totalSize += (outCropRect.width + m_padding * 2) * (outCropRect.height + m_padding * 2);
+            }
             else
-                sprite = Sprite(image, w, h, rotated, filename);
+            {
+                sprite = Sprite(image, original_w, original_h, rotated, filename);
+                totalSize += (original_w + m_padding * 2) * (original_h + m_padding * 2);
+            }
             imageList.emplace_back(sprite);
-            totalSize += (w + m_padding * 2) * (h + m_padding * 2);
         }
     }
 

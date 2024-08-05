@@ -25,6 +25,7 @@ struct REC2 {
 
 	REC2() : x(0), y(0), width(0), height(0) {}
 	REC2(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {}
+	auto operator<=>(const REC2&) const = default;
 };
 
 class GCSurface {
