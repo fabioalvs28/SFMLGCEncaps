@@ -1,7 +1,7 @@
 ## Spritesheet packer
 
 Tools that pack multiples sprites into 1 larger texture for more efficient draw call
-## Installation
+## Installation for Python script
 
 Clone the repo and install requirements:
 
