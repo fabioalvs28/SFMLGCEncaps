@@ -687,14 +687,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     //graphics->GetRender()->ActiveDeferredLightPass();
 
     int flagsLightColor = 0;
-    SET_FLAG(flagsLightColor, VERTEX_POSITION);
-    SET_FLAG(flagsLightColor, VERTEX_COLOR);
-    SET_FLAG(flagsLightColor, VERTEX_NORMAL);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
+    GC_SET_FLAG(flagsLightColor, GC_VERTEX_NORMAL);
 
     int flagsLightTexture = 0;
-    SET_FLAG(flagsLightTexture, VERTEX_POSITION);
-    SET_FLAG(flagsLightTexture, VERTEX_UV);
-    SET_FLAG(flagsLightTexture, VERTEX_NORMAL);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
+    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_NORMAL);
 
     auto geometryPostProcessing = graphics->CreateGeometryPrimitive(Quad, DirectX::XMFLOAT4(DirectX::Colors::Yellow));
     auto geoCubeOuter = graphics->CreateGeometryPrimitive(CubeSkybox, XMFLOAT4(Colors::Red));
@@ -718,8 +718,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     graphics->InitializeGraphicsResourcesStart();
 
     int flags = 0;
-    SET_FLAG(flags, VERTEX_POSITION);
-    SET_FLAG(flags, VERTEX_UV);
+    GC_SET_FLAG(flags, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flags, GC_VERTEX_UV);
 
     auto meshPostProcessing = graphics->CreateMeshCustom(geometryPostProcessing.resource, flags);
 
@@ -815,14 +815,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         directionalLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
         directionalLight.spotAngle = 0.0f;
         directionalLight.lightIntensity = 1.3f;
-        directionalLight.lightType = LIGHT_TYPE_DIRECTIONAL;
+        directionalLight.lightType = GC_LIGHT_TYPE_DIRECTIONAL;
         GCLIGHT pointLight;
         pointLight.position = DirectX::XMFLOAT3(0.0f, 4.0f, 0.0f);
         pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
         pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
         pointLight.spotAngle = 0.0f;
         pointLight.lightIntensity = 20.4f;
-        pointLight.lightType = LIGHT_TYPE_POINT;
+        pointLight.lightType = GC_LIGHT_TYPE_POINT;
 
         GCLIGHT light1;
         light1.position = DirectX::XMFLOAT3(-5.0f, 20.0f, -2.0f);

@@ -12,19 +12,19 @@ GCRenderContext::GCRenderContext()
 }
 
 GCRenderContext::~GCRenderContext() {
-	DELETE(m_pGCRenderResources);
-	DELETE(m_pPostProcessingShader);
-	DELETE(m_pPixelIdMappingShader);
+	GC_DELETE(m_pGCRenderResources);
+	GC_DELETE(m_pPostProcessingShader);
+	GC_DELETE(m_pPixelIdMappingShader);
 
-	DELETE(m_pPostProcessingRtv);
-	DELETE(m_pPixelIdMappingBufferRtv);
-	DELETE(m_pPixelIdMappingDepthStencilBuffer);
+	GC_DELETE(m_pPostProcessingRtv);
+	GC_DELETE(m_pPixelIdMappingBufferRtv);
+	GC_DELETE(m_pPixelIdMappingDepthStencilBuffer);
 }
 
 
 bool GCRenderContext::Initialize(Window* pWindow, int renderWidth, int renderHeight, GCGraphics* pGraphics)
 {
-	if (!CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
+	if (!GC_CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow))
 		return false;
 
 	m_pGCRenderResources = new GCRenderResources();
@@ -35,13 +35,14 @@ bool GCRenderContext::Initialize(Window* pWindow, int renderWidth, int renderHei
 
 	InitDX12RenderPipeline();
 
+
 	return true;
 }
 
 bool GCRenderContext::ResetCommandList() 
 {
 	HRESULT hr = m_pGCRenderResources->m_CommandList->Reset(m_pGCRenderResources->m_DirectCmdListAlloc, nullptr);
-	if (CHECK_HRESULT(hr, "Failed to Reset command list") == false) {
+	if (GC_CHECK_HRESULT(hr, "Failed to Reset command list") == false) {
 		return false;
 	}
 	return true;
@@ -56,7 +57,7 @@ void GCRenderContext::ExecuteCommandList()
 bool GCRenderContext::CloseCommandList() 
 {
 	HRESULT hr = m_pGCRenderResources->m_CommandList->Close();
-	if (CHECK_HRESULT(hr, "Failed to Close command list") == false) {
+	if (GC_CHECK_HRESULT(hr, "Failed to Close command list") == false) {
 		return false;
 	}
 	return true;
@@ -68,8 +69,14 @@ bool GCRenderContext::InitDX12RenderPipeline()
 
 	CreateDXGIFactory1(IID_PPV_ARGS(&m_pGCRenderResources->m_dxgiFactory));
 
+
+
 	// Try to create hardware device.
 	HRESULT hardwareResult = D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_pGCRenderResources->m_d3dDevice));
+
+
+
+	//exit(0);
 
 	// Fallback to WARP device.
 	if (FAILED(hardwareResult))
@@ -117,6 +124,7 @@ bool GCRenderContext::InitDX12RenderPipeline()
 
 	OnResize();
 	CreateDeferredLightPassResources();
+	m_pCbLightPropertiesInstance = new GCUploadBuffer<GCLIGHT>(m_pGCRenderResources->m_d3dDevice, 100, true);
 
 	// Pixel Id Mapping Output Rtv
 	m_pPixelIdMappingBufferRtv = m_pGCRenderResources->CreateRTVTexture(m_pGCRenderResources->GetBackBufferFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
@@ -197,8 +205,8 @@ void GCRenderContext::CreatePostProcessingResources(std::string shaderfilePath, 
 		GetRenderResources()->m_postProcessingShaderCS = new GCComputeShader();
 
 		int flags = 0;
-		SET_FLAG(flags, VERTEX_POSITION);
-		SET_FLAG(flags, VERTEX_UV);
+		GC_SET_FLAG(flags, GC_VERTEX_POSITION);
+		GC_SET_FLAG(flags, GC_VERTEX_UV);
 
 		GetRenderResources()->m_postProcessingShaderCS->Initialize(this, shaderfilePath, csoDestinationPath, flags);
 		GetRenderResources()->m_postProcessingShaderCS->Load();
@@ -223,17 +231,17 @@ void GCRenderContext::CreateDeferredLightPassResources() {
 		std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
 
 		int flags = 0;
-		SET_FLAG(flags, VERTEX_POSITION);
-		SET_FLAG(flags, VERTEX_UV);
+		GC_SET_FLAG(flags, GC_VERTEX_POSITION);
+		GC_SET_FLAG(flags, GC_VERTEX_UV);
 
 		int rootParametersFlag = 0;
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB0);
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB1);
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_CB2);
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2);
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3);
-		SET_FLAG(rootParametersFlag, ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT4);
+		GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB0);
+		GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB1);
+		GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB2);
+		GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
+		GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2);
+		GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3);
+		GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT4);
 		//
 
 		m_pDeferredLightPassShader->Initialize(this, shaderFilePath, csoDestinationPath, flags, D3D12_CULL_MODE_BACK, rootParametersFlag);
@@ -242,7 +250,6 @@ void GCRenderContext::CreateDeferredLightPassResources() {
 
 
 	m_pCbMaterialDsl = new GCUploadBuffer<GC_MATERIAL_DSL>(m_pGCRenderResources->m_d3dDevice, 100, true);
-	m_pCbLightPropertiesInstance = new GCUploadBuffer<GCLIGHT>(m_pGCRenderResources->m_d3dDevice, 100, true);
 }
 
 void GCRenderContext::OnResize() 
@@ -253,9 +260,9 @@ void GCRenderContext::OnResize()
 	//if (m_pGCRenderResources->m_canResize == false)
 	//	return;
 
-	CHECK_POINTERSNULL("Device not null", "Device is null", m_pGCRenderResources->m_d3dDevice);
-	CHECK_POINTERSNULL("SwapChain not null", "SwapChain is null", m_pGCRenderResources->m_d3dDevice);
-	CHECK_POINTERSNULL("Command Allocator not null", "Command Allocator is null", m_pGCRenderResources->m_d3dDevice);
+	GC_CHECK_POINTERSNULL("Device not null", "Device is null", m_pGCRenderResources->m_d3dDevice);
+	GC_CHECK_POINTERSNULL("SwapChain not null", "SwapChain is null", m_pGCRenderResources->m_d3dDevice);
+	GC_CHECK_POINTERSNULL("Command Allocator not null", "Command Allocator is null", m_pGCRenderResources->m_d3dDevice);
 
 	FlushCommandQueue();
 	ResetCommandList();
@@ -332,8 +339,8 @@ void GCRenderContext::CreateDepthStencilBufferAndView()
 
 void GCRenderContext::UpdateViewport() 
 {
-	m_pGCRenderResources->m_ScreenViewport.TopLeftX = (m_pGCRenderResources->m_pWindow->GetClientWidth() - m_pGCRenderResources->m_renderWidth) / 2;
-	m_pGCRenderResources->m_ScreenViewport.TopLeftY = (m_pGCRenderResources->m_pWindow->GetClientHeight() - m_pGCRenderResources->m_renderHeight) / 2;
+	m_pGCRenderResources->m_ScreenViewport.TopLeftX = static_cast<FLOAT>(m_pGCRenderResources->m_pWindow->GetClientWidth() - m_pGCRenderResources->m_renderWidth) / 2.0f;
+	m_pGCRenderResources->m_ScreenViewport.TopLeftY = static_cast<FLOAT>(m_pGCRenderResources->m_pWindow->GetClientHeight() - m_pGCRenderResources->m_renderHeight) / 2.0f;
 	m_pGCRenderResources->m_ScreenViewport.Width = static_cast<float>(m_pGCRenderResources->m_renderWidth);
 	m_pGCRenderResources->m_ScreenViewport.Height = static_cast<float>(m_pGCRenderResources->m_renderHeight);
 	m_pGCRenderResources->m_ScreenViewport.MinDepth = 0.0f;
@@ -356,7 +363,7 @@ bool GCRenderContext::FlushCommandQueue()
 	// are on the GPU timeline, the new fence point won't be set until the GPU finishes
 	// processing all the commands prior to this Signal().
 	hr = m_pGCRenderResources->m_CommandQueue->Signal(m_pGCRenderResources->m_Fence, m_pGCRenderResources->m_CurrentFence);
-	if (!CHECK_HRESULT(hr, "m_CommandQueue->Signal")) {
+	if (!GC_CHECK_HRESULT(hr, "m_CommandQueue->Signal")) {
 		return false;
 	};
 
@@ -367,7 +374,7 @@ bool GCRenderContext::FlushCommandQueue()
 
 		// Fire event when GPU hits current fence.  
 		hr = m_pGCRenderResources->m_Fence->SetEventOnCompletion(m_pGCRenderResources->m_CurrentFence, eventHandle);
-		if (!CHECK_HRESULT(hr, "Fence->SetEventOnCompletion")) {
+		if (!GC_CHECK_HRESULT(hr, "Fence->SetEventOnCompletion")) {
 			return false;
 		};
 
@@ -383,13 +390,13 @@ bool GCRenderContext::PrepareDraw()
 	//Always needs to be called right before drawing!!!
 
 	HRESULT hr = m_pGCRenderResources->m_DirectCmdListAlloc->Reset();
-	if (!CHECK_HRESULT(hr, "m_DirectCmdListAlloc->Reset()")) {
+	if (!GC_CHECK_HRESULT(hr, "m_DirectCmdListAlloc->Reset()")) {
 		return false;
 	};
 
 	hr = m_pGCRenderResources->m_CommandList->Reset(m_pGCRenderResources->m_DirectCmdListAlloc, nullptr);
 
-	if (!CHECK_HRESULT(hr, "m_CommandList->Reset()")) {
+	if (!GC_CHECK_HRESULT(hr, "m_CommandList->Reset()")) {
 		return false;
 	};
 
@@ -403,9 +410,13 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_CommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	/*m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
-	m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);*/
+
+	if (m_isDeferredLightPassActivated) {
+		m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pAlbedoGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+		m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pWorldPosGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+		m_pGCRenderResources->m_CommandList->ClearRenderTargetView(m_pNormalGBuffer->cpuHandle, DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
+	}
+	
 
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvs;
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvs;
@@ -415,7 +426,7 @@ bool GCRenderContext::PrepareDraw()
 		D3D12_CPU_DESCRIPTOR_HANDLE basicRtv = m_pGCRenderResources->CurrentBackBufferViewAddress();
 		rtvs.push_back(basicRtv);
 
-		if (m_renderMode == RENDER_MODE_3D) 
+		if (m_renderMode == GC_RENDER_MODE_3D)
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE basicDsv = m_pGCRenderResources->GetDepthStencilViewAddress();
 			dsvs.push_back(basicDsv);
@@ -438,8 +449,10 @@ bool GCRenderContext::PrepareDraw()
 		}
 	}
 
+	UINT rtvCount = static_cast<UINT>(rtvs.size());
+
 	D3D12_CPU_DESCRIPTOR_HANDLE basicDsv = m_pGCRenderResources->GetDepthStencilViewAddress();
-	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(rtvs.size(), rtvs.data(), FALSE, dsvs.data());
+	m_pGCRenderResources->m_CommandList->OMSetRenderTargets(rtvCount, rtvs.data(), FALSE, dsvs.data());
 
 	
 	ID3D12DescriptorHeap* descriptorHeaps[] = { m_pGCRenderResources->m_pCbvSrvUavDescriptorHeap };
@@ -453,7 +466,7 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 	GCShader* pShader = pMaterial->GetShader();
 	if (pMaterial == nullptr || pShader == nullptr || pMesh == nullptr)
 		return false;
-	if (!COMPARE_SHADER_MESH_FLAGS(pMaterial, pMesh))
+	if (!GC_COMPARE_SHADER_MESH_FLAGS(pMaterial, pMesh))
 		return false;
 
 	//Basic Draw
@@ -473,7 +486,7 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 		int rootParameterFlag = pMaterial->GetShader()->GetFlagRootParameters();
 
 		// Update cb0, cb of object
-		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB0)) {
+		if (GC_HAS_FLAG(rootParameterFlag, GC_ROOT_PARAMETER_CB0)) {
 			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_0, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]->Resource()->GetGPUVirtualAddress());
 		}
 
@@ -482,14 +495,14 @@ bool GCRenderContext::DrawObject(GCMesh* pMesh, GCMaterial* pMaterial, bool alph
 		pMaterial->IncrementCBCount();
 
 		// cb1, Camera
-		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB1)) {
+		if (GC_HAS_FLAG(rootParameterFlag, GC_ROOT_PARAMETER_CB1)) {
 			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_1, m_pCbCurrentViewProjInstance->Resource()->GetGPUVirtualAddress());
 		}
 		// cb2, Material Properties
-		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB2)) 
+		if (GC_HAS_FLAG(rootParameterFlag, GC_ROOT_PARAMETER_CB2))
 			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_2, pMaterial->GetCbMaterialPropertiesInstance()->Resource()->GetGPUVirtualAddress());
 		// cb3, Light Properties
-		if (HAS_FLAG(rootParameterFlag, ROOT_PARAMETER_CB3))
+		if (GC_HAS_FLAG(rootParameterFlag, GC_ROOT_PARAMETER_CB3))
 			m_pGCRenderResources->m_CommandList->SetGraphicsRootConstantBufferView(pShader->m_rootParameter_ConstantBuffer_3, m_pCbLightPropertiesInstance->Resource()->GetGPUVirtualAddress());
 
 		// Draw
@@ -530,13 +543,13 @@ bool GCRenderContext::CompleteDraw()
 	}
 
 	HRESULT hr = m_pGCRenderResources->m_CommandList->Close();
-	if (CHECK_HRESULT(hr, "Failed to close command list") == false) return false;
+	if (GC_CHECK_HRESULT(hr, "Failed to close command list") == false) return false;
 	ID3D12CommandList* cmdsLists[] = { m_pGCRenderResources->m_CommandList };
 	m_pGCRenderResources->m_CommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
 
 	hr = m_pGCRenderResources->m_SwapChain->Present(0, 0);
-	if (CHECK_HRESULT(hr, "Failed to present swap chain") == false) return false;
+	if (GC_CHECK_HRESULT(hr, "Failed to present swap chain") == false) return false;
 	// Swap front - back buffer index
 	m_pGCRenderResources->m_CurrBackBuffer = (m_pGCRenderResources->m_CurrBackBuffer + 1) % m_pGCRenderResources->SwapChainBufferCount;
 
@@ -696,14 +709,13 @@ void GCRenderContext::PerformPostProcessingCS()
 
 void GCRenderContext::EnableDebugController()
 {
-#if defined(DEBUG) || defined(_DEBUG) 
-	// Enable the D3D12 debug layer.
-	{
-		ID3D12Debug* debugController;
-		D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
-		debugController->EnableDebugLayer();
-	}
-#endif
+	#if defined(DEBUG) || defined(_DEBUG) 
+		// Enable the D3D12 debug layer.
+		{
+			D3D12GetDebugInterface(IID_PPV_ARGS(&m_pGCRenderResources->m_pDebugController));
+			m_pGCRenderResources->m_pDebugController->EnableDebugLayer();
+		}
+	#endif
 }
 
 void GCRenderContext::LogAdapters()

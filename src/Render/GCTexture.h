@@ -6,7 +6,7 @@ public:
     GCTexture();
     ~GCTexture();
 
-    GC_GRAPHICS_ERROR Initialize(const std::string& filePath, GCGraphics* pGraphics, size_t& textureOffset);
+    GC_GRAPHICS_ERROR Initialize(const std::string& filePath, GCGraphics* pGraphics, int& textureOffset);
 
     inline UINT GetCbvSrvUavDescriptorSize() const { return m_cbvSrvUavDescriptorSize; }
     inline ID3D12Resource* GetTextureBuffer() const { return m_pTextureBuffer; }

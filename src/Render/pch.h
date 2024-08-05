@@ -29,6 +29,7 @@
 #include <memory>
 #include <algorithm>
 #include <array>
+#include <map>
 #include <unordered_map>
 #include <cstdint>
 #include <fstream>
@@ -53,12 +54,12 @@
 
 //Geometry & Mesh
 struct GCGeometry;
-struct GCMESHBUFFERDATA;
+struct GC_MESH_BUFFER_DATA;
 
 //Shaders
-struct GCSHADERCB;
-struct GCWORLDCB;
-struct GCVIEWPROJCB;
+struct GC_SHADERCB;
+struct GC_WORLDCB;
+struct GC_VIEWPROJCB;
 struct GC_MATERIAL_DSL;
 
 //Geometry
@@ -103,6 +104,7 @@ struct GCVEC3;
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
+#include "../core/framework.h"
 
 
 // Add William 
@@ -111,7 +113,7 @@ struct GCVEC3;
 #include "./GCMeshBufferData.h"
 #include "GCPrimitiveIdEnum.h"
 
-#include "../core/framework.h"
+
 
 
 //
