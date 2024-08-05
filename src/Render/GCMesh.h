@@ -10,7 +10,7 @@ public:
 
     void UpdateGeometryData(float deltaTime);
 
-    inline GCMESHBUFFERDATA* GetBufferGeometryData() { return  m_pBufferGeometryData; }
+    inline GC_MESH_BUFFER_DATA* GetBufferGeometryData() { return  m_pBufferGeometryData; }
     inline int GetFlagEnabledBits() const { return m_flagEnabledBits; }
 
     void AddGeometry(DirectX::XMFLOAT3 position);
@@ -21,7 +21,7 @@ private:
     void UploadGeometryData(int& flagEnabledBits);
 
     GCRenderContext* m_pRender;
-    GCMESHBUFFERDATA* m_pBufferGeometryData;
+    GC_MESH_BUFFER_DATA* m_pBufferGeometryData;
 
     GCGeometry* m_pMeshGeometry;
     std::vector<DirectX::XMFLOAT3> m_geometryPositions;

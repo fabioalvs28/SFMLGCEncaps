@@ -12,7 +12,7 @@ struct GCWORLDCB : GCSHADERCB
 
 struct GCVIEWPROJCB : GCSHADERCB
 {
-    DirectX::XMFLOAT4X4 view; 
+    DirectX::XMFLOAT4X4 view;
     DirectX::XMFLOAT4X4 proj; 
 };
 

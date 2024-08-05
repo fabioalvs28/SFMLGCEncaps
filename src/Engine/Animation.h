@@ -1,22 +1,31 @@
 #pragma once
 #include "../core/framework.h"
 
+struct GCGeometry;
+
 class Animation
 {
 public:
 	Animation();
 	~Animation() = default;
 
-	void AddFrame(int x, int y, int width, int height, float displayTime, bool isFlipingX, bool isFlipingY);
-	bool Update(float deltaTime);
-	void IncrementFrame();
-	void Reset();
-	const GCFrame* GetCurrentFrame() const;
-	int GetNumberOfFrames() const { return static_cast<int>(m_frames.GetSize()); }
-	int GetCurrentFrameIndex() const { return m_currentFrameIndex; }
+	void AddFrame( int frameID, float displayTime = 2.0f, bool isFlipingX = false, bool isFlipingY = false);
+	void StartAnimation();
+	bool Update( int* currentFrameIndex, float* currentFrameTime  );
+	void IncrementFrame( int* currentFrameIndex );
+	const GCFrame* GetCurrentFrame( int currentFrameIndex ) const;
+	int GetNumberOfFrames() const { return static_cast<int>(m_pFrames.size()); }
+	GCGeometry* GetGeometry() { return m_pGeometry; }
+	GCTexture* GetTexture() { return m_pTexture; }
+
+	void SetSpriteSheet(std::string fileName, GC_SPRITESHEET_INFO* spriteSheet );
 
 private:
-	GCVector<GCFrame> m_frames;
-	int m_currentFrameIndex;
-	float m_currentFrameTime;
+
+	GC_SPRITESHEET_INFO m_spriteSheetInfos;
+	GCGeometry* m_pGeometry; 
+	GCTexture* m_pTexture;
+
+	std::vector<GCFrame*> m_pFrames;
+
 };

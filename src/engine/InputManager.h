@@ -262,7 +262,7 @@ private:
 
     int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
 
-    GCVector<BYTE> m_buttonState;
+    std::vector<BYTE> m_buttonState;
 
     void SendEvent(int index, BYTE state);
     

@@ -18,6 +18,8 @@ protected:
     ~GCGameObject() = default;
 
 public:
+    void Destroy();
+    
     GCGameObject* Duplicate();
     GCGameObject* Duplicate( GCGameObject* pParent );
     
@@ -57,8 +59,6 @@ public:
     void ClearComponents();
 
 protected:
-    void Destroy();
-    
     void RemoveTag( int index );
     
     void ActivateGlobal();
@@ -80,6 +80,8 @@ protected:
     GCScene* m_pScene; // The Scene where the GameObject located.
     GCGameObject* m_pParent; // The GameObject's Parent.
     GCList<GCGameObject*> m_childrenList; // The list of children the GameObject has.
+    
+    bool m_destroyed; // A boolean value indicating if the GameObject will be destroyed the next frame.
     
     bool m_globalActive; // The global active state of the GameObject ( Usually its Parent active state ).
     bool m_selfActive; // The active state of the GameObject.
@@ -107,9 +109,10 @@ T* GCGameObject::AddComponent()
     ASSERT( GetComponent<T>() == nullptr, LOG_FATAL, "Trying to add a Component to a GameObject that already has it" );
     T* pComponent = new T();
     pComponent->m_pGameObject = this;
+	pComponent->Start();
     pComponent->m_globalActive = IsActive();
-    m_componentsList.Insert( T::GetIDStatic(), pComponent ); //! To See
-    GC::GetActiveSceneManager()->AddComponentToCreateQueue( pComponent );
+    m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    GC::GetActiveSceneManager()->AddToCreateQueue( pComponent );
     return pComponent;
 }
 

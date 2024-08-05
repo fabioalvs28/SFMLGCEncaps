@@ -72,6 +72,11 @@ void GCGameObjectTransform::SetRotation( float yaw, float pitch, float roll )
 
 
 
+GCMATRIX& GCGameObjectTransform::GetWorldMatrix()
+{ return m_worldMatrix; }
+
+
+
 void GCGameObjectTransform::UpdateWorldMatrixFromParent()
 {
 	if ( m_pGameObject->m_pParent == nullptr )

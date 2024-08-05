@@ -1,38 +1,18 @@
 #include "pch.h"
 
 GCFrame::GCFrame()
-	: m_x(0), m_y(0), m_width(0), m_height(0), m_displayTime(0.0f), m_isFlipingX(false), m_isFlipingY(false) 
+	: m_displayTime(0.0f), 
+	m_isFlippingX(false), 
+	m_isFlippingY(false), 
+	m_frameID(0)
 {}
 
-GCFrame::GCFrame(int x, int y, int width, int height, float displayTime, bool isFlipingX, bool isFlipingY)
+GCFrame::GCFrame( int frameID, float displayTime, bool isFlipingX, bool isFlipingY)
 {
-	m_x = x;
-	m_y = y;
-	m_width = width;
-	m_height = height;
+	m_frameID = frameID;
 	m_displayTime = displayTime;
-	m_isFlipingX = isFlipingX;
-	m_isFlipingY = isFlipingY;
-}
-
-int GCFrame::GetX() const
-{
-	return m_x;
-}
-
-int GCFrame::GetY() const
-{
-	return m_y;
-}
-
-int GCFrame::GetWidth() const
-{
-	return m_width;
-}
-
-int GCFrame::GetHeight() const
-{
-	return m_height;
+	m_isFlippingX = isFlipingX;
+	m_isFlippingY = isFlipingY;
 }
 
 float GCFrame::GetDisplayTime() const
@@ -40,12 +20,17 @@ float GCFrame::GetDisplayTime() const
 	return m_displayTime;
 }
 
-bool GCFrame::IsFlipingX() const
+bool GCFrame::IsFlippingX() const
 {
-	return m_isFlipingX;
+	return m_isFlippingX;
 }
 
-bool GCFrame::IsFlipingY() const
+bool GCFrame::IsFlippingY() const
 {
-	return m_isFlipingY;
+	return m_isFlippingY;
+}
+
+int GCFrame::GetFrameID() const
+{
+	return m_frameID;
 }

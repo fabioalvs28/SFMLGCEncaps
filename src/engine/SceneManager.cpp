@@ -14,6 +14,10 @@ void GCSceneManager::Update()
 	for ( GCListNode<Component*>* pComponentNode = m_componentsToDeleteList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
 		DestroyComponent( pComponentNode->GetData() );
 	m_componentsToDeleteList.Clear();
+	
+    for ( GCListNode<GCGameObject*>* pGameObjectNode = m_gameObjectsToDeleteList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
+	    DestroyGameObject( pGameObjectNode->GetData() );
+	m_gameObjectsToDeleteList.Clear();
 }
 
 
@@ -117,7 +121,6 @@ void GCSceneManager::CreateComponent( Component* pComponent )
 		pComponent->m_created = true;
 		pComponent->RegisterToManagers();
 	}
-	pComponent->Start();
 }
 
 ///////////////////////////////////////////////////////////////
@@ -134,12 +137,29 @@ void GCSceneManager::DestroyComponent( Component* pComponent )
 
 
 
+/////////////////////////////////////////////////////////////////
+/// @brief Fully destroys the GameObject.
+/// 
+/// @param pGameObject A pointer to the GameObject to destroy.
+/////////////////////////////////////////////////////////////////
+void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
+{
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to destroy a nullptr pGameObject" );
+	if ( pGameObject->m_pParent != nullptr )
+		pGameObject->m_pChildNode->Delete();
+	if ( pGameObject->m_pSceneNode != nullptr )
+		pGameObject->m_pSceneNode->Delete();
+	delete pGameObject;
+}
+
+
+
 ////////////////////////////////////////////////////////////////////////
 /// @brief Adds the Component to the "Creation Queue".
 /// 
 /// @param pComponent A pointer to the Component to add to the queue.
 ////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddComponentToCreateQueue( Component* pComponent )
+void GCSceneManager::AddToCreateQueue( Component* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to add a nullptr pComponent to the Creation Queue" );
 	m_componentsToCreateList.PushBack( pComponent );
@@ -150,8 +170,21 @@ void GCSceneManager::AddComponentToCreateQueue( Component* pComponent )
 /// 
 /// @param pComponent A pointer to the Component to add to the queue.
 ////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddComponentToDeleteQueue( Component* pComponent )
+void GCSceneManager::AddToDeleteQueue( Component* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to add a nullptr pComponent to the Deletion Queue" );
 	m_componentsToDeleteList.PushBack( pComponent );
+}
+
+
+
+////////////////////////////////////////////////////////////////////////
+/// @brief Adds the GameObject to the "Deletion Queue".
+/// 
+/// @param pGameObject A pointer to the GameObject to add to the queue.
+////////////////////////////////////////////////////////////////////////
+void GCSceneManager::AddToDeleteQueue( GCGameObject* pGameObject )
+{
+	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to add a nullptr pGameObject to the Deletion Queue" );
+	m_gameObjectsToDeleteList.PushBack( pGameObject );
 }
