@@ -15,22 +15,22 @@ void ScriptStart::Update()
     if ( KEYBOARD::GetKeyStay( KEYBOARD::Q ) )
     {
         m_pGameObject->m_transform.Translate( GCVEC3( -0.01 , 0 , 0 ) );
-        pAnimator->PlayAnimation( "WalkHeroL" );
+        pAnimator->PlayAnimation( "WalkHeroL", true );
     }
     if ( KEYBOARD::GetKeyStay( KEYBOARD::D ) )
     {
         m_pGameObject->m_transform.Translate( GCVEC3( 0.01, 0 , 0 ) );
-        pAnimator->PlayAnimation( "WalkHeroR" );
+        pAnimator->PlayAnimation( "WalkHeroR", true);
     }
     if ( KEYBOARD::GetKeyStay( KEYBOARD::Z ) )
     {
         m_pGameObject->m_transform.Translate( GCVEC3( 0,0.01 , 0 ) );
-        pAnimator->PlayAnimation( "WalkBackward" );
+        pAnimator->PlayAnimation( "WalkBackward", true);
     }
     if ( KEYBOARD::GetKeyStay( KEYBOARD::S ) )
     {
         m_pGameObject->m_transform.Translate( GCVEC3( 0, -0.01, 0 ) );
-        pAnimator->PlayAnimation( "WalkForward" );
+        pAnimator->PlayAnimation( "WalkForward", true);
     }
 }
 
