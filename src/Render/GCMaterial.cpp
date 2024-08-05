@@ -45,7 +45,7 @@ GC_GRAPHICS_ERROR GCMaterial::Initialize(GCShader* pShader)
 
 bool GCMaterial::SetTexture(GCTexture* pTexture) {
     m_pTexture = pTexture;
-    CHECK_POINTERSNULL("Texture loaded successfully for material", "The material doesn't contain texture", pTexture);
+    GC_CHECK_POINTERSNULL("Texture loaded successfully for material", "The material doesn't contain texture", pTexture);
 
     return true;
 }

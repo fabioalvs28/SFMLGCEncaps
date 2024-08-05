@@ -187,7 +187,7 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateDepthStencilBufferAndView(DXGI_
 		&optClear,
 		IID_PPV_ARGS(&depthStencilBuffer)
 	);
-	CHECK_HRESULT(hr, "Dsv Bad Init");
+	GC_CHECK_HRESULT(hr, "Dsv Bad Init");
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
@@ -225,10 +225,6 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateStaticSrvWithTexture(ID3D
 
 	m_d3dDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
 
-	GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
-	profiler.LogWarning("Offset srv count : " + std::to_string(m_srvStaticOffsetCount));
-
-	//m_lShaderResourceView.push_back(srvGpuHandle);
 	m_lShaderResourceView.push_back(srvGpuHandle);
 
 	m_srvStaticOffsetCount++;
@@ -253,11 +249,6 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateDynamicSrvWithTexture(ID3
 
 	m_d3dDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
 
-
-	GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
-	profiler.LogWarning("Offset srv count : " + std::to_string(m_srvDynamicOffsetCount));
-
-	//m_lShaderResourceView.push_back(srvGpuHandle);
 	m_lShaderResourceView.push_back(srvGpuHandle);
 	
 	m_srvDynamicOffsetCount++;
@@ -280,22 +271,8 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateUavTexture(ID3D12Resource
 
 	m_d3dDevice->CreateUnorderedAccessView(textureResource, nullptr, &uavDesc, uavCpuHandle);
 
-	GCGraphicsLogger& logger = GCGraphicsLogger::GetInstance();
-	logger.LogWarning("Offset uav count : " + std::to_string(m_uavOffsetCount));
-
 	m_lUnorderedAccessView.push_back(uavCpuHandle);
 	m_uavOffsetCount++;
 
 	return uavGpuHandle;
 }
-
-//void GCRenderResources::DeleteRenderTarget(ID3D12Resource* pRenderTarget) {
-//	auto it = std::find(m_renderTargets.begin(), m_renderTargets.end(), pRenderTarget);
-//	if (it != m_renderTargets.end()) {
-//		if (pRenderTarget) {
-//			pRenderTarget->Release();
-//			pRenderTarget = nullptr;
-//		}
-//		m_renderTargets.erase(it);
-//	}
-//}

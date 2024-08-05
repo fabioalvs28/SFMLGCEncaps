@@ -398,7 +398,7 @@ Animator::Animator()
 	m_activeAnimationName = "";
 	m_spritesheetName = "";
 	m_pSpriteRenderer = nullptr;
-	m_pSpriteSheetInfo = nullptr;
+	m_spriteSheetID = -1;
 	m_currentFrameIndex = 0;
 	m_currentFrameTime = 0.0f;
 }
@@ -476,12 +476,10 @@ void Animator::StopAnimation()
 /// 
 /// @note An animator can load only one spritesheet.
 ///////////////////////////////////////////////////////
-void Animator::LoadSpriteSheet(std::string fileName, int row , int col , int width , int height )
+void Animator::LoadSpriteSheet(std::string fileName, int spriteSheetID)
 {
 	m_spritesheetName = fileName;
-	GCSpriteSheetGeometryLoader loader;
-
-	m_pSpriteSheetInfo = new GC_SPRITESHEET_INFO(loader.LoadSpriteSheet( row , col , width , height ));
+	m_spriteSheetID = spriteSheetID;
 }
 
 
@@ -495,10 +493,10 @@ void Animator::LoadSpriteSheet(std::string fileName, int row , int col , int wid
 //////////////////////////////////////////////////////////////////////////////////
 Animation* Animator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime )
 {
-	ASSERT( m_pSpriteSheetInfo != nullptr, LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
+	ASSERT( m_spriteSheetID != -1, LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
 	Animation* pNewAnimation = new Animation();
-	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_pSpriteSheetInfo );
+	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
 	for ( int i = firstFrame; i < firstFrame + frameNumber; i++ )
 	{
 		pNewAnimation->AddFrame( i, frameDisplayTime );
@@ -518,10 +516,10 @@ Animation* Animator::CreateAnimation( std::string animationName, int firstFrame,
 /////////////////////////////////////////////////////////////////////////////
 Animation* Animator::CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList, float frameDisplayTime )
 {
-	ASSERT( m_pSpriteSheetInfo != nullptr , LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
+	ASSERT( m_spriteSheetID != -1 , LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
 	Animation* pNewAnimation = new Animation();
-	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_pSpriteSheetInfo );
+	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
 
 	for ( int i = 0; i < frameList.size() ; i++ )
 	{

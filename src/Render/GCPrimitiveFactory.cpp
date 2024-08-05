@@ -476,7 +476,7 @@ GC_GRAPHICS_ERROR GCPrimitiveFactory::BuildGeometry(GC_PRIMITIVE_ID index, Direc
 {
     //Builds a texture based geometry using pre-created ones
     //Needs a geometry name
-    if (!CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", pGeometry))
+    if (!GC_CHECK_POINTERSNULL("Primitive Geometry built successfully", "Primitive geometry is empty", pGeometry))
         return GCRENDER_ERROR_POINTER_NULL;
 
 	pGeometry->indices = std::get<std::vector<uint16_t>>(m_primitiveInfos[index][L"index"]);

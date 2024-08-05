@@ -20,11 +20,11 @@ public:
 
 	int GetLastFrameIndex() { return m_pFrames.size() - 1; }
 
-	void SetSpriteSheet(std::string fileName, GC_SPRITESHEET_INFO* spriteSheet );
+	void SetSpriteSheet(std::string fileName, int spriteSheetID );
 
 private:
 
-	GC_SPRITESHEET_INFO m_spriteSheetInfos;
+	int m_spriteSheetID;
 	GCGeometry* m_pGeometry; 
 	GCTexture* m_pTexture;
 

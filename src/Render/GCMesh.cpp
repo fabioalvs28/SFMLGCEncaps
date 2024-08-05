@@ -37,7 +37,7 @@ GCMesh::~GCMesh()
 GC_GRAPHICS_ERROR GCMesh::Initialize(GCRenderContext* pRender, GCGeometry* pGeometry, int& flagEnabledBits)
 {
 
-    if (!CHECK_POINTERSNULL("Pointers pRender & pGeometry Valid", "Pointers pRender & pGeometry Not valid", pRender, pGeometry)) {
+    if (!GC_CHECK_POINTERSNULL("Pointers pRender & pGeometry Valid", "Pointers pRender & pGeometry Not valid", pRender, pGeometry)) {
         return GCRENDER_ERROR_POINTER_NULL;
     }
     
@@ -49,7 +49,7 @@ GC_GRAPHICS_ERROR GCMesh::Initialize(GCRenderContext* pRender, GCGeometry* pGeom
 
     UploadGeometryData(flagEnabledBits);
 
-    if (!CHECK_POINTERSNULL(
+    if (!GC_CHECK_POINTERSNULL(
         "All mesh buffer data pointers are valid",
         "One or more mesh buffer data pointers are null",
         m_pBufferGeometryData->VertexBufferCPU,
@@ -121,8 +121,8 @@ void GCMesh::UploadGeometryData(int& flagEnabledBits) {
         static_cast<UINT>(m_pMeshGeometry->indices.size()),
         false); 
 
-    m_currentIndexUploadBufferSize = m_pMeshGeometry->indices.size();
-    m_currentVertexUploadBufferSize = vertexData.size();
+    m_currentIndexUploadBufferSize = static_cast<int>(m_pMeshGeometry->indices.size());
+    m_currentVertexUploadBufferSize = static_cast<int>(vertexData.size());
 
     vertexBuffer->CopyData(0, vertexData.data(), vbByteSize);
     indexBuffer->CopyData(0, m_pMeshGeometry->indices.data(), ibByteSize);

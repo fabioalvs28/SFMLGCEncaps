@@ -55,7 +55,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGameObject* pHero = pScene->CreateGameObject();
     pHero->m_transform.Scale( GCVEC3(3 , 3 , 3) );
     pHero->AddComponent<SpriteRenderer>();
-    pHero->AddComponent<Animator>()->LoadSpriteSheet( "sprite_sheet.dds" , 4 , 6 , 823 , 823 );
+    pHero->AddComponent<Animator>()->LoadSpriteSheet( "sprite_sheet.dds" , 0 );
     pHero->AddComponent<ScriptStart>();
     pHero->GetComponent<Animator>()->CreateAnimation( "WalkForward" , 0 , 6 , 0.01f );
     pHero->GetComponent<Animator>()->CreateAnimation( "WalkHeroL" , 6 , 6 , 0.01f );

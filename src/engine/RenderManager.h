@@ -24,6 +24,7 @@ public:
 
     void AddAnimation( Animation* animation , std::string animationName );
     Animation* GetAnimation( std::string animationName );
+    GC_SPRITESHEET_DATA* GetSpriteSheetData() { return &m_spriteSheetData; }
 
     GCGraphics* m_pGraphics; 
     GCGeometry* m_pPlane;
@@ -37,5 +38,5 @@ public:
 
 protected:
     GCMap<std::string , Animation*> m_animationList;
-
+    GC_SPRITESHEET_DATA m_spriteSheetData;
 };

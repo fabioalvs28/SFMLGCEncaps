@@ -17,11 +17,13 @@ void Animation::AddFrame(int frameID, float displayTime, bool isFlipingX, bool i
 
 void Animation::StartAnimation()
 {
-	GC::GetActiveRenderManager()->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_pFrames[ 0 ]->GetFrameID(), m_spriteSheetInfos );
+	GCRenderManager* pRender = GC::GetActiveRenderManager();
+	pRender->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_spriteSheetID, m_pFrames[ 0 ]->GetFrameID(), *pRender->GetSpriteSheetData() );
 }
 
 bool Animation::Update( int* currentFrameIndex, float* currentFrameTime )
 {
+	GCRenderManager* pRender = GC::GetActiveRenderManager();
 	if (m_pFrames.size() > 0)
 	{
 		*currentFrameTime += GC::GetActiveTimer()->DeltaTime();
@@ -30,7 +32,7 @@ bool Animation::Update( int* currentFrameIndex, float* currentFrameTime )
 		{
 			*currentFrameTime -= m_pFrames[*currentFrameIndex]->GetDisplayTime();
 			IncrementFrame( currentFrameIndex );
-			GC::GetActiveRenderManager()->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(m_pGeometry, m_pFrames[ *currentFrameIndex ]->GetFrameID(), m_spriteSheetInfos);
+			pRender->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(m_pGeometry, m_spriteSheetID, m_pFrames[*currentFrameIndex]->GetFrameID(), *pRender->GetSpriteSheetData());
 			return true;
 		}
 	}
@@ -55,10 +57,10 @@ const GCFrame* Animation::GetCurrentFrame( int currentFrameIndex ) const
 }
 
 
-void Animation::SetSpriteSheet( std::string fileName , GC_SPRITESHEET_INFO* spriteSheet )
+void Animation::SetSpriteSheet( std::string fileName , int spriteSheetID )
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	m_spriteSheetInfos = *spriteSheet;
+	m_spriteSheetID = spriteSheetID;
 
 	pGraphics->InitializeGraphicsResourcesStart();
 	m_pTexture = pGraphics->CreateTexture("../../../src/Textures/" + fileName).resource;
