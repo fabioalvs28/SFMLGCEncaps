@@ -359,7 +359,7 @@ GC_RESOURCE_CREATION_RESULT<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pS
     if (errorState != 0)
         return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(false, nullptr, errorState);
 
-    material->m_materialId = m_vMaterials.size();
+    material->m_materialId = static_cast<float>(m_vMaterials.size());
     m_vMaterials.push_back(material);
 
     return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(true, material, errorState);
@@ -554,7 +554,7 @@ void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 }
 
 DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4& proj, DirectX::XMFLOAT4X4& view) {
-    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pRender->GetRenderResources()->GetRenderWidth(), m_pRender->GetRenderResources()->GetRenderHeight(), proj, view);
+    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(static_cast<float>(pixelX), static_cast<float>(pixelY), m_pRender->GetRenderResources()->GetRenderWidth(), m_pRender->GetRenderResources()->GetRenderHeight(), proj, view);
 
     DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 
