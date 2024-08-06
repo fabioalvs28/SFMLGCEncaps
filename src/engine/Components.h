@@ -387,7 +387,7 @@ friend class GCRenderManager;
 friend class GCGameManager;
 
 protected:
-    Script() {}
+    Script();
     virtual ~Script() = default;
     
     void RegisterToManagers() override;
