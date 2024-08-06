@@ -370,10 +370,14 @@ void GCAnimator::Update()
 	if ( m_currentAnimation == nullptr )
 		return;
 
-	if ( m_currentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) == false )
+	if ( m_isLoop == false && m_currentFrameIndex == m_currentAnimation->GetLastFrameIndex() )
+	{
+		StopAnimation();
 		return;
-	
-	m_pSpriteRenderer->SetAnimatedSprite( m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture() );
+	}
+
+	if ( m_currentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
+		m_pSpriteRenderer->SetAnimatedSprite( m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture() );
 }
 
 
@@ -382,14 +386,16 @@ void GCAnimator::Update()
 /// 
 /// @param animationName Animation's Name
 /////////////////////////////////////////////////
-void GCAnimator::PlayAnimation( std::string animationName )
+void GCAnimator::PlayAnimation( std::string animationName, bool isLoop )
 {
 	if ( m_activeAnimationName == animationName )
 		return;
 	Animation* pAnimation = GC::GetActiveRenderManager()->GetAnimation( animationName );
 	ASSERT( pAnimation != nullptr , LOG_FATAL , "Trying to play a non-existent animation" );
+	m_isLoop = isLoop;
 	m_activeAnimationName = animationName;
 	m_currentAnimation = pAnimation;
+	m_lastFrameIndex = pAnimation->GetLastFrameIndex();
 	m_currentAnimation->StartAnimation();
 	m_pSpriteRenderer->SetAnimatedSprite( m_currentAnimation->GetGeometry() , m_currentAnimation->GetTexture() );
 }

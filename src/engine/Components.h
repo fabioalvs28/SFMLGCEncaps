@@ -266,7 +266,7 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-    void PlayAnimation( std::string animationName );
+    void PlayAnimation( std::string animationName, bool isLoop );
     void StopAnimation();
 
     void LoadSpriteSheet( std::string fileName , int row , int col , int width , int height );
@@ -298,6 +298,8 @@ private:
     std::string m_activeAnimationName;
     Animation* m_currentAnimation;
 
+    bool m_isLoop;
+    int m_lastFrameIndex;
     int m_currentFrameIndex;
     float m_currentFrameTime;
 };

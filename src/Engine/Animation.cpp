@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "../Render/pch.h"
 
-Animation::Animation() : m_pFrames( 0 )
+Animation::Animation()
 {
+	m_pFrames = std::vector<GCFrame*>(0);
+	m_pTexture = nullptr;
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 	m_pGeometry = pGraphics->CreateGeometryPrimitive( Plane, XMFLOAT4( Colors::Green ) ).resource;
 }
@@ -26,7 +28,7 @@ bool Animation::Update( int* currentFrameIndex, float* currentFrameTime )
 
 		if ( *currentFrameTime >= m_pFrames[ *currentFrameIndex ]->GetDisplayTime() )
 		{
-			*currentFrameTime = 0;
+			*currentFrameTime -= m_pFrames[*currentFrameIndex]->GetDisplayTime();
 			IncrementFrame( currentFrameIndex );
 			GC::GetActiveRenderManager()->m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry, m_pFrames[ *currentFrameIndex ]->GetFrameID(), m_spriteSheetInfos );
 			return true;
@@ -37,7 +39,9 @@ bool Animation::Update( int* currentFrameIndex, float* currentFrameTime )
 
 void Animation::IncrementFrame( int* currentFrameIndex )
 {
-	*currentFrameIndex = ( *currentFrameIndex + 1 ) % m_pFrames.size();
+	*currentFrameIndex += 1;
+	if ( *currentFrameIndex == m_pFrames.size() )
+		*currentFrameIndex = 0;
 }
 
 
