@@ -24,6 +24,9 @@ public:
 	void SetRotationY( float angle ) {}; //! FAIS LE
 	void SetRotationZ( float angle ) {};
 
+	GCVEC3& GetWorldPosition();
+	GCVEC3& GetWorldScale();
+	GCMATRIX& GetWorldRotationMatrix();
 	GCMATRIX& GetWorldMatrix();
 
 protected:
