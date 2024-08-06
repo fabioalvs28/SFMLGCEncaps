@@ -340,7 +340,7 @@ void GCSoundMixer::CopyTo( GCComponent* pDestination )
 
 GCAnimator::GCAnimator()
 {
-	m_currentAnimation = nullptr;
+	m_pCurrentAnimation = nullptr;
 	m_activeAnimationName = "";
 	m_spritesheetName = "";
 	m_pSpriteRenderer = nullptr;
@@ -367,17 +367,17 @@ void GCAnimator::Start()
 
 void GCAnimator::Update()
 {
-	if ( m_currentAnimation == nullptr )
+	if ( m_pCurrentAnimation == nullptr )
 		return;
 
-	if ( m_isLoop == false && m_currentFrameIndex == m_currentAnimation->GetLastFrameIndex() )
+	if ( m_isLoop == false && m_currentFrameIndex == m_pCurrentAnimation->GetLastFrameIndex() )
 	{
 		StopAnimation();
 		return;
 	}
 
-	if ( m_currentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
-		m_pSpriteRenderer->SetAnimatedSprite( m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture() );
+	if ( m_pCurrentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
+		m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry(), m_pCurrentAnimation->GetTexture() );
 }
 
 
@@ -394,10 +394,10 @@ void GCAnimator::PlayAnimation( std::string animationName, bool isLoop )
 	ASSERT( pAnimation != nullptr , LOG_FATAL , "Trying to play a non-existent animation" );
 	m_isLoop = isLoop;
 	m_activeAnimationName = animationName;
-	m_currentAnimation = pAnimation;
+	m_pCurrentAnimation = pAnimation;
 	m_lastFrameIndex = pAnimation->GetLastFrameIndex();
-	m_currentAnimation->StartAnimation();
-	m_pSpriteRenderer->SetAnimatedSprite( m_currentAnimation->GetGeometry() , m_currentAnimation->GetTexture() );
+	m_pCurrentAnimation->StartAnimation();
+	m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() , m_pCurrentAnimation->GetTexture() );
 }
 
 /////////////////////////////////////////////////////////////
@@ -406,7 +406,7 @@ void GCAnimator::PlayAnimation( std::string animationName, bool isLoop )
 void GCAnimator::StopAnimation()
 {
 	m_activeAnimationName = "";
-	m_currentAnimation = nullptr;
+	m_pCurrentAnimation = nullptr;
 }
 
 ///////////////////////////////////////////////////////

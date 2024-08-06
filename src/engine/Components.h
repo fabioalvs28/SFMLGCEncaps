@@ -296,7 +296,7 @@ private:
     GCSpriteRenderer* m_pSpriteRenderer;
 
     std::string m_activeAnimationName;
-    Animation* m_currentAnimation;
+    Animation* m_pCurrentAnimation;
 
     bool m_isLoop;
     int m_lastFrameIndex;
