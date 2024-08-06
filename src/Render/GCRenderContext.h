@@ -65,7 +65,7 @@ public:
 
 	inline void Set2DMode() { m_renderMode = 0; }
 	inline void Set3DMode() { m_renderMode = 1; }
-
+	int GetRenderMode() { return m_renderMode; }
 	// DEFERRED SHADING LIGHT RESOURCES
 	// All diferent material used in same frame
 	std::vector<GC_MATERIAL_DSL> m_materialsUsedInFrame;
@@ -83,7 +83,7 @@ private:
 
 
 
-	int m_renderMode = 1; //2D or 3d
+	int m_renderMode = 0; //2D or 3d
 
 	GCShader* m_pPostProcessingShader;
 	GCShader* m_pPixelIdMappingShader;
