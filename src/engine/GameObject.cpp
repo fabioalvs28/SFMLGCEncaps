@@ -207,9 +207,13 @@ void GCGameObject::RemoveTag( const char* tag )
 ///////////////////////////////////////////////////
 void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// @return A string value (const char*) indicating the searched tag of the GameObject.
-//////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks if the GameObject contains the specified tag.
+/// 
+/// @param tag A string value (const char*) indicating the name of the tag to check.
+/// 
+/// @return A boolean value indicating if the GameObject contains the specified tag.
+///////////////////////////////////////////////////////////////////////////////////////
 bool GCGameObject::HasTag( const char* tag ) const
 { return m_tagsList.Find( tag ); }
 
@@ -417,18 +421,33 @@ void GCGameObject::RegisterScriptToTrigger( Script* pScript )
     m_scriptTriggerList.PushBack( pScript );
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerEnter method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::OnTriggerEnter( Collider* pCollider )
 {
     for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
         pScriptNode->GetData()->OnTriggerEnter( pCollider );
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerStay method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::OnTriggerStay( Collider* pCollider )
 {
     for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
         pScriptNode->GetData()->OnTriggerStay( pCollider );
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerExit method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::OnTriggerExit( Collider* pCollider )
 {
     for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
