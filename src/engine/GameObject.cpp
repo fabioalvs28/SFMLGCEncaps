@@ -1,7 +1,5 @@
 #include "pch.h"
 
-//todo HasTag( const char* tag )
-
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +50,8 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
-    pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
+    for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
+    { pGameObject->AddTag( pTagNode->GetData() ); }
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
     {
@@ -193,22 +192,26 @@ void GCGameObject::AddTag( const char* tag )
 ////////////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::RemoveTag( const char* tag )
 {
-    int index = m_tagsList.GetIndex( tag );
-    ASSERT( index != -1, LOG_FATAL, "Trying to remove a tag from a GameObject that doesn't have it" );
-    RemoveTag( index );
+    for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
+    {
+        if ( pTagNode->GetData() == tag )
+        {
+            pTagNode->Delete();
+            return;
+        }
+    }
 }
-
-/////////////////////////////////////////////////////////////////////////
-/// @brief Removes a tag from the GameObject.
-/// 
-/// @param index An integer indicating the index of the tag to remove.
-/////////////////////////////////////////////////////////////////////////
-void GCGameObject::RemoveTag( int index ) { m_tagsList.Remove( index ); }
 
 ///////////////////////////////////////////////////
 /// @brief Removes all tags from the GameObject.
 ///////////////////////////////////////////////////
 void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// @return A string value (const char*) indicating the searched tag of the GameObject.
+//////////////////////////////////////////////////////////////////////////////////////////
+bool GCGameObject::HasTag( const char* tag ) const
+{ return m_tagsList.Find( tag ); }
 
 
 
@@ -395,11 +398,6 @@ bool GCGameObject::IsActive() const { return m_globalActive && m_selfActive; }
 /// @return A string value (const char*) indicating the name of the GameObject.
 //////////////////////////////////////////////////////////////////////////////////
 const char* GCGameObject::GetName() const { return m_name; }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// @return A string value (const char*) indicating the searched tag of the GameObject.
-//////////////////////////////////////////////////////////////////////////////////////////
-const char* GCGameObject::GetTag( int index ) const { return m_tagsList[ index ]; } //? Why this method ?
 
 /////////////////////////////////////////////////////////////////
 /// @return An integer indicating the layer of the GameObject.

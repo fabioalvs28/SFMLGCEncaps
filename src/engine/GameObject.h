@@ -32,6 +32,7 @@ public:
     void AddTag( const char* tag );
     void RemoveTag( const char* tag );
     void RemoveTags();
+    bool HasTag( const char* tag ) const;
     
     void Activate();
     void Deactivate();
@@ -48,7 +49,6 @@ public:
     GCList<GCGameObject*>& GetChildren();
     bool IsActive() const;
     const char* GetName() const;
-    const char* GetTag( int index ) const;
     int GetLayer() const;
     
     template <class T>
@@ -60,8 +60,6 @@ public:
     void ClearComponents();
 
 protected:
-    void RemoveTag( int index );
-    
     void ActivateGlobal();
     void DeactivateGlobal();
     
@@ -93,7 +91,7 @@ protected:
     bool m_selfActive; // The active state of the GameObject.
     
     const char* m_name; // The GameObject's name.
-    GCVector<const char*> m_tagsList; // The list of tags the GameObject has.
+    GCList<const char*> m_tagsList; // The list of tags the GameObject has.
     int m_layer; // The GameObject's layer.
     
     GCMap<int, Component*> m_componentsList; // The list of Components the GameObject has.
