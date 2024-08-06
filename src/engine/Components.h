@@ -17,6 +17,7 @@ enum FLAGS
 	UPDATE          = 1 << 0,
 	FIXED_UPDATE    = 1 << 1,
     RENDER          = 1 << 2,
+    TRIGGER         = 1 << 3,
 };
 inline FLAGS operator|( FLAGS a, FLAGS b ) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
@@ -389,14 +390,18 @@ protected:
     Script() {}
     virtual ~Script() = default;
     
+    void RegisterToManagers() override;
+    void UnregisterFromManagers() override;
+    
     virtual void OnTriggerEnter( Collider* collider ) {}
     virtual void OnTriggerStay( Collider* collider ) {}
     virtual void OnTriggerExit( Collider* collider ) {}
     
-    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
+    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE | TRIGGER; }
 
 protected:
     inline static int scriptCount = (1<<15)-1;
+    GCListNode<Script*>* m_pTriggerNode;
 
 };
 

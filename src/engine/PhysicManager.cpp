@@ -28,11 +28,15 @@ void GCPhysicManager::Update()
 	{
 		for (GCListNode<Collider*>* pNextColliderNode = pColliderNode->GetNext(); pNextColliderNode != nullptr; pNextColliderNode = pNextColliderNode->GetNext())
 		{
-			if ( CheckCollision(pColliderNode->GetData(), pNextColliderNode->GetData()) == false )
+			Collider* pCollider = pColliderNode->GetData();
+			Collider* pNextCollider = pNextColliderNode->GetData();
+			if ( CheckCollision( pCollider, pNextCollider ) == false )
 				continue;
 
 			// Resolve collision
 			LogEngineDebug("Collision detected");
+			pCollider->m_pGameObject->OnTriggerStay( pNextCollider );
+			pNextCollider->m_pGameObject->OnTriggerStay( pCollider );
 		}
 	}
 }
@@ -41,13 +45,13 @@ bool GCPhysicManager::CheckCollision( Collider* pFirst, Collider* pSecond )
 {
 	if ( pFirst->GetID() == BoxCollider::GetIDStatic() )
 		if ( pSecond->GetID() == BoxCollider::GetIDStatic() )
-			return GCPhysic::CheckBox2DvsBox2D( static_cast<BoxCollider*>(pFirst), static_cast<BoxCollider*>(pSecond) );
+			return GCPhysic::CheckBox2DvsBox2D( static_cast<BoxCollider*>( pFirst ), static_cast<BoxCollider*>( pSecond ) );
 	
 	if ( pFirst->GetID() == CircleCollider::GetIDStatic() )
 		if ( pSecond->GetID() == CircleCollider::GetIDStatic() )
-			return GCPhysic::CheckCirclevsCircle( static_cast<CircleCollider*>(pFirst), static_cast<CircleCollider*>(pSecond) );
+			return GCPhysic::CheckCirclevsCircle( static_cast<CircleCollider*>( pFirst ), static_cast<CircleCollider*>( pSecond ) );
 	
-	return GCPhysic::CheckBox2DvsCircle( static_cast<BoxCollider*>(pFirst), static_cast<CircleCollider*>(pSecond) );
+	return GCPhysic::CheckBox2DvsCircle( static_cast<BoxCollider*>( pFirst ), static_cast<CircleCollider*>( pSecond ) );
 }
 
 namespace GCPhysic

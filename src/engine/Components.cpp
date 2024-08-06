@@ -524,3 +524,20 @@ Animation* Animator::CreateAnimationWithCustomFrames( std::string animationName 
 	return pNewAnimation;
 }
 
+
+
+
+Script::Script()
+{ m_pTriggerNode = nullptr; }
+
+void Script::RegisterToManagers()
+{
+	Component::RegisterToManagers();
+	m_pGameObject->RegisterScriptToTrigger( this );
+}
+
+void Script::UnregisterFromManagers()
+{
+	Component::UnregisterFromManagers();
+	m_pTriggerNode->Delete();
+}

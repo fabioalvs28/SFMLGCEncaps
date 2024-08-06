@@ -7,11 +7,12 @@ class GCGameObject
 {
 friend struct GCGameObjectTransform;
 friend class Component;
+friend class Script;
 friend class GCScene;
 friend class GCSceneManager;
+friend class GCPhysicManager;
 friend class GCRenderManager;
 friend class GC;
-friend class Component;
 
 protected:
     GCGameObject( GCScene* pScene );
@@ -66,6 +67,11 @@ protected:
     
     void RemoveScene();
     
+    void RegisterScriptToTrigger( Script* pScript );
+    void OnTriggerEnter( Collider* pCollider );
+    void OnTriggerStay( Collider* pCollider );
+    void OnTriggerExit( Collider* pCollider );
+    
     void RemoveComponent( int ID );
 
 public:
@@ -91,6 +97,7 @@ protected:
     int m_layer; // The GameObject's layer.
     
     GCMap<int, Component*> m_componentsList; // The list of Components the GameObject has.
+    GCList<Script*> m_scriptTriggerList; // The list of Scripts that will be called when a trigger collision happens with this GameObject
 
 };
 

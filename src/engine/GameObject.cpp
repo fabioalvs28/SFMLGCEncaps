@@ -408,6 +408,37 @@ int GCGameObject::GetLayer() const { return m_layer; }
 
 
 
+////////////////////////////////////////////////////////////
+/// @brief Registers the Script in the scriptTriggerList.
+/// 
+/// @param pScript A pointer to the Script to register.
+////////////////////////////////////////////////////////////
+void GCGameObject::RegisterScriptToTrigger( Script* pScript )
+{
+    ASSERT( pScript != nullptr, LOG_FATAL, "Trying to register a nullptr pScript to the scriptTriggerList" );
+    m_scriptTriggerList.PushBack( pScript );
+}
+
+void GCGameObject::OnTriggerEnter( Collider* pCollider )
+{
+    for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerEnter( pCollider );
+}
+
+void GCGameObject::OnTriggerStay( Collider* pCollider )
+{
+    for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerStay( pCollider );
+}
+
+void GCGameObject::OnTriggerExit( Collider* pCollider )
+{
+    for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode!= nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerExit( pCollider );
+}
+
+
+
 //////////////////////////////////////////////////////
 /// @brief Removes a component from the GameObject.
 /// 
