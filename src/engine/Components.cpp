@@ -338,60 +338,6 @@ void SoundMixer::CopyTo( Component* pDestination )
 
 
 
-
-Camera::Camera()
-{
-	m_position.SetZero();
-	m_target.SetZero();
-	m_up.SetZero();
-	
-	m_viewWidth = 20.0f;
-	m_viewHeight = 20.0f;
-	m_nearZ = 1.0f;
-	m_farZ = 1000.0f;
-	
-	m_viewMatrix.SetIdentity();
-	m_projectionMatrix.SetIdentity();
-}
-
-
-
-void Camera::CopyTo( Component* pDestination )
-{
-	Component::CopyTo( pDestination );
-	Camera* pCamera = static_cast<Camera*>( pDestination );
-	pCamera->m_nearZ = m_nearZ;
-    pCamera->m_farZ = m_farZ;
-    pCamera->m_viewWidth = m_viewWidth;
-    pCamera->m_viewHeight = m_viewHeight;
-}
-
-void Camera::Update()
-{
-	bool dirty = false;
-	
-	if ( m_position != m_pGameObject->m_transform.m_position )
-	{
-		m_position = m_pGameObject->m_transform.m_position;
-		dirty = true;
-	}
-	
-	if ( m_up != m_pGameObject->m_transform.m_up )
-	{
-		m_up = m_pGameObject->m_transform.m_up;
-		dirty = true;
-	}
-	
-	if ( dirty == false )
-		return;
-	
-	GC::GetActiveRenderManager()->m_pGraphics->CreateViewProjConstantBuffer( m_pGameObject->m_transform.m_position, m_target, m_pGameObject->m_transform.m_up, 0.0f, 0.0f, m_nearZ, m_farZ, m_viewWidth, m_viewHeight, GC_PROJECTION_TYPE::ORTHOGRAPHIC, m_projectionMatrix, m_viewMatrix );
-}
-
-
-
-
-
 Animator::Animator()
 {
 	m_currentAnimation = nullptr;
@@ -527,8 +473,71 @@ Animation* Animator::CreateAnimationWithCustomFrames( std::string animationName 
 
 
 
+
+
+Camera::Camera()
+{
+	m_position.SetZero();
+	m_target.SetZero();
+	m_up.SetZero();
+	
+	m_viewWidth = 10.0f;
+	m_viewHeight = 10.0f;
+	m_nearZ = 1.0f;
+	m_farZ = 1000.0f;
+	
+	m_viewMatrix.SetIdentity();
+	m_projectionMatrix.SetIdentity();
+}
+
+
+
+void Camera::CopyTo( Component* pDestination )
+{
+	Component::CopyTo( pDestination );
+	Camera* pCamera = static_cast<Camera*>( pDestination );
+	pCamera->m_nearZ = m_nearZ;
+    pCamera->m_farZ = m_farZ;
+    pCamera->m_viewWidth = m_viewWidth;
+    pCamera->m_viewHeight = m_viewHeight;
+}
+
+void Camera::Update()
+{
+	bool dirty = false;
+	
+	GCVEC3 worldPosition = m_pGameObject->m_transform.GetWorldPosition();
+	if ( m_position != worldPosition )
+	{
+		m_position = worldPosition;
+		m_target = m_position;
+		m_target.z = 0;
+		dirty = true;
+	}
+	
+	GCMATRIX worldRotationMatrix = m_pGameObject->m_transform.GetWorldRotationMatrix();
+	GCVEC3 worldUp( worldRotationMatrix._21, worldRotationMatrix._22, worldRotationMatrix._23 );
+	if ( m_up != worldUp )
+	{
+		m_up = worldUp;
+		dirty = true;
+	}
+	
+	if ( dirty == false )
+		return;
+	
+	GC::GetActiveRenderManager()->m_pGraphics->CreateViewProjConstantBuffer( m_position, m_target, m_up, 0.0f, 0.0f, m_nearZ, m_farZ, m_viewWidth, m_viewHeight, GC_PROJECTION_TYPE::ORTHOGRAPHIC, m_projectionMatrix, m_viewMatrix );
+}
+
+
+
+
+
+
 Script::Script()
 { m_pTriggerNode = nullptr; }
+
+
 
 void Script::RegisterToManagers()
 {
