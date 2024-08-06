@@ -289,7 +289,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto shaderColor = graphics->CreateShaderColor();
     graphics->InitializeGraphicsResourcesStart();
 
-    auto meshBackground = graphics->CreateMeshColor(geoPlane.resource);
+    auto meshBackground = graphics->CreateMeshCustom(geoPlane.resource, flagsLightColor);
 
     auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneAlphabet);
 
@@ -324,7 +324,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto materialText = graphics->CreateMaterial(shaderTexture.resource);
     materialText.resource->SetTexture(textureText.resource);
 
-    auto materialBackground = graphics->CreateMaterial(shaderColor.resource);
+    auto materialBackground = graphics->CreateMaterial(shaderLightColor.resource);
 
     // Définir les paramètres de la caméra
     GCVEC3 cameraPosition(0.0f, 0.0f, -10.0f);
@@ -414,15 +414,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
 
         std::vector<GCLIGHT> lights;
+        GCLIGHT light2;
+        light2.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Position en 2D (x, y, 0)
+        light2.direction = DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f); // Direction vers le bas en 2D
+        light2.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
+        light2.spotAngle = 10.0f; // Angle du spot si applicable
+        light2.lightIntensity = 3.2f;
+        light2.lightType = GC_LIGHT_TYPE_SPOT; // Type de lumière ponctuelle
 
         GCLIGHT pointLight;
         pointLight.position = DirectX::XMFLOAT3(6.0f, 1.0f, 0.0f); // Position en 2D (x, y, 0)
         pointLight.direction = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f); // Direction vers le bas en 2D
         pointLight.color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f); // Couleur de la lumière
         pointLight.spotAngle = 0.0f; // Angle du spot si applicable
-        pointLight.lightIntensity = 2.4f;
+        pointLight.lightIntensity = 10.4f;
         pointLight.lightType = GC_LIGHT_TYPE_POINT; // Type de lumière ponctuelle
 
+        lights.push_back(light2);
         lights.push_back(pointLight);
 
         graphics->UpdateLights(lights);
