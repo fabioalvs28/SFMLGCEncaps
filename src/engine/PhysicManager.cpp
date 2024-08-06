@@ -26,9 +26,9 @@ void GCPhysicManager::Update()
 
 	for (GCListNode<Collider*>* pColliderNode = m_colliders.GetFirstNode(); pColliderNode != nullptr; pColliderNode = pColliderNode->GetNext())
 	{
+		Collider* pCollider = pColliderNode->GetData();
 		for (GCListNode<Collider*>* pNextColliderNode = pColliderNode->GetNext(); pNextColliderNode != nullptr; pNextColliderNode = pNextColliderNode->GetNext())
 		{
-			Collider* pCollider = pColliderNode->GetData();
 			Collider* pNextCollider = pNextColliderNode->GetData();
 			if ( CheckCollision( pCollider, pNextCollider ) == false )
 				continue;
@@ -90,7 +90,7 @@ namespace GCPhysic
 		GCVEC2 aabbCenter = { boxPosition.x + aabbHalfExtents.x, boxPosition.y + aabbHalfExtents.y };
 
 		GCVEC2 difference = center - aabbCenter;
-		GCVEC2 clamped{ std::clamp(difference.x, -aabbHalfExtents.x, aabbHalfExtents.x), std::clamp(difference.y, -aabbHalfExtents.y, aabbHalfExtents.y) };
+		GCVEC2 clamped{ std::clamp( difference.x, -aabbHalfExtents.x, aabbHalfExtents.x ), std::clamp( difference.y, -aabbHalfExtents.y, aabbHalfExtents.y ) };
 
 		GCVEC2 closest = aabbCenter + clamped;
 		difference = closest - center;
@@ -109,11 +109,11 @@ namespace GCPhysic
 		float firstRadius = pFirstTransform->m_scale.x * 0.5f;
 		float secondRadius = pSecondTransform->m_scale.x * 0.5f;
 
-		GCVEC2 center1 = { firstPosition.x + firstRadius, firstPosition.y + firstRadius };
-		GCVEC2 center2 = { secondPosition.x + secondRadius, secondPosition.y + secondRadius };
+		GCVEC2 firstCenter = { firstPosition.x + firstRadius, firstPosition.y + firstRadius };
+		GCVEC2 secondCenter = { secondPosition.x + secondRadius, secondPosition.y + secondRadius };
 
-		GCVEC2 difference = center2 - center1;
+		GCVEC2 difference = secondCenter - firstCenter;
 
-		return difference.GetNormSquared() < (firstRadius + secondRadius) * (firstRadius + secondRadius);
+		return difference.GetNormSquared() < ( firstRadius + secondRadius ) * ( firstRadius + secondRadius );
 	}
 }

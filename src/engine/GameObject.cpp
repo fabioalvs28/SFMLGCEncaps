@@ -51,7 +51,7 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
     for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
-    { pGameObject->AddTag( pTagNode->GetData() ); }
+        pGameObject->AddTag( pTagNode->GetData() );
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
     {
@@ -431,7 +431,7 @@ void GCGameObject::OnTriggerStay( Collider* pCollider )
 
 void GCGameObject::OnTriggerExit( Collider* pCollider )
 {
-    for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode!= nullptr; pScriptNode = pScriptNode->GetNext() )
+    for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
         pScriptNode->GetData()->OnTriggerExit( pCollider );
 }
 
