@@ -194,6 +194,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GCGraphics* graphics = new GCGraphics();
     graphics->Initialize(window, 1920, 1080);
 
+    graphics->GetRender()->CreatePostProcessingResources("../../../src/Render/Shaders/test.hlsl", "../../../src/Render/CsoCompiled/test");
+    graphics->GetRender()->ActiveCSPostProcessing();
+   //graphics->GetRender()->ActiveDeferredLightPass();
+
     int flagsLightColor = 0;
     GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
     GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);

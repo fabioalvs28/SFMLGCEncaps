@@ -32,13 +32,7 @@ private:
     int m_currentVertexUploadBufferSize;
     int m_currentIndexUploadBufferSize;
 
-    GCUploadBufferBase* m_vertexBuffer;
-    GCUploadBufferBase* m_indexBuffer;
-
-    ID3D12Resource* CreateDefaultBuffer(ID3D12Device* device,
-        ID3D12GraphicsCommandList* cmdList,
-        const void* initData,
-        UINT64 byteSize,
-        ID3D12Resource* uploadBuffer);
+    GCUploadBufferBase* m_pVertexBuffer;
+    GCUploadBufferBase* m_pIndexBuffer;
 };
 

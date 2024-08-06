@@ -372,7 +372,7 @@ private:
 	std::vector<GCMesh*> m_vMeshes;
 
 	// Scene properties
-	std::vector<GCShaderUploadBufferBase*> m_pCbCameraInstances;
+	std::vector<GCShaderUploadBufferBase*> m_cbCameraInstances;
 	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	//Vertex Parser

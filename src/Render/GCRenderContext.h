@@ -85,7 +85,10 @@ private:
 
 	int m_renderMode = 0; //2D or 3d
 
+	// Basic PP
 	GCShader* m_pPostProcessingShader;
+	// Compute Shader PP
+	GCComputeShader* m_postProcessingShaderCS;
 	GCShader* m_pPixelIdMappingShader;
 	GCShader* m_pDeferredLightPassShader; // need PixelIdMapping pass
 
@@ -93,6 +96,7 @@ private:
 
 	//Post Processing Resources
 	GC_DESCRIPTOR_RESOURCE* m_pPostProcessingRtv;
+
 	D3D12_GPU_DESCRIPTOR_HANDLE m_postProcessingFrontBufferSrvGpuHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE m_postProcessingBackBufferSrvGpuHandle;
 

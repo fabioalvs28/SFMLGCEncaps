@@ -56,15 +56,15 @@ private:
 	// Initialize var
 	D3D12_CULL_MODE m_cullMode;
 
-	ID3D12RootSignature* m_RootSignature;
+	ID3D12RootSignature* m_pRootSignature;
 
 	ID3D12PipelineState* m_pPsoAlpha;
 	ID3D12PipelineState* m_pPsoNoAlpha;
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
 
-	ID3DBlob* m_vsByteCode;
-	ID3DBlob* m_psByteCode;
+	ID3DBlob* m_pVsByteCode;
+	ID3DBlob* m_pPsByteCode;
 	
 	//Path
 	std::wstring m_vsCsoPath;

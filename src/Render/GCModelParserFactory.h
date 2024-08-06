@@ -23,6 +23,6 @@ public:
 
 protected:
 	std::string m_filePath;
-	GC_MODELINFOS* m_ParsedModel;
+	GC_MODELINFOS* m_pParsedModel;
 };
 
