@@ -7,6 +7,8 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 
+
+
 //#define WIN32_LEAN_AND_MEAN             // Exclure les en-têtes Windows rarement utilisés
 // Fichiers d'en-tête Windows
 #include <windows.h>
@@ -27,6 +29,7 @@
 #include <memory>
 #include <algorithm>
 #include <array>
+#include <map>
 #include <unordered_map>
 #include <cstdint>
 #include <fstream>
@@ -48,45 +51,60 @@
 #include <WindowsX.h>
 
 
+
+//Geometry & Mesh
 struct GCGeometry;
-struct GCMESHBUFFERDATA;
+struct GC_MESH_BUFFER_DATA;
 
+//Shaders
+struct GC_SHADERCB;
+struct GC_WORLDCB;
+struct GC_VIEWPROJCB;
+struct GC_MATERIAL_DSL;
 
-struct GCSHADERCB;
-struct GCWORLDCB;
-struct GCVIEWPROJCB;
-
+//Geometry
 enum GC_PRIMITIVE_ID;
+struct GC_MODELINFOS;
+enum GC_EXTENSIONS;
 
-// Add William 
+//Logger
 class GCGraphicsLogger;
 enum GC_GRAPHICS_ERROR;
 
 struct GC_DESCRIPTOR_RESOURCE;
-//
 
-
+struct GCPARTICLE;
 
 class GCGraphics;
 class GCMaterial;
 class GCMesh;
-class GCModelParser;
+class GCModelParserFactory;
 class GCModelParserObj;
 class GCPrimitiveFactory;
 class GCRenderContext;
 class GCRenderResources;
 class GCShader;
+class GCComputeShader;
 class GCTexture;
 class GCTextureFactory;
-class GCShaderUploadBufferBase; // 
+class GCShaderUploadBufferBase; 
+class GCUploadBufferBase;
+
+class GCParticleSystem;
+class GCFontGeometryLoader;
+class GCSpriteSheetGeometryLoader;
 class GCUtils;
 class MathHelper;
 class Timer;
 class Window;
 
+struct GCMATRIX;
+struct GCVEC3;
+
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
+#include "../core/framework.h"
 
 
 // Add William 
@@ -96,6 +114,8 @@ class Window;
 #include "GCPrimitiveIdEnum.h"
 
 
+
+
 //
 #include "d3dx12.h"
 #include "Window.h"
@@ -103,20 +123,23 @@ class Window;
 #include "GCUploadBuffer.h"
 #include "GCRenderContext.h"
 #include "GCRenderResources.h"
-#include "Vectors.h"
 #include "GCGeometry.h"
 #include "GCMesh.h"
 #include "GCShader.h"
 #include "GCMaterial.h"
-#include "GCModelParser.h"
+#include "GCModelParserFactory.h"
 #include "GCModelParserObj.h"
+#include "GCParticleSystem.h"
+#include "GCFontGeometryLoader.h"
+#include "GCSpriteSheetGeometryLoader.h"
+#include "GCUtils.h"
 
 #include "GCPrimitiveFactory.h"
 #include "GCTexture.h"
 #include "GCGraphics.h"
 #include "GCTextureFactory.h"
 #include "Timer.h"
-#include "GCUtils.h"
+
 
 
 

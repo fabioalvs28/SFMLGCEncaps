@@ -1,21 +1,28 @@
 #include "pch.h"
 
 GCMaterial::GCMaterial()
+    : m_iCount(0),
+    
+    m_pRender(nullptr),
+    
+    m_pShader(nullptr),
+    m_pTexture(nullptr),
+    
+    m_pCbMaterialPropertiesInstance(nullptr)
 {
-    m_pRender = nullptr;
-    m_pShader = nullptr;
-    m_pTexture = nullptr;
-    m_pCbMaterialPropertiesInstance = nullptr;
+    m_pCbObjectInstances.clear();
 }
 
 GCMaterial::~GCMaterial()
 {
-    delete(m_pRender);
-    delete(m_pShader);
-    delete(m_pTexture);
-    delete(m_pCbMaterialPropertiesInstance);
-}
+    GC_DELETE(m_pCbMaterialPropertiesInstance);
 
+    for (auto* cb : m_pCbObjectInstances)
+    {
+        GC_DELETE(cb);
+    }
+    m_pCbObjectInstances.clear();
+}
 
 GC_GRAPHICS_ERROR GCMaterial::Initialize(GCShader* pShader)
 {
@@ -38,7 +45,7 @@ GC_GRAPHICS_ERROR GCMaterial::Initialize(GCShader* pShader)
 
 bool GCMaterial::SetTexture(GCTexture* pTexture) {
     m_pTexture = pTexture;
-    CHECK_POINTERSNULL("Texture loaded successfully for material", "The material doesn't contain texture", pTexture);
+    GC_CHECK_POINTERSNULL("Texture loaded successfully for material", "The material doesn't contain texture", pTexture);
 
     return true;
 }
@@ -50,7 +57,7 @@ void GCMaterial::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUplo
 
 bool GCMaterial::UpdateTexture()
 {
-    if (HAS_FLAG(m_pShader->GetFlagEnabledBits(), VERTEX_UV))
+    if (GC_HAS_FLAG(m_pShader->GetFlagEnabledBits(), GC_VERTEX_UV))
     {
         if (m_pTexture)
         {
@@ -64,3 +71,4 @@ bool GCMaterial::UpdateTexture()
     }
     return false;
 }
+

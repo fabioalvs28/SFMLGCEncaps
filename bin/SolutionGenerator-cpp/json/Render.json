@@ -15,8 +15,12 @@
             "sdl_check": "true",
             "preprocessor_definitions": "_DEBUG;_LIB;%(PreprocessorDefinitions)",
             "conformance_mode": "true",
+            "precompiled_header": "Use",
+            "precompiled_header_file": "pch.h",
             "generate_debug_information": "true",
             "language_standard": "stdcpp20",
+            "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
+            "additional_dependencies" : "Core.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         },
@@ -35,8 +39,12 @@
             "conformance_mode": "true",
             "enable_comdat_folding": "true",
             "optimize_references": "true",
+            "precompiled_header": "Use",
+            "precompiled_header_file": "pch.h",
             "generate_debug_information": "true",
             "language_standard": "stdcpp20",
+            "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
+            "additional_dependencies" : "Core.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         }

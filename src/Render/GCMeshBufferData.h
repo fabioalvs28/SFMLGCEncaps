@@ -1,15 +1,15 @@
-struct GCMESHBUFFERDATA
+struct GC_MESH_BUFFER_DATA
 {
     // System memory copies.  Use Blobs because the vertex/index format can be generic.
     // It is up to the client to cast appropriately.  
-    ID3DBlob* VertexBufferCPU = nullptr;
-    ID3DBlob* IndexBufferCPU = nullptr;
+    ID3DBlob* pVertexBufferCPU = nullptr;
+    ID3DBlob* pIndexBufferCPU = nullptr;
 
-    ID3D12Resource* VertexBufferGPU = nullptr;
-    ID3D12Resource* IndexBufferGPU = nullptr;
+    ID3D12Resource* pVertexBufferGPU = nullptr;
+    ID3D12Resource* pIndexBufferGPU = nullptr;
 
-    ID3D12Resource* VertexBufferUploader = nullptr;
-    ID3D12Resource* IndexBufferUploader = nullptr;
+    ID3D12Resource* pVertexBufferUploader = nullptr;
+    ID3D12Resource* pIndexBufferUploader = nullptr;
 
     // Data about the buffers.
     UINT VertexByteStride = 0;
@@ -17,13 +17,12 @@ struct GCMESHBUFFERDATA
     DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
     UINT IndexBufferByteSize = 0;
 
-
     UINT IndexCount = 0;
 
     D3D12_VERTEX_BUFFER_VIEW VertexBufferView()const
     {
         D3D12_VERTEX_BUFFER_VIEW vbv;
-        vbv.BufferLocation = VertexBufferGPU->GetGPUVirtualAddress();
+        vbv.BufferLocation = pVertexBufferGPU->GetGPUVirtualAddress();
         vbv.StrideInBytes = VertexByteStride;
         vbv.SizeInBytes = VertexBufferByteSize;
 
@@ -33,7 +32,7 @@ struct GCMESHBUFFERDATA
     D3D12_INDEX_BUFFER_VIEW IndexBufferView() const
     {
         D3D12_INDEX_BUFFER_VIEW ibv;
-        ibv.BufferLocation = IndexBufferGPU->GetGPUVirtualAddress();
+        ibv.BufferLocation = pIndexBufferGPU->GetGPUVirtualAddress();
         ibv.Format = IndexFormat;
         ibv.SizeInBytes = IndexBufferByteSize;
 
@@ -42,7 +41,7 @@ struct GCMESHBUFFERDATA
 
     void DisposeUploaders()
     {
-        VertexBufferUploader = nullptr;
-        IndexBufferUploader = nullptr;
+        pVertexBufferUploader = nullptr;
+        pIndexBufferUploader = nullptr;
     }
 };

@@ -7,6 +7,7 @@
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld; // World matrix
+    float objectId;
 };
 
 cbuffer cbPerCamera : register(b1)
@@ -80,9 +81,17 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-// Pixel shader
-float4 PS(VertexOut pin) : SV_Target
+struct PSOutput
 {
+    float4 color1 : SV_Target0;
+    float4 color2 : SV_Target1;
+};
+
+// Pixel shader
+PSOutput PS(VertexOut pin) : SV_Target
+{
+    PSOutput output;
+    
     float3x3 invViewMatrix = (float3x3) transpose(gView); // Transpose of view matrix
     float3 cameraPosition = -mul(invViewMatrix, gView[3].xyz); // Camera position in world space
 
@@ -140,6 +149,14 @@ float4 PS(VertexOut pin) : SV_Target
     finalColor.rgb += diffuseColor * pin.Color.rgb;
     finalColor.rgb += specularColor * pin.Color.rgb;
     finalColor.a = pin.Color.a;
-
-    return finalColor;
+    
+    output.color1 = finalColor;
+    
+    float r = float(objectId % 256) / 255.0f;
+    output.color2 = float4(r, 0.0f, 0.0f, 1.0f);
+    
+    return output;
 }
+
+
+

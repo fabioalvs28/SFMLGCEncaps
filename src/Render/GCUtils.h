@@ -3,8 +3,10 @@ class GCUtils
 {
 public:
 	static DirectX::XMFLOAT3 PixelToWorld(float x, float y, UINT windowWidth, UINT windowHeight, const DirectX::XMFLOAT4X4& proj, const DirectX::XMFLOAT4X4& view);
-	//static DirectX::XMFLOAT3 GetNormal(const GCVEC3& v1, const GCVEC3& v2, const GCVEC3& v3, bool inverse);
-	//static DirectX::XMFLOAT3 Gcvec3oXmfloat3(const GCVEC3& v1);
-	//static GCVEC3 Xmfloat3ToGcvec3(const DirectX::XMFLOAT3& v1);
+	static DirectX::XMFLOAT4X4 GCMATRIXToXMFLOAT4x4(const GCMATRIX& mat);
+	static GCMATRIX XMMATRIXToGCMATRIX(const DirectX::XMMATRIX& mat);
+	static DirectX::XMMATRIX GCMATRIXToXMMATRIX(const GCMATRIX& mat);
+	static DirectX::XMMATRIX CreateBillboardMatrix(DirectX::XMVECTOR objectPosition, DirectX::XMVECTOR cameraPosition, DirectX::XMVECTOR cameraUp);
+	static DirectX::XMVECTOR GCVEC3ToXMVECTOR(const GCVEC3& mat);
 };
 

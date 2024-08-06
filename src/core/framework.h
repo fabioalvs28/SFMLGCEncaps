@@ -9,3 +9,4 @@
 #include "Map.h"
 #include "Transform.h"
 #include "Logger.h"
+#include "GCFile.h"

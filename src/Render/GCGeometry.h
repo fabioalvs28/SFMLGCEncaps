@@ -1,5 +1,7 @@
 #pragma once
 
+// Tous passer en GCVector
+
 struct GCGeometry 
 {
 public:
@@ -16,6 +18,7 @@ public:
 
 	std::vector<DirectX::XMFLOAT3> normals; 
 	std::vector<DirectX::XMFLOAT3> tangents;   
-	std::vector<DirectX::XMFLOAT3> binormals;  
+	std::vector<DirectX::XMFLOAT3> binormals;
 };
+
 
