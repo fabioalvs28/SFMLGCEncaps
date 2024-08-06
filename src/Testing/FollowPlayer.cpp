@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "FollowPlayer.h"
 
-void ScriptFollowPlayer::CopyTo( Component* pDestination )
+void GCScriptFollowPlayer::CopyTo( GCComponent* pDestination )
 {
-    Component::CopyTo( pDestination );
-    ScriptFollowPlayer* pScript = static_cast<ScriptFollowPlayer*>( pDestination );
+    GCComponent::CopyTo( pDestination );
+    GCScriptFollowPlayer* pScript = static_cast<GCScriptFollowPlayer*>( pDestination );
 }
 
-void ScriptFollowPlayer::Update()
+void GCScriptFollowPlayer::Update()
 {
     // m_pGameObject->m_transform.SetPosition( m_pPlayer->m_transform.m_position );
 }

@@ -4,16 +4,13 @@
 class Layer
 {
 public:
-    virtual void OnEvent(GCEvent& e) = 0;
+    virtual void OnEvent( GCEvent& event ) = 0;
     virtual ~Layer() = default;
 };
 
 class UILayer : public Layer
 {
 public:
-    void OnEvent(GCEvent& e) override
-    {
-        //TODO: use eventdispatcher to handle UI event
-    }
+    void OnEvent( GCEvent& event ) override {} //TODO: use eventdispatcher to handle UI event
 
 };

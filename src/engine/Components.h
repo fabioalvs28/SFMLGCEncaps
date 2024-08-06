@@ -23,7 +23,7 @@ inline FLAGS operator|( FLAGS a, FLAGS b ) { return static_cast<FLAGS>(static_ca
 
 
 
-class Component
+class GCComponent
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
@@ -42,14 +42,14 @@ public:
     GCGameObject* GetGameObject() { return m_pGameObject; }
 
 protected:
-    Component();
-    virtual ~Component() = default;
+    GCComponent();
+    virtual ~GCComponent() = default;
     
     virtual void RegisterToManagers();
     virtual void UnregisterFromManagers();
     
-    virtual Component* Duplicate() = 0;
-    virtual void CopyTo( Component *pDestination );
+    virtual GCComponent* Duplicate() = 0;
+    virtual void CopyTo( GCComponent *pDestination );
     
     virtual void Start() {}
     virtual void Update() {}
@@ -75,22 +75,22 @@ protected:
     
     bool m_created;
     
-    GCListNode<Component*>* m_pUpdateNode;
-    GCListNode<Component*>* m_pPhysicsNode;
-    GCListNode<Component*>* m_pRenderNode;
+    GCListNode<GCComponent*>* m_pUpdateNode;
+    GCListNode<GCComponent*>* m_pPhysicsNode;
+    GCListNode<GCComponent*>* m_pRenderNode;
 
 };
 
 
 
-class SpriteRenderer : public Component
+class GCSpriteRenderer : public GCComponent
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
-friend class Animator;
+friend class GCAnimator;
 
 public:
     static const int GetIDStatic() { return m_ID; }
@@ -101,11 +101,11 @@ public:
     void GetSprite() {};
 
 protected:
-	SpriteRenderer();
-    ~SpriteRenderer() override {}
+	GCSpriteRenderer();
+    ~GCSpriteRenderer() override {}
 
-    SpriteRenderer* Duplicate() override { return new SpriteRenderer(); }
-    void CopyTo( Component* pDestination ) override;
+    GCSpriteRenderer* Duplicate() override { return new GCSpriteRenderer(); }
+    void CopyTo( GCComponent* pDestination ) override;
     
     void Render() override;
     
@@ -116,7 +116,7 @@ protected:
     void SetAnimatedSprite(GCGeometry* pGeometry, GCTexture* pTexture);
 
 protected:
-    inline static const int m_ID = ++Component::componentCount;
+    inline static const int m_ID = ++GCComponent::componentCount;
 
     GCGeometry* m_pGeometry;
     GCMesh* m_pMesh;
@@ -126,7 +126,7 @@ protected:
 
 
 
-class Collider : public Component
+class GCCollider : public GCComponent
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
@@ -135,13 +135,13 @@ friend class GCPhysicManager;
 friend class GCRenderManager;
 
 public:
-    Collider();
-    ~Collider() override {}
+    GCCollider();
+    ~GCCollider() override {}
     
     void RegisterToManagers() override;
     void UnregisterFromManagers() override;
     
-    void CopyTo( Component* pDestination ) override;
+    void CopyTo( GCComponent* pDestination ) override;
 
     void SetTrigger( bool trigger ) { m_trigger = trigger; }
     void SetVisible( bool showCollider ) { m_visible = showCollider; }
@@ -158,7 +158,7 @@ protected:
     bool m_trigger;
     bool m_visible;
     
-    GCListNode<Collider*>* m_pColliderNode;
+    GCListNode<GCCollider*>* m_pColliderNode;
 
     GCGeometry* m_pGeometry;
     GCMesh* m_pMesh;
@@ -167,7 +167,7 @@ protected:
 
 
 
-class BoxCollider : public Collider
+class GCBoxCollider : public GCCollider
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
@@ -180,22 +180,22 @@ public:
     const int GetID() override { return m_ID; }
 
 protected:
-    BoxCollider();
-    ~BoxCollider() override {}
+    GCBoxCollider();
+    ~GCBoxCollider() override {}
 
-    BoxCollider* Duplicate() override { return new BoxCollider(); }
-    void CopyTo( Component* pDestination ) override;
+    GCBoxCollider* Duplicate() override { return new GCBoxCollider(); }
+    void CopyTo( GCComponent* pDestination ) override;
     
     void Render() override;
 
 protected:
-    inline static const int m_ID = ++Component::componentCount;
+    inline static const int m_ID = ++GCComponent::componentCount;
 
 };
 
 
 
-class CircleCollider : public Collider
+class GCCircleCollider : public GCCollider
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
@@ -208,20 +208,20 @@ public:
     const int GetID() override { return m_ID; }
 
 protected:
-    CircleCollider() {}
-    ~CircleCollider() override {}
+    GCCircleCollider() {}
+    ~GCCircleCollider() override {}
     
-    CircleCollider* Duplicate() override { return new CircleCollider(); }
-    void CopyTo( Component* pDestination ) override;
+    GCCircleCollider* Duplicate() override { return new GCCircleCollider(); }
+    void CopyTo( GCComponent* pDestination ) override;
 
 protected:
-    inline static const int m_ID = ++Component::componentCount;
+    inline static const int m_ID = ++GCComponent::componentCount;
 
 };
 
 
 
-class RigidBody : public Component
+class GCRigidBody : public GCComponent
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
@@ -236,25 +236,25 @@ public:
     void AddForce( GCVEC2 force ) {}
 
 protected:
-    RigidBody();
-    ~RigidBody() override {}
+    GCRigidBody();
+    ~GCRigidBody() override {}
     
-    RigidBody* Duplicate() override { return new RigidBody(); }
-    void CopyTo( Component* pDestination ) override;
+    GCRigidBody* Duplicate() override { return new GCRigidBody(); }
+    void CopyTo( GCComponent* pDestination ) override;
     
     void FixedUpdate() override;
     
     FLAGS GetFlags() override { return FIXED_UPDATE; }
 
 protected:
-    inline static const int m_ID = ++Component::componentCount;
+    inline static const int m_ID = ++GCComponent::componentCount;
     GCVEC3 m_velocity;
 
 };
 
 
 
-class Animator : public Component
+class GCAnimator : public GCComponent
 {
     friend class GCGameObject;
     friend class GCUpdateManager;
@@ -276,11 +276,11 @@ public:
     std::string GetActiveAnimation() { return m_activeAnimationName; }
 
 protected:
-    Animator();
-    ~Animator() override {}
+    GCAnimator();
+    ~GCAnimator() override {}
 
-    Animator* Duplicate() override { return new Animator(); }
-    void CopyTo( Component* pDestination ) override;
+    GCAnimator* Duplicate() override { return new GCAnimator(); }
+    void CopyTo( GCComponent* pDestination ) override;
     
     void Start() override;
     void Update() override;
@@ -288,12 +288,12 @@ protected:
     FLAGS GetFlags() override { return UPDATE; }
 
 protected:
-    inline static const int m_ID = ++Component::componentCount;
+    inline static const int m_ID = ++GCComponent::componentCount;
 
 private:
     std::string m_spritesheetName;
     GC_SPRITESHEET_INFO* m_pSpriteSheetInfo;
-    SpriteRenderer* m_pSpriteRenderer;
+    GCSpriteRenderer* m_pSpriteRenderer;
 
     std::string m_activeAnimationName;
     Animation* m_currentAnimation;
@@ -304,7 +304,7 @@ private:
 
 
 
-class SoundMixer : public Component
+class GCSoundMixer : public GCComponent
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
@@ -317,24 +317,24 @@ public:
     const int GetID() override { return m_ID; }
 
 protected:
-	SoundMixer() {}
-    ~SoundMixer() override {}
+	GCSoundMixer() {}
+    ~GCSoundMixer() override {}
     
-    SoundMixer* Duplicate() override { return new SoundMixer(); }
-    void CopyTo( Component* pDestination ) override;
+    GCSoundMixer* Duplicate() override { return new GCSoundMixer(); }
+    void CopyTo( GCComponent* pDestination ) override;
     
     void Update() override {}
     
     FLAGS GetFlags() override { return UPDATE; }
 
 protected:
-    inline static const int m_ID = ++Component::componentCount;
+    inline static const int m_ID = ++GCComponent::componentCount;
 
 };
 
 
 
-class Camera : public Component
+class GCCamera : public GCComponent
 {
 friend class GCGameObject;
 friend class GCUpdateManager;
@@ -347,18 +347,18 @@ public:
     const int GetID() override { return m_ID; }
 
 protected:
-    Camera();
-    ~Camera() override {}
+    GCCamera();
+    ~GCCamera() override {}
     
-    Camera* Duplicate() override { return new Camera(); }
-    void CopyTo( Component* pDestination ) override;
+    GCCamera* Duplicate() override { return new GCCamera(); }
+    void CopyTo( GCComponent* pDestination ) override;
     
     void Update() override;
     
     FLAGS GetFlags() override { return NONE; }
 
 protected:
-    inline static const int m_ID = ++Component::componentCount;
+    inline static const int m_ID = ++GCComponent::componentCount;
     
     GCVEC3 m_position;
     GCVEC3 m_target;
@@ -376,7 +376,7 @@ protected:
 
 
 
-class Script : public Component
+class GCScript : public GCComponent
 {
 friend class GCGameObject;
 friend class GCScene;
@@ -387,26 +387,26 @@ friend class GCRenderManager;
 friend class GCGameManager;
 
 protected:
-    Script();
-    virtual ~Script() = default;
+    GCScript();
+    virtual ~GCScript() = default;
     
     void RegisterToManagers() override;
     void UnregisterFromManagers() override;
     
-    virtual void OnTriggerEnter( Collider* collider ) {}
-    virtual void OnTriggerStay( Collider* collider ) {}
-    virtual void OnTriggerExit( Collider* collider ) {}
+    virtual void OnTriggerEnter( GCCollider* collider ) {}
+    virtual void OnTriggerStay( GCCollider* collider ) {}
+    virtual void OnTriggerExit( GCCollider* collider ) {}
     
     FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE | TRIGGER; }
 
 protected:
-    inline static int scriptCount = (1<<15)-1;
-    GCListNode<Script*>* m_pTriggerNode;
+    inline static int scriptCount = ( 1 << 15 ) - 1;
+    GCListNode<GCScript*>* m_pTriggerNode;
 
 };
 
 #define CREATE_SCRIPT_INHERIT_START( CLASS_NAME, INHERITANCE ) \
-    class Script##CLASS_NAME : public Script##INHERITANCE \
+    class GCScript##CLASS_NAME : public GCScript##INHERITANCE \
     { \
     friend class GCGameObject; \
     friend class GCScene; \
@@ -420,23 +420,23 @@ protected:
         const int GetID() override { return m_ID; } \
      \
     protected: \
-        Script##CLASS_NAME() = default; /* Calling Method to be overritten */ \
-        ~Script##CLASS_NAME() = default; \
+        GCScript##CLASS_NAME() = default; /* Calling Method to be overritten */ \
+        ~GCScript##CLASS_NAME() = default; \
          \
-        Script##CLASS_NAME* Duplicate() override { return new Script##CLASS_NAME(); } \
-        void CopyTo( Component* pDestination ) override; \
+        GCScript##CLASS_NAME* Duplicate() override { return new GCScript##CLASS_NAME(); } \
+        void CopyTo( GCComponent* pDestination ) override; \
          \
         /*void Start() override; \
         void Update() override; \
         void FixedUpdate() override; \
         void Destroy() override; \
          \
-        void OnTriggerEnter( Collider* collider ) override; \
-        void OnTriggerStay( Collider* collider ) override; \
-        void OnTriggerExit( Collider* collider ) override;*/ \
+        void OnTriggerEnter( GCCollider* collider ) override; \
+        void OnTriggerStay( GCCollider* collider ) override; \
+        void OnTriggerExit( GCCollider* collider ) override;*/ \
      \
     protected: \
-        inline static const int m_ID = ++Script::scriptCount; \
+        inline static const int m_ID = ++GCScript::scriptCount; \
      \
     private:
 

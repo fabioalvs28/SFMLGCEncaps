@@ -55,8 +55,8 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
     {
-        Component* pComponent = it.second;
-        Component* pNewComponent = pComponent->Duplicate();
+        GCComponent* pComponent = it.second;
+        GCComponent* pNewComponent = pComponent->Duplicate();
         pNewComponent->m_pGameObject = pGameObject;
         pNewComponent->Start();
         pComponent->CopyTo( pNewComponent );
@@ -358,7 +358,7 @@ void GCGameObject::SetLayer( const int layer )
 
     for ( auto it : m_componentsList )
     {
-        Component* pComponent = it.second;
+        GCComponent* pComponent = it.second;
         if ( pComponent->IsFlagSet( RENDER ) )
         {
             if ( pComponent->m_pRenderNode != nullptr )
@@ -415,7 +415,7 @@ int GCGameObject::GetLayer() const { return m_layer; }
 /// 
 /// @param pScript A pointer to the Script to register.
 ////////////////////////////////////////////////////////////
-void GCGameObject::RegisterScriptToTrigger( Script* pScript )
+void GCGameObject::RegisterScriptToTrigger( GCScript* pScript )
 {
     ASSERT( pScript != nullptr, LOG_FATAL, "Trying to register a nullptr pScript to the scriptTriggerList" );
     m_scriptTriggerList.PushBack( pScript );
@@ -426,9 +426,9 @@ void GCGameObject::RegisterScriptToTrigger( Script* pScript )
 /// 
 /// @param pCollider A pointer to the collider with which the collision happened.
 ////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::OnTriggerEnter( Collider* pCollider )
+void GCGameObject::OnTriggerEnter( GCCollider* pCollider )
 {
-    for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
         pScriptNode->GetData()->OnTriggerEnter( pCollider );
 }
 
@@ -437,9 +437,9 @@ void GCGameObject::OnTriggerEnter( Collider* pCollider )
 /// 
 /// @param pCollider A pointer to the collider with which the collision happened.
 ////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::OnTriggerStay( Collider* pCollider )
+void GCGameObject::OnTriggerStay( GCCollider* pCollider )
 {
-    for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
         pScriptNode->GetData()->OnTriggerStay( pCollider );
 }
 
@@ -448,9 +448,9 @@ void GCGameObject::OnTriggerStay( Collider* pCollider )
 /// 
 /// @param pCollider A pointer to the collider with which the collision happened.
 ////////////////////////////////////////////////////////////////////////////////////
-void GCGameObject::OnTriggerExit( Collider* pCollider )
+void GCGameObject::OnTriggerExit( GCCollider* pCollider )
 {
-    for ( GCListNode<Script*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
         pScriptNode->GetData()->OnTriggerExit( pCollider );
 }
 
@@ -463,7 +463,7 @@ void GCGameObject::OnTriggerExit( Collider* pCollider )
 //////////////////////////////////////////////////////
 void GCGameObject::RemoveComponent( int ID )
 {
-    Component* pComponent;
+    GCComponent* pComponent;
     ASSERT( m_componentsList.Find( ID, pComponent ) == true, LOG_FATAL, "Trying to remove a Component from a GameObject that doesn't have it" ); //? The .Find() is necessary for the method to work but it's in an ASSERT ?
     m_componentsList.Remove( ID ); //? To See ?
     GC::GetActiveSceneManager()->AddToDeleteQueue( pComponent );

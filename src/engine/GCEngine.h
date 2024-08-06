@@ -17,43 +17,42 @@
 
 namespace GCINPUT
 {
-/// <summary>
-/// Bind a function based on key ID and key state
-/// </summary>
-/// <typeparam name="Func"></typeparam>
-/// <param name="keyId"></param>
-/// <param name="state"></param>
-/// <param name="func"></param>
-template<typename Func>
-void BindKey(KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state, Func&& func)
-{
-    GC::GetActiveInputSystem()->m_pKeyboard->BindAction(keyId, state, func);
-}
 
-/// <summary>
-/// Unbind a function based on key ID and key state
-/// </summary>
-/// <typeparam name="Func"></typeparam>
-/// <param name="keyId"></param>
-/// <param name="state"></param>
-/// <param name="func"></param>
+////////////////////////////////////////////////////////////
+/// @brief Bind a function based on key ID and key state.
+/// 
+/// @tparam Func 
+/// 
+/// @param keyId 
+/// @param state 
+/// @param func 
+////////////////////////////////////////////////////////////
 template<typename Func>
-void UnbindKey(KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state, Func&& func)
-{
-    GC::GetActiveInputSystem()->m_pKeyboard->UnbindAction(keyId, state, func);
-}
+void BindKey( KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state, Func&& func )
+{ GC::GetActiveInputSystem()->m_pKeyboard->BindAction( keyId, state, func ); }
+
+//////////////////////////////////////////////////////////////
+/// @brief Unbind a function based on key ID and key state.
+/// 
+/// @tparam Func 
+/// 
+/// @param keyId 
+/// @param state 
+/// @param func 
+//////////////////////////////////////////////////////////////
+template<typename Func>
+void UnbindKey( KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state, Func&& func )
+{ GC::GetActiveInputSystem()->m_pKeyboard->UnbindAction( keyId, state, func ); }
 };
 
 namespace EVENT
 {
-    int CreateEventHandler(EventHandler* handler);
-    void CallEventHandler(int handlerID);
-    void PushEvent(GCEvent* ev);
+    int CreateEventHandler( EventHandler* pHandler );
+    void CallEventHandler( int handlerID );
+    void PushEvent( GCEvent* pEvent );
 
     template<typename Event>
-    void Subscribe(GCEventType eventType, void (*function)(Event&))
-    {
-        GC::GetActiveEventManager()->Subscribe(eventType, function);
-    }
+    void Subscribe( GCEventType eventType, void (*function)(Event&) )
+    { GC::GetActiveEventManager()->Subscribe( eventType, function ); }
 };
 

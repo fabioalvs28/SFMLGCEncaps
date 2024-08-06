@@ -13,19 +13,19 @@ void GCTime::Reset()
 {
 	// System
 	m_initTime = timeGetTime();
-	m_previousTime = static_cast<float>(m_initTime);
+	m_previousTime = static_cast<float>( m_initTime );
 	m_isPerformanceTimer = false;
 	m_frequency = 0.0f;
 	LARGE_INTEGER frequency;
-	memset(&frequency, 0, sizeof(LARGE_INTEGER));
-	if (QueryPerformanceFrequency(&frequency) && frequency.QuadPart)
+	memset( &frequency, 0, sizeof( LARGE_INTEGER ) );
+	if ( QueryPerformanceFrequency( &frequency ) && frequency.QuadPart )
 	{
 		m_isPerformanceTimer = true;
-		m_frequency = (float)frequency.QuadPart;
+		m_frequency = static_cast<float>( frequency.QuadPart );
 		LARGE_INTEGER counter;
-		QueryPerformanceCounter(&counter);
+		QueryPerformanceCounter( &counter );
 		m_performTime = counter.QuadPart;
-		m_previousTime = (float)(counter.QuadPart - m_performTime) / m_frequency;
+		m_previousTime = static_cast<float>( counter.QuadPart - m_performTime ) / m_frequency;
 	}
 	m_sysDeltaTime = 0.0f;
 
@@ -45,34 +45,30 @@ void GCTime::Reset()
 }
 
 void GCTime::Start()
-{
-	m_running = true;
-}
+{ m_running = true; }
 
 void GCTime::Stop()
-{
-	m_running = false;
-}
+{ m_running = false; }
 
 bool GCTime::Update()
 {
 	// Performance or Classic
 	float cur = 0.0f;
-	if (m_isPerformanceTimer)
+	if ( m_isPerformanceTimer )
 	{
 		LARGE_INTEGER counter;
-		QueryPerformanceCounter(&counter);
-		cur = (float)(counter.QuadPart - m_performTime) / m_frequency;
+		QueryPerformanceCounter( &counter );
+		cur = static_cast<float>( counter.QuadPart - m_performTime ) / m_frequency;
 	}
 	else
-		cur = (timeGetTime() - m_initTime) / 1000.0f;
+		cur = ( timeGetTime() - m_initTime ) / 1000.0f;
 
 	// System delta time
 	float dt = cur - m_previousTime;
 	m_previousTime = cur;
 
 	// Pause
-	if (m_running == false)
+	if ( m_running == false )
 	{
 		m_sysDeltaTime = 0.0f;
 		m_deltaTime = 0.0f;
@@ -81,18 +77,18 @@ bool GCTime::Update()
 
 	// System delta time
 	m_sysDeltaTime += dt;
-	if (m_sysDeltaTime < m_defMinDeltaTime)
+	if ( m_sysDeltaTime < m_defMinDeltaTime )
 	{
 		m_deltaTime = 0.0f;
 		return false;
 	}
-	if (m_sysDeltaTime > m_maxDeltaTime)
+	if ( m_sysDeltaTime > m_maxDeltaTime )
 		m_sysDeltaTime = m_maxDeltaTime;
 
 	// FPS
 	m_fpsCount++;
 	m_fpsElapsed += m_sysDeltaTime;
-	if (m_fpsElapsed >= 1.0f)
+	if ( m_fpsElapsed >= 1.0f )
 	{
 		m_fps = m_fpsCount;
 		m_fpsCount = 0;
@@ -111,32 +107,20 @@ bool GCTime::Update()
 	return true;
 }
 
-void GCTime::SetMaxDeltaTime(float maxDeltaTime)
-{
-	m_maxDeltaTime = maxDeltaTime;
-}
+void GCTime::SetMaxDeltaTime( float maxDeltaTime )
+{ m_maxDeltaTime = maxDeltaTime; }
 
-void GCTime::SetTimeScale(float timeScale)
-{
-	m_timeScale = timeScale;
-}
+void GCTime::SetTimeScale( float timeScale )
+{ m_timeScale = timeScale; }
 
 float GCTime::DeltaTime() const
-{
-	return m_deltaTime;
-}
+{ return m_deltaTime; }
 
 float GCTime::FixedDeltaTime() const
-{
-	return m_fixedDeltaTime;
-}
+{ return m_fixedDeltaTime; }
 
 float GCTime::TotalTime() const
-{
-	return m_totalTime;
-}
+{ return m_totalTime; }
 
 int GCTime::GetFPS() const
-{
-	return m_fps;
-}
+{ return m_fps; }

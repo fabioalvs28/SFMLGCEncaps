@@ -4,7 +4,7 @@
 struct GCGameObjectTransform: public GCTransform
 {
 friend class GCGameObject;
-friend class Component;
+friend class GCComponent;
 
 public:
 	void Translate( const GCVEC3& translation );

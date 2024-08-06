@@ -1,8 +1,8 @@
 #pragma once
 #include "pch.h"
 
-//macro to bind the event function
-//Reminders: if use in a class, use GC_BIND_EVENT_FN(ClassName::FunctionName)
+// macro to bind the event function
+// Reminders: if use in a class, use GC_BIND_EVENT_FN(ClassName::FunctionName)
 #define GC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
 enum class GCEventType
@@ -12,7 +12,7 @@ enum class GCEventType
 	MouseButtonPressed, MouseButtonReleased, MouseMove, MouseScrolled,
 	ComponentAdded, ComponentRemove,
 	Custom,
-    Count //Keep this at the end
+    Count // Keep this at the end
 };
 
 enum class GCMouseButton
@@ -22,10 +22,11 @@ enum class GCMouseButton
 	Middle
 };
 
-/// <summary>
-/// Base event type class
-/// Derived class should have a static get method to work
-/// </summary>
+///////////////////////////////////////////////////////////////////
+/// @brief Base event type class.
+/// 
+/// @note Derived class should have a static get method to work.
+///////////////////////////////////////////////////////////////////
 class GCEvent {
 public:
 	virtual GCEventType GetEventType() const = 0;
@@ -33,7 +34,7 @@ public:
 	virtual std::string ToString() const { return GetName(); }
 	virtual ~GCEvent() = default;
 
-	bool isHandled = false;
+	bool m_isHandled = false;
 };
 
 class GCEventDispatcher
@@ -41,14 +42,14 @@ class GCEventDispatcher
 	template<typename T>
 	using GCEventFn = std::function<bool(T&)>;
 public:
-	GCEventDispatcher(GCEvent& gcevent) : m_gcEvent(gcevent) {};
+	GCEventDispatcher( GCEvent& gcevent ) : m_gcEvent( gcevent ) {};
 
 	template<typename Type>
-	bool Dispatch(GCEventFn<Type> func)
+	bool Dispatch( GCEventFn<Type> func )
 	{
-		if (m_gcEvent.GetEventType() == Type::GetStaticType())
+		if ( m_gcEvent.GetEventType() == Type::GetStaticType() )
 		{
-			m_gcEvent.isHandled = func(*(Type*)(&m_gcEvent));
+			m_gcEvent.m_isHandled = func( *(Type*)( &m_gcEvent ) );
 			return true;
 		}
 		return false;
@@ -62,8 +63,7 @@ private:
 class GCMouseButtonPressed : public GCEvent
 {
 public:
-	GCMouseButtonPressed(float x, float y, GCMouseButton mouseButton)
-		: m_x(x), m_y(y), m_mouseButton(mouseButton) {}
+	GCMouseButtonPressed( float x, float y, GCMouseButton mouseButton ) : m_x( x ), m_y( y ), m_mouseButton( mouseButton ) {}
 
 	static GCEventType GetStaticType() { return GCEventType::MouseButtonPressed; }
 	GCEventType GetEventType() const override { return GetStaticType(); }
@@ -81,10 +81,7 @@ private:
 class GCMouseMoveEvent : public GCEvent
 {
 public:
-    GCMouseMoveEvent(float x, float y)
-        : m_x(x), m_y(y)
-    {
-    }
+    GCMouseMoveEvent( float x, float y ) : m_x( x ), m_y( y ) {}
 
     static GCEventType GetStaticType() { return GCEventType::MouseMove; }
     GCEventType GetEventType() const override { return GetStaticType(); }
@@ -115,13 +112,12 @@ public:
 	const char* GetName() const override { return "WindowCloseEvent"; }
 };
 
-/// <summary>
-/// Event occurs when application's window is resized
-/// </summary>
+////////////////////////////////////////////////////////////////
+/// @brief Event occurs when application's window is resized.
+////////////////////////////////////////////////////////////////
 class GCWindowResizeEvent : public GCEvent {
 public:
-	GCWindowResizeEvent(unsigned int width, unsigned int height) 
-		: m_width(width), m_height(height) {}
+	GCWindowResizeEvent( unsigned int width, unsigned int height ) : m_width( width ), m_height( height ) {}
 
 	static GCEventType GetStaticType() { return GCEventType::WindowResize; }
 	GCEventType GetEventType() const override { return GetStaticType(); }
@@ -131,7 +127,8 @@ public:
 	unsigned int GetHeight() const { return m_height; }
 
 private:
-	unsigned int m_width, m_height;
+	unsigned int m_width;
+	unsigned int m_height;
 };
 #pragma endregion
 
@@ -142,72 +139,68 @@ typedef unsigned char BYTE;
 class GCKeyEvent : public GCEvent
 {
 public:
-	GCKeyEvent(int id, BYTE state) : keyID(id), keyState(state) {}
+	GCKeyEvent( int id, BYTE state ) : m_keyID( id ), m_keyState( state ) {}
 
 protected:
-	int keyID;
-	BYTE keyState;
+	int m_keyID;
+	BYTE m_keyState;
 };
 
 class GCKeyPressedEvent : public GCKeyEvent
 {
 public:
-    GCKeyPressedEvent(int id, BYTE state) : GCKeyEvent(id, state) {};
+    GCKeyPressedEvent( int id, BYTE state ) : GCKeyEvent( id, state ) {};
 	
     static GCEventType GetStaticType() { return GCEventType::KeyPressed; }
     GCEventType GetEventType() const override { return GetStaticType(); }
     const char* GetName() const override { return "KeyPressedEvent"; }
 
-    int GetKeyID() const { return keyID; }
-	BYTE GetKeyState() const { return keyState; }
+    int GetKeyID() const { return m_keyID; }
+	BYTE GetKeyState() const { return m_keyState; }
 };
 
 class GCKeyReleasedEvent : public GCKeyEvent
 {
 public:
 
-    GCKeyReleasedEvent(int id, BYTE state) : GCKeyEvent(id, state) {};
+    GCKeyReleasedEvent( int id, BYTE state ) : GCKeyEvent( id, state ) {};
 
     static GCEventType GetStaticType() { return GCEventType::KeyReleased; }
     GCEventType GetEventType() const override { return GetStaticType(); }
     const char* GetName() const override { return "KeyReleased"; }
 
-    int GetKeyID() const { return keyID; }
-	BYTE GetKeyState() const { return keyState; }
+    int GetKeyID() const { return m_keyID; }
+	BYTE GetKeyState() const { return m_keyState; }
 };
 #pragma endregion
 
 class ComponentAddedEvent : public GCEvent
 {
 public:
-	ComponentAddedEvent(Component *component) 
-		: m_component(component) { }
+	ComponentAddedEvent( GCComponent* pComponent ) : m_pComponent( pComponent ) {}
 		
 	static GCEventType GetStaticType() { return GCEventType::ComponentAdded; }
 	GCEventType GetEventType() const override { return GetStaticType(); }
 
-	Component* GetComponent() const { return m_component; }
+	GCComponent* GetComponent() const { return m_pComponent; }
 
 private:
-	Component* m_component;
+	GCComponent* m_pComponent;
 };
 
 template<typename... Args>
 class CustomEvent : public GCEvent
 {
 public:
-	CustomEvent(Args... args) : m_data(std::make_tuple(args...))
-	{
-		++m_eventID;
-	}
+	CustomEvent( Args... args ) : m_data( std::make_tuple( args... ) ) { ++m_eventID; }
 
 	static GCEventType GetStaticType() { return GCEventType::Custom; }
 	GCEventType GetEventType() const override { return GetStaticType(); }
 
 	template<std::size_t Index>
-	auto GetData() const -> decltype(std::get<Index>(this->m_data))
+	auto GetData() const -> decltype( std::get<Index>( this->m_data ) )
 	{
-		return std::get<Index>(this->m_data);
+		return std::get<Index>( this->m_data );
 	}
 
 private:

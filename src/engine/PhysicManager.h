@@ -7,33 +7,26 @@ class GCPhysicManager
 {
 friend class GCGameObject;
 
-private:
-	/*
-	 * Components that need to be fixed updated
-	 */
-	GCList<Component*> m_components;
-
-	/*
-	 * Colliders that need to be checked for collision
-	 */
-	GCList<Collider*> m_colliders;
 public:
 	GCPhysicManager();
 	~GCPhysicManager();
-
-	void RegisterComponent(Component* pComponent);
-
-	void RegisterCollider(Collider* pCollider);
-
+	void RegisterComponent( GCComponent* pComponent );
+	void RegisterCollider( GCCollider* pCollider );
+	
 	void Update();
 
 private:
-	bool CheckCollision( Collider* pFirst, Collider* pSecond );
+	bool CheckCollision( GCCollider* pFirst, GCCollider* pSecond );
+
+private:
+	GCList<GCComponent*> m_componentsList; // A list of pointers to the Components that need to be fixed updated
+	GCList<GCCollider*> m_collidersList; // A list of pointers to the Colliders that need to be checked for collisions
+
 };
 
 namespace GCPhysic
 {
-	bool CheckBox2DvsBox2D( BoxCollider* pFirst, BoxCollider* pSecond );
-	bool CheckBox2DvsCircle( BoxCollider* pBox, CircleCollider* pCircle );
-	bool CheckCirclevsCircle( CircleCollider* pFirst, CircleCollider* pSecond );
+	bool CheckBox2DvsBox2D( GCBoxCollider* pFirst, GCBoxCollider* pSecond );
+	bool CheckBox2DvsCircle( GCBoxCollider* pBox, GCCircleCollider* pCircle );
+	bool CheckCirclevsCircle( GCCircleCollider* pFirst, GCCircleCollider* pSecond );
 }

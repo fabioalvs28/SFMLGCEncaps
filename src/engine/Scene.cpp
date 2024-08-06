@@ -251,5 +251,5 @@ GCScene* GCScene::GetParent() const { return m_pParent; }
 ////////////////////////////////////////////////////
 /// @return A pointer to the Scene's main Camera.
 ////////////////////////////////////////////////////
-Camera* GCScene::GetMainCamera()
+GCCamera* GCScene::GetMainCamera()
 { return m_pMainCamera; }

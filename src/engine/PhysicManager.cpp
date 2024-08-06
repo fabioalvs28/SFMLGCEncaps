@@ -1,39 +1,31 @@
 #include "pch.h"
 
 
-GCPhysicManager::GCPhysicManager()
-{
-}
+GCPhysicManager::GCPhysicManager() {}
 
-GCPhysicManager::~GCPhysicManager()
-{
-}
+GCPhysicManager::~GCPhysicManager() {}
 
-void GCPhysicManager::RegisterComponent(Component* component)
-{
-	m_components.PushBack(component);
-}
+void GCPhysicManager::RegisterComponent( GCComponent* pComponent )
+{ m_componentsList.PushBack( pComponent ); }
 
-void GCPhysicManager::RegisterCollider(Collider* collider)
-{
-	m_colliders.PushBack(collider);
-}
+void GCPhysicManager::RegisterCollider( GCCollider* pCollider )
+{ m_collidersList.PushBack( pCollider ); }
 
 void GCPhysicManager::Update()
 {
-	for (GCListNode<Component*>* pComponentNode = m_components.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext())
+	for ( GCListNode<GCComponent*>* pComponentNode = m_componentsList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
 		pComponentNode->GetData()->FixedUpdate();
 
-	for (GCListNode<Collider*>* pColliderNode = m_colliders.GetFirstNode(); pColliderNode != nullptr; pColliderNode = pColliderNode->GetNext())
+	for ( GCListNode<GCCollider*>* pColliderNode = m_collidersList.GetFirstNode(); pColliderNode != nullptr; pColliderNode = pColliderNode->GetNext() )
 	{
-		Collider* pCollider = pColliderNode->GetData();
-		for (GCListNode<Collider*>* pNextColliderNode = pColliderNode->GetNext(); pNextColliderNode != nullptr; pNextColliderNode = pNextColliderNode->GetNext())
+		GCCollider* pCollider = pColliderNode->GetData();
+		for ( GCListNode<GCCollider*>* pNextColliderNode = pColliderNode->GetNext(); pNextColliderNode != nullptr; pNextColliderNode = pNextColliderNode->GetNext() )
 		{
-			Collider* pNextCollider = pNextColliderNode->GetData();
+			GCCollider* pNextCollider = pNextColliderNode->GetData();
+			
 			if ( CheckCollision( pCollider, pNextCollider ) == false )
 				continue;
-
-			// Resolve collision
+			
 			LogEngineDebug("Collision detected");
 			pCollider->m_pGameObject->OnTriggerStay( pNextCollider );
 			pNextCollider->m_pGameObject->OnTriggerStay( pCollider );
@@ -41,22 +33,22 @@ void GCPhysicManager::Update()
 	}
 }
 
-bool GCPhysicManager::CheckCollision( Collider* pFirst, Collider* pSecond )
+bool GCPhysicManager::CheckCollision( GCCollider* pFirst, GCCollider* pSecond )
 {
-	if ( pFirst->GetID() == BoxCollider::GetIDStatic() )
-		if ( pSecond->GetID() == BoxCollider::GetIDStatic() )
-			return GCPhysic::CheckBox2DvsBox2D( static_cast<BoxCollider*>( pFirst ), static_cast<BoxCollider*>( pSecond ) );
+	if ( pFirst->GetID() == GCBoxCollider::GetIDStatic() )
+		if ( pSecond->GetID() == GCBoxCollider::GetIDStatic() )
+			return GCPhysic::CheckBox2DvsBox2D( static_cast<GCBoxCollider*>( pFirst ), static_cast<GCBoxCollider*>( pSecond ) );
 	
-	if ( pFirst->GetID() == CircleCollider::GetIDStatic() )
-		if ( pSecond->GetID() == CircleCollider::GetIDStatic() )
-			return GCPhysic::CheckCirclevsCircle( static_cast<CircleCollider*>( pFirst ), static_cast<CircleCollider*>( pSecond ) );
+	if ( pFirst->GetID() == GCCircleCollider::GetIDStatic() )
+		if ( pSecond->GetID() == GCCircleCollider::GetIDStatic() )
+			return GCPhysic::CheckCirclevsCircle( static_cast<GCCircleCollider*>( pFirst ), static_cast<GCCircleCollider*>( pSecond ) );
 	
-	return GCPhysic::CheckBox2DvsCircle( static_cast<BoxCollider*>( pFirst ), static_cast<CircleCollider*>( pSecond ) );
+	return GCPhysic::CheckBox2DvsCircle( static_cast<GCBoxCollider*>( pFirst ), static_cast<GCCircleCollider*>( pSecond ) );
 }
 
 namespace GCPhysic
 {
-	bool CheckBox2DvsBox2D( BoxCollider* pFirst, BoxCollider* pSecond )
+	bool CheckBox2DvsBox2D( GCBoxCollider* pFirst, GCBoxCollider* pSecond )
 	{
 		GCTransform* pFirstTransform = &pFirst->GetGameObject()->m_transform;
 		GCTransform* pSecondTransform = &pSecond->GetGameObject()->m_transform;
@@ -73,7 +65,7 @@ namespace GCPhysic
 		return collisionX && collisionY;
 	}
 
-	bool CheckBox2DvsCircle( BoxCollider* pBox, CircleCollider* pCircle )
+	bool CheckBox2DvsCircle( GCBoxCollider* pBox, GCCircleCollider* pCircle )
 	{
 		GCTransform* pBoxTransform = &pBox->GetGameObject()->m_transform;
 		GCTransform* pCircleTransform = &pCircle->GetGameObject()->m_transform;
@@ -98,7 +90,7 @@ namespace GCPhysic
 		return difference.GetNormSquared() < circleRadius * circleRadius;
 	}
 
-	bool CheckCirclevsCircle( CircleCollider* pFirst, CircleCollider* pSecond )
+	bool CheckCirclevsCircle( GCCircleCollider* pFirst, GCCircleCollider* pSecond )
 	{
 		GCTransform* pFirstTransform = &pFirst->GetGameObject()->m_transform;
 		GCTransform* pSecondTransform = &pSecond->GetGameObject()->m_transform;

@@ -6,8 +6,8 @@
 class GCGameObject
 {
 friend struct GCGameObjectTransform;
-friend class Component;
-friend class Script;
+friend class GCComponent;
+friend class GCScript;
 friend class GCScene;
 friend class GCSceneManager;
 friend class GCPhysicManager;
@@ -65,10 +65,10 @@ protected:
     
     void RemoveScene();
     
-    void RegisterScriptToTrigger( Script* pScript );
-    void OnTriggerEnter( Collider* pCollider );
-    void OnTriggerStay( Collider* pCollider );
-    void OnTriggerExit( Collider* pCollider );
+    void RegisterScriptToTrigger( GCScript* pScript );
+    void OnTriggerEnter( GCCollider* pCollider );
+    void OnTriggerStay( GCCollider* pCollider );
+    void OnTriggerExit( GCCollider* pCollider );
     
     void RemoveComponent( int ID );
 
@@ -94,8 +94,8 @@ protected:
     GCList<const char*> m_tagsList; // The list of tags the GameObject has.
     int m_layer; // The GameObject's layer.
     
-    GCMap<int, Component*> m_componentsList; // The list of Components the GameObject has.
-    GCList<Script*> m_scriptTriggerList; // The list of Scripts that will be called when a trigger collision happens with this GameObject
+    GCMap<int, GCComponent*> m_componentsList; // The list of Components the GameObject has.
+    GCList<GCScript*> m_scriptTriggerList; // The list of Scripts that will be called when a trigger collision happens with this GameObject
 
 };
 
@@ -129,7 +129,7 @@ T* GCGameObject::AddComponent()
 template <class T>
 T* GCGameObject::GetComponent()
 {
-    Component* pComponent;
+    GCComponent* pComponent;
     if ( m_componentsList.Find( T::GetIDStatic(), pComponent ) == true )
         return (T*) pComponent;
     return nullptr;

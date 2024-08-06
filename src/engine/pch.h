@@ -26,16 +26,16 @@
 
 struct GCGameObjectTransform;
 
-class Component;
-class SpriteRenderer;
-class Collider;
-class BoxCollider;
-class CircleCollider;
-class RigidBody;
-class Animator;
-class SoundMixer;
-class Camera;
-class Script;
+class GCComponent;
+class GCSpriteRenderer;
+class GCCollider;
+class GCBoxCollider;
+class GCCircleCollider;
+class GCRigidBody;
+class GCAnimator;
+class GCSoundMixer;
+class GCCamera;
+class GCScript;
 
 class GCGameObject;
 class GCScene;

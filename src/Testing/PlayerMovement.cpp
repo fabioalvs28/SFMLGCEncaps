@@ -1,19 +1,19 @@
 #include "pch.h"
 #include "PlayerMovement.h"
 
-void ScriptPlayerMovement::CopyTo( Component* pDestination )
+void GCScriptPlayerMovement::CopyTo( GCComponent* pDestination )
 {
-    Component::CopyTo( pDestination );
-    ScriptPlayerMovement* pScript = static_cast<ScriptPlayerMovement*>( pDestination );
+    GCComponent::CopyTo( pDestination );
+    GCScriptPlayerMovement* pScript = static_cast<GCScriptPlayerMovement*>( pDestination );
     pScript->m_speed = m_speed;
 }
 
-void ScriptPlayerMovement::Start()
+void GCScriptPlayerMovement::Start()
 {
     m_speed = 0.05f;
 }
 
-void ScriptPlayerMovement::Update()
+void GCScriptPlayerMovement::Update()
 {
     GCVEC3 translation;
     

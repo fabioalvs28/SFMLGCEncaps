@@ -3,27 +3,19 @@
 void GCStateManager::Update()
 {
 	float deltaTime = GC::GetActiveTimer()->DeltaTime();
-	if (m_currentState)
-	{
-		m_currentState->Update(deltaTime);
-	}
-	if (m_nextState)
-	{
-		ChangeState(m_nextState);
-	}
+	if ( m_pCurrentState )
+		m_pCurrentState->Update( deltaTime );
+	if ( m_pNextState )
+		ChangeState( m_pNextState );
 }
 
-void GCStateManager::ChangeState(GCState* newState)
+void GCStateManager::ChangeState( GCState* pNewState)
 {
-	if (m_currentState)
-	{
-		m_currentState->Exit(newState);
-	}
-	if (newState)
-	{
-		newState->Enter(m_currentState);
-	}
-	m_previousState = m_currentState;
-	m_currentState = newState;
-	m_nextState = nullptr;
+	if ( m_pCurrentState )
+		m_pCurrentState->Exit( pNewState );
+	if ( pNewState )
+		pNewState->Enter( m_pCurrentState );
+	m_pPreviousState = m_pCurrentState;
+	m_pCurrentState = pNewState;
+	m_pNextState = nullptr;
 }

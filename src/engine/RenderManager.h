@@ -8,34 +8,27 @@ class Animation;
 
 class GCRenderManager
 {
-    friend class Component;
-private:
-    GCList<Component*> m_componentList;
+friend class GCComponent;
 
 public:
     GCRenderManager( Window* pWindow );
     ~GCRenderManager();
 
-    void RegisterComponent(Component* pComponent);
+    void RegisterComponent( GCComponent* pComponent );
 
     void CreateGeometry();
 
     void Render();
 
-    void AddAnimation( Animation* animation , std::string animationName );
+    void AddAnimation( Animation* pAnimation , std::string animationName );
     Animation* GetAnimation( std::string animationName );
 
     GCGraphics* m_pGraphics; 
     GCGeometry* m_pPlane;
     GCGeometry* m_pCircle;
 
-
-    //camera
-    XMVECTOR m_cameraPosition ;
-    XMVECTOR m_cameraTarget ;
-    XMVECTOR m_cameraUp ;
-
-protected:
-    GCMap<std::string , Animation*> m_animationList;
+private:
+    GCList<GCComponent*> m_componentsList;
+    GCMap<std::string , Animation*> m_animationsList;
 
 };

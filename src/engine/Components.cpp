@@ -4,7 +4,7 @@
 using namespace DirectX;
 
 
-Component::Component()
+GCComponent::GCComponent()
 {
 	m_pGameObject = nullptr;
 	m_globalActive = true;
@@ -19,7 +19,7 @@ Component::Component()
 
 
 
-void Component::RegisterToManagers()
+void GCComponent::RegisterToManagers()
 {
 	if ( IsFlagSet( UPDATE ) )
 		GC::GetActiveUpdateManager()->RegisterComponent( this );
@@ -28,10 +28,10 @@ void Component::RegisterToManagers()
 		GC::GetActivePhysicManager()->RegisterComponent( this );
 	
 	if ( IsFlagSet( RENDER ) )
-		GC::GetActiveRenderManager()->RegisterComponent(this);
+		GC::GetActiveRenderManager()->RegisterComponent( this );
 }
 
-void Component::UnregisterFromManagers()
+void GCComponent::UnregisterFromManagers()
 {
 	if ( IsFlagSet( UPDATE ) )
 	{
@@ -63,12 +63,12 @@ void Component::UnregisterFromManagers()
 /// @note The m_globalActive won't be passed to the new Component as it doesn't have any GameObject.
 /// @note The new Component won't be registered to the Managers as it will be registered the next frame.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Component::CopyTo( Component* pDestination )
+void GCComponent::CopyTo( GCComponent* pDestination )
 { pDestination->m_selfActive = m_selfActive; }
 
 
 
-void Component::Activate()
+void GCComponent::Activate()
 {
 	if( m_selfActive == true )
 		return;
@@ -85,7 +85,7 @@ void Component::Activate()
 	OnActivate();
 }
 
-void Component::Deactivate()
+void GCComponent::Deactivate()
 {
 	if ( m_selfActive == false )
 		return;
@@ -102,7 +102,7 @@ void Component::Deactivate()
 	OnDeactivate();
 }
 
-void Component::ActivateGlobal()
+void GCComponent::ActivateGlobal()
 {
 	if ( m_globalActive == true )
 		return;
@@ -119,7 +119,7 @@ void Component::ActivateGlobal()
 	OnActivate();
 }
 
-void Component::DeactivateGlobal()
+void GCComponent::DeactivateGlobal()
 {
 	if ( m_globalActive == false )
 		return;
@@ -136,7 +136,7 @@ void Component::DeactivateGlobal()
 	OnDeactivate();
 }
 
-void Component::SetActive( bool active )
+void GCComponent::SetActive( bool active )
 {
 	if ( active == true )
 	{
@@ -151,14 +151,14 @@ void Component::SetActive( bool active )
 
 
 
-SpriteRenderer::SpriteRenderer()
+GCSpriteRenderer::GCSpriteRenderer()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
-	m_pGeometry = pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Blue)).resource;
+	m_pGeometry = pGraphics->CreateGeometryPrimitive( Plane, XMFLOAT4( Colors::Blue ) ).resource;
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture(m_pGeometry).resource;
+	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 	GC_RESOURCE_CREATION_RESULT<GCShader*> shaderTexture = pGraphics->CreateShaderTexture();
@@ -168,19 +168,19 @@ SpriteRenderer::SpriteRenderer()
 
 
 
-void SpriteRenderer::CopyTo( Component* pDestination )
+void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 {
-	Component::CopyTo( pDestination );
-	SpriteRenderer* pSpriteRenderer = static_cast<SpriteRenderer*>( pDestination );
-	*(pSpriteRenderer->m_pMesh) = *m_pMesh; //! Need to ask Render if this will work
-	*(pSpriteRenderer->m_pMaterial) = *m_pMaterial; //! Need to ask Render if this will work
+	GCComponent::CopyTo( pDestination );
+	GCSpriteRenderer* pSpriteRenderer = static_cast<GCSpriteRenderer*>( pDestination );
+	*( pSpriteRenderer->m_pMesh ) = *m_pMesh; //! Need to ask Render if this will work
+	*( pSpriteRenderer->m_pMaterial ) = *m_pMaterial; //! Need to ask Render if this will work
 }
 
-void SpriteRenderer::Render()
+void GCSpriteRenderer::Render()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix());
-	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
+	pGraphics->UpdateWorldConstantBuffer( m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
+	pGraphics->GetRender()->DrawObject( m_pMesh, m_pMaterial, true );
 
 }
 
@@ -194,35 +194,35 @@ void SpriteRenderer::Render()
 /// @note The sprite must be in .dds 
 /////////////////////////////////////////////////
 
-void SpriteRenderer::SetSprite(std::string fileName)
+void GCSpriteRenderer::SetSprite( std::string fileName )
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture(m_pGeometry).resource;
-	GCTexture* texture = pGraphics->CreateTexture( std::string("../../../src/Textures/") + fileName).resource;
+	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
+	GCTexture* pTexture = pGraphics->CreateTexture( std::string( "../../../src/Textures/" ) + fileName ).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
-	m_pMaterial->SetTexture(texture);
+	m_pMaterial->SetTexture( pTexture );
 }
 
 
-void SpriteRenderer::SetAnimatedSprite(GCGeometry* pGeometry, GCTexture* pTexture)
+void GCSpriteRenderer::SetAnimatedSprite( GCGeometry* pGeometry, GCTexture* pTexture )
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 	m_pGeometry = pGeometry;
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture(m_pGeometry).resource;
+	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
-	m_pMaterial->SetTexture(pTexture);
+	m_pMaterial->SetTexture( pTexture );
 }
 
 
 
 
 
-Collider::Collider()
+GCCollider::GCCollider()
 {
 	m_trigger = false;
 	m_visible = false;
@@ -230,28 +230,28 @@ Collider::Collider()
 
 
 
-void Collider::RegisterToManagers()
+void GCCollider::RegisterToManagers()
 {
-	Component::RegisterToManagers();
+	GCComponent::RegisterToManagers();
 	GC::GetActivePhysicManager()->RegisterCollider( this );
 }
 
-void Collider::UnregisterFromManagers()
+void GCCollider::UnregisterFromManagers()
 {
-	Component::UnregisterFromManagers();
+	GCComponent::UnregisterFromManagers();
 	m_pColliderNode->Delete();
 }
 
 
 
-void Collider::CopyTo( Component* pDestination )
+void GCCollider::CopyTo( GCComponent* pDestination )
 {
-	Component::CopyTo( pDestination );
-	Collider* pCollider = static_cast<Collider*>( pDestination );
+	GCComponent::CopyTo( pDestination );
+	GCCollider* pCollider = static_cast<GCCollider*>( pDestination );
 	pCollider->m_trigger = m_trigger;
 	pCollider->m_visible = m_visible;
-	*(pCollider->m_pMesh) = *m_pMesh; //! Need to ask Render if this will work
-	*(pCollider->m_pMaterial) = *m_pMaterial; //! Need to ask Render if this will work
+	*( pCollider->m_pMesh ) = *m_pMesh; //! Need to ask Render if this will work
+	*( pCollider->m_pMaterial ) = *m_pMaterial; //! Need to ask Render if this will work
 }
 
 
@@ -259,37 +259,37 @@ void Collider::CopyTo( Component* pDestination )
 
 
 
-BoxCollider::BoxCollider()
+GCBoxCollider::GCBoxCollider()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
-	m_pGeometry = pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Blue)).resource;
+	m_pGeometry = pGraphics->CreateGeometryPrimitive( Plane, XMFLOAT4( Colors::Blue ) ).resource;
 
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture(m_pGeometry).resource;
-	GCTexture* texture = pGraphics->CreateTexture("../../../src/Textures/BoxColliderSquare.dds").resource;
+	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
+	GCTexture* pTexture = pGraphics->CreateTexture( "../../../src/Textures/BoxColliderSquare.dds" ).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 	auto shaderTexture = pGraphics->CreateShaderTexture();
-	auto mat = pGraphics->CreateMaterial(shaderTexture.resource);
+	auto mat = pGraphics->CreateMaterial( shaderTexture.resource );
 	m_pMaterial = mat.resource;
-	m_pMaterial->SetTexture(texture);
+	m_pMaterial->SetTexture( pTexture );
 }
 
 
 
-void BoxCollider::CopyTo( Component* pDestination )
-{ Collider::CopyTo( pDestination ); }
+void GCBoxCollider::CopyTo( GCComponent* pDestination )
+{ GCCollider::CopyTo( pDestination ); }
 
-void BoxCollider::Render()
+void GCBoxCollider::Render()
 {
-	if (m_visible == false)
+	if ( m_visible == false )
 		return;
 
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
-	pGraphics->UpdateWorldConstantBuffer(m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix());
-	pGraphics->GetRender()->DrawObject(m_pMesh, m_pMaterial, true);
+	pGraphics->UpdateWorldConstantBuffer( m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
+	pGraphics->GetRender()->DrawObject( m_pMesh, m_pMaterial, true );
 
 }
 
@@ -298,32 +298,32 @@ void BoxCollider::Render()
 
 
 
-void CircleCollider::CopyTo( Component* pDestination )
-{ Collider::CopyTo( pDestination ); }
+void GCCircleCollider::CopyTo( GCComponent* pDestination )
+{ GCCollider::CopyTo( pDestination ); }
 
 
 
 
 
 
-RigidBody::RigidBody()
+GCRigidBody::GCRigidBody()
 {
 	m_velocity.SetZero();
 }
 
 
 
-void RigidBody::CopyTo( Component* pDestination )
+void GCRigidBody::CopyTo( GCComponent* pDestination )
 {
-	Component::CopyTo( pDestination );
-	RigidBody* pRigidBody = static_cast<RigidBody*>( pDestination );
+	GCComponent::CopyTo( pDestination );
+	GCRigidBody* pRigidBody = static_cast<GCRigidBody*>( pDestination );
 	pRigidBody->m_velocity = m_velocity;
 }
 
-void RigidBody::FixedUpdate()
+void GCRigidBody::FixedUpdate()
 {
 	// Apply velocity
-	m_pGameObject->m_transform.Translate(m_velocity);		// TODO: Multiply by the fixed delta time
+	m_pGameObject->m_transform.Translate( m_velocity ); // TODO: Multiply by the fixed delta time
 }
 
 
@@ -331,14 +331,14 @@ void RigidBody::FixedUpdate()
 
 
 
-void SoundMixer::CopyTo( Component* pDestination )
-{ Component::CopyTo( pDestination ); }
+void GCSoundMixer::CopyTo( GCComponent* pDestination )
+{ GCComponent::CopyTo( pDestination ); }
 
 
 
 
 
-Animator::Animator()
+GCAnimator::GCAnimator()
 {
 	m_currentAnimation = nullptr;
 	m_activeAnimationName = "";
@@ -351,29 +351,29 @@ Animator::Animator()
 
 
 
-void Animator::CopyTo( Component* pDestination )
+void GCAnimator::CopyTo( GCComponent* pDestination )
 {
-	Component::CopyTo( pDestination );
-	Animator* pAnimator = static_cast<Animator*>( pDestination );
+	GCComponent::CopyTo( pDestination );
+	GCAnimator* pAnimator = static_cast<GCAnimator*>( pDestination );
 	// todo
 }
 
-void Animator::Start()
+void GCAnimator::Start()
 {
-	SpriteRenderer* pSpriteRenderer = m_pGameObject->GetComponent<SpriteRenderer>();
+	GCSpriteRenderer* pSpriteRenderer = m_pGameObject->GetComponent<GCSpriteRenderer>();
 	ASSERT( pSpriteRenderer != nullptr , LOG_FATAL , "Trying to add Animator without a SpriteRenderer" );
 	m_pSpriteRenderer = pSpriteRenderer;
 }
 
-void Animator::Update()
+void GCAnimator::Update()
 {
 	if ( m_currentAnimation == nullptr )
 		return;
 
-	if ( m_currentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
-	{
-		m_pSpriteRenderer->SetAnimatedSprite(m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture());
-	}
+	if ( m_currentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) == false )
+		return;
+	
+	m_pSpriteRenderer->SetAnimatedSprite( m_currentAnimation->GetGeometry(), m_currentAnimation->GetTexture() );
 }
 
 
@@ -382,7 +382,7 @@ void Animator::Update()
 /// 
 /// @param animationName Animation's Name
 /////////////////////////////////////////////////
-void Animator::PlayAnimation(std::string animationName)
+void GCAnimator::PlayAnimation( std::string animationName )
 {
 	if ( m_activeAnimationName == animationName )
 		return;
@@ -397,7 +397,7 @@ void Animator::PlayAnimation(std::string animationName)
 /////////////////////////////////////////////////////////////
 /// @brief Stop the current animation and keep last sprite
 /////////////////////////////////////////////////////////////
-void Animator::StopAnimation()
+void GCAnimator::StopAnimation()
 {
 	m_activeAnimationName = "";
 	m_currentAnimation = nullptr;
@@ -414,12 +414,12 @@ void Animator::StopAnimation()
 /// 
 /// @note An animator can load only one spritesheet.
 ///////////////////////////////////////////////////////
-void Animator::LoadSpriteSheet(std::string fileName, int row , int col , int width , int height )
+void GCAnimator::LoadSpriteSheet( std::string fileName, int row , int col , int width , int height )
 {
 	m_spritesheetName = fileName;
 	GCSpriteSheetGeometryLoader loader;
 
-	m_pSpriteSheetInfo = new GC_SPRITESHEET_INFO(loader.LoadSpriteSheet( row , col , width , height ));
+	m_pSpriteSheetInfo = new GC_SPRITESHEET_INFO( loader.LoadSpriteSheet( row , col , width , height ) );
 }
 
 
@@ -431,16 +431,14 @@ void Animator::LoadSpriteSheet(std::string fileName, int row , int col , int wid
 /// @param frameNumber the number of frame in the spritesheet for the animation
 /// @param frameDisplayTime How long each frame will be display
 //////////////////////////////////////////////////////////////////////////////////
-Animation* Animator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime )
+Animation* GCAnimator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime )
 {
 	ASSERT( m_pSpriteSheetInfo != nullptr, LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
 	Animation* pNewAnimation = new Animation();
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_pSpriteSheetInfo );
 	for ( int i = firstFrame; i < firstFrame + frameNumber; i++ )
-	{
 		pNewAnimation->AddFrame( i, frameDisplayTime );
-	}
 	GC::GetActiveRenderManager()->AddAnimation( pNewAnimation , animationName );
 
 	return pNewAnimation;
@@ -454,7 +452,7 @@ Animation* Animator::CreateAnimation( std::string animationName, int firstFrame,
 /// @param frameList the frame id list of the animation in the spritesheet
 /// @param frameDisplayTime How long each frame will be display
 /////////////////////////////////////////////////////////////////////////////
-Animation* Animator::CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList, float frameDisplayTime )
+Animation* GCAnimator::CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList, float frameDisplayTime )
 {
 	ASSERT( m_pSpriteSheetInfo != nullptr , LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
@@ -462,9 +460,7 @@ Animation* Animator::CreateAnimationWithCustomFrames( std::string animationName 
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_pSpriteSheetInfo );
 
 	for ( int i = 0; i < frameList.size() ; i++ )
-	{
 		pNewAnimation->AddFrame( frameList[i] , frameDisplayTime );
-	}
 	GC::GetActiveRenderManager()->AddAnimation( pNewAnimation , animationName );
 
 	return pNewAnimation;
@@ -475,7 +471,7 @@ Animation* Animator::CreateAnimationWithCustomFrames( std::string animationName 
 
 
 
-Camera::Camera()
+GCCamera::GCCamera()
 {
 	m_position.SetZero();
 	m_target.SetZero();
@@ -492,17 +488,17 @@ Camera::Camera()
 
 
 
-void Camera::CopyTo( Component* pDestination )
+void GCCamera::CopyTo( GCComponent* pDestination )
 {
-	Component::CopyTo( pDestination );
-	Camera* pCamera = static_cast<Camera*>( pDestination );
+	GCComponent::CopyTo( pDestination );
+	GCCamera* pCamera = static_cast<GCCamera*>( pDestination );
 	pCamera->m_nearZ = m_nearZ;
     pCamera->m_farZ = m_farZ;
     pCamera->m_viewWidth = m_viewWidth;
     pCamera->m_viewHeight = m_viewHeight;
 }
 
-void Camera::Update()
+void GCCamera::Update()
 {
 	bool dirty = false;
 	
@@ -534,19 +530,19 @@ void Camera::Update()
 
 
 
-Script::Script()
+GCScript::GCScript()
 { m_pTriggerNode = nullptr; }
 
 
 
-void Script::RegisterToManagers()
+void GCScript::RegisterToManagers()
 {
-	Component::RegisterToManagers();
+	GCComponent::RegisterToManagers();
 	m_pGameObject->RegisterScriptToTrigger( this );
 }
 
-void Script::UnregisterFromManagers()
+void GCScript::UnregisterFromManagers()
 {
-	Component::UnregisterFromManagers();
+	GCComponent::UnregisterFromManagers();
 	m_pTriggerNode->Delete();
 }
