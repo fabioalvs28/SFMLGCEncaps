@@ -28,7 +28,7 @@ namespace GCINPUT
 /// @param func 
 ////////////////////////////////////////////////////////////
 template<typename Func>
-void BindKey( KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state, Func&& func )
+void BindKey( GCKEYBOARD keyId, GCKeyboardInputManager::KeyboardState state, Func&& func )
 { GC::GetActiveInputSystem()->m_pKeyboard->BindAction( keyId, state, func ); }
 
 //////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ void BindKey( KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state,
 /// @param func 
 //////////////////////////////////////////////////////////////
 template<typename Func>
-void UnbindKey( KEYBOARD::Keys keyId, GCKeyboardInputManager::KeyboardState state, Func&& func )
+void UnbindKey( GCKEYBOARD keyId, GCKeyboardInputManager::KeyboardState state, Func&& func )
 { GC::GetActiveInputSystem()->m_pKeyboard->UnbindAction( keyId, state, func ); }
 };
 

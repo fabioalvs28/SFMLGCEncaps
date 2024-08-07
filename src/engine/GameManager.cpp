@@ -46,6 +46,7 @@ void GCGameManager::GameLoop()
 {
     while ( m_pWindow->Run( m_pRenderManager->m_pGraphics->GetRender() ) )
     {
+        // GCINPUTS::Update();
         m_pTimer->Update();
         m_pInputSystem->Update();
         m_pEventManager->Update();

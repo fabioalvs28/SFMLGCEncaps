@@ -79,6 +79,9 @@ class GCMouseInputManager;
 // class GCControllerManager;
 // class GCControllerInputManager;
 class GCInputSystem;
+enum GCKEYBOARD;
+enum GCMOUSE;
+class GCINPUTS;
 
 class GCTime;
 

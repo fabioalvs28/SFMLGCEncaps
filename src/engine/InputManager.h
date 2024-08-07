@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-namespace KEYBOARD
-{
-enum Keys
+
+
+enum GCKEYBOARD
 {
     F1 = 112, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
     
@@ -50,10 +50,10 @@ enum Keys
     END         = 35,
     PAGE_DOWN   = 34,
     
-    UP_ARROW    = 38, UP    = 38,
-    LEFT_ARROW  = 37, LEFT  = 37,
-    RIGHT_ARROW = 39, RIGHT = 39,
-    DOWN_ARROW  = 40, DOWN  = 40,
+    UP_ARROW    = 38, //UP    = 38,
+    LEFT_ARROW  = 37, //LEFT  = 37,
+    RIGHT_ARROW = 39, //RIGHT = 39,
+    DOWN_ARROW  = 40, //DOWN  = 40,
     
     NUM_LOCK         = 144,
     NUMPAD_DIVIDE    = 111,
@@ -67,7 +67,7 @@ enum Keys
     DEGREE         = 219, RPARENTHESE = 219, RSQUARE_BRACKET = 219,
     PLUS           = 187, EQUALS      = 187, RCURLY_BRACKET  = 187,
     DIAERESIS      = 221, CIRCUMFLEX  = 221,
-    POUND          = 186, DOLLAR      = 186, CURRENCY        = 186,
+    POUND          = 186, DOLLAR      = 186, //CURRENCY        = 186,
     PERCENTAGE     = 192, U_GRAVE     = 192,
     MU             = 220, ASTERISK    = 220,
     ANGLE_BRACKETS = 226,
@@ -79,15 +79,7 @@ enum Keys
     KEYIDCOUNT = 257
 };
 
-bool GetKeyDown( Keys keyId );
-bool GetKeyUp( Keys keyId );
-bool GetKeyStay( Keys keyId );
-
-};
-
-namespace MOUSE
-{
-enum Buttons
+enum GCMOUSE
 {
     LEFT     = 1,
     RIGHT    = 2,
@@ -98,10 +90,7 @@ enum Buttons
     MOUSEIDCOUNT = 7
 };
 
-bool GetMouseKeyDown( Buttons keyId );
-bool GetMouseKeyUp( Buttons keyId );
-bool GetMouseKeyStay( Buttons keyId );
-};
+
 
 class GCInputManager
 {
@@ -153,7 +142,7 @@ public:
         KEYSTATECOUNT
     };
 
-    int GetIDSize() const override { return KEYBOARD::KEYIDCOUNT; };
+    int GetIDSize() const override { return GCKEYBOARD::KEYIDCOUNT; };
 
     int GetStateSize() const override { return KeyboardState::KEYSTATECOUNT; };
 
@@ -248,7 +237,7 @@ public:
 private:
     void Update();
 
-    int GetIDSize() const override { return MOUSE::MOUSEIDCOUNT; };
+    int GetIDSize() const override { return GCMOUSE::MOUSEIDCOUNT; };
 
     int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
 
@@ -349,5 +338,31 @@ protected:
 
     void GetConnectedControllers();
     void Update();
+
+};
+
+
+
+class GCINPUTS
+{
+friend class GCGameManager;
+
+public:
+    GCINPUTS() = delete;
+    ~GCINPUTS() = delete;
+    
+    static bool GetKeyDown( GCKEYBOARD keyId );
+    static bool GetKeyStay( GCKEYBOARD keyId );
+    static bool GetKeyUp( GCKEYBOARD keyId );
+    
+    static bool GetKeyDown( GCMOUSE keyId );
+    static bool GetKeyStay( GCMOUSE keyId );
+    static bool GetKeyUp( GCMOUSE keyId );
+
+// private:
+//     static void Update();
+
+// private:
+//     static GCInputSystem* s_pActiveInputSystem;
 
 };

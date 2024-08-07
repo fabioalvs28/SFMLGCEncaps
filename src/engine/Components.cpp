@@ -172,8 +172,8 @@ void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 {
 	GCComponent::CopyTo( pDestination );
 	GCSpriteRenderer* pSpriteRenderer = static_cast<GCSpriteRenderer*>( pDestination );
-	*( pSpriteRenderer->m_pMesh ) = *m_pMesh; //! Need to ask Render if this will work
-	*( pSpriteRenderer->m_pMaterial ) = *m_pMaterial; //! Need to ask Render if this will work
+	*( pSpriteRenderer->m_pMesh ) = *m_pMesh;
+	*( pSpriteRenderer->m_pMaterial ) = *m_pMaterial;
 }
 
 void GCSpriteRenderer::Render()
@@ -186,21 +186,20 @@ void GCSpriteRenderer::Render()
 
 
 
-/////////////////////////////////////////////////
-/// @brief Set Sprite of a GameObject
+//////////////////////////////////////////////////
+/// @brief Set Sprite of a GameObject.
 /// 
-/// @param texturePath name of the sprite file
+/// @param texturePath Name of the sprite file.
 /// 
-/// @note The sprite must be in .dds 
-/////////////////////////////////////////////////
-
+/// @note The sprite must be in .dds .
+//////////////////////////////////////////////////
 void GCSpriteRenderer::SetSprite( std::string fileName )
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 
 	pGraphics->InitializeGraphicsResourcesStart();
 	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
-	GCTexture* pTexture = pGraphics->CreateTexture( std::string( "../../../src/Textures/" ) + fileName ).resource;
+	GCTexture* pTexture = pGraphics->CreateTexture( std::string( "../../../res/" ) + fileName ).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 	m_pMaterial->SetTexture( pTexture );
@@ -250,8 +249,8 @@ void GCCollider::CopyTo( GCComponent* pDestination )
 	GCCollider* pCollider = static_cast<GCCollider*>( pDestination );
 	pCollider->m_trigger = m_trigger;
 	pCollider->m_visible = m_visible;
-	*( pCollider->m_pMesh ) = *m_pMesh; //! Need to ask Render if this will work
-	*( pCollider->m_pMaterial ) = *m_pMaterial; //! Need to ask Render if this will work
+	*( pCollider->m_pMesh ) = *m_pMesh;
+	*( pCollider->m_pMaterial ) = *m_pMaterial;
 }
 
 
@@ -267,7 +266,7 @@ GCBoxCollider::GCBoxCollider()
 
 	pGraphics->InitializeGraphicsResourcesStart();
 	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
-	GCTexture* pTexture = pGraphics->CreateTexture( "../../../src/Textures/BoxColliderSquare.dds" ).resource;
+	GCTexture* pTexture = pGraphics->CreateTexture( "../../../res/BoxColliderSquare.dds" ).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
 
 	auto shaderTexture = pGraphics->CreateShaderTexture();
@@ -307,9 +306,7 @@ void GCCircleCollider::CopyTo( GCComponent* pDestination )
 
 
 GCRigidBody::GCRigidBody()
-{
-	m_velocity.SetZero();
-}
+{ m_velocity.SetZero(); }
 
 
 
@@ -351,18 +348,28 @@ GCAnimator::GCAnimator()
 
 
 
-void GCAnimator::CopyTo( GCComponent* pDestination )
-{
-	GCComponent::CopyTo( pDestination );
-	GCAnimator* pAnimator = static_cast<GCAnimator*>( pDestination );
-	// todo
-}
-
 void GCAnimator::Start()
 {
 	GCSpriteRenderer* pSpriteRenderer = m_pGameObject->GetComponent<GCSpriteRenderer>();
 	ASSERT( pSpriteRenderer != nullptr , LOG_FATAL , "Trying to add Animator without a SpriteRenderer" );
 	m_pSpriteRenderer = pSpriteRenderer;
+}
+
+void GCAnimator::CopyTo( GCComponent* pDestination )
+{
+	GCComponent::CopyTo( pDestination );
+	GCAnimator* pAnimator = static_cast<GCAnimator*>( pDestination );
+	
+	pAnimator->m_spritesheetName = m_spritesheetName;
+	pAnimator->m_pSpriteSheetInfo = m_pSpriteSheetInfo;
+	
+	pAnimator->m_activeAnimationName = m_activeAnimationName;
+	pAnimator->m_pCurrentAnimation = m_pCurrentAnimation;
+	
+	pAnimator->m_isLoop = m_isLoop;
+	pAnimator->m_lastFrameIndex = m_lastFrameIndex;
+	pAnimator->m_currentFrameIndex = m_currentFrameIndex;
+	pAnimator->m_currentFrameTime = m_currentFrameTime;
 }
 
 void GCAnimator::Update()
@@ -498,10 +505,18 @@ void GCCamera::CopyTo( GCComponent* pDestination )
 {
 	GCComponent::CopyTo( pDestination );
 	GCCamera* pCamera = static_cast<GCCamera*>( pDestination );
+	
+	pCamera->m_position = m_position;
+	pCamera->m_target = m_target;
+	pCamera->m_up = m_up;
+	
 	pCamera->m_nearZ = m_nearZ;
     pCamera->m_farZ = m_farZ;
     pCamera->m_viewWidth = m_viewWidth;
     pCamera->m_viewHeight = m_viewHeight;
+	
+	pCamera->m_viewMatrix = m_viewMatrix;
+	pCamera->m_projectionMatrix = m_projectionMatrix;
 }
 
 void GCCamera::Update()

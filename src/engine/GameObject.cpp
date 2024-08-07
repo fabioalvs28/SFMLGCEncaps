@@ -418,7 +418,7 @@ int GCGameObject::GetLayer() const { return m_layer; }
 void GCGameObject::RegisterScriptToTrigger( GCScript* pScript )
 {
     ASSERT( pScript != nullptr, LOG_FATAL, "Trying to register a nullptr pScript to the scriptTriggerList" );
-    m_scriptTriggerList.PushBack( pScript );
+    pScript->m_pTriggerNode = m_scriptTriggerList.PushBack( pScript );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

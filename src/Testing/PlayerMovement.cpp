@@ -17,22 +17,22 @@ void GCScriptPlayerMovement::Update()
 {
     GCVEC3 translation;
     
-    if ( KEYBOARD::GetKeyStay( KEYBOARD::UP ) )
+    if ( GCINPUTS::GetKeyStay( GCKEYBOARD::UP_ARROW ) )
     { translation.SetUp(); }
 
-    if ( KEYBOARD::GetKeyStay( KEYBOARD::LEFT ) )
+    if ( GCINPUTS::GetKeyStay( GCKEYBOARD::LEFT_ARROW ) )
     {
         translation.SetRight();
         translation *= -1;
     }
 
-    if ( KEYBOARD::GetKeyStay( KEYBOARD::DOWN ) )
+    if ( GCINPUTS::GetKeyStay( GCKEYBOARD::DOWN_ARROW ) )
     {
         translation.SetUp();
         translation *= -1;
     }
 
-    if ( KEYBOARD::GetKeyStay( KEYBOARD::RIGHT ) )
+    if ( GCINPUTS::GetKeyStay( GCKEYBOARD::RIGHT_ARROW ) )
     { translation.SetRight(); }
     
     translation *= m_speed;
