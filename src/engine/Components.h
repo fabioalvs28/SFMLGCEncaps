@@ -233,7 +233,8 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
-    void AddForce( GCVEC2 force ) {}
+    GCVEC3 GetVelocity() { return m_velocity; }
+    void SetVelocity( GCVEC3 velocity ) { m_velocity = velocity; }
 
 protected:
     GCRigidBody();
@@ -242,9 +243,10 @@ protected:
     GCRigidBody* Duplicate() override { return new GCRigidBody(); }
     void CopyTo( GCComponent* pDestination ) override;
     
-    void FixedUpdate() override;
+    void Update() override;
+    void FixedUpdate() override {};
     
-    FLAGS GetFlags() override { return FIXED_UPDATE; }
+    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
 
 protected:
     inline static const int m_ID = ++GCComponent::componentCount;

@@ -317,11 +317,8 @@ void GCRigidBody::CopyTo( GCComponent* pDestination )
 	pRigidBody->m_velocity = m_velocity;
 }
 
-void GCRigidBody::FixedUpdate()
-{
-	// Apply velocity
-	m_pGameObject->m_transform.Translate( m_velocity ); // TODO: Multiply by the fixed delta time
-}
+void GCRigidBody::Update()
+{ m_pGameObject->m_transform.Translate( m_velocity * GC::GetActiveTimer()->DeltaTime() ); }
 
 
 
