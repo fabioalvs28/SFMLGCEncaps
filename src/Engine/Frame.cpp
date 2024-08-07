@@ -1,13 +1,13 @@
 #include "pch.h"
 
 GCFrame::GCFrame()
-	: m_displayTime(0.0f), 
-	m_isFlippingX(false), 
-	m_isFlippingY(false), 
-	m_frameID(0)
+	: m_displayTime( 0.0f ), 
+	m_isFlippingX( false ), 
+	m_isFlippingY( false ), 
+	m_frameID( 0 )
 {}
 
-GCFrame::GCFrame( int frameID, float displayTime, bool isFlipingX, bool isFlipingY)
+GCFrame::GCFrame( int frameID, float displayTime, bool isFlipingX, bool isFlipingY )
 {
 	m_frameID = frameID;
 	m_displayTime = displayTime;
@@ -16,21 +16,13 @@ GCFrame::GCFrame( int frameID, float displayTime, bool isFlipingX, bool isFlipin
 }
 
 float GCFrame::GetDisplayTime() const
-{
-	return m_displayTime;
-}
+{ return m_displayTime; }
 
 bool GCFrame::IsFlippingX() const
-{
-	return m_isFlippingX;
-}
+{ return m_isFlippingX; }
 
 bool GCFrame::IsFlippingY() const
-{
-	return m_isFlippingY;
-}
+{ return m_isFlippingY; }
 
 int GCFrame::GetFrameID() const
-{
-	return m_frameID;
-}
+{ return m_frameID; }

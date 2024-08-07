@@ -3,7 +3,7 @@
 
 class GCUpdateManager
 {
-friend class Component;
+friend class GCComponent;
 friend class GCGameManager;
 
 private:
@@ -12,9 +12,9 @@ private:
     
     void Update();
     
-    void RegisterComponent( Component* pComponent );
+    void RegisterComponent( GCComponent* pComponent );
 
 private:
-    GCList<Component*> m_registeredComponents; // A list of pointers to the registered Components that wants to be updated.
+    GCList<GCComponent*> m_registeredComponents; // A list of pointers to the registered Components that wants to be updated.
 
 };

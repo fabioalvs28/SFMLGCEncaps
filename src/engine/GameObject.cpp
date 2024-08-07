@@ -1,7 +1,5 @@
 #include "pch.h"
 
-//todo HasTag( const char* tag )
-
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -52,12 +50,13 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
-    pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
+    for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
+        pGameObject->AddTag( pTagNode->GetData() );
     pGameObject->m_layer = m_layer;
     for ( auto it : m_componentsList )
     {
-        Component* pComponent = it.second;
-        Component* pNewComponent = pComponent->Duplicate();
+        GCComponent* pComponent = it.second;
+        GCComponent* pNewComponent = pComponent->Duplicate();
         pNewComponent->m_pGameObject = pGameObject;
         pNewComponent->Start();
         pComponent->CopyTo( pNewComponent );
@@ -193,22 +192,30 @@ void GCGameObject::AddTag( const char* tag )
 ////////////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::RemoveTag( const char* tag )
 {
-    int index = m_tagsList.GetIndex( tag );
-    ASSERT( index != -1, LOG_FATAL, "Trying to remove a tag from a GameObject that doesn't have it" );
-    RemoveTag( index );
+    for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
+    {
+        if ( pTagNode->GetData() == tag )
+        {
+            pTagNode->Delete();
+            return;
+        }
+    }
 }
-
-/////////////////////////////////////////////////////////////////////////
-/// @brief Removes a tag from the GameObject.
-/// 
-/// @param index An integer indicating the index of the tag to remove.
-/////////////////////////////////////////////////////////////////////////
-void GCGameObject::RemoveTag( int index ) { m_tagsList.Remove( index ); }
 
 ///////////////////////////////////////////////////
 /// @brief Removes all tags from the GameObject.
 ///////////////////////////////////////////////////
 void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
+
+///////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks if the GameObject contains the specified tag.
+/// 
+/// @param tag A string value (const char*) indicating the name of the tag to check.
+/// 
+/// @return A boolean value indicating if the GameObject contains the specified tag.
+///////////////////////////////////////////////////////////////////////////////////////
+bool GCGameObject::HasTag( const char* tag ) const
+{ return m_tagsList.Find( tag ); }
 
 
 
@@ -351,7 +358,7 @@ void GCGameObject::SetLayer( const int layer )
 
     for ( auto it : m_componentsList )
     {
-        Component* pComponent = it.second;
+        GCComponent* pComponent = it.second;
         if ( pComponent->IsFlagSet( RENDER ) )
         {
             if ( pComponent->m_pRenderNode != nullptr )
@@ -396,15 +403,56 @@ bool GCGameObject::IsActive() const { return m_globalActive && m_selfActive; }
 //////////////////////////////////////////////////////////////////////////////////
 const char* GCGameObject::GetName() const { return m_name; }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// @return A string value (const char*) indicating the searched tag of the GameObject.
-//////////////////////////////////////////////////////////////////////////////////////////
-const char* GCGameObject::GetTag( int index ) const { return m_tagsList[ index ]; } //? Why this method ?
-
 /////////////////////////////////////////////////////////////////
 /// @return An integer indicating the layer of the GameObject.
 /////////////////////////////////////////////////////////////////
 int GCGameObject::GetLayer() const { return m_layer; }
+
+
+
+////////////////////////////////////////////////////////////
+/// @brief Registers the Script in the scriptTriggerList.
+/// 
+/// @param pScript A pointer to the Script to register.
+////////////////////////////////////////////////////////////
+void GCGameObject::RegisterScriptToTrigger( GCScript* pScript )
+{
+    ASSERT( pScript != nullptr, LOG_FATAL, "Trying to register a nullptr pScript to the scriptTriggerList" );
+    pScript->m_pTriggerNode = m_scriptTriggerList.PushBack( pScript );
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerEnter method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
+void GCGameObject::OnTriggerEnter( GCCollider* pCollider )
+{
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerEnter( pCollider );
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerStay method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
+void GCGameObject::OnTriggerStay( GCCollider* pCollider )
+{
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerStay( pCollider );
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerExit method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
+void GCGameObject::OnTriggerExit( GCCollider* pCollider )
+{
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerExit( pCollider );
+}
 
 
 
@@ -415,7 +463,7 @@ int GCGameObject::GetLayer() const { return m_layer; }
 //////////////////////////////////////////////////////
 void GCGameObject::RemoveComponent( int ID )
 {
-    Component* pComponent;
+    GCComponent* pComponent;
     ASSERT( m_componentsList.Find( ID, pComponent ) == true, LOG_FATAL, "Trying to remove a Component from a GameObject that doesn't have it" ); //? The .Find() is necessary for the method to work but it's in an ASSERT ?
     m_componentsList.Remove( ID ); //? To See ?
     GC::GetActiveSceneManager()->AddToDeleteQueue( pComponent );

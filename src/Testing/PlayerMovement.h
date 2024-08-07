@@ -1,10 +1,12 @@
 #pragma once
 #include "GCEngine.h"
 
-CREATE_SCRIPT_START( Start )
+CREATE_SCRIPT_START( PlayerMovement )
 
-public : 
+private:
     void Start() override;
     void Update() override;
+    
+    float m_speed;
 
 CREATE_SCRIPT_END
