@@ -11,7 +11,7 @@ GCGraphics::GCGraphics()
     m_vShaders.clear();
     m_vMaterials.clear();
     m_vMeshes.clear();
-    m_pCbCameraInstances.clear();
+    m_cbCameraInstances.clear();
 }
 
 GCGraphics::~GCGraphics()
@@ -40,11 +40,11 @@ GCGraphics::~GCGraphics()
     }
     m_lTextures.clear();
 
-    for (auto buffer : m_pCbCameraInstances)
+    for (auto buffer : m_cbCameraInstances)
     {
         GC_DELETE(buffer);
     }
-    m_pCbCameraInstances.clear();
+    m_cbCameraInstances.clear();
 
     GC_DELETE(m_pRender);
     GC_DELETE(m_pPrimitiveFactory);
@@ -69,7 +69,7 @@ bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
     m_pRender->Initialize(pWindow, renderWidth, renderHeight, this);
 
 	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
-    m_pCbCameraInstances.push_back(pCbInstance);
+    m_cbCameraInstances.push_back(pCbInstance);
 
     return true;
 }
@@ -462,6 +462,31 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
     return GCRENDER_ERROR_RESOURCE_TO_REMOVE_DONT_FIND;
 }
 
+GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
+    // Obtenez le rapport d'aspect
+    float aspectRatio = m_pRender->GetRenderResources()->GetCurrentWindow()->AspectRatio();
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+
+    // Calculer les facteurs de mise à l'échelle
+    if (aspectRatio > 1.0f) {
+        scaleX = 1.0f / aspectRatio;
+    }
+    else {
+        scaleY = aspectRatio;
+    }
+
+    DirectX::XMMATRIX xmWorldMatrix = GCUtils::GCMATRIXToXMMATRIX(worldMatrix);
+
+    DirectX::XMMATRIX xmAdditionalScaleMatrix = DirectX::XMMatrixScaling(scaleX, scaleY, 1.0f);
+
+    DirectX::XMMATRIX xmWorldMatrixScaled = xmWorldMatrix * xmAdditionalScaleMatrix;
+
+    GCMATRIX scaledWorldMatrix = GCUtils::XMMATRIXToGCMATRIX(xmWorldMatrixScaled);
+
+    return scaledWorldMatrix;
+}
+
 bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
@@ -469,9 +494,9 @@ bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATR
     cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
     cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
 
-    UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
+    UpdateConstantBuffer(cameraData, m_cbCameraInstances[0]);
 
-    m_pRender->m_pCbCurrentViewProjInstance = m_pCbCameraInstances[0];
+    m_pRender->m_pCbCurrentViewProjInstance = m_cbCameraInstances[0];
 
     return true;
 }
@@ -482,8 +507,8 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
     float aspectRatio,
     float nearZ,
     float farZ,
-    float viewWidth,   // Ajoutez ces paramètres
-    float viewHeight,  // Ajoutez ces paramètres
+    float viewWidth,  
+    float viewHeight,  
     GC_PROJECTION_TYPE projType,
     GCMATRIX& projectionMatrix,
     GCMATRIX& viewMatrix)
@@ -500,11 +525,9 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
         projectionMatrixXM = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, aspectRatio, nearZ, farZ);
     }
     else {
-        // Créer une matrice orthographique avec viewWidth et viewHeight
         projectionMatrixXM = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, nearZ, farZ);
     }
 
-    // Transposer les matrices pour les shaders
     DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrixXM);
     DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrixXM);
 
@@ -519,9 +542,9 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
     GCVIEWPROJCB cameraData;
     cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
     cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
-    UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
+    UpdateConstantBuffer(cameraData, m_cbCameraInstances[0]);
 
-    m_pRender->m_pCbCurrentViewProjInstance = m_pCbCameraInstances[0];
+    m_pRender->m_pCbCurrentViewProjInstance = m_cbCameraInstances[0];
 
     return true;
 }
@@ -537,7 +560,18 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
     }
 
     GCWORLDCB worldData;
-    worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
+    //Additional scaling for Screen Ratio not equilibrate, not ponderate
+    if (m_pRender->GetRenderMode() == 0)//2D
+    {
+        GCMATRIX matrix = UpdateScalingRatio(worldMatrix);
+
+        worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(matrix);
+    }
+    else if (m_pRender->GetRenderMode() == 1)//3D
+    {
+        worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
+    }
+
     worldData.objectId = meshId;
     worldData.materialId = pMaterial->m_materialId;
 
@@ -547,7 +581,6 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
     return true;
 }
 
-//Update Camera and Object Constant Buffer / But They can also send their own structure
 void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
 {
     uploadBufferInstance->CopyData(0, objectData);

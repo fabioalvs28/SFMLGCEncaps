@@ -8,17 +8,17 @@ GCRenderResources::GCRenderResources()
 	m_ScreenViewport(),
 
 	m_pGraphics(nullptr),
-	m_dxgiFactory(nullptr),
-	m_d3dDevice(nullptr),
-	m_SwapChain(nullptr),
-	m_SwapChainBuffer(),
-	m_DepthStencilBuffer(nullptr),
+	m_pFactory(nullptr),
+	m_pDevice(nullptr),
+	m_pSwapChain(nullptr),
+	m_pSwapChainBuffer(),
+	m_pDepthStencilBuffer(nullptr),
 
-	m_CommandList(nullptr),
-	m_CommandQueue(nullptr),
-	m_DirectCmdListAlloc(nullptr),
+	m_pCommandList(nullptr),
+	m_pCommandQueue(nullptr),
+	m_pDirectCmdListAlloc(nullptr),
 
-	m_Fence(nullptr),
+	m_pFence(nullptr),
 	m_CurrentFence(0),
 
 	m_pRtvHeap(nullptr),
@@ -27,7 +27,7 @@ GCRenderResources::GCRenderResources()
 
 	m_canResize(true),
 
-	m_CurrBackBuffer(0),
+	m_currBackBuffer(0),
 	m_DepthStencilFormat(DXGI_FORMAT_D24_UNORM_S8_UINT),
 	m_BackBufferFormat(DXGI_FORMAT_R8G8B8A8_UNORM),
 
@@ -50,35 +50,35 @@ GCRenderResources::~GCRenderResources() {
 
 	// Release all RTV resources
 	for (auto& rtvResource : m_lRenderTargets) {
-		rtvResource->resource->Release();
+		rtvResource->pResource->Release();
 	}
 
 	// Release all DSV resources
 	for (auto& dsvResource : m_lDepthStencilView) {
-		dsvResource->resource->Release();
+		dsvResource->pResource->Release();
 	}
 
 	m_lShaderResourceView.clear(); 
 	m_lUnorderedAccessView.clear();
 
 	// Release Swap Chain Buffers
-	for (int i = 0; i < SwapChainBufferCount; ++i) {
-		m_SwapChainBuffer[i]->Release();
+	for (int i = 0; i < m_swapChainBufferCount; ++i) {
+		m_pSwapChainBuffer[i]->Release();
 	}
 
 	// Release Command List and Allocator
-	m_CommandList->Release();
-	m_DirectCmdListAlloc->Release();
+	m_pCommandList->Release();
+	m_pDirectCmdListAlloc->Release();
 
 	// Release Command Queue
-	m_CommandQueue->Release();
+	m_pCommandQueue->Release();
 
 	// Release Fence
-	m_Fence->Release();
+	m_pFence->Release();
 
 	// Release Device and Factory
-	m_d3dDevice->Release();
-	m_dxgiFactory->Release();
+	m_pDevice->Release();
+	m_pFactory->Release();
 }
 
 void GCRenderResources::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible, ID3D12DescriptorHeap** pDescriptorHeap)
@@ -89,7 +89,7 @@ void GCRenderResources::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UI
 	heapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	heapDesc.NodeMask = 0;
 
-	HRESULT hr = m_d3dDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(pDescriptorHeap));
+	HRESULT hr = m_pDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(pDescriptorHeap));
 }
 
 GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, D3D12_RESOURCE_FLAGS resourceFlags, D3D12_CLEAR_VALUE* clearValue)
@@ -123,7 +123,7 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, 
 
 	CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_DEFAULT);
 	ID3D12Resource* renderTargetTexture = nullptr;
-	HRESULT hr = m_d3dDevice->CreateCommittedResource(
+	HRESULT hr = m_pDevice->CreateCommittedResource(
 		&heapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&textureDesc,
@@ -140,12 +140,12 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateRTVTexture(DXGI_FORMAT format, 
 
 	if(resourceFlags != D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS)
 	{
-		m_d3dDevice->CreateRenderTargetView(renderTargetTexture, &rtvDesc, rtvCpuHandle);
+		m_pDevice->CreateRenderTargetView(renderTargetTexture, &rtvDesc, rtvCpuHandle);
 	}
 
 	// Manager Rtv
 	GC_DESCRIPTOR_RESOURCE* descriptorResource = new GC_DESCRIPTOR_RESOURCE();
-	descriptorResource->resource = renderTargetTexture;
+	descriptorResource->pResource = renderTargetTexture;
 	descriptorResource->cpuHandle = rtvCpuHandle;
 
 	m_lRenderTargets.push_back(descriptorResource);
@@ -179,7 +179,7 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateDepthStencilBufferAndView(DXGI_
 
 	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 	ID3D12Resource* depthStencilBuffer = nullptr;
-	hr = m_d3dDevice->CreateCommittedResource(
+	hr = m_pDevice->CreateCommittedResource(
 		&heapProps,
 		D3D12_HEAP_FLAG_NONE,
 		&depthStencilDesc,
@@ -198,7 +198,7 @@ GC_DESCRIPTOR_RESOURCE* GCRenderResources::CreateDepthStencilBufferAndView(DXGI_
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_pDsvHeap->GetCPUDescriptorHandleForHeapStart());
 	dsvHandle.Offset(m_dsvOffsetCount, m_dsvDescriptorSize);
 
-	m_d3dDevice->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, dsvHandle);
+	m_pDevice->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, dsvHandle);
 
 	GC_DESCRIPTOR_RESOURCE* dsv = new GC_DESCRIPTOR_RESOURCE{ depthStencilBuffer, dsvHandle };
 
@@ -223,7 +223,7 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateStaticSrvWithTexture(ID3D
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 	srvGpuHandle.Offset(m_srvStaticOffsetCount, m_cbvSrvUavDescriptorSize);
 
-	m_d3dDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
+	m_pDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
 
 	m_lShaderResourceView.push_back(srvGpuHandle);
 
@@ -247,7 +247,7 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateDynamicSrvWithTexture(ID3
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_pCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 	srvGpuHandle.Offset(m_srvDynamicOffsetCount, m_cbvSrvUavDescriptorSize);
 
-	m_d3dDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
+	m_pDevice->CreateShaderResourceView(textureResource, &srvDesc, srvCpuHandle);
 
 	m_lShaderResourceView.push_back(srvGpuHandle);
 	
@@ -269,7 +269,7 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE GCRenderResources::CreateUavTexture(ID3D12Resource
 	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
 	uavDesc.Texture2D.MipSlice = 0;
 
-	m_d3dDevice->CreateUnorderedAccessView(textureResource, nullptr, &uavDesc, uavCpuHandle);
+	m_pDevice->CreateUnorderedAccessView(textureResource, nullptr, &uavDesc, uavCpuHandle);
 
 	m_lUnorderedAccessView.push_back(uavCpuHandle);
 	m_uavOffsetCount++;

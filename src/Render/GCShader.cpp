@@ -1,13 +1,13 @@
 #include "pch.h"
 //test
 GCShader::GCShader()
-	: m_RootSignature(nullptr),
+	: m_pRootSignature(nullptr),
 
 	m_pPsoAlpha(nullptr),
 	m_pPsoNoAlpha(nullptr),
 
-	m_vsByteCode(nullptr),
-	m_psByteCode(nullptr),
+	m_pVsByteCode(nullptr),
+	m_pPsByteCode(nullptr),
 
 	m_pRender(nullptr),
 
@@ -37,11 +37,11 @@ GCShader::GCShader()
 
 GCShader::~GCShader()
 {
-	m_RootSignature->Release();
+	m_pRootSignature->Release();
 	m_pPsoAlpha->Release();
 	m_pPsoNoAlpha->Release();
-	m_vsByteCode->Release();
-	m_psByteCode->Release();
+	m_pVsByteCode->Release();
+	m_pPsByteCode->Release();
 
 	m_InputLayout.clear();
 }
@@ -71,8 +71,8 @@ GC_GRAPHICS_ERROR GCShader::Initialize(GCRenderContext* pRender, const std::stri
  
 void GCShader::CompileShader()
 {
-	m_vsByteCode = LoadShaderFromFile(m_vsCsoPath);
-	m_psByteCode = LoadShaderFromFile(m_psCsoPath);
+	m_pVsByteCode = LoadShaderFromFile(m_vsCsoPath);
+	m_pPsByteCode = LoadShaderFromFile(m_psCsoPath);
 
 	m_InputLayout.clear();
 
@@ -187,7 +187,7 @@ void GCShader::RootSign()
 	if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
     //if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
 
-    m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature));
+    m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_pRootSignature));
 }
 
 void GCShader::Pso() 
@@ -197,16 +197,16 @@ void GCShader::Pso()
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDescNoAlpha = {};
 
 	psoDescAlpha.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
-	psoDescAlpha.pRootSignature = m_RootSignature;
+	psoDescAlpha.pRootSignature = m_pRootSignature;
 
 	psoDescNoAlpha.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
-	psoDescNoAlpha.pRootSignature = m_RootSignature;
+	psoDescNoAlpha.pRootSignature = m_pRootSignature;
 
-	psoDescAlpha.VS = { reinterpret_cast<BYTE*>(m_vsByteCode->GetBufferPointer()), m_vsByteCode->GetBufferSize()};
-	psoDescAlpha.PS ={ reinterpret_cast<BYTE*>(m_psByteCode->GetBufferPointer()), m_psByteCode->GetBufferSize()};
+	psoDescAlpha.VS = { reinterpret_cast<BYTE*>(m_pVsByteCode->GetBufferPointer()), m_pVsByteCode->GetBufferSize()};
+	psoDescAlpha.PS ={ reinterpret_cast<BYTE*>(m_pPsByteCode->GetBufferPointer()), m_pPsByteCode->GetBufferSize()};
 
-	psoDescNoAlpha.VS = { reinterpret_cast<BYTE*>(m_vsByteCode->GetBufferPointer()), m_vsByteCode->GetBufferSize() };
-	psoDescNoAlpha.PS = { reinterpret_cast<BYTE*>(m_psByteCode->GetBufferPointer()), m_psByteCode->GetBufferSize() };
+	psoDescNoAlpha.VS = { reinterpret_cast<BYTE*>(m_pVsByteCode->GetBufferPointer()), m_pVsByteCode->GetBufferSize() };
+	psoDescNoAlpha.PS = { reinterpret_cast<BYTE*>(m_pPsByteCode->GetBufferPointer()), m_pPsByteCode->GetBufferSize() };
 
 	psoDescAlpha.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDescAlpha.RasterizerState.CullMode = m_cullMode;
@@ -288,7 +288,7 @@ void GCShader::Pso()
 
 ID3D12RootSignature* GCShader::GetRootSign() 
 {
-	return m_RootSignature;
+	return m_pRootSignature;
 }
 
 ID3D12PipelineState* GCShader::GetPso(bool alpha) 
@@ -300,12 +300,12 @@ ID3D12PipelineState* GCShader::GetPso(bool alpha)
 
 ID3DBlob* GCShader::GetmvsByteCode()
 {
-	return m_vsByteCode;
+	return m_pVsByteCode;
 }
 
 ID3DBlob* GCShader::GetmpsByteCode()
 {
-	return m_psByteCode;
+	return m_pPsByteCode;
 }
 
 ID3DBlob* GCShader::CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint,const std::string& target)
@@ -383,7 +383,7 @@ GC_GRAPHICS_ERROR GCShader::Load() {
 	RootSign();
 	Pso();
 
-	if (!GC_CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_pPsoAlpha, m_pPsoNoAlpha, m_vsByteCode, m_psByteCode))
+	if (!GC_CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_pRootSignature, m_pPsoAlpha, m_pPsoNoAlpha, m_pVsByteCode, m_pPsByteCode))
 		return GCRENDER_ERROR_POINTER_NULL;
 
 	return GCRENDER_SUCCESS_OK;

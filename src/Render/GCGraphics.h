@@ -196,6 +196,9 @@ public:
 		GCMATRIX& projectionMatrix,
 		GCMATRIX& viewMatrix);
 
+	// No comment
+	GCMATRIX UpdateScalingRatio(const GCMATRIX& worldMatrix);
+
 	/************************************************************************************************
 	* @brief Update one object data, using GCWORLDCB Struct, template for update object matrix, and object/layer id in for PixelIdMapping
 	*
@@ -369,7 +372,7 @@ private:
 	std::vector<GCMesh*> m_vMeshes;
 
 	// Scene properties
-	std::vector<GCShaderUploadBufferBase*> m_pCbCameraInstances;
+	std::vector<GCShaderUploadBufferBase*> m_cbCameraInstances;
 	GCShaderUploadBufferBase* m_pCbLightPropertiesInstance;
 
 	//Vertex Parser
