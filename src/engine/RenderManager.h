@@ -1,42 +1,36 @@
 #pragma once
 #include "pch.h"
-#include "../Render/pch.h"
 
 using namespace DirectX;
 
-class Animation;
-
 class GCRenderManager
 {
-    friend class Component;
-private:
-    GCList<Component*> m_componentList;
+friend class GCAnimation;
+friend class GCSprite;
+friend class GCComponent;
+friend class GCSpriteRenderer;
+friend class GCBoxCollider;
+friend class GCAnimator;
+friend class GCCamera;
+friend class GCGameObject;
+friend class GCGameManager;
 
-public:
+private:
     GCRenderManager( Window* pWindow );
     ~GCRenderManager();
 
-    void RegisterComponent(Component* pComponent);
-
-    void CreateGeometry();
-
+    void RegisterComponent( GCComponent* pComponent );
+    
     void Render();
 
-    void AddAnimation( Animation* animation , std::string animationName );
-    Animation* GetAnimation( std::string animationName );
+    void AddAnimation( GCAnimation* pAnimation , std::string animationName );
+    GCAnimation* GetAnimation( std::string animationName );
     GC_SPRITESHEET_DATA* GetSpriteSheetData() { return &m_spriteSheetData; }
 
-    GCGraphics* m_pGraphics; 
-    GCGeometry* m_pPlane;
-    GCGeometry* m_pCircle;
-
-
-    //camera
-    XMVECTOR m_cameraPosition ;
-    XMVECTOR m_cameraTarget ;
-    XMVECTOR m_cameraUp ;
-
-protected:
-    GCMap<std::string , Animation*> m_animationList;
+private:
+    GCGraphics* m_pGraphics;
+    GCList<GCComponent*> m_componentsList;
+    GCMap<std::string , GCAnimation*> m_animationsList;
+    GCSprite* m_pSpriteCollider;
     GC_SPRITESHEET_DATA m_spriteSheetData;
 };

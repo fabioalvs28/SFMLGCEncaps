@@ -1,7 +1,5 @@
 #include "pch.h"
 
-//todo HasTag( const char* tag )
-
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -52,18 +50,22 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
-    pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
+    for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
+        pGameObject->AddTag( pTagNode->GetData() );
     pGameObject->m_layer = m_layer;
-    for ( auto it : m_componentsList )
+    GCComponent* pComponent;
+    for ( int i = 0; i < GCComponent::componentCount; i++ )
     {
-        Component* pComponent = it.second;
-        Component* pNewComponent = pComponent->Duplicate();
-        pNewComponent->m_pGameObject = pGameObject;
-        pNewComponent->Start();
-        pComponent->CopyTo( pNewComponent );
-        pNewComponent->m_globalActive = pGameObject->IsActive();
-        pGameObject->m_componentsList.Insert( pNewComponent->GetID(), pNewComponent );
-        GC::GetActiveSceneManager()->AddToCreateQueue( pNewComponent );
+        if ( m_componentsList.Find( i, pComponent ) )
+        {
+            GCComponent* pNewComponent = pComponent->Duplicate();
+            pNewComponent->m_pGameObject = pGameObject;
+            pNewComponent->Start();
+            pComponent->CopyTo( pNewComponent );
+            pNewComponent->m_globalActive = pGameObject->IsActive();
+            pGameObject->m_componentsList.Insert( pNewComponent->GetID(), pNewComponent );
+            GC::GetActiveSceneManager()->AddToCreateQueue( pNewComponent );
+        }
     }
     
     return pGameObject;
@@ -90,8 +92,10 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
     pGameObject->m_name = m_name;
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
-    for ( auto it : m_componentsList )
-        it.second->Duplicate();
+    GCComponent* pComponent;
+    for ( int i = 0; i < GCComponent::componentCount; i++ )
+        if ( m_componentsList.Find( i, pComponent ) )
+            pComponent->Duplicate();
     
     return pGameObject;
 }
@@ -193,22 +197,30 @@ void GCGameObject::AddTag( const char* tag )
 ////////////////////////////////////////////////////////////////////////////////////////
 void GCGameObject::RemoveTag( const char* tag )
 {
-    int index = m_tagsList.GetIndex( tag );
-    ASSERT( index != -1, LOG_FATAL, "Trying to remove a tag from a GameObject that doesn't have it" );
-    RemoveTag( index );
+    for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
+    {
+        if ( pTagNode->GetData() == tag )
+        {
+            pTagNode->Delete();
+            return;
+        }
+    }
 }
-
-/////////////////////////////////////////////////////////////////////////
-/// @brief Removes a tag from the GameObject.
-/// 
-/// @param index An integer indicating the index of the tag to remove.
-/////////////////////////////////////////////////////////////////////////
-void GCGameObject::RemoveTag( int index ) { m_tagsList.Remove( index ); }
 
 ///////////////////////////////////////////////////
 /// @brief Removes all tags from the GameObject.
 ///////////////////////////////////////////////////
 void GCGameObject::RemoveTags() { m_tagsList.Clear(); }
+
+///////////////////////////////////////////////////////////////////////////////////////
+/// @brief Checks if the GameObject contains the specified tag.
+/// 
+/// @param tag A string value (const char*) indicating the name of the tag to check.
+/// 
+/// @return A boolean value indicating if the GameObject contains the specified tag.
+///////////////////////////////////////////////////////////////////////////////////////
+bool GCGameObject::HasTag( const char* tag ) const
+{ return m_tagsList.Find( tag ); }
 
 
 
@@ -221,8 +233,10 @@ void GCGameObject::Activate()
     {
         m_selfActive = true;
         m_globalActive = true;
-        for ( auto it : m_componentsList )
-            it.second->ActivateGlobal();
+        GCComponent* pComponent;
+        for ( int i = 0; i < GCComponent::componentCount; i++ )
+            if ( m_componentsList.Find( i, pComponent ) )
+                pComponent->ActivateGlobal();
         for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
             pGameObjectNode->GetData()->ActivateGlobal();
     }
@@ -238,8 +252,10 @@ void GCGameObject::Deactivate()
         m_selfActive = false;
         if ( m_globalActive == true )
         {
-            for ( auto it : m_componentsList )
-                it.second->DeactivateGlobal();
+            GCComponent* pComponent;
+            for ( int i = 0; i < GCComponent::componentCount; i++ )
+                if ( m_componentsList.Find( i, pComponent ) )
+                    pComponent->DeactivateGlobal();
             for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
                 pGameObjectNode->GetData()->DeactivateGlobal();
         }
@@ -256,8 +272,11 @@ void GCGameObject::ActivateGlobal()
         m_globalActive = true;
         if ( m_selfActive == true )
         {
-            for ( auto it : m_componentsList )
-                it.second->ActivateGlobal();
+
+            GCComponent* pComponent;
+            for ( int i = 0; i < GCComponent::componentCount; i++ )
+                if ( m_componentsList.Find( i, pComponent ) )
+                    pComponent->ActivateGlobal();
             for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
                 pGameObjectNode->GetData()->ActivateGlobal();
         }
@@ -272,8 +291,12 @@ void GCGameObject::DeactivateGlobal()
     if ( m_globalActive == true )
     {
         m_globalActive = false;
-        for ( auto it : m_componentsList )
-            it.second->DeactivateGlobal();
+        
+        GCComponent* pComponent;
+        for ( int i = 0; i < GCComponent::componentCount; i++ )
+            if ( m_componentsList.Find( i, pComponent ) )
+                pComponent->DeactivateGlobal();
+
         for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
             pGameObjectNode->GetData()->DeactivateGlobal();
     }
@@ -349,16 +372,19 @@ void GCGameObject::SetLayer( const int layer )
 { 
     m_layer = layer; 
 
-    for ( auto it : m_componentsList )
+    GCComponent* pComponent;
+    for ( int i = 0; i < GCComponent::componentCount; i++ )
     {
-        Component* pComponent = it.second;
-        if ( pComponent->IsFlagSet( RENDER ) )
+        if ( m_componentsList.Find( i, pComponent ) )
         {
-            if ( pComponent->m_pRenderNode != nullptr )
+            if ( pComponent->IsFlagSet( RENDER ) )
             {
-                pComponent->m_pRenderNode->Delete();
-                pComponent->m_pRenderNode = nullptr;
-                GC::GetActiveRenderManager()->RegisterComponent( pComponent );
+                if ( pComponent->m_pRenderNode != nullptr )
+                {
+                    pComponent->m_pRenderNode->Delete();
+                    pComponent->m_pRenderNode = nullptr;
+                    GC::GetActiveRenderManager()->RegisterComponent( pComponent );
+                }
             }
         }
     }
@@ -396,15 +422,56 @@ bool GCGameObject::IsActive() const { return m_globalActive && m_selfActive; }
 //////////////////////////////////////////////////////////////////////////////////
 const char* GCGameObject::GetName() const { return m_name; }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// @return A string value (const char*) indicating the searched tag of the GameObject.
-//////////////////////////////////////////////////////////////////////////////////////////
-const char* GCGameObject::GetTag( int index ) const { return m_tagsList[ index ]; } //? Why this method ?
-
 /////////////////////////////////////////////////////////////////
 /// @return An integer indicating the layer of the GameObject.
 /////////////////////////////////////////////////////////////////
 int GCGameObject::GetLayer() const { return m_layer; }
+
+
+
+////////////////////////////////////////////////////////////
+/// @brief Registers the Script in the scriptTriggerList.
+/// 
+/// @param pScript A pointer to the Script to register.
+////////////////////////////////////////////////////////////
+void GCGameObject::RegisterScriptToTrigger( GCScript* pScript )
+{
+    ASSERT( pScript != nullptr, LOG_FATAL, "Trying to register a nullptr pScript to the scriptTriggerList" );
+    pScript->m_pTriggerNode = m_scriptTriggerList.PushBack( pScript );
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerEnter method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
+void GCGameObject::OnTriggerEnter( GCCollider* pCollider )
+{
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerEnter( pCollider );
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerStay method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
+void GCGameObject::OnTriggerStay( GCCollider* pCollider )
+{
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerStay( pCollider );
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnTriggerExit method.
+/// 
+/// @param pCollider A pointer to the collider with which the collision happened.
+////////////////////////////////////////////////////////////////////////////////////
+void GCGameObject::OnTriggerExit( GCCollider* pCollider )
+{
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptTriggerList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnTriggerExit( pCollider );
+}
 
 
 
@@ -415,7 +482,7 @@ int GCGameObject::GetLayer() const { return m_layer; }
 //////////////////////////////////////////////////////
 void GCGameObject::RemoveComponent( int ID )
 {
-    Component* pComponent;
+    GCComponent* pComponent;
     ASSERT( m_componentsList.Find( ID, pComponent ) == true, LOG_FATAL, "Trying to remove a Component from a GameObject that doesn't have it" ); //? The .Find() is necessary for the method to work but it's in an ASSERT ?
     m_componentsList.Remove( ID ); //? To See ?
     GC::GetActiveSceneManager()->AddToDeleteQueue( pComponent );
@@ -426,6 +493,8 @@ void GCGameObject::RemoveComponent( int ID )
 ///////////////////////////////////////////////////////////
 void GCGameObject::ClearComponents()
 {
-    for ( auto it : m_componentsList )
-        RemoveComponent( it.second->GetID() );
+    GCComponent* pComponent;
+    for ( int i = 0; i < GCComponent::componentCount; i++ )
+        if ( m_componentsList.Find( i, pComponent ) )
+            RemoveComponent( pComponent->GetID() );
 }

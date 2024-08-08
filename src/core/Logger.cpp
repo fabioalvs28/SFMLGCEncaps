@@ -1,15 +1,15 @@
 #include "pch.h"
 
-const char* Logger::NormalColorCode = "\x1B[0m";
-const char* Logger::WhiteColorCode = "\x1B[37m";
-const char* Logger::GreenColorCode = "\x1B[32m";
-const char* Logger::YellowColorCode = "\x1B[33m";
-const char* Logger::RedColorCode = "\x1B[31m";
+const char* Logger::s_normalColorCode = "\x1B[0m";
+const char* Logger::s_whiteColorCode = "\x1B[37m";
+const char* Logger::s_greenColorCode = "\x1B[32m";
+const char* Logger::s_yellowColorCode = "\x1B[33m";
+const char* Logger::s_redColorCode = "\x1B[31m";
 
 
 Logger::Logger(const char* name)
 {
-	m_InitialString = name;
+	m_initialString = name;
 }
 
 const char* Logger::MessagePriorityToString(LogPriority priority)
@@ -36,12 +36,12 @@ void Logger::SetColor(LogPriority priority)
 	switch (priority)
 	{
 
-	case Logger::LOG_TRACE: color = WhiteColorCode; break;
-	case Logger::LOG_DEBUG: color = WhiteColorCode; break;
-	case Logger::LOG_INFO: color = GreenColorCode; break;
-	case Logger::LOG_WARN: color = YellowColorCode; break;
-	case Logger::LOG_ERROR: color = RedColorCode; break;
-	default: color = NormalColorCode; break;
+	case Logger::LOG_TRACE: color = s_whiteColorCode; break;
+	case Logger::LOG_DEBUG: color = s_whiteColorCode; break;
+	case Logger::LOG_INFO: color = s_greenColorCode; break;
+	case Logger::LOG_WARN: color = s_yellowColorCode; break;
+	case Logger::LOG_ERROR: color = s_redColorCode; break;
+	default: color = s_normalColorCode; break;
 	}
 
 	std::printf("%s", color);

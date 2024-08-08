@@ -9,7 +9,7 @@ public:
 
 	virtual void Init();
 
-	virtual void Update(float deltaTime) = 0;
+	virtual void Update( float deltaTime ) = 0;
 	
 	virtual void CleanUp();
 };

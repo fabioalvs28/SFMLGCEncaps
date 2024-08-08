@@ -6,10 +6,10 @@ class GCStateManager
 public:
 
 	void Update();
-	void ChangeState(GCState* newState);
+	void ChangeState( GCState* pNewState );
 
 private:
-	GCState* m_currentState = nullptr;
-	GCState* m_nextState = nullptr;
-	GCState* m_previousState = nullptr;
+	GCState* m_pCurrentState = nullptr;
+	GCState* m_pNextState = nullptr;
+	GCState* m_pPreviousState = nullptr;
 };

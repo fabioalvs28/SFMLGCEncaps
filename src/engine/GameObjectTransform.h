@@ -4,7 +4,7 @@
 struct GCGameObjectTransform: public GCTransform
 {
 friend class GCGameObject;
-friend class Component;
+friend class GCComponent;
 
 public:
 	void Translate( const GCVEC3& translation );
@@ -24,6 +24,9 @@ public:
 	void SetRotationY( float angle ) {}; //! FAIS LE
 	void SetRotationZ( float angle ) {};
 
+	GCVEC3& GetWorldPosition();
+	GCVEC3& GetWorldScale();
+	GCMATRIX& GetWorldRotationMatrix();
 	GCMATRIX& GetWorldMatrix();
 
 protected:

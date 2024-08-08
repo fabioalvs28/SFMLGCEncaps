@@ -39,7 +39,7 @@ protected:
     GCSceneManager* m_pSceneManager; // A pointer to the GameManager's SceneManager
     GCRenderManager* m_pRenderManager; // A pointer to the GameManager's RenderManager
     
-    GCMap<unsigned int, Script*> m_scriptsList; // A list of pointers to the GameManager's Scripts
+    GCMap<unsigned int, GCScript*> m_scriptsList; // A list of pointers to the GameManager's Scripts
 };
 
 
@@ -73,9 +73,9 @@ ScriptClass* GCGameManager::AddScript()
 template <class ScriptClass>
 ScriptClass* GCGameManager::GetScript()
 {
-    Script* pScript;
+    GCScript* pScript;
     if ( m_scriptsList.Find( ScriptClass::GetIDStatic(), pScript ) == true )
-        return static_cast<ScriptClass*>(pScript);
+        return static_cast<ScriptClass*>( pScript );
     return nullptr;
 }
 

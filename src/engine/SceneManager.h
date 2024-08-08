@@ -3,7 +3,7 @@
 
 class GCSceneManager
 {
-friend class Component;
+friend class GCComponent;
 friend class GCGameObject;
 friend class GCScene;
 friend class GCGameManager;
@@ -22,13 +22,13 @@ private:
 	void UnloadScene( GCScene* pScene );
 	void DestroyScene( GCScene* pScene );
 	
-	void CreateComponent( Component* pComponent );
-	void DestroyComponent( Component* pComponent );
+	void CreateComponent( GCComponent* pComponent );
+	void DestroyComponent( GCComponent* pComponent );
 	
 	void DestroyGameObject( GCGameObject* pGameObject );
 	
-	void AddToCreateQueue( Component* pComponent );
-	void AddToDeleteQueue( Component* pComponent );
+	void AddToCreateQueue( GCComponent* pComponent );
+	void AddToDeleteQueue( GCComponent* pComponent );
 	
 	void AddToDeleteQueue( GCGameObject* pGameObject );
 	
@@ -40,8 +40,8 @@ private:
 	GCList<GCScene*> m_scenesList; // A list of pointers to every existing Scenes in the Game
 	GCList<GCScene*> m_loadedScenesList; // A list of pointers to every loaded scenes in the Game
 	
-	GCList<Component*> m_componentsToCreateList; // A list of pointers to the Components to create in the next frame
-	GCList<Component*> m_componentsToDeleteList; // A list of pointers to the Components to delete in the next frame
+	GCList<GCComponent*> m_componentsToCreateList; // A list of pointers to the Components to create in the next frame
+	GCList<GCComponent*> m_componentsToDeleteList; // A list of pointers to the Components to delete in the next frame
 	
 	GCList<GCGameObject*> m_gameObjectsToDeleteList; // A list of pointers of the GameObjects to delete in the next frame
 };

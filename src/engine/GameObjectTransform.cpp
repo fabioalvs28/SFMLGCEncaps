@@ -72,6 +72,15 @@ void GCGameObjectTransform::SetRotation( float yaw, float pitch, float roll )
 
 
 
+GCVEC3& GCGameObjectTransform::GetWorldPosition()
+{ return m_worldPosition; }
+
+GCVEC3& GCGameObjectTransform::GetWorldScale()
+{ return m_worldScale; }
+
+GCMATRIX& GCGameObjectTransform::GetWorldRotationMatrix()
+{ return m_worldRotationMatrix; }
+
 GCMATRIX& GCGameObjectTransform::GetWorldMatrix()
 { return m_worldMatrix; }
 

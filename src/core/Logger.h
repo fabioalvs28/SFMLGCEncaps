@@ -91,15 +91,15 @@ private:
 
 	LogPriority m_logPriority = LOG_DEBUG;
 	std::mutex m_LogLock;
-	const char* m_InitialString = "";
-	const char* m_TimestampFormat = "%Y-%m-%d %H:%M:%S";
+	const char* m_initialString = "";
+	const char* m_timestampFormat = "%Y-%m-%d %H:%M:%S";
 	char m_TimeBuffer[80];
 
-	static const char* NormalColorCode;
-	static const char* WhiteColorCode;
-	static const char* GreenColorCode;
-	static const char* YellowColorCode;
-	static const char* RedColorCode;
+	static const char* s_normalColorCode;
+	static const char* s_whiteColorCode;
+	static const char* s_greenColorCode;
+	static const char* s_yellowColorCode;
+	static const char* s_redColorCode;
 };
 
 template<typename ...Args>
@@ -114,15 +114,15 @@ void Logger::Log(LogPriority msgPriority, const char* message, Args&& ... args)
 		std::scoped_lock lock(m_LogLock);
 
 		SetColor(msgPriority);
-		std::strftime(m_TimeBuffer, sizeof(m_TimeBuffer), m_TimestampFormat, &timestamp);
+		std::strftime(m_TimeBuffer, sizeof(m_TimeBuffer), m_timestampFormat, &timestamp);
 		std::printf("%s ", m_TimeBuffer);
 
 		const char* msgPriorityString = MessagePriorityToString(msgPriority);
-		std::printf("%s%s", msgPriorityString, m_InitialString);
+		std::printf("%s%s", msgPriorityString, m_initialString);
 
 		std::printf(message, args ...);
 		std::printf("\n");
 
-		std::printf(NormalColorCode);
+		std::printf(s_normalColorCode);
 	}
 }
