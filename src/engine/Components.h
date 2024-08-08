@@ -1,15 +1,12 @@
 #pragma once
 #include "pch.h"
-#include "../Render/pch.h"
 
 using namespace DirectX;
 
-// TODO Adding lots of stuff to the components
 // TODO Transforms for colliders
 // TODO Make sure IDs are handled differently
-// TODO À faire dans le Duplicate() : Start()
 
-class Animation;
+class GCAnimation;
 
 enum FLAGS
 {
@@ -96,9 +93,8 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
     
-    void SetSprite( std::string fileName);
-    
-    void GetSprite() {};
+    void SetSprite( GCSprite* pSprite );
+    GCSprite* GetSprite() { return m_pSprite; };
 
 protected:
 	GCSpriteRenderer();
@@ -113,14 +109,11 @@ protected:
 
     int GetComponentLayer() override { return 5; }
 
-    void SetAnimatedSprite(GCGeometry* pGeometry, GCTexture* pTexture);
+    void SetAnimatedSprite( GCGeometry* pGeometry );
 
 protected:
     inline static const int m_ID = ++GCComponent::componentCount;
-
-    GCGeometry* m_pGeometry;
-    GCMesh* m_pMesh;
-    GCMaterial* m_pMaterial;
+    GCSprite* m_pSprite;
 
 };
 
@@ -159,10 +152,6 @@ protected:
     bool m_visible;
     
     GCListNode<GCCollider*>* m_pColliderNode;
-
-    GCGeometry* m_pGeometry;
-    GCMesh* m_pMesh;
-    GCMaterial* m_pMaterial;
 };
 
 
@@ -272,8 +261,8 @@ public:
     void StopAnimation();
 
     void LoadSpriteSheet( std::string fileName , int row , int col , int width , int height );
-    Animation* CreateAnimation( std::string animationName , int firstFrame , int frameNumber , float frameDisplayTime = 0.1f );
-    Animation* CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList , float frameDisplayTime = 0.1f );
+    GCAnimation* CreateAnimation( std::string animationName , int firstFrame , int frameNumber , float frameDisplayTime = 0.1f );
+    GCAnimation* CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList , float frameDisplayTime = 0.1f );
 
     std::string GetActiveAnimation() { return m_activeAnimationName; }
 
@@ -298,7 +287,7 @@ private:
     GCSpriteRenderer* m_pSpriteRenderer;
 
     std::string m_activeAnimationName;
-    Animation* m_pCurrentAnimation;
+    GCAnimation* m_pCurrentAnimation;
 
     bool m_isLoop;
     int m_lastFrameIndex;

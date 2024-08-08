@@ -53,16 +53,19 @@ GCGameObject* GCGameObject::Duplicate()
     for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
         pGameObject->AddTag( pTagNode->GetData() );
     pGameObject->m_layer = m_layer;
-    for ( auto it : m_componentsList )
+    GCComponent* pComponent;
+    for ( int i = 0; i < GCComponent::componentCount; i++ )
     {
-        GCComponent* pComponent = it.second;
-        GCComponent* pNewComponent = pComponent->Duplicate();
-        pNewComponent->m_pGameObject = pGameObject;
-        pNewComponent->Start();
-        pComponent->CopyTo( pNewComponent );
-        pNewComponent->m_globalActive = pGameObject->IsActive();
-        pGameObject->m_componentsList.Insert( pNewComponent->GetID(), pNewComponent );
-        GC::GetActiveSceneManager()->AddToCreateQueue( pNewComponent );
+        if ( m_componentsList.Find( i, pComponent ) )
+        {
+            GCComponent* pNewComponent = pComponent->Duplicate();
+            pNewComponent->m_pGameObject = pGameObject;
+            pNewComponent->Start();
+            pComponent->CopyTo( pNewComponent );
+            pNewComponent->m_globalActive = pGameObject->IsActive();
+            pGameObject->m_componentsList.Insert( pNewComponent->GetID(), pNewComponent );
+            GC::GetActiveSceneManager()->AddToCreateQueue( pNewComponent );
+        }
     }
     
     return pGameObject;
@@ -89,8 +92,10 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
     pGameObject->m_name = m_name;
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
-    for ( auto it : m_componentsList )
-        it.second->Duplicate();
+    GCComponent* pComponent;
+    for ( int i = 0; i < GCComponent::componentCount; i++ )
+        if ( m_componentsList.Find( i, pComponent ) )
+            pComponent->Duplicate();
     
     return pGameObject;
 }
@@ -228,8 +233,10 @@ void GCGameObject::Activate()
     {
         m_selfActive = true;
         m_globalActive = true;
-        for ( auto it : m_componentsList )
-            it.second->ActivateGlobal();
+        GCComponent* pComponent;
+        for ( int i = 0; i < GCComponent::componentCount; i++ )
+            if ( m_componentsList.Find( i, pComponent ) )
+                pComponent->ActivateGlobal();
         for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
             pGameObjectNode->GetData()->ActivateGlobal();
     }
@@ -245,8 +252,10 @@ void GCGameObject::Deactivate()
         m_selfActive = false;
         if ( m_globalActive == true )
         {
-            for ( auto it : m_componentsList )
-                it.second->DeactivateGlobal();
+            GCComponent* pComponent;
+            for ( int i = 0; i < GCComponent::componentCount; i++ )
+                if ( m_componentsList.Find( i, pComponent ) )
+                    pComponent->DeactivateGlobal();
             for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
                 pGameObjectNode->GetData()->DeactivateGlobal();
         }
@@ -263,8 +272,11 @@ void GCGameObject::ActivateGlobal()
         m_globalActive = true;
         if ( m_selfActive == true )
         {
-            for ( auto it : m_componentsList )
-                it.second->ActivateGlobal();
+
+            GCComponent* pComponent;
+            for ( int i = 0; i < GCComponent::componentCount; i++ )
+                if ( m_componentsList.Find( i, pComponent ) )
+                    pComponent->ActivateGlobal();
             for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
                 pGameObjectNode->GetData()->ActivateGlobal();
         }
@@ -279,8 +291,12 @@ void GCGameObject::DeactivateGlobal()
     if ( m_globalActive == true )
     {
         m_globalActive = false;
-        for ( auto it : m_componentsList )
-            it.second->DeactivateGlobal();
+        
+        GCComponent* pComponent;
+        for ( int i = 0; i < GCComponent::componentCount; i++ )
+            if ( m_componentsList.Find( i, pComponent ) )
+                pComponent->DeactivateGlobal();
+
         for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode!= nullptr; pGameObjectNode->GetNext() )
             pGameObjectNode->GetData()->DeactivateGlobal();
     }
@@ -356,16 +372,19 @@ void GCGameObject::SetLayer( const int layer )
 { 
     m_layer = layer; 
 
-    for ( auto it : m_componentsList )
+    GCComponent* pComponent;
+    for ( int i = 0; i < GCComponent::componentCount; i++ )
     {
-        GCComponent* pComponent = it.second;
-        if ( pComponent->IsFlagSet( RENDER ) )
+        if ( m_componentsList.Find( i, pComponent ) )
         {
-            if ( pComponent->m_pRenderNode != nullptr )
+            if ( pComponent->IsFlagSet( RENDER ) )
             {
-                pComponent->m_pRenderNode->Delete();
-                pComponent->m_pRenderNode = nullptr;
-                GC::GetActiveRenderManager()->RegisterComponent( pComponent );
+                if ( pComponent->m_pRenderNode != nullptr )
+                {
+                    pComponent->m_pRenderNode->Delete();
+                    pComponent->m_pRenderNode = nullptr;
+                    GC::GetActiveRenderManager()->RegisterComponent( pComponent );
+                }
             }
         }
     }
@@ -474,6 +493,8 @@ void GCGameObject::RemoveComponent( int ID )
 ///////////////////////////////////////////////////////////
 void GCGameObject::ClearComponents()
 {
-    for ( auto it : m_componentsList )
-        RemoveComponent( it.second->GetID() );
+    GCComponent* pComponent;
+    for ( int i = 0; i < GCComponent::componentCount; i++ )
+        if ( m_componentsList.Find( i, pComponent ) )
+            RemoveComponent( pComponent->GetID() );
 }

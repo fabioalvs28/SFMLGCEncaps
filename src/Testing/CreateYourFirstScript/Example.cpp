@@ -25,14 +25,14 @@ void GCScriptExample::ChangeTime()
     // If it was night time, change the Sprite to the sun, turn the night status off and add 1 to the day counter
     if (m_night)
     {
-        m_pSpriteRenderer->SetSprite("Sun.dds");
+        // m_pSpriteRenderer->SetSprite("Sun.dds");
         m_night = false;
         m_days++;
     }
     // If it was day time, change the Sprite to the moon and turn the night status on
     else
     {
-        m_pSpriteRenderer->SetSprite("Moon.dds");
+        // m_pSpriteRenderer->SetSprite("Moon.dds");
         m_night = true;
     }
 }
@@ -44,7 +44,7 @@ void GCScriptExample::Start()
     // Set the initial position and Sprite, and initialize the day counter and night status
     ResetPosition();
     m_pSpriteRenderer = m_pGameObject->GetComponent<GCSpriteRenderer>();
-    m_pSpriteRenderer->SetSprite("Sun.dds");
+    // m_pSpriteRenderer->SetSprite("Sun.dds");
     m_night = false;
     m_days = 0;
 }

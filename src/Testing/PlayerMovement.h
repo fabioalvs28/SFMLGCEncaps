@@ -8,5 +8,7 @@ private:
     void Update() override;
     
     float m_speed;
+    GCSprite* m_pSprite1;
+    GCSprite* m_pSprite2;
 
 CREATE_SCRIPT_END
