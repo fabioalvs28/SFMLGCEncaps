@@ -320,7 +320,6 @@ void GCAnimator::CopyTo( GCComponent* pDestination )
 	GCAnimator* pAnimator = static_cast<GCAnimator*>( pDestination );
 	
 	pAnimator->m_spritesheetName = m_spritesheetName;
-	pAnimator->m_pSpriteSheetInfo = m_pSpriteSheetInfo;
 	
 	pAnimator->m_activeAnimationName = m_activeAnimationName;
 	pAnimator->m_pCurrentAnimation = m_pCurrentAnimation;
@@ -391,6 +390,7 @@ void GCAnimator::LoadSpriteSheet(std::string fileName, int spriteSheetID)
 {
 	m_spritesheetName = fileName;
 	m_spriteSheetID = spriteSheetID;
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -405,7 +405,7 @@ GCAnimation* GCAnimator::CreateAnimation( std::string animationName, int firstFr
 {
 	ASSERT( m_spriteSheetID != -1, LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
-	GCAnimation* pNewAnimation = new Animation();
+	GCAnimation* pNewAnimation = new GCAnimation();
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
 	for ( int i = firstFrame; i < firstFrame + frameNumber; i++ )
 		pNewAnimation->AddFrame( i, frameDisplayTime );
@@ -426,7 +426,7 @@ GCAnimation* GCAnimator::CreateAnimationWithCustomFrames( std::string animationN
 {
 	ASSERT( m_spriteSheetID != -1 , LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
-	GCAnimation* pNewAnimation = new Animation();
+	GCAnimation* pNewAnimation = new GCAnimation();
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
 
 	for ( int i = 0; i < frameList.size() ; i++ )

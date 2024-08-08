@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GCEngine.h"
+#include "PlayerMovement.h"
 
 
 int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -7,14 +8,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
     GCScene* pScene = GCScene::Create();
     
-    GCSprite pPlayerSprite( "goofyImage.dds" );
+    GCSprite pPlayerSprite( "caow.dds" );
     GCGameObject* pPlayer = pScene->CreateGameObject();
     pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite( &pPlayerSprite );
     pPlayer->AddComponent<GCBoxCollider>()->SetVisible( false );
-    GCAnimator* pAnimator = pPlayer->AddComponent<GCAnimator>();
-    pAnimator->LoadSpriteSheet( "sprite_sheet.dds", 4, 6, 823, 823 );
-    pAnimator->CreateAnimation( "walk", 0, 6, 0.1f );
-    pAnimator->PlayAnimation( "walk", true );
     pPlayer->AddComponent<GCScriptPlayerMovement>();
     pPlayer->SetLayer(1);
     

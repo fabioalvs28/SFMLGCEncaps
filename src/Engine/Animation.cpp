@@ -15,7 +15,7 @@ void GCAnimation::AddFrame( int frameID, float displayTime, bool isFlipingX, boo
 
 void GCAnimation::StartAnimation()
 {
-	m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_spriteSheetID, m_pFrames[ 0 ]->GetFrameID(), *pRender->GetSpriteSheetData() );
+	m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_spriteSheetID, m_pFrames[ 0 ]->GetFrameID(), *GC::GetActiveRenderManager()->GetSpriteSheetData() );
 }
 
 bool GCAnimation::Update( int* currentFrameIndex, float* currentFrameTime )
@@ -29,7 +29,7 @@ bool GCAnimation::Update( int* currentFrameIndex, float* currentFrameTime )
 		{
 			*currentFrameTime -= m_pFrames[*currentFrameIndex]->GetDisplayTime();
 			IncrementFrame( currentFrameIndex );
-			m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(m_pGeometry, m_spriteSheetID, m_pFrames[*currentFrameIndex]->GetFrameID(), *pRender->GetSpriteSheetData());
+			m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(m_pGeometry, m_spriteSheetID, m_pFrames[*currentFrameIndex]->GetFrameID(), *GC::GetActiveRenderManager()->GetSpriteSheetData() );
 
 			return true;
 		}
@@ -53,13 +53,14 @@ const GCFrame* GCAnimation::GetCurrentFrame( int currentFrameIndex ) const
 }
 
 
-void Animation::SetSpriteSheet( std::string fileName , int spriteSheetID )
+void GCAnimation::SetSpriteSheet(std::string filename, int spriteSheetID)
 {
 	m_spriteSheetID = spriteSheetID;
 
 	m_pGraphics->InitializeGraphicsResourcesStart();
-	GCTexture* pTexture = m_pGraphics->CreateTexture( std::string( "../../../res/" ) + filename ).resource;
-    m_pGraphics->InitializeGraphicsResourcesEnd();
+	GCTexture* pTexture = m_pGraphics->CreateTexture(std::string("../../../res/") + filename).resource;
+	m_pGraphics->InitializeGraphicsResourcesEnd();
 
-	m_pMaterial = m_pGraphics->CreateMaterial( m_pGraphics->CreateShaderTexture().resource ).resource;
-	m_pMaterial->SetTexture( pTexture );
+	m_pMaterial = m_pGraphics->CreateMaterial(m_pGraphics->CreateShaderTexture().resource).resource;
+	m_pMaterial->SetTexture(pTexture);
+}
