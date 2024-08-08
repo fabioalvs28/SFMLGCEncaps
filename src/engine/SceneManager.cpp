@@ -117,11 +117,9 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 void GCSceneManager::CreateComponent( GCComponent* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to create a nullptr pComponent" );
+	pComponent->m_created = true;
 	if ( pComponent->IsActive() == true )
-	{
-		pComponent->m_created = true;
 		pComponent->RegisterToManagers();
-	}
 }
 
 ///////////////////////////////////////////////////////////////
