@@ -260,7 +260,7 @@ public:
     void PlayAnimation( std::string animationName, bool isLoop );
     void StopAnimation();
 
-    void LoadSpriteSheet( std::string fileName , int row , int col , int width , int height );
+    void LoadSpriteSheet( std::string fileName ,int spriteSheetID );
     GCAnimation* CreateAnimation( std::string animationName , int firstFrame , int frameNumber , float frameDisplayTime = 0.1f );
     GCAnimation* CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList , float frameDisplayTime = 0.1f );
 
@@ -283,9 +283,8 @@ protected:
 
 private:
     std::string m_spritesheetName;
-    GC_SPRITESHEET_INFO* m_pSpriteSheetInfo;
     GCSpriteRenderer* m_pSpriteRenderer;
-
+    int m_spriteSheetID;
     std::string m_activeAnimationName;
     GCAnimation* m_pCurrentAnimation;
 

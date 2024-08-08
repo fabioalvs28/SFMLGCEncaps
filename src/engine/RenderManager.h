@@ -25,11 +25,12 @@ private:
 
     void AddAnimation( GCAnimation* pAnimation , std::string animationName );
     GCAnimation* GetAnimation( std::string animationName );
+    GC_SPRITESHEET_DATA* GetSpriteSheetData() { return &m_spriteSheetData; }
 
 private:
     GCGraphics* m_pGraphics;
     GCList<GCComponent*> m_componentsList;
     GCMap<std::string , GCAnimation*> m_animationsList;
     GCSprite* m_pSpriteCollider;
-
+    GC_SPRITESHEET_DATA m_spriteSheetData;
 };

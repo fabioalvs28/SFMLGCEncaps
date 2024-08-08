@@ -1,13 +1,13 @@
 #include "pch.h"
 //test
 GCShader::GCShader()
-	: m_RootSignature(nullptr),
+	: m_pRootSignature(nullptr),
 
 	m_pPsoAlpha(nullptr),
 	m_pPsoNoAlpha(nullptr),
 
-	m_vsByteCode(nullptr),
-	m_psByteCode(nullptr),
+	m_pVsByteCode(nullptr),
+	m_pPsByteCode(nullptr),
 
 	m_pRender(nullptr),
 
@@ -37,20 +37,20 @@ GCShader::GCShader()
 
 GCShader::~GCShader()
 {
-	m_RootSignature->Release();
+	m_pRootSignature->Release();
 	m_pPsoAlpha->Release();
 	m_pPsoNoAlpha->Release();
-	m_vsByteCode->Release();
-	m_psByteCode->Release();
+	m_pVsByteCode->Release();
+	m_pPsByteCode->Release();
 
 	m_InputLayout.clear();
 }
 
 GC_GRAPHICS_ERROR GCShader::Initialize(GCRenderContext* pRender, const std::string& filePath, const std::string& csoDestinationPath, int& flagEnabledBits, D3D12_CULL_MODE cullMode, int flagRootParameters)
 {
-	if (!CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
+	if (!GC_CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
 		return GCRENDER_ERROR_POINTER_NULL;
-	if (!CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully"))
+	if (!GC_CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully"))
 		return GCRENDER_ERROR_SHADER_CREATION_FAILED;
 
 	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());
@@ -71,8 +71,8 @@ GC_GRAPHICS_ERROR GCShader::Initialize(GCRenderContext* pRender, const std::stri
  
 void GCShader::CompileShader()
 {
-	m_vsByteCode = LoadShaderFromFile(m_vsCsoPath);
-	m_psByteCode = LoadShaderFromFile(m_psCsoPath);
+	m_pVsByteCode = LoadShaderFromFile(m_vsCsoPath);
+	m_pPsByteCode = LoadShaderFromFile(m_psCsoPath);
 
 	m_InputLayout.clear();
 
@@ -138,32 +138,37 @@ void GCShader::RootSign()
 
 	CD3DX12_ROOT_SIGNATURE_DESC rootSignDesc;
 
+	CD3DX12_DESCRIPTOR_RANGE srvTable1;
+	CD3DX12_DESCRIPTOR_RANGE srvTable2;
+	CD3DX12_DESCRIPTOR_RANGE srvTable3;
+	CD3DX12_DESCRIPTOR_RANGE srvTable4;
+
 	if (GC_HAS_FLAG(m_flagEnabledBits, GC_VERTEX_UV)) {
 
 		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1)) {
 			m_rootParameter_DescriptorTable_1 = numParameters;
-			CD3DX12_DESCRIPTOR_RANGE srvTable;
-			srvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable);
+
+			srvTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable1);
 		}
 		
 		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT2)) {
 			m_rootParameter_DescriptorTable_2 = numParameters;
-			CD3DX12_DESCRIPTOR_RANGE srvTable2;
+
 			srvTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
 			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable2);
 		}
 
 		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
 			m_rootParameter_DescriptorTable_3 = numParameters;
-			CD3DX12_DESCRIPTOR_RANGE srvTable3;
+
 			srvTable3.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
 			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable3);
 		}
 
-		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT3)) {
+		if (GC_HAS_FLAG(m_flagRootParameters, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT4)) {
 			m_rootParameter_DescriptorTable_4 = numParameters;
-			CD3DX12_DESCRIPTOR_RANGE srvTable4;
+
 			srvTable4.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
 			slotRootParameter[numParameters++].InitAsDescriptorTable(1, &srvTable4);
 		}
@@ -182,7 +187,7 @@ void GCShader::RootSign()
 	if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
     //if (errorBlob != nullptr) ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
 
-    m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature));
+    m_pRender->GetRenderResources()->Getmd3dDevice()->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_pRootSignature));
 }
 
 void GCShader::Pso() 
@@ -192,16 +197,16 @@ void GCShader::Pso()
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDescNoAlpha = {};
 
 	psoDescAlpha.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
-	psoDescAlpha.pRootSignature = m_RootSignature;
+	psoDescAlpha.pRootSignature = m_pRootSignature;
 
 	psoDescNoAlpha.InputLayout = { m_InputLayout.data(), (UINT)m_InputLayout.size() };
-	psoDescNoAlpha.pRootSignature = m_RootSignature;
+	psoDescNoAlpha.pRootSignature = m_pRootSignature;
 
-	psoDescAlpha.VS = { reinterpret_cast<BYTE*>(m_vsByteCode->GetBufferPointer()), m_vsByteCode->GetBufferSize()};
-	psoDescAlpha.PS ={ reinterpret_cast<BYTE*>(m_psByteCode->GetBufferPointer()), m_psByteCode->GetBufferSize()};
+	psoDescAlpha.VS = { reinterpret_cast<BYTE*>(m_pVsByteCode->GetBufferPointer()), m_pVsByteCode->GetBufferSize()};
+	psoDescAlpha.PS ={ reinterpret_cast<BYTE*>(m_pPsByteCode->GetBufferPointer()), m_pPsByteCode->GetBufferSize()};
 
-	psoDescNoAlpha.VS = { reinterpret_cast<BYTE*>(m_vsByteCode->GetBufferPointer()), m_vsByteCode->GetBufferSize() };
-	psoDescNoAlpha.PS = { reinterpret_cast<BYTE*>(m_psByteCode->GetBufferPointer()), m_psByteCode->GetBufferSize() };
+	psoDescNoAlpha.VS = { reinterpret_cast<BYTE*>(m_pVsByteCode->GetBufferPointer()), m_pVsByteCode->GetBufferSize() };
+	psoDescNoAlpha.PS = { reinterpret_cast<BYTE*>(m_pPsByteCode->GetBufferPointer()), m_pPsByteCode->GetBufferSize() };
 
 	psoDescAlpha.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDescAlpha.RasterizerState.CullMode = m_cullMode;
@@ -232,7 +237,7 @@ void GCShader::Pso()
 	blendDesc2.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc2.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
-	for (UINT i = 1; i < rtvSize; ++i) {
+	for (int i = 1; i < rtvSize; ++i) {
 		blendDesc1.RenderTarget[i].BlendEnable = FALSE; // Disable blending
 		blendDesc1.RenderTarget[i].SrcBlend = D3D12_BLEND_ONE;
 		blendDesc1.RenderTarget[i].DestBlend = D3D12_BLEND_ZERO;
@@ -271,7 +276,7 @@ void GCShader::Pso()
 	psoDescNoAlpha.SampleDesc.Quality = m_pRender->GetRenderResources()->Get4xMsaaState() ? (m_pRender->GetRenderResources()->Get4xMsaaQuality() - 1) : 0;
 	psoDescNoAlpha.DSVFormat = m_pRender->GetRenderResources()->GetDepthStencilFormat();
 
-	for (UINT i = 0; i < rtvSize; ++i) {
+	for (int i = 0; i < rtvSize; ++i) {
 		psoDescAlpha.RTVFormats[i] = m_rtvFormats[i];
 		psoDescNoAlpha.RTVFormats[i] = m_rtvFormats[i];
 	}
@@ -283,7 +288,7 @@ void GCShader::Pso()
 
 ID3D12RootSignature* GCShader::GetRootSign() 
 {
-	return m_RootSignature;
+	return m_pRootSignature;
 }
 
 ID3D12PipelineState* GCShader::GetPso(bool alpha) 
@@ -295,12 +300,12 @@ ID3D12PipelineState* GCShader::GetPso(bool alpha)
 
 ID3DBlob* GCShader::GetmvsByteCode()
 {
-	return m_vsByteCode;
+	return m_pVsByteCode;
 }
 
 ID3DBlob* GCShader::GetmpsByteCode()
 {
-	return m_psByteCode;
+	return m_pPsByteCode;
 }
 
 ID3DBlob* GCShader::CompileShaderBase(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint,const std::string& target)
@@ -378,7 +383,7 @@ GC_GRAPHICS_ERROR GCShader::Load() {
 	RootSign();
 	Pso();
 
-	if (!CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_RootSignature, m_pPsoAlpha, m_pPsoNoAlpha, m_vsByteCode, m_psByteCode))
+	if (!GC_CHECK_POINTERSNULL("All shader ptr are loaded", "Shader pointers are not correctly loaded", m_pRootSignature, m_pPsoAlpha, m_pPsoNoAlpha, m_pVsByteCode, m_pPsByteCode))
 		return GCRENDER_ERROR_POINTER_NULL;
 
 	return GCRENDER_SUCCESS_OK;

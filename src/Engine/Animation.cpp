@@ -15,11 +15,12 @@ void GCAnimation::AddFrame( int frameID, float displayTime, bool isFlipingX, boo
 
 void GCAnimation::StartAnimation()
 {
-	m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_pFrames[ 0 ]->GetFrameID(), m_spriteSheetInfos );
+	m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry , m_spriteSheetID, m_pFrames[ 0 ]->GetFrameID(), *GC::GetActiveRenderManager()->GetSpriteSheetData() );
 }
 
 bool GCAnimation::Update( int* currentFrameIndex, float* currentFrameTime )
 {
+
 	if ( m_pFrames.size() > 0 )
 	{
 		*currentFrameTime += GC::GetActiveTimer()->DeltaTime();
@@ -28,7 +29,8 @@ bool GCAnimation::Update( int* currentFrameIndex, float* currentFrameTime )
 		{
 			*currentFrameTime -= m_pFrames[*currentFrameIndex]->GetDisplayTime();
 			IncrementFrame( currentFrameIndex );
-			m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs( m_pGeometry, m_pFrames[ *currentFrameIndex ]->GetFrameID(), m_spriteSheetInfos );
+			m_pGraphics->m_pSpriteSheetGeometryLoader->SetSpriteUVs(m_pGeometry, m_spriteSheetID, m_pFrames[*currentFrameIndex]->GetFrameID(), *GC::GetActiveRenderManager()->GetSpriteSheetData() );
+
 			return true;
 		}
 	}
@@ -51,14 +53,14 @@ const GCFrame* GCAnimation::GetCurrentFrame( int currentFrameIndex ) const
 }
 
 
-void GCAnimation::SetSpriteSheet( std::string filename , GC_SPRITESHEET_INFO* spriteSheet )
+void GCAnimation::SetSpriteSheet(std::string filename, int spriteSheetID)
 {
+	m_spriteSheetID = spriteSheetID;
+
 	m_pGraphics->InitializeGraphicsResourcesStart();
-	GCTexture* pTexture = m_pGraphics->CreateTexture( std::string( "../../../res/" ) + filename ).resource;
-    m_pGraphics->InitializeGraphicsResourcesEnd();
-	
-    m_pMaterial = m_pGraphics->CreateMaterial( m_pGraphics->CreateShaderTexture().resource ).resource;
-	m_pMaterial->SetTexture( pTexture );
-	
-	m_spriteSheetInfos = *spriteSheet;
+	GCTexture* pTexture = m_pGraphics->CreateTexture(std::string("../../../res/") + filename).resource;
+	m_pGraphics->InitializeGraphicsResourcesEnd();
+
+	m_pMaterial = m_pGraphics->CreateMaterial(m_pGraphics->CreateShaderTexture().resource).resource;
+	m_pMaterial->SetTexture(pTexture);
 }

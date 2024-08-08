@@ -19,14 +19,13 @@ public:
 
 	int GetLastFrameIndex() { return m_pFrames.size() - 1; }
 
-	void SetSpriteSheet(std::string fileName, GC_SPRITESHEET_INFO* spriteSheet );
+	void SetSpriteSheet(std::string filename, int spriteSheetID );
 
 private:
 	GCGraphics* m_pGraphics;
-	GC_SPRITESHEET_INFO m_spriteSheetInfos;
-	GCGeometry* m_pGeometry;
+	int m_spriteSheetID;
+	GCGeometry* m_pGeometry; 
 	GCMaterial* m_pMaterial;
-
 	std::vector<GCFrame*> m_pFrames;
 
 };

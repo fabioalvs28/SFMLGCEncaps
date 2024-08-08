@@ -53,6 +53,11 @@ DirectX::XMMATRIX GCUtils::GCMATRIXToXMMATRIX(const GCMATRIX& mat) {
 	);
 }
 
+DirectX::XMVECTOR GCUtils::GCVEC3ToXMVECTOR(const GCVEC3& mat) {
+	return DirectX::XMVECTOR(
+		{ mat.x, mat.y, mat.z }
+	);
+}
 
 DirectX::XMMATRIX GCUtils::CreateBillboardMatrix(DirectX::XMVECTOR objectPosition, DirectX::XMVECTOR cameraPosition, DirectX::XMVECTOR cameraUp)
 {
