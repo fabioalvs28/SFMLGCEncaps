@@ -1,34 +1,35 @@
 #pragma once
 #include "pch.h"
-#include "../Render/pch.h"
 
 using namespace DirectX;
 
-class Animation;
-
 class GCRenderManager
 {
+friend class GCAnimation;
+friend class GCSprite;
 friend class GCComponent;
+friend class GCSpriteRenderer;
+friend class GCBoxCollider;
+friend class GCAnimator;
+friend class GCCamera;
+friend class GCGameObject;
+friend class GCGameManager;
 
-public:
+private:
     GCRenderManager( Window* pWindow );
     ~GCRenderManager();
 
     void RegisterComponent( GCComponent* pComponent );
-
-    void CreateGeometry();
-
+    
     void Render();
 
-    void AddAnimation( Animation* pAnimation , std::string animationName );
-    Animation* GetAnimation( std::string animationName );
-
-    GCGraphics* m_pGraphics; 
-    GCGeometry* m_pPlane;
-    GCGeometry* m_pCircle;
+    void AddAnimation( GCAnimation* pAnimation , std::string animationName );
+    GCAnimation* GetAnimation( std::string animationName );
 
 private:
+    GCGraphics* m_pGraphics;
     GCList<GCComponent*> m_componentsList;
-    GCMap<std::string , Animation*> m_animationsList;
+    GCMap<std::string , GCAnimation*> m_animationsList;
+    GCSprite* m_pSpriteCollider;
 
 };

@@ -132,6 +132,7 @@ void GCSceneManager::CreateComponent( GCComponent* pComponent )
 void GCSceneManager::DestroyComponent( GCComponent* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to destroy a nullptr pComponent" );
+	pComponent->UnregisterFromManagers();
 	pComponent->Destroy();
 	delete pComponent;
 }

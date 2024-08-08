@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "../core/pch.h"
 
 using namespace DirectX;
 
@@ -7,7 +6,6 @@ GCRenderManager::GCRenderManager( Window* pWindow )
 {
     m_pGraphics = new GCGraphics();
     m_pGraphics->Initialize( pWindow, 1920, 1080 );
-    CreateGeometry();
 }
 
 GCRenderManager::~GCRenderManager() {}
@@ -25,15 +23,6 @@ void GCRenderManager::Render()
         pComponentNode->GetData()->Render();
 
     m_pGraphics->EndFrame();
-}
-
-/////////////////////////////////////////////
-/// @brief Create geometry, (only square).
-/////////////////////////////////////////////
-void GCRenderManager::CreateGeometry()
-{
-    m_pPlane = m_pGraphics->CreateGeometryPrimitive( Plane, XMFLOAT4( Colors::Blue ) ).resource;
-    //m_pCircle = m_pGraphics->CreateGeometryPrimitive( Circle, XMFLOAT4( Colors::Blue ) ).resource;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,12 +87,12 @@ void GCRenderManager::RegisterComponent( GCComponent* pComponent )
 }
 
 
-void GCRenderManager::AddAnimation( Animation* pAnimation , std::string animationName )
+void GCRenderManager::AddAnimation( GCAnimation* pAnimation , std::string animationName )
 { m_animationsList.Insert( animationName , pAnimation ); }
 
-Animation* GCRenderManager::GetAnimation( std::string animationName )
+GCAnimation* GCRenderManager::GetAnimation( std::string animationName )
 {
-    Animation* pAnimation;
+    GCAnimation* pAnimation;
     if ( m_animationsList.Find( animationName , pAnimation ) )
         return pAnimation;
     return nullptr;

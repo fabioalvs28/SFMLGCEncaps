@@ -21,10 +21,14 @@
 //Core Elements
 #include "../core/framework.h"
 
+//Render Elements
+#include "../Render/pch.h" //! To change
+
 
 // Gameplay classes
 
 struct GCGameObjectTransform;
+class GCSprite;
 
 class GCComponent;
 class GCSpriteRenderer;
@@ -92,6 +96,7 @@ class GC;
 
 
 #include "GameObjectTransform.h"
+#include "Sprite.h"
 #include "Components.h"
 #include "GameObject.h"
 #include "Scene.h"

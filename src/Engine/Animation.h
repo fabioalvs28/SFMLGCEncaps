@@ -1,13 +1,13 @@
 #pragma once
-#include "../core/framework.h"
+#include "pch.h"
 
-struct GCGeometry;
-
-class Animation
+class GCAnimation
 {
+friend class GCAnimator;
+
 public:
-	Animation();
-	~Animation() = default;
+	GCAnimation();
+	~GCAnimation() = default;
 
 	void AddFrame( int frameID, float displayTime = 2.0f, bool isFlipingX = false, bool isFlipingY = false );
 	void StartAnimation();
@@ -16,17 +16,16 @@ public:
 	const GCFrame* GetCurrentFrame( int currentFrameIndex ) const;
 	int GetNumberOfFrames() const { return static_cast<int>( m_pFrames.size() ); }
 	GCGeometry* GetGeometry() { return m_pGeometry; }
-	GCTexture* GetTexture() { return m_pTexture; }
 
 	int GetLastFrameIndex() { return m_pFrames.size() - 1; }
 
 	void SetSpriteSheet(std::string fileName, GC_SPRITESHEET_INFO* spriteSheet );
 
 private:
-
+	GCGraphics* m_pGraphics;
 	GC_SPRITESHEET_INFO m_spriteSheetInfos;
-	GCGeometry* m_pGeometry; 
-	GCTexture* m_pTexture;
+	GCGeometry* m_pGeometry;
+	GCMaterial* m_pMaterial;
 
 	std::vector<GCFrame*> m_pFrames;
 

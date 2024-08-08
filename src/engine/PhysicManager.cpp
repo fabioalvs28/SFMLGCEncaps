@@ -6,10 +6,10 @@ GCPhysicManager::GCPhysicManager() {}
 GCPhysicManager::~GCPhysicManager() {}
 
 void GCPhysicManager::RegisterComponent( GCComponent* pComponent )
-{ m_componentsList.PushBack( pComponent ); }
+{ pComponent->m_pPhysicsNode = m_componentsList.PushBack( pComponent ); }
 
 void GCPhysicManager::RegisterCollider( GCCollider* pCollider )
-{ m_collidersList.PushBack( pCollider ); }
+{ pCollider->m_pColliderNode = m_collidersList.PushBack( pCollider ); }
 
 void GCPhysicManager::Update()
 {

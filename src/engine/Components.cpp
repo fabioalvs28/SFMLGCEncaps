@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "../Render/pch.h"
 
 using namespace DirectX;
 
@@ -152,19 +151,7 @@ void GCComponent::SetActive( bool active )
 
 
 GCSpriteRenderer::GCSpriteRenderer()
-{
-	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-
-	m_pGeometry = pGraphics->CreateGeometryPrimitive( Plane, XMFLOAT4( Colors::Blue ) ).resource;
-
-	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
-	pGraphics->InitializeGraphicsResourcesEnd();
-
-	GC_RESOURCE_CREATION_RESULT<GCShader*> shaderTexture = pGraphics->CreateShaderTexture();
-	GC_RESOURCE_CREATION_RESULT<GCMaterial*> mat = pGraphics->CreateMaterial( shaderTexture.resource );
-	m_pMaterial = mat.resource;
-}
+{ m_pSprite = nullptr; }
 
 
 
@@ -172,49 +159,37 @@ void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 {
 	GCComponent::CopyTo( pDestination );
 	GCSpriteRenderer* pSpriteRenderer = static_cast<GCSpriteRenderer*>( pDestination );
-	*( pSpriteRenderer->m_pMesh ) = *m_pMesh;
-	*( pSpriteRenderer->m_pMaterial ) = *m_pMaterial;
 }
 
 void GCSpriteRenderer::Render()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	pGraphics->UpdateWorldConstantBuffer( m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
-	pGraphics->GetRender()->DrawObject( m_pMesh, m_pMaterial, true );
-
+	pGraphics->UpdateWorldConstantBuffer( m_pSprite->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
+	pGraphics->GetRender()->DrawObject( m_pSprite->m_pMesh, m_pSprite->m_pMaterial, true );
 }
 
 
 
-//////////////////////////////////////////////////
-/// @brief Set Sprite of a GameObject.
-/// 
-/// @param texturePath Name of the sprite file.
-/// 
-/// @note The sprite must be in .dds .
-//////////////////////////////////////////////////
-void GCSpriteRenderer::SetSprite( std::string fileName )
+void GCSpriteRenderer::SetSprite( GCSprite* pSprite )
 {
-	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-
-	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
-	GCTexture* pTexture = pGraphics->CreateTexture( std::string( "../../../res/" ) + fileName ).resource;
-	pGraphics->InitializeGraphicsResourcesEnd();
-
-	m_pMaterial->SetTexture( pTexture );
+	if ( m_pSprite == nullptr )
+	{
+		m_pSprite = pSprite;
+		return;
+	}
+	m_pSprite->m_pGeometry = pSprite->m_pGeometry;
+	m_pSprite->m_pMaterial = pSprite->m_pMaterial;
+	m_pSprite->m_pMesh = pSprite->m_pMesh;
 }
 
-
-void GCSpriteRenderer::SetAnimatedSprite( GCGeometry* pGeometry, GCTexture* pTexture )
+void GCSpriteRenderer::SetAnimatedSprite( GCGeometry* pGeometry )
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	m_pGeometry = pGeometry;
+	m_pSprite->m_pGeometry = pGeometry;
+	
 	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
+	m_pSprite->m_pMesh = pGraphics->CreateMeshTexture( m_pSprite->m_pGeometry ).resource;
 	pGraphics->InitializeGraphicsResourcesEnd();
-
-	m_pMaterial->SetTexture( pTexture );
 }
 
 
@@ -249,8 +224,8 @@ void GCCollider::CopyTo( GCComponent* pDestination )
 	GCCollider* pCollider = static_cast<GCCollider*>( pDestination );
 	pCollider->m_trigger = m_trigger;
 	pCollider->m_visible = m_visible;
-	*( pCollider->m_pMesh ) = *m_pMesh;
-	*( pCollider->m_pMaterial ) = *m_pMaterial;
+	// *( pCollider->m_pMesh ) = *m_pMesh; 
+	// *( pCollider->m_pMaterial ) = *m_pMaterial;
 }
 
 
@@ -258,22 +233,7 @@ void GCCollider::CopyTo( GCComponent* pDestination )
 
 
 
-GCBoxCollider::GCBoxCollider()
-{
-	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-
-	m_pGeometry = pGraphics->CreateGeometryPrimitive( Plane, XMFLOAT4( Colors::Blue ) ).resource;
-
-	pGraphics->InitializeGraphicsResourcesStart();
-	m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
-	GCTexture* pTexture = pGraphics->CreateTexture( "../../../res/BoxColliderSquare.dds" ).resource;
-	pGraphics->InitializeGraphicsResourcesEnd();
-
-	auto shaderTexture = pGraphics->CreateShaderTexture();
-	auto mat = pGraphics->CreateMaterial( shaderTexture.resource );
-	m_pMaterial = mat.resource;
-	m_pMaterial->SetTexture( pTexture );
-}
+GCBoxCollider::GCBoxCollider() {}
 
 
 
@@ -285,11 +245,13 @@ void GCBoxCollider::Render()
 	if ( m_visible == false )
 		return;
 
-	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+	GCRenderManager* pRenderManager = GC::GetActiveRenderManager();
+	GCGraphics* pGraphics = pRenderManager->m_pGraphics;
 
-	pGraphics->UpdateWorldConstantBuffer( m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
-	pGraphics->GetRender()->DrawObject( m_pMesh, m_pMaterial, true );
-
+	GCSprite* pSprite = pRenderManager->m_pSpriteCollider;
+	pGraphics->UpdateWorldConstantBuffer( pSprite->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
+	pGraphics->GetRender()->DrawObject( pSprite->m_pMesh, pSprite->m_pMaterial, true );
+	
 }
 
 
@@ -381,7 +343,7 @@ void GCAnimator::Update()
 	}
 
 	if ( m_pCurrentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
-		m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry(), m_pCurrentAnimation->GetTexture() );
+		m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 }
 
 
@@ -394,14 +356,15 @@ void GCAnimator::PlayAnimation( std::string animationName, bool isLoop )
 {
 	if ( m_activeAnimationName == animationName )
 		return;
-	Animation* pAnimation = GC::GetActiveRenderManager()->GetAnimation( animationName );
+	GCAnimation* pAnimation = GC::GetActiveRenderManager()->GetAnimation( animationName );
 	ASSERT( pAnimation != nullptr , LOG_FATAL , "Trying to play a non-existent animation" );
 	m_isLoop = isLoop;
 	m_activeAnimationName = animationName;
 	m_pCurrentAnimation = pAnimation;
 	m_lastFrameIndex = pAnimation->GetLastFrameIndex();
 	m_pCurrentAnimation->StartAnimation();
-	m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() , m_pCurrentAnimation->GetTexture() );
+	m_pSpriteRenderer->m_pSprite->m_pMaterial = m_pCurrentAnimation->m_pMaterial;
+	m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 }
 
 /////////////////////////////////////////////////////////////
@@ -441,11 +404,11 @@ void GCAnimator::LoadSpriteSheet( std::string fileName, int row , int col , int 
 /// @param frameNumber the number of frame in the spritesheet for the animation
 /// @param frameDisplayTime How long each frame will be display
 //////////////////////////////////////////////////////////////////////////////////
-Animation* GCAnimator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime )
+GCAnimation* GCAnimator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime )
 {
 	ASSERT( m_pSpriteSheetInfo != nullptr, LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
-	Animation* pNewAnimation = new Animation();
+	GCAnimation* pNewAnimation = new GCAnimation();
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_pSpriteSheetInfo );
 	for ( int i = firstFrame; i < firstFrame + frameNumber; i++ )
 		pNewAnimation->AddFrame( i, frameDisplayTime );
@@ -462,11 +425,11 @@ Animation* GCAnimator::CreateAnimation( std::string animationName, int firstFram
 /// @param frameList the frame id list of the animation in the spritesheet
 /// @param frameDisplayTime How long each frame will be display
 /////////////////////////////////////////////////////////////////////////////
-Animation* GCAnimator::CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList, float frameDisplayTime )
+GCAnimation* GCAnimator::CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList, float frameDisplayTime )
 {
 	ASSERT( m_pSpriteSheetInfo != nullptr , LOG_FATAL , "Trying to create an animation without any Spritesheet loaded" );
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
-	Animation* pNewAnimation = new Animation();
+	GCAnimation* pNewAnimation = new GCAnimation();
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_pSpriteSheetInfo );
 
 	for ( int i = 0; i < frameList.size() ; i++ )
