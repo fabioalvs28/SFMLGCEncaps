@@ -116,7 +116,6 @@ class GC;
 #include "InputManager.h"
 #include "Timer.h"
 #include "GameManager.h"
-#include "Window.h"
 
 #include "GC.h"
 
