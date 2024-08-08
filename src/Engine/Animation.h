@@ -1,33 +1,31 @@
 #pragma once
-#include "../core/framework.h"
+#include "pch.h"
 
-struct GCGeometry;
-
-class Animation
+class GCAnimation
 {
-public:
-	Animation();
-	~Animation() = default;
+friend class GCAnimator;
 
-	void AddFrame( int frameID, float displayTime = 2.0f, bool isFlipingX = false, bool isFlipingY = false);
+public:
+	GCAnimation();
+	~GCAnimation() = default;
+
+	void AddFrame( int frameID, float displayTime = 2.0f, bool isFlipingX = false, bool isFlipingY = false );
 	void StartAnimation();
 	bool Update( int* currentFrameIndex, float* currentFrameTime  );
 	void IncrementFrame( int* currentFrameIndex );
 	const GCFrame* GetCurrentFrame( int currentFrameIndex ) const;
-	int GetNumberOfFrames() const { return static_cast<int>(m_pFrames.size()); }
+	int GetNumberOfFrames() const { return static_cast<int>( m_pFrames.size() ); }
 	GCGeometry* GetGeometry() { return m_pGeometry; }
-	GCTexture* GetTexture() { return m_pTexture; }
 
 	int GetLastFrameIndex() { return m_pFrames.size() - 1; }
 
-	void SetSpriteSheet(std::string fileName, GC_SPRITESHEET_INFO* spriteSheet );
+	void SetSpriteSheet(std::string filename, int spriteSheetID );
 
 private:
-
-	GC_SPRITESHEET_INFO m_spriteSheetInfos;
+	GCGraphics* m_pGraphics;
+	int m_spriteSheetID;
 	GCGeometry* m_pGeometry; 
-	GCTexture* m_pTexture;
-
+	GCMaterial* m_pMaterial;
 	std::vector<GCFrame*> m_pFrames;
 
 };

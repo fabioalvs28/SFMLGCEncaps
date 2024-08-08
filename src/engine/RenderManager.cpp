@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "../core/pch.h"
 
 using namespace DirectX;
 
@@ -7,12 +6,10 @@ GCRenderManager::GCRenderManager( Window* pWindow )
 {
     m_pGraphics = new GCGraphics();
     m_pGraphics->Initialize(pWindow,1920,1080);
-    CreateGeometry();
+    m_spriteSheetData = m_pGraphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheet("../../../src/Textures/SS_data.ssdg");
 }
 
-GCRenderManager::~GCRenderManager()
-{
-}
+GCRenderManager::~GCRenderManager() {}
 
 //////////////////////////////////////////////////////////
 /// @brief Calls the Render function of the components.
@@ -23,21 +20,10 @@ void GCRenderManager::Render()
     
     GC::GetActiveScene()->GetMainCamera()->Update();
 
-    for (GCListNode<Component*>* pComponentNode = m_componentList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext())
-    {
+    for ( GCListNode<GCComponent*>* pComponentNode = m_componentsList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
         pComponentNode->GetData()->Render();
-    }
 
     m_pGraphics->EndFrame();
-}
-
-/////////////////////////////////////////////
-/// @brief Create geometry, (only square).
-/////////////////////////////////////////////
-void GCRenderManager::CreateGeometry()
-{
-    m_pPlane = m_pGraphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::Blue)).resource;
-    //m_pCircle = m_pGraphics->CreateGeometryPrimitive(Circle, XMFLOAT4(Colors::Blue)).resource;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,22 +31,22 @@ void GCRenderManager::CreateGeometry()
 ///
 /// @param pComponent a pointer to the stored component. 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-void GCRenderManager::RegisterComponent( Component* pComponent )
+void GCRenderManager::RegisterComponent( GCComponent* pComponent )
 {   
-    GCListNode<Component*>* pFirstNode = m_componentList.GetFirstNode() ;
+    GCListNode<GCComponent*>* pFirstNode = m_componentsList.GetFirstNode();
 
     if ( pFirstNode == nullptr )
     {
-        pComponent->m_pRenderNode = m_componentList.PushBack(pComponent);
+        pComponent->m_pRenderNode = m_componentsList.PushBack( pComponent );
         return; 
     }
 
 
-    if ( pFirstNode == m_componentList.GetLastNode() )
+    if ( pFirstNode == m_componentsList.GetLastNode() )
     {
         if ( pFirstNode->GetData()->m_pGameObject->GetLayer() < pComponent->m_pGameObject->GetLayer() )
         {
-            m_componentList.PushBack(pComponent);
+            m_componentsList.PushBack(pComponent);
             return;
         }
 
@@ -68,18 +54,18 @@ void GCRenderManager::RegisterComponent( Component* pComponent )
         {
             if ( pFirstNode->GetData()->GetComponentLayer() < pComponent->GetComponentLayer() )
             {
-                m_componentList.PushBack( pComponent );
+                m_componentsList.PushBack( pComponent );
                 return;
             }
         }
 
-        m_componentList.PushFront( pComponent );
+        m_componentsList.PushFront( pComponent );
     }
 
 
-    for ( GCListNode<Component*>* pComponentNode = m_componentList.GetLastNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetPrevious() )
+    for ( GCListNode<GCComponent*>* pComponentNode = m_componentsList.GetLastNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetPrevious() )
     {
-        Component* pComponentInList = pComponentNode->GetData();
+        GCComponent* pComponentInList = pComponentNode->GetData();
 
         if (pComponentInList->m_pGameObject->GetLayer() < pComponent->m_pGameObject->GetLayer() )
         {
@@ -98,19 +84,17 @@ void GCRenderManager::RegisterComponent( Component* pComponent )
         }
     }
 
-    m_componentList.PushFront(pComponent);
+    m_componentsList.PushFront( pComponent );
 }
 
 
-void GCRenderManager::AddAnimation( Animation* animation , std::string animationName )
-{
-    m_animationList.Insert( animationName , animation );
-}
+void GCRenderManager::AddAnimation( GCAnimation* pAnimation , std::string animationName )
+{ m_animationsList.Insert( animationName , pAnimation ); }
 
-Animation* GCRenderManager::GetAnimation( std::string animationName )
+GCAnimation* GCRenderManager::GetAnimation( std::string animationName )
 {
-    Animation* pAnimation;
-    if ( m_animationList.Find( animationName , pAnimation ) )
+    GCAnimation* pAnimation;
+    if ( m_animationsList.Find( animationName , pAnimation ) )
         return pAnimation;
     return nullptr;
 }

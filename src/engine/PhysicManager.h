@@ -1,39 +1,29 @@
 #pragma once
 #include "pch.h"
 
-// TODO Turn every methods into private methods
-
 class GCPhysicManager
 {
+friend class GCComponent;
+friend class GCCollider;
 friend class GCGameObject;
+friend class GCGameManager;
 
 private:
-	/*
-	 * Components that need to be fixed updated
-	 */
-	GCList<Component*> m_components;
-
-	/*
-	 * Colliders that need to be checked for collision
-	 */
-	GCList<Collider*> m_colliders;
-public:
 	GCPhysicManager();
 	~GCPhysicManager();
-
-	void RegisterComponent(Component* pComponent);
-
-	void RegisterCollider(Collider* pCollider);
-
+	
+	void RegisterComponent( GCComponent* pComponent );
+	void RegisterCollider( GCCollider* pCollider );
+	
 	void Update();
+	
+	bool CheckCollision( GCCollider* pFirst, GCCollider* pSecond );
+	bool CheckCollision( GCBoxCollider* pFirst, GCBoxCollider* pSecond );
+	bool CheckCollision( GCBoxCollider* pBox, GCCircleCollider* pCircle );
+	bool CheckCollision( GCCircleCollider* pFirst, GCCircleCollider* pSecond );
 
 private:
-	bool CheckCollision( Collider* pFirst, Collider* pSecond );
-};
+	GCList<GCComponent*> m_componentsList; // A list of pointers to the Components that need to be fixed updated
+	GCList<GCCollider*> m_collidersList; // A list of pointers to the Colliders that need to be checked for collisions
 
-namespace GCPhysic
-{
-	bool CheckBox2DvsBox2D( BoxCollider* pFirst, BoxCollider* pSecond );
-	bool CheckBox2DvsCircle( BoxCollider* pBox, CircleCollider* pCircle );
-	bool CheckCirclevsCircle( CircleCollider* pFirst, CircleCollider* pSecond );
-}
+};

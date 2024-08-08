@@ -38,7 +38,6 @@ void GCFontGeometryLoader::LoadMetadata(const std::string& metadataFile) {
         float u1, v1, u2, v2, u3, v3, u4, v4;
         if (iss >> id >> u1 >> v1 >> u2 >> v2 >> u3 >> v3 >> u4 >> v4) {
             metadata.emplace_back(id, u1 / textureWidth, v1 / textureHeight, u2 / textureWidth, v2 / textureHeight, u3 / textureWidth, v3 / textureHeight, u4 / textureWidth, v4 / textureHeight);
-            /*logger.LogInfo("Parsed line: id=" + std::to_string(id) + ", u=" + std::to_string(u) + ", v=" + std::to_string(v));*/
         }
         else {
             logger.LogWarning("Malformed line in metadata file: " + line);
@@ -72,7 +71,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
             xOffset += spacing;
             continue;
         }
-        int startIdx = geometry->pos.size();
+        int startIdx = static_cast<int>(geometry->pos.size());
 
         float u1, v1, u2, v2, u3, v3, u4, v4;
         bool found = false;

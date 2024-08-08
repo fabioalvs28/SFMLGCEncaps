@@ -18,11 +18,11 @@ GCMesh::~GCMesh()
 {
     if (m_pBufferGeometryData)
     {
-        m_pBufferGeometryData->VertexBufferCPU->Release();
-        m_pBufferGeometryData->IndexBufferCPU->Release();
+        m_pBufferGeometryData->pVertexBufferCPU->Release();
+        m_pBufferGeometryData->pIndexBufferCPU->Release();
 
-        m_pBufferGeometryData->VertexBufferGPU->Release();
-        m_pBufferGeometryData->IndexBufferGPU->Release();
+        m_pBufferGeometryData->pVertexBufferGPU->Release();
+        m_pBufferGeometryData->pIndexBufferGPU->Release();
 
         m_pBufferGeometryData->VertexByteStride = 0;
         m_pBufferGeometryData->VertexBufferByteSize = 0;
@@ -37,7 +37,7 @@ GCMesh::~GCMesh()
 GC_GRAPHICS_ERROR GCMesh::Initialize(GCRenderContext* pRender, GCGeometry* pGeometry, int& flagEnabledBits)
 {
 
-    if (!CHECK_POINTERSNULL("Pointers pRender & pGeometry Valid", "Pointers pRender & pGeometry Not valid", pRender, pGeometry)) {
+    if (!GC_CHECK_POINTERSNULL("Pointers pRender & pGeometry Valid", "Pointers pRender & pGeometry Not valid", pRender, pGeometry)) {
         return GCRENDER_ERROR_POINTER_NULL;
     }
     
@@ -49,13 +49,13 @@ GC_GRAPHICS_ERROR GCMesh::Initialize(GCRenderContext* pRender, GCGeometry* pGeom
 
     UploadGeometryData(flagEnabledBits);
 
-    if (!CHECK_POINTERSNULL(
+    if (!GC_CHECK_POINTERSNULL(
         "All mesh buffer data pointers are valid",
         "One or more mesh buffer data pointers are null",
-        m_pBufferGeometryData->VertexBufferCPU,
-        m_pBufferGeometryData->IndexBufferCPU,
-        m_pBufferGeometryData->VertexBufferGPU,
-        m_pBufferGeometryData->IndexBufferGPU
+        m_pBufferGeometryData->pVertexBufferCPU,
+        m_pBufferGeometryData->pIndexBufferCPU,
+        m_pBufferGeometryData->pVertexBufferGPU,
+        m_pBufferGeometryData->pIndexBufferGPU
     )) 
     {
         return GCRENDER_ERROR_POINTER_NULL;
@@ -106,10 +106,10 @@ void GCMesh::UploadGeometryData(int& flagEnabledBits) {
 
     m_pBufferGeometryData = new GC_MESH_BUFFER_DATA();
 
-    D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
-    CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
-    D3DCreateBlob(ibByteSize, &m_pBufferGeometryData->IndexBufferCPU);
-    CopyMemory(m_pBufferGeometryData->IndexBufferCPU->GetBufferPointer(), m_pMeshGeometry->indices.data(), ibByteSize);
+    D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->pVertexBufferCPU);
+    CopyMemory(m_pBufferGeometryData->pVertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
+    D3DCreateBlob(ibByteSize, &m_pBufferGeometryData->pIndexBufferCPU);
+    CopyMemory(m_pBufferGeometryData->pIndexBufferCPU->GetBufferPointer(), m_pMeshGeometry->indices.data(), ibByteSize);
 
     auto vertexBuffer = std::make_unique<GCUploadBuffer<float>>(
         m_pRender->GetRenderResources()->Getmd3dDevice(),
@@ -121,16 +121,16 @@ void GCMesh::UploadGeometryData(int& flagEnabledBits) {
         static_cast<UINT>(m_pMeshGeometry->indices.size()),
         false); 
 
-    m_currentIndexUploadBufferSize = m_pMeshGeometry->indices.size();
-    m_currentVertexUploadBufferSize = vertexData.size();
+    m_currentIndexUploadBufferSize = static_cast<int>(m_pMeshGeometry->indices.size());
+    m_currentVertexUploadBufferSize = static_cast<int>(vertexData.size());
 
     vertexBuffer->CopyData(0, vertexData.data(), vbByteSize);
     indexBuffer->CopyData(0, m_pMeshGeometry->indices.data(), ibByteSize);
 
-    m_pBufferGeometryData->VertexBufferGPU = vertexBuffer->Resource();
-    m_pBufferGeometryData->IndexBufferGPU = indexBuffer->Resource();
-    m_pBufferGeometryData->VertexBufferUploader = vertexBuffer.release()->Resource();
-    m_pBufferGeometryData->IndexBufferUploader = indexBuffer.release()->Resource();
+    m_pBufferGeometryData->pVertexBufferGPU = vertexBuffer->Resource();
+    m_pBufferGeometryData->pIndexBufferGPU = indexBuffer->Resource();
+    m_pBufferGeometryData->pVertexBufferUploader = vertexBuffer.release()->Resource();
+    m_pBufferGeometryData->pIndexBufferUploader = indexBuffer.release()->Resource();
 
     m_pBufferGeometryData->VertexByteStride = static_cast<UINT>(vertexSize * sizeof(float));
     m_pBufferGeometryData->VertexBufferByteSize = vbByteSize;
@@ -212,10 +212,10 @@ void GCMesh::UpdateGeometryData(float deltaTime)
 
     m_pBufferGeometryData = new GC_MESH_BUFFER_DATA();
 
-    D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->VertexBufferCPU);
-    CopyMemory(m_pBufferGeometryData->VertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
-    D3DCreateBlob(ibByteSize, &m_pBufferGeometryData->IndexBufferCPU);
-    CopyMemory(m_pBufferGeometryData->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+    D3DCreateBlob(vbByteSize, &m_pBufferGeometryData->pVertexBufferCPU);
+    CopyMemory(m_pBufferGeometryData->pVertexBufferCPU->GetBufferPointer(), vertexData.data(), vbByteSize);
+    D3DCreateBlob(ibByteSize, &m_pBufferGeometryData->pIndexBufferCPU);
+    CopyMemory(m_pBufferGeometryData->pIndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
 
     auto vertexBuffer = std::make_unique<GCUploadBuffer<float>>(m_pRender->GetRenderResources()->Getmd3dDevice(), static_cast<UINT>(vertexData.size()), false);
     auto indexBuffer = std::make_unique<GCUploadBuffer<std::uint16_t>>(m_pRender->GetRenderResources()->Getmd3dDevice(), static_cast<UINT>(indices.size()), false);
@@ -223,10 +223,10 @@ void GCMesh::UpdateGeometryData(float deltaTime)
     vertexBuffer->CopyData(0, vertexData.data(), vbByteSize);
     indexBuffer->CopyData(0, indices.data(), ibByteSize);
 
-    m_pBufferGeometryData->VertexBufferGPU = vertexBuffer->Resource();
-    m_pBufferGeometryData->IndexBufferGPU = indexBuffer->Resource();
-    m_pBufferGeometryData->VertexBufferUploader = vertexBuffer.release()->Resource();
-    m_pBufferGeometryData->IndexBufferUploader = indexBuffer.release()->Resource();
+    m_pBufferGeometryData->pVertexBufferGPU = vertexBuffer->Resource();
+    m_pBufferGeometryData->pIndexBufferGPU = indexBuffer->Resource();
+    m_pBufferGeometryData->pVertexBufferUploader = vertexBuffer.release()->Resource();
+    m_pBufferGeometryData->pIndexBufferUploader = indexBuffer.release()->Resource();
 
     m_pBufferGeometryData->VertexByteStride = static_cast<UINT>(vertexSize * sizeof(float));
     m_pBufferGeometryData->VertexBufferByteSize = vbByteSize;

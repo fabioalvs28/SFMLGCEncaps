@@ -2,7 +2,7 @@
 
 struct GC_DESCRIPTOR_RESOURCE
 {
-	ID3D12Resource* resource;
+	ID3D12Resource* pResource;
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
 };
 
@@ -13,27 +13,27 @@ public:
 	~GCRenderResources();
 
 	//Double RTV Resource For Final Render
-	inline ID3D12Resource* CurrentBackBuffer() const { return m_SwapChainBuffer[m_CurrBackBuffer]; }
+	inline ID3D12Resource* CurrentBackBuffer() const { return m_pSwapChainBuffer[m_currBackBuffer]; }
 	//CPU Handle Address of the both
-	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_CurrBackBuffer, m_rtvDescriptorSize); }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferViewAddress() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_pRtvHeap->GetCPUDescriptorHandleForHeapStart(), m_currBackBuffer, m_rtvDescriptorSize); }
 	//Render format
 	inline DXGI_FORMAT GetBackBufferFormat() const { return m_BackBufferFormat; }
-	inline int GetCurrBackBuffer() const { return m_CurrBackBuffer; }
+	inline int GetCurrBackBuffer() const { return m_currBackBuffer; }
 	//Msaa
 	inline bool Get4xMsaaState() const { return m_4xMsaaState; }
 	inline UINT Get4xMsaaQuality() const { return m_4xMsaaQuality; }
 
 	//CPU Handle address Depth Stencil Final Render
-	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewAddress() const { return m_DepthStencilBufferAddress; }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewAddress() const { return m_depthStencilBufferAddress; }
 	//It's format
 	inline DXGI_FORMAT GetDepthStencilFormat() const { return m_DepthStencilFormat; }
 
 	//DirectX12 Instances
-	inline ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
-	inline ID3D12Device* Getmd3dDevice() const { return m_d3dDevice; }
-	inline ID3D12CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
-	inline ID3D12CommandAllocator* GetCommandAllocator() const { return m_DirectCmdListAlloc; }
-	inline ID3D12Fence* GetFence() { return m_Fence; }
+	inline ID3D12GraphicsCommandList* GetCommandList() const { return m_pCommandList; }
+	inline ID3D12Device* Getmd3dDevice() const { return m_pDevice; }
+	inline ID3D12CommandQueue* GetCommandQueue() const { return m_pCommandQueue; }
+	inline ID3D12CommandAllocator* GetCommandAllocator() const { return m_pDirectCmdListAlloc; }
+	inline ID3D12Fence* GetFence() { return m_pFence; }
 	inline ID3D12Debug* GetDebugController() { return m_pDebugController; }
 
 
@@ -65,24 +65,24 @@ private:
 	//Debug
 	GCGraphics* m_pGraphics;
 
-	static const int SwapChainBufferCount = 2;
+	static const int m_swapChainBufferCount = 2;
 
 	//DirectX12 3D Instances
-	IDXGIFactory4* m_dxgiFactory;
-	ID3D12Device* m_d3dDevice;
+	IDXGIFactory4* m_pFactory;
+	ID3D12Device* m_pDevice;
 
-	ID3D12GraphicsCommandList* m_CommandList;
-	IDXGISwapChain* m_SwapChain;
-	ID3D12Resource* m_SwapChainBuffer[SwapChainBufferCount];
+	ID3D12GraphicsCommandList* m_pCommandList;
+	IDXGISwapChain* m_pSwapChain;
+	ID3D12Resource* m_pSwapChainBuffer[m_swapChainBufferCount];
 
-	ID3D12Resource* m_DepthStencilBuffer;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE m_DepthStencilBufferAddress;
+	ID3D12Resource* m_pDepthStencilBuffer;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_depthStencilBufferAddress;
 
-	ID3D12CommandQueue* m_CommandQueue;
-	ID3D12CommandAllocator* m_DirectCmdListAlloc;
+	ID3D12CommandQueue* m_pCommandQueue;
+	ID3D12CommandAllocator* m_pDirectCmdListAlloc;
 
 	//Fence
-	ID3D12Fence* m_Fence;
+	ID3D12Fence* m_pFence;
 	UINT64 m_CurrentFence;
 
 	//Debug Controller
@@ -100,7 +100,7 @@ private:
 
 	//State var
 	bool m_canResize;
-	int m_CurrBackBuffer;
+	int m_currBackBuffer;
 
 	//Format
 	DXGI_FORMAT m_DepthStencilFormat;
@@ -141,9 +141,5 @@ private:
 	int m_dsvOffsetCount = 0;
 	std::list<GC_DESCRIPTOR_RESOURCE*> m_lDepthStencilView;
 	GC_DESCRIPTOR_RESOURCE* CreateDepthStencilBufferAndView(DXGI_FORMAT depthStencilFormat, D3D12_RESOURCE_STATES resourceFlags);
-	
-	GCShader* m_postProcessingShader;
-	GCComputeShader* m_postProcessingShaderCS;
-	// Object / Layers Buffer Id Resources
-	GCShader* m_objectBufferIdShader;
+
 };

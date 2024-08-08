@@ -39,7 +39,7 @@ public:
     template <class ScriptClass>
     void RemoveScript();
 	
-	Camera* GetMainCamera();
+	GCCamera* GetMainCamera();
 
 protected:
 	void MoveGameObjectToScene( GCGameObject* pGameObject );
@@ -55,10 +55,10 @@ protected:
 	
 	const char* m_name; // The Scene's name
 	bool m_active; // Whether or not this Scene is the active Scene
-	Camera* m_pMainCamera; // A pointer to the Scene's Main Camera
+	GCCamera* m_pMainCamera; // A pointer to the Scene's Main Camera
 	
 	GCList<GCGameObject*> m_gameObjectsList; // A list of pointers to the Scene's GameObjects without Parents
-    GCMap<unsigned int, Script*> m_scriptsList; // A list of pointers to the Scene's Scripts
+    GCMap<unsigned int, GCScript*> m_scriptsList; // A list of pointers to the Scene's Scripts
 
 };
 
@@ -93,7 +93,7 @@ ScriptClass* GCScene::AddScript()
 template <class ScriptClass>
 ScriptClass* GCScene::GetScript()
 {
-    Script* pScript;
+    GCScript* pScript;
     if ( m_scriptsList.Find( ScriptClass::GetIDStatic(), pScript ) == true )
         return static_cast<ScriptClass*>(pScript);
     return nullptr;

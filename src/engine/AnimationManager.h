@@ -1,7 +1,7 @@
 #pragma once
 #include "../core/framework.h"
 
-class Animation; 
+class GCAnimation; 
 
 class GCAnimationManager
 {

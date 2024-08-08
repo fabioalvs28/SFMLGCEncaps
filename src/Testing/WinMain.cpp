@@ -1,72 +1,41 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "GCEngine.h"
-#include "ScriptStart.h"
+#include "PlayerMovement.h"
 
 
-using namespace DirectX;
-///////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////Custom Event Example/////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-
-int heroHP = 100;
-
-class TakeDamage : public CustomEvent<int> {
-public:
-    TakeDamage(int x) : m_upcomingDamage(x), CustomEvent(x) {}
-
-    static GCEventType GetStaticType() { return GCEventType::Custom; }
-    GCEventType GetEventType() { return GetStaticType(); }
-    const char* GetName() const override { return "Damage Event"; }
-
-    int GetDamage() { return m_upcomingDamage; }
-private:
-    int m_upcomingDamage;
-};
-
-void Hello()
+int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-    std::cout << "Hello" << std::endl;
-    GC::GetActiveEventManager()->QueueEvent(new TakeDamage(10));
-}
-
-void OnDamageTaken(TakeDamage& dm) 
-{
-    heroHP -= dm.GetDamage();
-    std::cout << heroHP << std::endl;
-}
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
-{
-    
     GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
     GCScene* pScene = GCScene::Create();
-
-    //int myID = EVENT::CreateEventHandler(new EventHandler(Hello));
-    //EVENT::CallEventHandler(myID);
-    //EVENT::CallEventHandler(myID);
-    //EVENT::Subscribe(GCEventType::Custom, OnDamageTaken);
-    //GCINPUT::BindKey(KEYBOARD::SPACE, GCKeyboardInputManager::KeyboardState::DOWN, Hello);
-    //EVENT::PushEvent(new TakeDamage(10));
-
-    //Animated Character Test
-    GCGameObject* pHero = pScene->CreateGameObject();
-    pHero->m_transform.Scale( GCVEC3(3 , 3 , 3) );
-    pHero->AddComponent<SpriteRenderer>();
-    pHero->AddComponent<Animator>()->LoadSpriteSheet( "sprite_sheet.dds" , 4 , 6 , 823 , 823 );
-    pHero->AddComponent<ScriptStart>();
-    pHero->GetComponent<Animator>()->CreateAnimation( "WalkForward" , 0 , 6 , 0.01f );
-    pHero->GetComponent<Animator>()->CreateAnimation( "WalkHeroL" , 6 , 6 , 0.01f );
-    pHero->GetComponent<Animator>()->CreateAnimation( "WalkHeroR" , 12 , 6 , 0.01f );
-    pHero->GetComponent<Animator>()->CreateAnimation( "WalkBackward" , 18 , 6 , 0.01f );
-
-    pHero->AddComponent<BoxCollider>()->SetVisible( true );
-
-
-    // Start the game
+    
+    GCSprite pPlayerSprite( "caow.dds" );
+    GCGameObject* pPlayer = pScene->CreateGameObject();
+    pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite( &pPlayerSprite );
+    pPlayer->AddComponent<GCBoxCollider>()->SetVisible( false );
+    pPlayer->AddComponent<GCScriptPlayerMovement>();
+    pPlayer->SetLayer(1);
+    
+    GCGameObject* pMainCamera = pScene->GetMainCamera()->GetGameObject();
+    pPlayer->AddChild( pMainCamera );
+    // pMainCamera->AddComponent<GCScriptFollowPlayer>()->SetPlayer( pPlayer );
+    
+    GCSprite pHappySprite( "happyImage.dds" );
+    GCGameObject* pHappy1 = pScene->CreateGameObject();
+    pHappy1->AddComponent<GCSpriteRenderer>()->SetSprite( &pHappySprite );
+    pHappy1->AddComponent<GCBoxCollider>()->SetVisible( false );
+    pHappy1->m_transform.SetPosition( GCVEC3( 0.0f, 0.0f, 0.0f ) );
+    
+    GCGameObject* pHappy2 = pScene->CreateGameObject();
+    pHappy2->AddComponent<GCSpriteRenderer>()->SetSprite( &pHappySprite );
+    pHappy2->AddComponent<GCBoxCollider>()->SetVisible( false );
+    pHappy2->m_transform.SetPosition( GCVEC3( 0.0f, 2.1f, 0.0f ) );
+    
+    GCGameObject* pHappy3 = pScene->CreateGameObject();
+    pHappy3->AddComponent<GCSpriteRenderer>()->SetSprite( &pHappySprite );
+    pHappy3->AddComponent<GCBoxCollider>()->SetVisible( false );
+    pHappy3->m_transform.SetPosition( GCVEC3( 0.0f, -2.1f, 0.0f ) );
+    
     pGameManager->Run();
-
+    
     return 0;
 }

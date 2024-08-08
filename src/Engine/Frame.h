@@ -6,7 +6,7 @@ class GCFrame
 {
 public:
 	GCFrame();
-	GCFrame( int frameID, float displayTime, bool isFlipingX, bool isFlipingY);
+	GCFrame( int frameID, float displayTime, bool isFlipingX, bool isFlipingY );
 	~GCFrame() = default;
 
 	float GetDisplayTime() const;

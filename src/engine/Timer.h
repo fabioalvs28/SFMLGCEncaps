@@ -17,8 +17,8 @@ public:
 	void Stop();
 	bool Update();
 
-	void SetTimeScale(float timeScale);
-	void SetMaxDeltaTime(float maxDeltaTime);
+	void SetTimeScale( float timeScale );
+	void SetMaxDeltaTime( float maxDeltaTime );
 
 	float DeltaTime() const;
 	float FixedDeltaTime() const;

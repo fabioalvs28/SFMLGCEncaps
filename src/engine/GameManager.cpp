@@ -20,7 +20,7 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
     m_pSceneManager = new GCSceneManager();
     m_pRenderManager = new GCRenderManager( m_pWindow );
 
-    m_pInputSystem->SetEventManager(m_pEventManager);
+    m_pInputSystem->SetEventManager( m_pEventManager );
 }
 
 
@@ -36,6 +36,7 @@ void GCGameManager::Run()
     SetActiveGameManager();
     if ( m_pSceneManager->GetActiveScene() == nullptr )
         GCScene::Create();
+    m_pRenderManager->m_pSpriteCollider = new GCSprite( "BoxColliderSquare.dds" );
     GameLoop();
 }
 
@@ -44,8 +45,9 @@ void GCGameManager::Run()
 ////////////////////////////
 void GCGameManager::GameLoop()
 {
-    while ( m_pWindow->Run(m_pRenderManager->m_pGraphics->GetRender()) )
+    while ( m_pWindow->Run( m_pRenderManager->m_pGraphics->GetRender() ) )
     {
+        // GCINPUTS::Update();
         m_pTimer->Update();
         m_pInputSystem->Update();
         m_pEventManager->Update();

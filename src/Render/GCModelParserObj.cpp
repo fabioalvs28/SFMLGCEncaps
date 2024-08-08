@@ -8,7 +8,7 @@ std::vector<std::string> split(std::string str, std::string delimiter)
 		int start = 0;
 		do {
 			// Find the index of occurrence
-			int idx = str.find(delimiter, start);
+			int idx = str.find(delimiter, static_cast<size_t>(start));
 			if (idx == std::string::npos) {
 				break;
 			}
@@ -17,7 +17,8 @@ std::vector<std::string> split(std::string str, std::string delimiter)
 			// occurrence in the vector
 			int length = idx - start;
 			v.push_back(str.substr(start, length));
-			start += (length + delimiter.size());
+			int delimiterSize = static_cast<int>(delimiter.size());
+			start += (length + delimiterSize);
 		} while (true);
 		v.push_back(str.substr(start));
 	}

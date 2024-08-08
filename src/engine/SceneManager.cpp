@@ -7,11 +7,11 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCSceneManager::Update()
 {
-	for ( GCListNode<Component*>* pComponentNode = m_componentsToCreateList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
+	for ( GCListNode<GCComponent*>* pComponentNode = m_componentsToCreateList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
 		CreateComponent( pComponentNode->GetData() );
 	m_componentsToCreateList.Clear();
 	
-	for ( GCListNode<Component*>* pComponentNode = m_componentsToDeleteList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
+	for ( GCListNode<GCComponent*>* pComponentNode = m_componentsToDeleteList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
 		DestroyComponent( pComponentNode->GetData() );
 	m_componentsToDeleteList.Clear();
 	
@@ -54,8 +54,9 @@ GCScene* GCSceneManager::CreateScene()
 	GCScene* pScene = new GCScene();
     pScene->m_pNode = m_scenesList.PushBack( pScene );
 	GCGameObject* pMainCameraGameObject = pScene->CreateGameObject();
-	pMainCameraGameObject->m_transform.SetPosition( GCVEC3( 0.0f, 0.0f, -1.0f ) );
-	pScene->m_pMainCamera = pMainCameraGameObject->AddComponent<Camera>(); //! If you delete the GameObject that currently contains the MainCamera, it will make everything stop working and it will be the end of the world.
+	pMainCameraGameObject->SetName( "MainCamera" );
+	pMainCameraGameObject->m_transform.SetPosition( GCVEC3( 0.0f, 0.0f, -10.0f ) );
+	pScene->m_pMainCamera = pMainCameraGameObject->AddComponent<GCCamera>(); //! If you delete the GameObject that currently contains the MainCamera, it will make everything stop working and it will be the end of the world.
 	if ( m_pActiveScene == nullptr )
 		SetActiveScene( pScene );
 	return pScene;
@@ -113,14 +114,12 @@ void GCSceneManager::DestroyScene( GCScene* pScene )
 /// 
 /// @param pComponent A pointer to the Component to create.
 ////////////////////////////////////////////////////////////////////////////
-void GCSceneManager::CreateComponent( Component* pComponent )
+void GCSceneManager::CreateComponent( GCComponent* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to create a nullptr pComponent" );
+	pComponent->m_created = true;
 	if ( pComponent->IsActive() == true )
-	{
-		pComponent->m_created = true;
 		pComponent->RegisterToManagers();
-	}
 }
 
 ///////////////////////////////////////////////////////////////
@@ -128,9 +127,10 @@ void GCSceneManager::CreateComponent( Component* pComponent )
 /// 
 /// @param pComponent A pointer to the Component to destroy.
 ///////////////////////////////////////////////////////////////
-void GCSceneManager::DestroyComponent( Component* pComponent )
+void GCSceneManager::DestroyComponent( GCComponent* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to destroy a nullptr pComponent" );
+	pComponent->UnregisterFromManagers();
 	pComponent->Destroy();
 	delete pComponent;
 }
@@ -159,7 +159,7 @@ void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 /// 
 /// @param pComponent A pointer to the Component to add to the queue.
 ////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddToCreateQueue( Component* pComponent )
+void GCSceneManager::AddToCreateQueue( GCComponent* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to add a nullptr pComponent to the Creation Queue" );
 	m_componentsToCreateList.PushBack( pComponent );
@@ -170,7 +170,7 @@ void GCSceneManager::AddToCreateQueue( Component* pComponent )
 /// 
 /// @param pComponent A pointer to the Component to add to the queue.
 ////////////////////////////////////////////////////////////////////////
-void GCSceneManager::AddToDeleteQueue( Component* pComponent )
+void GCSceneManager::AddToDeleteQueue( GCComponent* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to add a nullptr pComponent to the Deletion Queue" );
 	m_componentsToDeleteList.PushBack( pComponent );

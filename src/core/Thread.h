@@ -29,7 +29,7 @@ private:
 #pragma endregion
 
 #pragma region WinThead
-class WinThread
+class WinThread //! GCWinThread
 {
 public:
 	WinThread() : m_threadHandle(nullptr), m_threadID(0) {}

@@ -21,21 +21,25 @@
 //Core Elements
 #include "../core/framework.h"
 
+//Render Elements
+#include "../Render/pch.h" //! To change
+
 
 // Gameplay classes
 
 struct GCGameObjectTransform;
+class GCSprite;
 
-class Component;
-class SpriteRenderer;
-class Collider;
-class BoxCollider;
-class CircleCollider;
-class RigidBody;
-class Animator;
-class SoundMixer;
-class Camera;
-class Script;
+class GCComponent;
+class GCSpriteRenderer;
+class GCCollider;
+class GCBoxCollider;
+class GCCircleCollider;
+class GCRigidBody;
+class GCAnimator;
+class GCSoundMixer;
+class GCCamera;
+class GCScript;
 
 class GCGameObject;
 class GCScene;
@@ -55,8 +59,6 @@ class GCFrame;
 class GCAnimation;
 class GCAnimationManager;
 
-
-
 class Layer;
 class UILayer;
 enum class GCEventType;
@@ -73,12 +75,15 @@ class GCKeyReleasedEvent;
 class ComponentAddedEvent;
 class GCEventManager;
 
+enum GCKEYBOARD;
+enum GCMOUSE;
 class GCInputManager;
 class GCKeyboardInputManager;
 class GCMouseInputManager;
 // class GCControllerManager;
 // class GCControllerInputManager;
 class GCInputSystem;
+class GCINPUTS;
 
 class GCTime;
 
@@ -89,6 +94,7 @@ class GC;
 
 
 #include "GameObjectTransform.h"
+#include "Sprite.h"
 #include "Components.h"
 #include "GameObject.h"
 #include "Scene.h"
@@ -108,7 +114,6 @@ class GC;
 #include "InputManager.h"
 #include "Timer.h"
 #include "GameManager.h"
-#include "Window.h"
 
 #include "GC.h"
 

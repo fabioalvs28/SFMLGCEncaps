@@ -93,49 +93,49 @@ bool CheckPointersNull(const char* successMsg, const char* warningMsg, Args... a
 
 // Variadic Check Ptr with 1 message Error 
 #ifdef _DEBUG
-#define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
+#define GC_CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
     CheckPointersNull(successMsg, warningMsg, __VA_ARGS__)
 #else
-#define CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
+#define GC_CHECK_POINTERSNULL(successMsg, warningMsg, ...) \
     true
 #endif
 
 #ifdef _DEBUG
-#define CHECK_FILE(fileName, errorMessage, successMessage) \
+#define GC_CHECK_FILE(fileName, errorMessage, successMessage) \
     CheckFile(fileName, errorMessage, successMessage)
 #else
-#define CHECK_FILE(fileName, errorMessage, successMessage) \
+#define GC_CHECK_FILE(fileName, errorMessage, successMessage) \
     true
 #endif
 
 #ifdef _DEBUG
-#define CHECK_EXTENSION(filePath, fileExtension) \
+#define GC_CHECK_EXTENSION(filePath, fileExtension) \
     CheckExtension(filePath, fileExtension)
 #else
-#define CHECK_EXTENSION(filePath, fileExtension) \
+#define GC_CHECK_EXTENSION(filePath, fileExtension) \
     true
 #endif
 
 #ifdef _DEBUG
-#define CHECK_HRESULT(hr, msg) \
+#define GC_CHECK_HRESULT(hr, msg) \
     CheckHResult(hr, msg)
 #else
-#define CHECK_HRESULT(hr, msg) \
+#define GC_CHECK_HRESULT(hr, msg) \
     true
 #endif
 
 
 #ifdef _DEBUG
-#define COMPARE_SHADER_MESH_FLAGS(material, mesh) \
+#define GC_COMPARE_SHADER_MESH_FLAGS(material, mesh) \
     CompareShaderMeshFlags(material, mesh)
 #else
-#define COMPARE_SHADER_MESH_FLAGS(material, mesh) \
+#define GC_COMPARE_SHADER_MESH_FLAGS(material, mesh) \
     true
 #endif
 
 // Release & Debug ***
 
-#define LOG_REMOVE_RESOURCE(it, resourceName, container) \
+#define GC_LOG_REMOVE_RESOURCE(it, resourceName, container) \
     LogRemoveResource(it, resourceName, container)
 
 

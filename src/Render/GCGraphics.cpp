@@ -11,7 +11,7 @@ GCGraphics::GCGraphics()
     m_vShaders.clear();
     m_vMaterials.clear();
     m_vMeshes.clear();
-    m_pCbCameraInstances.clear();
+    m_cbCameraInstances.clear();
 }
 
 GCGraphics::~GCGraphics()
@@ -40,11 +40,11 @@ GCGraphics::~GCGraphics()
     }
     m_lTextures.clear();
 
-    for (auto buffer : m_pCbCameraInstances)
+    for (auto buffer : m_cbCameraInstances)
     {
         GC_DELETE(buffer);
     }
-    m_pCbCameraInstances.clear();
+    m_cbCameraInstances.clear();
 
     GC_DELETE(m_pRender);
     GC_DELETE(m_pPrimitiveFactory);
@@ -53,7 +53,7 @@ GCGraphics::~GCGraphics()
 
 bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
 {
-    if (CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow) == false)
+    if (GC_CHECK_POINTERSNULL("Graphics Initialized with window sucessfully", "Can't initialize Graphics, Window is empty", pWindow) == false)
         return false;
 
     //Creates Primitive and parser instances
@@ -69,7 +69,7 @@ bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
     m_pRender->Initialize(pWindow, renderWidth, renderHeight, this);
 
 	GCShaderUploadBufferBase* pCbInstance = new GCShaderUploadBuffer<GCVIEWPROJCB>(m_pRender->GetRenderResources()->Getmd3dDevice(), 1, true);
-    m_pCbCameraInstances.push_back(pCbInstance);
+    m_cbCameraInstances.push_back(pCbInstance);
 
     return true;
 }
@@ -122,7 +122,7 @@ bool GCGraphics::EndFrame()
 
 bool GCGraphics::InitializeGraphicsResourcesStart() {
     HRESULT hr = m_pRender->GetRenderResources()->GetCommandList()->Reset(m_pRender->GetRenderResources()->GetCommandAllocator(), nullptr);
-    if (!CHECK_HRESULT(hr, "CommandList->Reset()")) {
+    if (!GC_CHECK_HRESULT(hr, "CommandList->Reset()")) {
         return false;
     };
 
@@ -131,7 +131,7 @@ bool GCGraphics::InitializeGraphicsResourcesStart() {
 bool GCGraphics::InitializeGraphicsResourcesEnd() {
     HRESULT hr;
     hr = m_pRender->GetRenderResources()->GetCommandList()->Close();
-    if (!CHECK_HRESULT(hr, "CommandList()->Close()")) {
+    if (!GC_CHECK_HRESULT(hr, "CommandList()->Close()")) {
         return false;
     };
     m_pRender->ExecuteCommandList();
@@ -176,8 +176,10 @@ GC_RESOURCE_CREATION_RESULT<GCTexture*> GCGraphics::CreateTexture(const std::str
         m_lTextureActiveFlags.push_back(true);
     }
 
+    INT intIndex = static_cast<INT>(index);
+
     // Initialize the texture with the specified index
-    GC_GRAPHICS_ERROR errorState = texture->Initialize(filePath, this, index);
+    GC_GRAPHICS_ERROR errorState = texture->Initialize(filePath, this, intIndex);
     if (errorState != GCRENDER_SUCCESS_OK) {
         return GC_RESOURCE_CREATION_RESULT<GCTexture*>(false, nullptr, errorState);
     }
@@ -255,7 +257,7 @@ GC_RESOURCE_CREATION_RESULT<GCShader*> GCGraphics::CreateShaderCustom(std::strin
 
 GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshCustom(GCGeometry* pGeometry, int& flagEnabledBits)
 {
-    if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
     {
         return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
     }
@@ -279,7 +281,7 @@ GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshColor(GCGeometry* pGe
     GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
 
     // Check if Geometry is valid
-    if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
         return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMesh* pMesh = new GCMesh();
@@ -300,7 +302,7 @@ GC_RESOURCE_CREATION_RESULT<GCMesh*> GCGraphics::CreateMeshTexture(GCGeometry* p
     GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
 
     // Check if Geometry is valid
-    if (CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Geometry loaded successfully for mesh", "Can't create mesh, Geometry is empty", pGeometry) == false)
         return GC_RESOURCE_CREATION_RESULT<GCMesh*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMesh* pMesh = new GCMesh();
@@ -318,7 +320,7 @@ GC_RESOURCE_CREATION_RESULT<GCGeometry*> GCGraphics::CreateGeometryPrimitive(con
 {
     GCGeometry* pGeometry = new GCGeometry();
 
-    if (CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
         return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GC_GRAPHICS_ERROR errorState = m_pPrimitiveFactory->BuildGeometry(primitiveIndex, color, pGeometry);
@@ -334,7 +336,7 @@ GC_RESOURCE_CREATION_RESULT<GCGeometry*> GCGraphics::CreateGeometryModelParser(c
 {
     GCGeometry* pGeometry = new GCGeometry;
 
-    if (CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
+    if (GC_CHECK_POINTERSNULL("Pointer geometry not null", "Pointer geometry null", pGeometry) == false)
         return GC_RESOURCE_CREATION_RESULT<GCGeometry*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GC_GRAPHICS_ERROR errorState = m_pModelParserFactory->BuildModel(filePath, DirectX::XMFLOAT4(DirectX::Colors::Gray), fileExtensionType, pGeometry);
@@ -348,7 +350,7 @@ GC_RESOURCE_CREATION_RESULT<GCGeometry*> GCGraphics::CreateGeometryModelParser(c
 
 GC_RESOURCE_CREATION_RESULT<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pShader)
 {
-    if (CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader) == false)
+    if (GC_CHECK_POINTERSNULL("Shader loaded successfully for material", "Can't create material, Shader is empty", pShader) == false)
         return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(false, nullptr, GCRENDER_ERROR_POINTER_NULL);
 
     GCMaterial* material = new GCMaterial();
@@ -357,7 +359,7 @@ GC_RESOURCE_CREATION_RESULT<GCMaterial*> GCGraphics::CreateMaterial(GCShader* pS
     if (errorState != 0)
         return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(false, nullptr, errorState);
 
-    material->m_materialId = m_vMaterials.size();
+    material->m_materialId = static_cast<float>(m_vMaterials.size());
     m_vMaterials.push_back(material);
 
     return GC_RESOURCE_CREATION_RESULT<GCMaterial*>(true, material, errorState);
@@ -385,13 +387,13 @@ std::list<GCTexture*> GCGraphics::GetTextures()
 
 GC_GRAPHICS_ERROR GCGraphics::RemoveShader(GCShader* pShader)
 {
-    if (CHECK_POINTERSNULL("Ptr for RemoveShader is not null", "Can't remove shader, pShader is null", pShader) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for RemoveShader is not null", "Can't remove shader, pShader is null", pShader) == false)
         return GCRENDER_ERROR_POINTER_NULL;
 
     // Removes Shader both from vector and the shader itself
     auto it = std::find(m_vShaders.begin(), m_vShaders.end(), pShader);
 
-    if (LOG_REMOVE_RESOURCE(it, "Shader", m_vShaders))
+    if (GC_LOG_REMOVE_RESOURCE(it, "Shader", m_vShaders))
     {
         m_vShaders.erase(it);
         delete pShader;
@@ -402,12 +404,12 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveShader(GCShader* pShader)
 
 GC_GRAPHICS_ERROR GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 {
-    if (CHECK_POINTERSNULL("Ptr for RemoveMaterial is not null", "Can't remove material, pMaterial is null", pMaterial) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for RemoveMaterial is not null", "Can't remove material, pMaterial is null", pMaterial) == false)
         return GCRENDER_ERROR_POINTER_NULL;
 
     auto it = std::find(m_vMaterials.begin(), m_vMaterials.end(), pMaterial);
 
-    if (LOG_REMOVE_RESOURCE(it, "Material", m_vMaterials))
+    if (GC_LOG_REMOVE_RESOURCE(it, "Material", m_vMaterials))
     {
         m_vMaterials.erase(it);
         delete pMaterial;
@@ -418,13 +420,13 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveMaterial(GCMaterial* pMaterial)
 
 GC_GRAPHICS_ERROR GCGraphics::RemoveMesh(GCMesh* pMesh)
 {
-    if (CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for RemoveMesh is not null", "Can't remove mesh, pMesh is null", pMesh) == false)
         return GCRENDER_ERROR_POINTER_NULL;
 
     // Removes Mesh
     auto it = std::find(m_vMeshes.begin(), m_vMeshes.end(), pMesh);
 
-    if (LOG_REMOVE_RESOURCE(it, "Mesh", m_vMeshes))
+    if (GC_LOG_REMOVE_RESOURCE(it, "Mesh", m_vMeshes))
     {
         m_vMeshes.erase(it);
         delete pMesh;
@@ -460,6 +462,31 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
     return GCRENDER_ERROR_RESOURCE_TO_REMOVE_DONT_FIND;
 }
 
+GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
+    // Obtenez le rapport d'aspect
+    float aspectRatio = m_pRender->GetRenderResources()->GetCurrentWindow()->AspectRatio();
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+
+    // Calculer les facteurs de mise à l'échelle
+    if (aspectRatio > 1.0f) {
+        scaleX = 1.0f / aspectRatio;
+    }
+    else {
+        scaleY = aspectRatio;
+    }
+
+    DirectX::XMMATRIX xmWorldMatrix = GCUtils::GCMATRIXToXMMATRIX(worldMatrix);
+
+    DirectX::XMMATRIX xmAdditionalScaleMatrix = DirectX::XMMatrixScaling(scaleX, scaleY, 1.0f);
+
+    DirectX::XMMATRIX xmWorldMatrixScaled = xmWorldMatrix * xmAdditionalScaleMatrix;
+
+    GCMATRIX scaledWorldMatrix = GCUtils::XMMATRIXToGCMATRIX(xmWorldMatrixScaled);
+
+    return scaledWorldMatrix;
+}
+
 bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
@@ -467,9 +494,9 @@ bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATR
     cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
     cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
 
-    UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
+    UpdateConstantBuffer(cameraData, m_cbCameraInstances[0]);
 
-    m_pRender->m_pCbCurrentViewProjInstance = m_pCbCameraInstances[0];
+    m_pRender->m_pCbCurrentViewProjInstance = m_cbCameraInstances[0];
 
     return true;
 }
@@ -480,8 +507,8 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
     float aspectRatio,
     float nearZ,
     float farZ,
-    float viewWidth,   // Ajoutez ces paramètres
-    float viewHeight,  // Ajoutez ces paramètres
+    float viewWidth,  
+    float viewHeight,  
     GC_PROJECTION_TYPE projType,
     GCMATRIX& projectionMatrix,
     GCMATRIX& viewMatrix)
@@ -498,11 +525,9 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
         projectionMatrixXM = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, aspectRatio, nearZ, farZ);
     }
     else {
-        // Créer une matrice orthographique avec viewWidth et viewHeight
         projectionMatrixXM = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, nearZ, farZ);
     }
 
-    // Transposer les matrices pour les shaders
     DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrixXM);
     DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrixXM);
 
@@ -517,9 +542,9 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
     GCVIEWPROJCB cameraData;
     cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
     cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
-    UpdateConstantBuffer(cameraData, m_pCbCameraInstances[0]);
+    UpdateConstantBuffer(cameraData, m_cbCameraInstances[0]);
 
-    m_pRender->m_pCbCurrentViewProjInstance = m_pCbCameraInstances[0];
+    m_pRender->m_pCbCurrentViewProjInstance = m_cbCameraInstances[0];
 
     return true;
 }
@@ -527,7 +552,7 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
 // Update per object constant buffer
 bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId)
 {
-    if (CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
 
     if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
@@ -535,23 +560,34 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
     }
 
     GCWORLDCB worldData;
-    worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
+    //Additional scaling for Screen Ratio not equilibrate, not ponderate
+    if (m_pRender->GetRenderMode() == 0)//2D
+    {
+        GCMATRIX matrix = UpdateScalingRatio(worldMatrix);
+
+        worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(matrix);
+    }
+    else if (m_pRender->GetRenderMode() == 1)//3D
+    {
+        worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
+    }
+
     worldData.objectId = meshId;
     worldData.materialId = pMaterial->m_materialId;
 
     // Update 
     pMaterial->UpdateConstantBuffer(worldData, pMaterial->GetCbObjectInstance()[pMaterial->GetCount()]);
 
+    return true;
 }
 
-//Update Camera and Object Constant Buffer / But They can also send their own structure
 void GCGraphics::UpdateConstantBuffer(const GCSHADERCB& objectData, GCShaderUploadBufferBase* uploadBufferInstance)
 {
     uploadBufferInstance->CopyData(0, objectData);
 }
 
 DirectX::XMFLOAT4X4 GCGraphics::ToPixel(int pixelX, int pixelY, DirectX::XMFLOAT4X4& proj, DirectX::XMFLOAT4X4& view) {
-    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(pixelX, pixelY, m_pRender->GetRenderResources()->GetRenderWidth(), m_pRender->GetRenderResources()->GetRenderHeight(), proj, view);
+    DirectX::XMFLOAT3 worldPos = GCUtils::PixelToWorld(static_cast<float>(pixelX), static_cast<float>(pixelY), m_pRender->GetRenderResources()->GetRenderWidth(), m_pRender->GetRenderResources()->GetRenderHeight(), proj, view);
 
     DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 
@@ -568,7 +604,7 @@ void GCGraphics::Resize(int width, int height) {
 
 bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPERTIES& objectData)
 {
-    if (CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
 
     pMaterial->ambientLightColor = objectData.ambientLightColor;
@@ -583,7 +619,7 @@ bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, GCMATERIALPROPE
 
 bool GCGraphics::UpdateMaterialProperties(GCMaterial* pMaterial, DirectX::XMFLOAT4& ambientLightColor, DirectX::XMFLOAT4& ambient, DirectX::XMFLOAT4& diffuse, DirectX::XMFLOAT4& specular, float shininess)
 {
-    if (CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
+    if (GC_CHECK_POINTERSNULL("Ptr for Update Material Properties is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         return false;
 
     GCMATERIALPROPERTIES materialData;
