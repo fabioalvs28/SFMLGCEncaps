@@ -59,8 +59,6 @@ class GCFrame;
 class GCAnimation;
 class GCAnimationManager;
 
-
-
 class Layer;
 class UILayer;
 enum class GCEventType;
@@ -77,14 +75,14 @@ class GCKeyReleasedEvent;
 class ComponentAddedEvent;
 class GCEventManager;
 
+enum GCKEYBOARD;
+enum GCMOUSE;
 class GCInputManager;
 class GCKeyboardInputManager;
 class GCMouseInputManager;
 // class GCControllerManager;
 // class GCControllerInputManager;
 class GCInputSystem;
-enum GCKEYBOARD;
-enum GCMOUSE;
 class GCINPUTS;
 
 class GCTime;
