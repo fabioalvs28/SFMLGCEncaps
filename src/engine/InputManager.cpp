@@ -318,6 +318,10 @@ void GCMouseInputManager::Update()
             }
         }
     }
+    LPPOINT mousePos;
+    GetCursorPos(mousePos);
+    m_mousePos.x = mousePos->x;
+    m_mousePos.y = mousePos->y;
 }
 #pragma endregion
 

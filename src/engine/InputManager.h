@@ -225,6 +225,8 @@ public:
     bool GetKeyStay( int key );
     bool GetKeyUp( int key );
 
+    GCVEC2 GetMousePos() { return m_mousePos; }
+
     enum MouseState
     {
         NONE, // NOT PRESSED
@@ -235,6 +237,8 @@ public:
     };
 
 private:
+
+
     void Update();
 
     int GetIDSize() const override { return GCMOUSE::MOUSEIDCOUNT; };
@@ -242,6 +246,7 @@ private:
     int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
 
     std::vector<BYTE> m_buttonState;
+    GCVEC2 m_mousePos;
 
     void SendEvent( int index, BYTE state );
     
