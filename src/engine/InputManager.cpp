@@ -233,6 +233,7 @@ GCMouseInputManager::GCMouseInputManager()
 {
     for ( int i = 0 ; i < GCMOUSE::MOUSEIDCOUNT; i++ )
         m_buttonState.push_back( GCMouseInputManager::NONE );
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -318,10 +319,25 @@ void GCMouseInputManager::Update()
             }
         }
     }
-    LPPOINT mousePos;
-    GetCursorPos(mousePos);
-    m_mousePos.x = mousePos->x;
-    m_mousePos.y = mousePos->y;
+    POINT mousePos = {0,0};
+
+    GetCursorPos(&mousePos);
+
+    RECT rect = { NULL };
+    Window* pWindow = GC::GetWindow();
+    GetWindowRect(pWindow->GetHMainWnd(), &rect);
+    mousePos.x -= rect.left;
+    mousePos.y -= rect.top;
+    m_mousePos.x = mousePos.x;
+    m_mousePos.y = mousePos.y;
+    if (m_mousePos.x < 0)
+        m_mousePos.x = 0;
+    if (m_mousePos.y < 0)
+        m_mousePos.y = 0;
+    if (m_mousePos.x > pWindow->GetClientWidth())
+        m_mousePos.x = pWindow->GetClientWidth();
+    if (m_mousePos.y > pWindow->GetClientHeight())
+        m_mousePos.y = pWindow->GetClientHeight();
 }
 #pragma endregion
 
@@ -569,6 +585,9 @@ bool GCINPUTS::GetKeyUp( GCMOUSE keyId )
 
 bool GCINPUTS::GetKeyStay( GCMOUSE keyId )
 { return GC::GetActiveInputSystem()->m_pMouse->GetKeyStay( keyId ); }
+
+GCVEC2 GCINPUTS::GetMousePos()
+{ return GC::GetActiveInputSystem()->m_pMouse->GetMousePos(); }
 
 // void GCINPUTS::Update()
 // { s_pActiveInputSystem = GC::GetActiveInputSystem(); }

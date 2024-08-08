@@ -244,10 +244,8 @@ private:
     int GetIDSize() const override { return GCMOUSE::MOUSEIDCOUNT; };
 
     int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
-
     std::vector<BYTE> m_buttonState;
     GCVEC2 m_mousePos;
-
     void SendEvent( int index, BYTE state );
     
 };
@@ -363,6 +361,8 @@ public:
     static bool GetKeyDown( GCMOUSE keyId );
     static bool GetKeyStay( GCMOUSE keyId );
     static bool GetKeyUp( GCMOUSE keyId );
+
+    static GCVEC2 GetMousePos();
 
 // private:
 //     static void Update();
