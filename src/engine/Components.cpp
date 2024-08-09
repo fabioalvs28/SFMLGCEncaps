@@ -159,6 +159,7 @@ void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 {
 	GCComponent::CopyTo( pDestination );
 	GCSpriteRenderer* pSpriteRenderer = static_cast<GCSpriteRenderer*>( pDestination );
+	pSpriteRenderer->m_pSprite = m_pSprite;
 }
 
 void GCSpriteRenderer::Render()
