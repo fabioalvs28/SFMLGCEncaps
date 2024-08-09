@@ -1,0 +1,29 @@
+{
+    "solution_name": "GC Engine",
+    "format_version": "12.00",
+    "version": "16",
+    "version_full": "16.0.28729.10",
+    "minimum_version": "10.0.40219.1",
+    "poles": {
+        "engine": {
+            "projects": ["Testing.json", "Engine.json", "Core.json","Render.json"] 
+        },
+        "gameplay": {
+            "projects": ["Jeu_1.json", "Engine.json", "Core.json", "Jeu_2.json"],
+            "folders": [
+                {
+                    "name": "Gameplay"
+                }
+            ]
+        },
+        "render": {
+            "projects": ["RenderApp.json"]
+        },
+        "tools": {
+            "projects": ["Multimedia.json","Core.json","SpriteSheetGenerator.json"]
+        },
+        "qa": {
+            "projects": []
+        }
+    }
+}
