@@ -24,6 +24,9 @@
         },
         "qa": {
             "projects": []
+        },
+        "WITGN": {
+            "projects": ["WITGN.json","Engine.json","Core.json","Render.json"]
         }
     }
 }
