@@ -350,9 +350,9 @@ GCControllerInputManager::GCControllerInputManager()
     m_controllersRightAxis.x = 0.0; m_controllersRightAxis.y = 0.0;
     m_controllerTrigger.x = 0.0; m_controllerTrigger.y = 0.0;
 
-    m_buttonState = GCVector<BYTE>( 16 );
+    m_buttonState = std::vector<BYTE>( 16 );
 
-    for ( int j = 0; j < ControllerID::CONTROLLERIDCOUNT; j++ )
+    for ( int j = 0; j < GCCONTROLLER::CONTROLLERIDCOUNT; j++ )
         m_buttonState[j] = GCControllerInputManager::NONE;
 }
 
@@ -362,9 +362,9 @@ GCControllerInputManager::GCControllerInputManager( int id )
     m_controllersLeftAxis.x = 0.0; m_controllersLeftAxis.y = 0.0;
     m_controllersRightAxis.x = 0.0; m_controllersRightAxis.y = 0.0;
     m_controllerTrigger.x = 0.0; m_controllerTrigger.y = 0.0;
-    m_buttonState = GCVector<BYTE>( 16 );
+    m_buttonState = std::vector<BYTE>( 16 );
 
-    for ( int j = 0; j < ControllerID::CONTROLLERIDCOUNT; j++ )
+    for ( int j = 0; j < GCCONTROLLER::CONTROLLERIDCOUNT; j++ )
         m_buttonState[j] = GCControllerInputManager::NONE;
 }
 
@@ -375,10 +375,7 @@ GCControllerInputManager::GCControllerInputManager( int id )
 ////////////////////////////////////////////////////////////////
 bool GCControllerInputManager::GetControllerButtonDown( int vButton )
 {
-    int index = 0x5800;
-    if ( vButton > 0x05807 )
-        index += 8;
-    return m_buttonState[ vButton - index ] == GCControllerInputManager::DOWN;
+    return m_buttonState[ vButton ] == GCControllerInputManager::DOWN;
 }
 
 /////////////////////////////////////////////////////////////////
@@ -388,10 +385,7 @@ bool GCControllerInputManager::GetControllerButtonDown( int vButton )
 /////////////////////////////////////////////////////////////////
 bool GCControllerInputManager::GetControllerButtonStay( int vButton )
 {
-    int index = 0x5800;
-    if ( vButton > 0x05807 )
-        index += 8;
-    return m_buttonState[ vButton - index ] == GCControllerInputManager::STAY;
+    return m_buttonState[ vButton ] == GCControllerInputManager::STAY;
 }
 
 //////////////////////////////////////////////////////////////
@@ -401,10 +395,7 @@ bool GCControllerInputManager::GetControllerButtonStay( int vButton )
 //////////////////////////////////////////////////////////////
 bool GCControllerInputManager::GetControllerButtonUp( int vButton )
 {
-    int index = 0x5800;
-    if ( vButton > 0x05807 )
-        index += 8;
-    return m_buttonState[ vButton - index ] == GCControllerInputManager::UP;
+    return m_buttonState[ vButton ] == GCControllerInputManager::UP;
 }
 
 void GCControllerInputManager::UpdateController()
@@ -479,67 +470,70 @@ void GCControllerInputManager::UpdateJoySticksinput()
 {
     XINPUT_STATE state;
     int side[2] = { 1, 1 };
+
     if ( XInputGetState( m_ID, &state ) == ERROR_SUCCESS )
     {
         float temp = 1.0f / 32767.0f;
-        float LX = state.Gamepad.sThumbLX;
-        float LY = state.Gamepad.sThumbLY;
+        float leftAxisX = state.Gamepad.sThumbLX;
+        float leftAxisY = state.Gamepad.sThumbLY;
         
-        if ( LX <= -32767 )
-            LX = -32767;
-        if ( LY <= -32767 )
-            LY = -32767;
-        
-        float rLX = LX * temp;
-        float rLY = LY * temp;
-        
-        if ( rLX < 0 )
+        if ( leftAxisX <= -32767 )
+            leftAxisX = -32767;
+        if ( leftAxisY <= -32767 )
+            leftAxisY = -32767;
+
+        if (leftAxisX < 0 )
             side[0] = -1;
-        if ( rLY < 0 )
+        if (leftAxisY < 0 )
             side[1] = -1;
         
-        rLX = rLX * rLX;
-        rLY = rLY * rLY;
+        float newLeftAxisX = leftAxisX * temp;
+        float newLeftAxisY = leftAxisY * temp;
         
-        if ( LX * side[0] + LY * side[1] < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+        
+        newLeftAxisX = newLeftAxisX * newLeftAxisX;
+        newLeftAxisY = newLeftAxisY * newLeftAxisY;
+        
+        if ( leftAxisX * side[0] + leftAxisY * side[1] < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
         {
-            rLX = 0.0f;
-            rLY = 0.0f;
+            newLeftAxisX = 0.0f;
+            newLeftAxisY = 0.0f;
         }
         
-        m_controllersLeftAxis.x = rLX;
-        m_controllersLeftAxis.y = rLY;
+        m_controllersLeftAxis.x = newLeftAxisX * side[0];
+        m_controllersLeftAxis.y = newLeftAxisY * side[1];
         
         side[0] = 1;
         side[1] = 1;
         
-        float RX = state.Gamepad.sThumbRX;
-        float RY = state.Gamepad.sThumbRY;
+        float rightAxisX = state.Gamepad.sThumbRX;
+        float rightAxisY = state.Gamepad.sThumbRY;
         
-        if ( RX <= -32767 )
-            RX = -32767;
-        if ( RY <= -32767 )
-            RY = -32767;
-        
-        float rRX = RX * temp;
-        float rRY = RY * temp;
-        
-        if ( rRX < 0 )
+        if (rightAxisX <= -32767 )
+            rightAxisX = -32767;
+        if (rightAxisY <= -32767 )
+            rightAxisY = -32767;
+
+        if (rightAxisX < 0 )
             side[0] = -1;
-        if ( rRY < 0 )
+        if (rightAxisY < 0 )
             side[1] = -1;
         
-        rRX = rRX * rRX;
-        rRY = rRY * rRY;
+        float newRightAxisX = rightAxisX * temp;
+        float newRightAxisY = rightAxisY * temp;
         
-        if ( RX * side[0] + RY * side[1] < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
+        
+        newRightAxisX = newRightAxisX * newRightAxisX;
+        newRightAxisY = newRightAxisY * newRightAxisY;
+        
+        if (rightAxisX * side[0] + rightAxisY * side[1] < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
         {
-            rRX = 0.0;
-            rRY = 0.0;
+            newRightAxisX = 0.0;
+            newRightAxisY = 0.0;
         }
         
-        m_controllersRightAxis.x = rRX;
-        m_controllersRightAxis.y = rRY;
+        m_controllersRightAxis.x = newRightAxisX * side[0];
+        m_controllersRightAxis.y = newRightAxisY * side[1];
     }
 }
 
@@ -577,6 +571,7 @@ bool GCINPUTS::GetKeyUp( GCKEYBOARD keyId )
 bool GCINPUTS::GetKeyStay( GCKEYBOARD keyId )
 { return GC::GetActiveInputSystem()->m_pKeyboard->GetKeyStay( keyId ); }
 
+
 bool GCINPUTS::GetKeyDown( GCMOUSE keyId )
 { return GC::GetActiveInputSystem()->m_pMouse->GetKeyDown( keyId ); }
 
@@ -586,8 +581,32 @@ bool GCINPUTS::GetKeyUp( GCMOUSE keyId )
 bool GCINPUTS::GetKeyStay( GCMOUSE keyId )
 { return GC::GetActiveInputSystem()->m_pMouse->GetKeyStay( keyId ); }
 
+
+bool GCINPUTS::GetControllerKeyDown(int controllerID, GCCONTROLLER keyId)
+{ return GC::GetActiveInputSystem()->m_pControllerList[controllerID]->GetControllerButtonDown(keyId); }
+
+bool GCINPUTS::GetControllerKeyUp(int controllerID, GCCONTROLLER keyId)
+{ return GC::GetActiveInputSystem()->m_pControllerList[controllerID]->GetControllerButtonUp(keyId); }
+
+bool GCINPUTS::GetControllerKeyStay(int controllerID, GCCONTROLLER keyId)
+{ return GC::GetActiveInputSystem()->m_pControllerList[controllerID]->GetControllerButtonStay(keyId); }
+
+
 GCVEC2 GCINPUTS::GetMousePos()
 { return GC::GetActiveInputSystem()->m_pMouse->GetMousePos(); }
+
+
+GCVEC2 GCINPUTS::GetControllerLeftJoyStick( int controllerID )
+{ return *GC::GetActiveInputSystem()->m_pControllerList[controllerID]->GetControllerLeftJoyStick(); }
+
+GCVEC2 GCINPUTS::GetControllerRightJoyStick( int controllerID )
+{ return *GC::GetActiveInputSystem()->m_pControllerList[controllerID]->GetControllerRightJoyStick(); }
+
+float GCINPUTS::GetControllerLeftTrigger( int controllerID )
+{ return GC::GetActiveInputSystem()->m_pControllerList[controllerID]->GetControllerLeftTriggerState(); }
+
+float GCINPUTS::GetControllerRightTrigger( int controllerID )
+{ return GC::GetActiveInputSystem()->m_pControllerList[controllerID]->GetControllerRightTriggerState(); }
 
 // void GCINPUTS::Update()
 // { s_pActiveInputSystem = GC::GetActiveInputSystem(); }
