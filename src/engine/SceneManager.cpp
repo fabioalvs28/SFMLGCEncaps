@@ -146,7 +146,7 @@ void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 {
 	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to destroy a nullptr pGameObject" );
 	if ( pGameObject->m_pParent != nullptr )
-		pGameObject->m_pChildNode->Delete();
+		pGameObject->m_pChildNode = nullptr;
 	if ( pGameObject->m_pSceneNode != nullptr )
 		pGameObject->m_pSceneNode->Delete();
 	delete pGameObject;
