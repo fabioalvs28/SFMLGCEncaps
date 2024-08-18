@@ -47,25 +47,22 @@ GCGameObject* GCGameObject::Duplicate()
         pChildNode->GetData()->Duplicate( pGameObject );
     
     pGameObject->m_transform = m_transform;
+    pGameObject->m_transform.m_pGameObject = pGameObject;
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
     for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
         pGameObject->AddTag( pTagNode->GetData() );
     pGameObject->m_layer = m_layer;
-    GCComponent* pComponent;
-    for ( int i = 0; i < GCComponent::componentCount; i++ )
+    for (auto it : m_componentsList)
     {
-        if ( m_componentsList.Find( i, pComponent ) )
-        {
-            GCComponent* pNewComponent = pComponent->Duplicate();
+            GCComponent* pNewComponent = it.second->Duplicate();
             pNewComponent->m_pGameObject = pGameObject;
             pNewComponent->Start();
-            pComponent->CopyTo( pNewComponent );
+            it.second->CopyTo( pNewComponent );
             pNewComponent->m_globalActive = pGameObject->IsActive();
             pGameObject->m_componentsList.Insert( pNewComponent->GetID(), pNewComponent );
             GC::GetActiveSceneManager()->AddToCreateQueue( pNewComponent );
-        }
     }
     
     return pGameObject;
@@ -87,15 +84,23 @@ GCGameObject* GCGameObject::Duplicate( GCGameObject* pParent )
         pChildNode->GetData()->Duplicate( pGameObject );
     
     pGameObject->m_transform = m_transform;
+    pGameObject->m_transform.m_pGameObject = pGameObject;
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
     pGameObject->m_tagsList = m_tagsList; // TODO Change this to LinkedList
     pGameObject->m_layer = m_layer;
-    GCComponent* pComponent;
-    for ( int i = 0; i < GCComponent::componentCount; i++ )
-        if ( m_componentsList.Find( i, pComponent ) )
-            pComponent->Duplicate();
+
+    for (auto it : m_componentsList)
+    {
+            GCComponent* pNewComponent = it.second->Duplicate();
+            pNewComponent->m_pGameObject = pGameObject;
+            pNewComponent->Start();
+            it.second->CopyTo(pNewComponent);
+            pNewComponent->m_globalActive = pGameObject->IsActive();
+            pGameObject->m_componentsList.Insert(pNewComponent->GetID(), pNewComponent);
+            GC::GetActiveSceneManager()->AddToCreateQueue(pNewComponent);
+    }
     
     return pGameObject;
 }
