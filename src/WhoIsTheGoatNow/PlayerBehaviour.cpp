@@ -9,7 +9,7 @@ void GCScriptPlayerBehaviour::CopyTo(GCComponent* pDestination)
 
 void GCScriptPlayerBehaviour::Start()
 {
-	m_velocity = 0.1f;
+	m_velocity = 0.05f;
 	m_pInputSystem = new InputSystem();
 	m_pInputSystem->Initialize();
 }
