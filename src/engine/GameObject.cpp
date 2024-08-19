@@ -51,9 +51,12 @@ GCGameObject* GCGameObject::Duplicate()
     pGameObject->m_globalActive = m_globalActive;
     pGameObject->m_selfActive = m_selfActive;
     pGameObject->m_name = m_name;
+
     for ( GCListNode<const char*>* pTagNode = m_tagsList.GetFirstNode(); pTagNode != nullptr; pTagNode = pTagNode->GetNext() )
         pGameObject->AddTag( pTagNode->GetData() );
+
     pGameObject->m_layer = m_layer;
+
     for (auto it : m_componentsList)
     {
             GCComponent* pNewComponent = it.second->Duplicate();

@@ -2,6 +2,7 @@
 #include "GCEngine.h"
 #include "PlayerBehaviour.h"
 #include "EnemyBehaviour.h"
+#include "EnemySpawner.h"
 
 
 int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -26,9 +27,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_pEnemy->AddComponent<GCBoxCollider>();
     GO_pEnemy->AddComponent<GCScriptEnemyBehaviour>()->SetTarget(GO_pPlayer);
 
-    //GO_pEnemy->GetComponent<GCScriptEnemyBehaviour>()->Spawn();
-    GO_pPlayer->SetLayer(1);
+    GCGameObject* GO_pEnemySpawner = pScene->CreateGameObject();
+    GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->SetTemplate(GO_pEnemy);
+
     pGameManager->Run();
-    
+
     return 0;
 }

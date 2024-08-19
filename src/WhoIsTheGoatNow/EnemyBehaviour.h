@@ -6,10 +6,12 @@ public:
 	void Start() override;
 	void FixedUpdate() override;
 
+	void Spawn();
 	void Die();
 
-	void SetTarget(GCGameObject* pTarget);
-	void Spawn();
+	void SetTarget(GCGameObject* pTarget) { m_pTarget = pTarget; };
+	GCGameObject* GetTarget() { return m_pTarget; };
+
 private:
 	int m_hp;
 	float m_speed;
