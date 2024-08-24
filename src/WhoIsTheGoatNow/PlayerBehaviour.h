@@ -6,11 +6,14 @@ public:
 	void Start() override;
 	void Update() override;
 
-	void Shoot();
+	void PlayerShoot();
+	void SetBulletTemplate(GCGameObject* pBullet) { m_pBulletTemplate = pBullet; };
 
 private:
 	int m_ammunitions;
-	InputSystem* m_pInputSystem;
 	float m_velocity;
+
+	InputSystem* m_pInputSystem;
+	GCGameObject* m_pBulletTemplate;
 
 CREATE_SCRIPT_END

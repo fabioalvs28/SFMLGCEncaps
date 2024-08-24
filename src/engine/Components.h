@@ -338,6 +338,10 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
+    GCVEC3 GetPosition() { return m_position; };
+
+    float GetViewWidth() { return m_viewWidth; };
+    float GetViewHeight() { return m_viewHeight; };
 protected:
     GCCamera();
     ~GCCamera() override {}
@@ -348,6 +352,7 @@ protected:
     void Update() override;
     
     FLAGS GetFlags() override { return NONE; }
+
 
 protected:
     inline static const int m_ID = ++GCComponent::componentCount;

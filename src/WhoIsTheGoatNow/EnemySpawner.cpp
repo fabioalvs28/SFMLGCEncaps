@@ -19,17 +19,15 @@ void GCScriptEnemySpawner::FixedUpdate()
 
 void GCScriptEnemySpawner::SpawnEnemies(float deltaTime)
 {
-	int i = 0;
 	m_counter += deltaTime;
 	if (m_counter > 100.0f)
 	{
 		m_counter = 0.0f;
-		m_pEnemies.push_back(GC::GetActiveScene()->CreateGameObject());
-		m_pEnemies[i] = m_pEnemyTemplate->Duplicate();
-		//m_pEnemies[i]->m_transform.SetPosition(GCVEC3::Zero());
-		m_pEnemies[i]->GetComponent<GCScriptEnemyBehaviour>()->SetTarget(
+		GCGameObject* newEnemy = m_pEnemyTemplate->Duplicate();
+		newEnemy->Activate();
+
+		newEnemy->GetComponent<GCScriptEnemyBehaviour>()->SetTarget(
 						m_pEnemyTemplate->GetComponent<GCScriptEnemyBehaviour>()->GetTarget());
-		i++;
 	}
 }
 

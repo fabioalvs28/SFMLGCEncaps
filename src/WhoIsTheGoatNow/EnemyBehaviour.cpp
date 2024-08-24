@@ -32,8 +32,8 @@ void GCScriptEnemyBehaviour::Spawn()
     float x, y;
     
     // Get the half dimensions of the screen
-    float halfWidth = Window::GetApp()->GetClientWidth() / 2.0f;
-    float halfHeight = Window::GetApp()->GetClientHeight() / 2.0f;
+    float halfWidth = GC::GetActiveScene()->GetMainCamera()->GetViewWidth() / 2.0f;
+    float halfHeight = GC::GetActiveScene()->GetMainCamera()->GetViewHeight() / 2.0f;
 
     // Randomly choose if x will be in the range [-15, -10] or [10, 15]
     if (rand() % 2 == 0) {
@@ -52,18 +52,15 @@ void GCScriptEnemyBehaviour::Spawn()
     }
     else {
         // y is in the range [10, 15]
-        y = 10.0f + static_cast<float>(rand()) / RAND_MAX * 5.0f;
+        y = 15.0f + static_cast<float>(rand()) / RAND_MAX * 5.0f;
     }
 
-
-
     //Apply to transform
-    m_pGameObject->m_transform.m_position.x = x;
-    m_pGameObject->m_transform.m_position.y = y;
+    m_pGameObject->m_transform.Translate(GCVEC3(x, y, 0));
 
 }
 
 void GCScriptEnemyBehaviour::Die()
 {
-    Destroy();
+    m_pGameObject->Destroy();
 }

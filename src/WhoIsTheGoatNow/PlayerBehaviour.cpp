@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PlayerBehaviour.h"
+#include "Bullet.h"
 
 void GCScriptPlayerBehaviour::CopyTo(GCComponent* pDestination)
 {
@@ -55,13 +56,19 @@ void GCScriptPlayerBehaviour::Update()
 	m_pGameObject->m_transform.Translate(translation);
 
 	//Actions
-	//for (int input : m_pInputSystem->GetDirections()->Right.inputs) //Shoot
-	//{
-	//	if (GCINPUTS::GetKeyDown(GCKEYBOARD(input)))
-	//	{
-	//		Shoot();
-	//	}
-	//}
+	for (int input : m_pInputSystem->GetActions()->Shoot.inputs) //Shoot
+	{
+		if (GCINPUTS::GetKeyDown(GCKEYBOARD(input)))
+		{
+			PlayerShoot();
+		}
+	}
 }
 
+void GCScriptPlayerBehaviour::PlayerShoot()
+{
+	GCGameObject* newBullet = m_pBulletTemplate->Duplicate();
+	newBullet->Activate();
+	newBullet->GetComponent<GCScriptBullet>()->BulletShoot();
+}
 
