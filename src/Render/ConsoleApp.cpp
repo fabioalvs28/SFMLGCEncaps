@@ -431,8 +431,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 //        pointLight.spotAngle = 0.0f; 
 //        pointLight.lightIntensity = 10.4f;
 //        pointLight.lightType = GC_LIGHT_TYPE_POINT;
-//        lights.push_back(light2);
-//        lights.push_back(pointLight);
+//        //lights.push_back(light2);
+//        //lights.push_back(pointLight);
 //
 //        graphics->UpdateLights(lights);
 //

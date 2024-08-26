@@ -323,17 +323,22 @@ void GCMouseInputManager::Update()
 
     GetCursorPos(&mousePos);
 
+    //!! 0;0 at center and value not in pixel.
+
     RECT rect = { NULL };
     Window* pWindow = GC::GetWindow();
+    GCCamera* pCamera = GC::GetActiveScene()->GetMainCamera();
     GetWindowRect(pWindow->GetHMainWnd(), &rect);
     mousePos.x -= rect.left;
     mousePos.y -= rect.top;
 
-    mousePos.x -= pWindow->GetClientWidth() / 2;
-    mousePos.y -= pWindow->GetClientHeight() / 2;
-
-    m_mousePos.x = mousePos.x;
-    m_mousePos.y = mousePos.y * -1;
+    //mousePos.x -= pWindow->GetClientWidth() / 2;
+    //mousePos.y -= pWindow->GetClientHeight() / 2;
+   
+    XMFLOAT3 mousePosNotPixel = GCUtils::PixelToWorld(mousePos.x, mousePos.y, pWindow->GetClientWidth(), pWindow->GetClientHeight(), GCUtils::GCMATRIXToXMFLOAT4x4(pCamera->m_projectionMatrix), GCUtils::GCMATRIXToXMFLOAT4x4(pCamera->m_viewMatrix));
+    //! CHANGE FAST FAST FAST
+    m_mousePos.x = mousePosNotPixel.x;
+    m_mousePos.y = mousePosNotPixel.y;
 }
 #pragma endregion
 

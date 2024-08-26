@@ -333,6 +333,7 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class GCMouseInputManager;
 
 public:
     static const int GetIDStatic() { return m_ID; }
@@ -352,6 +353,9 @@ protected:
     void Update() override;
     
     FLAGS GetFlags() override { return NONE; }
+
+    GCMATRIX GetViewMatrix() { return m_viewMatrix; }
+    GCMATRIX GetProjMatrix() { return m_projectionMatrix; }
 
 
 protected:

@@ -260,7 +260,7 @@ void GCGameObject::Deactivate()
         {
             for ( auto it: m_componentsList )
                     it.second->DeactivateGlobal();
-            for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode->GetNext() )
+            for ( GCListNode<GCGameObject*>* pGameObjectNode = m_childrenList.GetFirstNode(); pGameObjectNode != nullptr; pGameObjectNode = pGameObjectNode->GetNext() )
                 pGameObjectNode->GetData()->DeactivateGlobal();
         }
     }
