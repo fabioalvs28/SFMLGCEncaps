@@ -10,6 +10,7 @@ GCComponent::GCComponent()
 	m_selfActive = true;
 	
 	m_created = false;
+	m_registered = false;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
@@ -28,6 +29,8 @@ void GCComponent::RegisterToManagers()
 	
 	if ( IsFlagSet( RENDER ) )
 		GC::GetActiveRenderManager()->RegisterComponent( this );
+
+	m_registered = true;
 }
 
 void GCComponent::UnregisterFromManagers()
@@ -49,6 +52,8 @@ void GCComponent::UnregisterFromManagers()
 		m_pRenderNode->Delete();
 		m_pRenderNode = nullptr;
 	}
+
+	m_registered = false;
 }
 
 

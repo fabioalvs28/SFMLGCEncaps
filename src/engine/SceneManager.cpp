@@ -30,11 +30,15 @@ void GCSceneManager::Update()
 void GCSceneManager::SetActiveScene( GCScene* pScene )
 {
 	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to set a nullptr pScene as the active Scene" );
-	if ( m_pActiveScene != nullptr )
+	if (m_pActiveScene != nullptr)
+	{
+		m_pActiveScene->Deactivate();
 		m_pActiveScene->m_active = false;
+	}
     m_pActiveScene = pScene;
     m_pActiveScene->m_active = true;
 }
+
 
 /////////////////////////////////////////////
 /// @return A pointer to the active scene.
@@ -118,7 +122,7 @@ void GCSceneManager::CreateComponent( GCComponent* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to create a nullptr pComponent" );
 	pComponent->m_created = true;
-	if ( pComponent->IsActive() == true )
+	if ( pComponent->IsActive() == true && pComponent->m_pGameObject->m_pScene->m_active == true )
 		pComponent->RegisterToManagers();
 }
 

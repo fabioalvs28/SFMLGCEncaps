@@ -70,6 +70,9 @@ protected:
     void OnTriggerStay( GCCollider* pCollider );
     void OnTriggerExit( GCCollider* pCollider );
     
+    void RegisterComponents();
+    void UnregisterComponents();
+
     void RemoveComponent( int ID );
 
 public:

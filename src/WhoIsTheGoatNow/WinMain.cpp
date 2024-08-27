@@ -15,12 +15,12 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCScene* pScene = GCScene::Create();
     
     GCSprite SP_enemy("red_square.dds");
-    GCGameObject* ptest = pScene->CreateGameObject();
-    ptest->AddComponent<GCScriptTest>();
-    ptest->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
-    ptest->m_transform.SetPosition(GCVEC3(3, 3, 0));
+    //GCGameObject* ptest = pScene->CreateGameObject();
+    //ptest->AddComponent<GCScriptTest>();
+    //ptest->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
+    //ptest->m_transform.SetPosition(GCVEC3(3, 3, 0));
 
-    GCGameObject* GO_pGameScene = pScene->CreateGameObject();
+    //GCGameObject* GO_pGameScene = pScene->CreateGameObject();
 
     //Bullet prefab 
     GCSprite SP_bullet("black_small_square.dds");
@@ -36,7 +36,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //Player creation
     GCSprite SP_player("blue_square.dds");
 
-    GCGameObject* GO_pPlayer = GO_pGameScene->CreateChild();
+    GCGameObject* GO_pPlayer = pScene->CreateGameObject();
     GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
     GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>()->SetBulletTemplate(GO_pBullet);
@@ -54,16 +54,15 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_pEnemy->AddTag("enemy");
     GO_pEnemy->Deactivate();
 
-    GCGameObject* GO_pEnemySpawner = GO_pGameScene->CreateChild();
+    GCGameObject* GO_pEnemySpawner = pScene->CreateGameObject();
     GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->SetTemplate(GO_pEnemy);
     
-    
-    GO_pGameScene->Deactivate();
 #pragma endregion
 
 #pragma region HOMESCENE
 
-    GCGameObject* GO_pHomeScene = pScene->CreateGameObject();
+    GCScene* pHomeScne = GCScene::Create();
+    pHomeScne->SetActive();
 
     //Button prefab
     //GCGameObject* GO_pButton = pHomeScene->CreateGameObject();
@@ -71,11 +70,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //GO_pButton->AddComponent<GCBoxCollider>();
     
     //Mouse collider
-    GCGameObject* GO_pMouse = pScene->CreateGameObject();
+    GCGameObject* GO_pMouse = pHomeScne->CreateGameObject();
     GO_pMouse->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_pMouse->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
     GO_pMouse->AddComponent<GCScriptMouse>();
-    GO_pMouse->SetParent(GO_pHomeScene);
     GO_pMouse->SetLayer(1);
 
 #pragma endregion

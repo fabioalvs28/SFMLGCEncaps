@@ -470,7 +470,19 @@ void GCGameObject::OnTriggerExit( GCCollider* pCollider )
         pScriptNode->GetData()->OnTriggerExit( pCollider );
 }
 
+void GCGameObject::RegisterComponents()
+{
+    for (auto it : m_componentsList)
+        if (it.second->m_created == true && it.second->m_registered == false)
+            it.second->RegisterToManagers();
+}
 
+void GCGameObject::UnregisterComponents()
+{
+    for (auto it : m_componentsList)
+        if (it.second->m_created == true && it.second->m_registered == true)
+            it.second->UnregisterFromManagers();
+}
 
 //////////////////////////////////////////////////////
 /// @brief Removes a component from the GameObject.

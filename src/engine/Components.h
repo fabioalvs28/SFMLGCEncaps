@@ -70,6 +70,7 @@ protected:
     bool m_globalActive;
     bool m_selfActive;
     
+    bool m_registered;
     bool m_created;
     
     GCListNode<GCComponent*>* m_pUpdateNode;
