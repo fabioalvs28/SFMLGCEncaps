@@ -158,9 +158,9 @@ public:
 	// get RGBA of the image
 	std::vector<uint8_t> GetPixelData() { return m_rgba; }
 	// get Pixel (RGB) from the image
-	COLORREF GetPixelRGB(int x, int y);
+	UI32 GetPixelRGB(int x, int y);
 	// get Pixel (RGBA) from the image
-	COLORREF GetPixelRGBA(int x, int y);
+	UI32 GetPixelRGBA(int x, int y);
 	// check if the pixel is valid
 	bool IsValidPixel(int x, int y);
 	// get Index of the pixel
@@ -177,7 +177,7 @@ public:
 	// Create Empty Image, w and h are the width and height, bpp is the bits per pixel (24 or 32)
 	void CreateEmptyImage(int w, int h, int bpp);
 
-	void WritePixel(int x, int y, COLORREF color);
+	void WritePixel(int x, int y, UI32 color);
 	void DrawLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	void DrawLineLow(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	void DrawLineHigh(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
@@ -196,7 +196,7 @@ public:
 	// Set Alpha of the image, alpha is the alpha value
 	bool SetAlpha(uint8_t alpha);
 	// Set Alpha for Color, alpha is the alpha value and colorToFind is the color to find
-	bool SetAlphaForColor(uint8_t alpha, COLORREF colorToFind);
+	bool SetAlphaForColor(uint8_t alpha, UI32 colorToFind);
 	// Rotate the image, angle is the angle to rotate
 	bool Rotate(int angle);
 	//Premultiply the image

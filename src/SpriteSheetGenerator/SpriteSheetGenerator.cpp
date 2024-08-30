@@ -362,8 +362,8 @@ int SpriteSheetGenerator::Packer()
                                                                 {"original_h", cropRect.height} });
             maxX = std::max(maxX, pos.x + w + m_padding * 2);
             maxY = std::max(maxY, pos.y + h + m_padding * 2);
-            pos = Pos(pos.x + w + m_padding * 2, pos.y);
-            Ys.emplace_back(h + m_padding * 2);
+            pos = Pos(pos.x + w + m_padding * 2 + 1, pos.y);
+            Ys.emplace_back(h + m_padding * 2 + 1);
         }
     }
 

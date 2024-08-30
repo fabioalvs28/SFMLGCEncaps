@@ -12,11 +12,10 @@ typedef unsigned __int16       UI16;
 typedef unsigned __int32       UI32;
 typedef unsigned __int64       UI64;
 
-typedef unsigned __int32               COLORREF;
 
 
-#define RGB(r, g, b) (COLORREF)(r << 24 | g << 16 | b << 8 | 0)
-#define RGBA(r, g, b, a) (COLORREF)(r << 24 | g << 16 | b << 8 | a)
+#define RGB(r, g, b) (UI32)(r << 24 | g << 16 | b << 8 | 0)
+#define RGBA(r, g, b, a) (UI32)(r << 24 | g << 16 | b << 8 | a)
 #define GetRValue(rgb) (uint8_t)(rgb & 0xFF << 24)
 #define GetGValue(rgb) (uint8_t)(rgb & 0xFF << 16)
 #define GetBValue(rgb) (uint8_t)(rgb & 0xFF << 8)

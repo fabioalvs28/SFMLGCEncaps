@@ -643,7 +643,8 @@ void GCImage::CreateEmptyImage(int w, int h, int bitDepth)
 	m_rgba.resize(m_width * m_height * m_channels, 0);
 }
 
-COLORREF GCImage::GetPixelRGB(int x, int y)
+
+UI32 GCImage::GetPixelRGB(int x, int y)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height)
 	{
@@ -656,7 +657,7 @@ COLORREF GCImage::GetPixelRGB(int x, int y)
 	return RGB(R, G, B);
 }
 
-COLORREF GCImage::GetPixelRGBA(int x, int y)
+UI32 GCImage::GetPixelRGBA(int x, int y)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height)
 	{
@@ -737,7 +738,7 @@ int GCImage::CountPixelOfColor(int r, int g, int b, int a)
 }
 
 //** All drawing Functions **//
-void GCImage::WritePixel(int x, int y, COLORREF color)
+void GCImage::WritePixel(int x, int y, UI32 color)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height) 
 	{
@@ -1062,7 +1063,7 @@ bool GCImage::SetAlpha(uint8_t alpha)
 	return true;
 }
 
-bool GCImage::SetAlphaForColor(uint8_t alpha, COLORREF colorToFind)
+bool GCImage::SetAlphaForColor(uint8_t alpha, UI32 colorToFind)
 {
 	int channels = m_bitDepth / 8;
 	if (channels != 4)

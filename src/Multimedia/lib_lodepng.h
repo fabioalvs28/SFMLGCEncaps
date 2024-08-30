@@ -7,49 +7,49 @@
 //#include <string>
 #endif /*__cplusplus*/
 
-#define LODEPNG_VERSION_STRING "20141130"
+#define LODEPNG_VERSION_STRING_LIB "20141130"
 
 /*deflate & zlib. If disabled, you must specify alternative zlib functions in
 the custom_zlib field of the compress and decompress settings*/
-#ifndef LODEPNG_NO_COMPILE_ZLIB
-#define LODEPNG_COMPILE_ZLIB
+#ifndef LODEPNG_NO_COMPILE_ZLIB_LIB
+#define LODEPNG_COMPILE_ZLIB_LIB
 #endif
 /*png encoder and png decoder*/
-#ifndef LODEPNG_NO_COMPILE_PNG
-#define LODEPNG_COMPILE_PNG
+#ifndef LODEPNG_NO_COMPILE_PNG_LIB
+#define LODEPNG_COMPILE_PNG_LIB
 #endif
 /*deflate&zlib decoder and png decoder*/
-#ifndef LODEPNG_NO_COMPILE_DECODER
-#define LODEPNG_COMPILE_DECODER
+#ifndef LODEPNG_NO_COMPILE_DECODER_LIB
+#define LODEPNG_COMPILE_DECODER_LIB
 #endif
 /*deflate&zlib encoder and png encoder*/
-#ifndef LODEPNG_NO_COMPILE_ENCODER
-#define LODEPNG_COMPILE_ENCODER
+#ifndef LODEPNG_NO_COMPILE_ENCODER_LIB
+#define LODEPNG_COMPILE_ENCODER_LIB
 #endif
 /*support for chunks other than IHDR, IDAT, PLTE, tRNS, IEND: ancillary and unknown chunks*/
-#ifndef LODEPNG_NO_COMPILE_ANCILLARY_CHUNKS
-#define LODEPNG_COMPILE_ANCILLARY_CHUNKS
+#ifndef LODEPNG_NO_COMPILE_ANCILLARY_CHUNKS_LIB
+#define LODEPNG_COMPILE_ANCILLARY_CHUNKS_LIB
 #endif
 /*ability to convert error numerical codes to English text string*/
-#ifndef LODEPNG_NO_COMPILE_ERROR_TEXT
-//#define LODEPNG_COMPILE_ERROR_TEXT
+#ifndef LODEPNG_NO_COMPILE_ERROR_TEXT_LIB
+//#define LODEPNG_COMPILE_ERROR_TEXT_LIB
 #endif
 /*Compile the default allocators (C's free, malloc and realloc). If you disable this,
 you can define the functions lodepng_free, lodepng_malloc and lodepng_realloc in your
 source files with custom allocators.*/
-#ifndef LODEPNG_NO_COMPILE_ALLOCATORS
-#define LODEPNG_COMPILE_ALLOCATORS
+#ifndef LODEPNG_NO_COMPILE_ALLOCATORS_LIB
+#define LODEPNG_COMPILE_ALLOCATORS_LIB
 #endif
 /*compile the C++ version (you can disable the C++ wrapper here even when compiling for C++)*/
 #ifdef __cplusplus
-#ifndef LODEPNG_NO_COMPILE_CPP
-#define LODEPNG_COMPILE_CPP
+#ifndef LODEPNG_NO_COMPILE_CPP_LIB
+#define LODEPNG_COMPILE_CPP_LIB
 #endif
 #endif
 
-#ifdef LODEPNG_COMPILE_PNG
+#ifdef LODEPNG_COMPILE_PNG_LIB
 /*The PNG color types (also used for raw).*/
-typedef enum LodePNGColorType
+typedef enum LodePNGColorTypelib
 {
   LCT_GREY = 0, /*greyscale: 1,2,4,8,16 bit*/
   LCT_RGB = 2, /*RGB: 8,16 bit*/
@@ -58,7 +58,7 @@ typedef enum LodePNGColorType
   LCT_RGBA = 6 /*RGB with alpha: 8,16 bit*/
 } LodePNGColorType;
 
-#ifdef LODEPNG_COMPILE_DECODER
+#ifdef LODEPNG_COMPILE_DECODER_LIB
 /*
 Converts PNG data in memory to raw pixel data.
 out: Output parameter. Pointer to buffer that will contain the raw pixel data.
@@ -76,7 +76,7 @@ Return value: LodePNG error code (0 means no error).
 */
 UI32 lodepng_decode_memory(BYTE** out, UI32* w, UI32* h,
                                const BYTE* in, size_t insize,
-                               LodePNGColorType colortype, UI32 bitdepth);
+                               LodePNGColorTypelib colortype, UI32 bitdepth);
 
 /*Same as lodepng_decode_memory, but always decodes to 32-bit RGBA raw image*/
 UI32 lodepng_decode32(BYTE** out, UI32* w, UI32* h,
@@ -85,10 +85,10 @@ UI32 lodepng_decode32(BYTE** out, UI32* w, UI32* h,
 /*Same as lodepng_decode_memory, but always decodes to 24-bit RGB raw image*/
 UI32 lodepng_decode24(BYTE** out, UI32* w, UI32* h,
                           const BYTE* in, size_t insize);
-#endif /*LODEPNG_COMPILE_DECODER*/
+#endif /*LODEPNG_COMPILE_DECODER_LIB*/
 
 
-#ifdef LODEPNG_COMPILE_ENCODER
+#ifdef LODEPNG_COMPILE_ENCODER_LIB
 /*
 Converts raw pixel data into a PNG image in memory. The colortype and bitdepth
   of the output PNG image cannot be chosen, they are automatically determined
@@ -107,7 +107,7 @@ Return value: LodePNG error code (0 means no error).
 */
 UI32 lodepng_encode_memory(BYTE** out, size_t* outsize,
                                const BYTE* image, UI32 w, UI32 h,
-                               LodePNGColorType colortype, UI32 bitdepth);
+                               LodePNGColorTypelib colortype, UI32 bitdepth);
 
 /*Same as lodepng_encode_memory, but always encodes from 32-bit RGBA raw image.*/
 UI32 lodepng_encode32(BYTE** out, size_t* outsize,
@@ -132,10 +132,10 @@ namespace lodepng
 is the format to output the pixels to. Default is RGBA 8-bit per channel.*/
 UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
                 const BYTE* in, size_t insize,
-                LodePNGColorType colortype = LCT_RGBA, UI32 bitdepth = 8);
+                LodePNGColorTypelib colortype = LCT_RGBA, UI32 bitdepth = 8);
 UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
                 const std::vector<BYTE>& in,
-                LodePNGColorType colortype = LCT_RGBA, UI32 bitdepth = 8);
+                LodePNGColorTypelib colortype = LCT_RGBA, UI32 bitdepth = 8);
 #endif //LODEPNG_COMPILE_DECODER
 
 #ifdef LODEPNG_COMPILE_ENCODER
@@ -143,10 +143,10 @@ UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
 is that of the raw input data. The output PNG color type will be auto chosen.*/
 UI32 encode(std::vector<BYTE>& out,
                 const BYTE* in, UI32 w, UI32 h,
-                LodePNGColorType colortype = LCT_RGBA, UI32 bitdepth = 8);
+                LodePNGColorTypelib colortype = LCT_RGBA, UI32 bitdepth = 8);
 UI32 encode(std::vector<BYTE>& out,
                 const std::vector<BYTE>& in, UI32 w, UI32 h,
-                LodePNGColorType colortype = LCT_RGBA, UI32 bitdepth = 8);
+                LodePNGColorTypelib colortype = LCT_RGBA, UI32 bitdepth = 8);
 #endif //LODEPNG_COMPILE_ENCODER
 } //namespace lodepng
 #endif /*LODEPNG_COMPILE_CPP*/
@@ -159,27 +159,27 @@ cstr lodepng_error_text(UI32 code);
 
 #ifdef LODEPNG_COMPILE_DECODER
 /*Settings for zlib decompression*/
-typedef struct LodePNGDecompressSettings LodePNGDecompressSettings;
-struct LodePNGDecompressSettings
+typedef struct LodePNGDecompressSettingslib LodePNGDecompressSettingslib;
+struct LodePNGDecompressSettingslib
 {
   UI32 ignore_adler32; /*if 1, continue and don't give an error message if the Adler32 checksum is corrupted*/
 
   /*use custom zlib decoder instead of built in one (default: null)*/
   UI32 (*custom_zlib)(BYTE**, size_t*,
                           const BYTE*, size_t,
-                          const LodePNGDecompressSettings*);
+                          const LodePNGDecompressSettingslib*);
   /*use custom deflate decoder instead of built in one (default: null)
   if custom_zlib is used, custom_deflate is ignored since only the built in
   zlib function will call custom_deflate*/
   UI32 (*custom_inflate)(BYTE**, size_t*,
                              const BYTE*, size_t,
-                             const LodePNGDecompressSettings*);
+                             const LodePNGDecompressSettingslib*);
 
   const void* custom_context; /*optional custom settings for custom functions*/
 };
 
-extern const LodePNGDecompressSettings lodepng_default_decompress_settings;
-void lodepng_decompress_settings_init(LodePNGDecompressSettings* settings);
+extern const LodePNGDecompressSettingslib lodepng_default_decompress_settings;
+void lodepng_decompress_settings_init(LodePNGDecompressSettingslib* settings);
 #endif /*LODEPNG_COMPILE_DECODER*/
 
 #ifdef LODEPNG_COMPILE_ENCODER
@@ -187,8 +187,8 @@ void lodepng_decompress_settings_init(LodePNGDecompressSettings* settings);
 Settings for zlib compression. Tweaking these settings tweaks the balance
 between speed and compression ratio.
 */
-typedef struct LodePNGCompressSettings LodePNGCompressSettings;
-struct LodePNGCompressSettings /*deflate = compress*/
+typedef struct LodePNGCompressSettingslib LodePNGCompressSettingslib;
+struct LodePNGCompressSettingslib /*deflate = compress*/
 {
   /*LZ77 related settings*/
   UI32 btype; /*the block type for LZ (0, 1, 2 or 3, see zlib standard). Should be 2 for proper compression.*/
@@ -201,19 +201,19 @@ struct LodePNGCompressSettings /*deflate = compress*/
   /*use custom zlib encoder instead of built in one (default: null)*/
   UI32 (*custom_zlib)(BYTE**, size_t*,
                           const BYTE*, size_t,
-                          const LodePNGCompressSettings*);
+                          const LodePNGCompressSettingslib*);
   /*use custom deflate encoder instead of built in one (default: null)
   if custom_zlib is used, custom_deflate is ignored since only the built in
   zlib function will call custom_deflate*/
   UI32 (*custom_deflate)(BYTE**, size_t*,
                              const BYTE*, size_t,
-                             const LodePNGCompressSettings*);
+                             const LodePNGCompressSettingslib*);
 
   const void* custom_context; /*optional custom settings for custom functions*/
 };
 
-extern const LodePNGCompressSettings lodepng_default_compress_settings;
-void lodepng_compress_settings_init(LodePNGCompressSettings* settings);
+extern const LodePNGCompressSettingslib lodepng_default_compress_settings;
+void lodepng_compress_settings_init(LodePNGCompressSettingslib* settings);
 #endif /*LODEPNG_COMPILE_ENCODER*/
 
 #ifdef LODEPNG_COMPILE_PNG
@@ -222,10 +222,10 @@ Color mode of an image. Contains all information required to decode the pixel
 bits to RGBA colors. This information is the same as used in the PNG file
 format, and is used both for PNG and raw image data in LodePNG.
 */
-typedef struct LodePNGColorMode
+typedef struct LodePNGColorModelib
 {
   /*header (IHDR)*/
-  LodePNGColorType colortype; /*color type, see PNG standard or documentation further in this header file*/
+  LodePNGColorTypelib colortype; /*color type, see PNG standard or documentation further in this header file*/
   UI32 bitdepth;  /*bits per sample, see PNG standard or documentation further in this header file*/
 
   /*
@@ -259,33 +259,33 @@ typedef struct LodePNGColorMode
   UI32 key_r;       /*red/greyscale component of color key*/
   UI32 key_g;       /*green component of color key*/
   UI32 key_b;       /*blue component of color key*/
-} LodePNGColorMode;
+} LodePNGColorModelib;
 
 /*init, cleanup and copy functions to use with this struct*/
-void lodepng_color_mode_init(LodePNGColorMode* info);
-void lodepng_color_mode_cleanup(LodePNGColorMode* info);
+void lodepng_color_mode_init(LodePNGColorModelib* info);
+void lodepng_color_mode_cleanup(LodePNGColorModelib* info);
 /*return value is error code (0 means no error)*/
-UI32 lodepng_color_mode_copy(LodePNGColorMode* dest, const LodePNGColorMode* source);
+UI32 lodepng_color_mode_copy(LodePNGColorModelib* dest, const LodePNGColorModelib* source);
 
-void lodepng_palette_clear(LodePNGColorMode* info);
+void lodepng_palette_clear(LodePNGColorModelib* info);
 /*add 1 color to the palette*/
-UI32 lodepng_palette_add(LodePNGColorMode* info,
+UI32 lodepng_palette_add(LodePNGColorModelib* info,
                              BYTE r, BYTE g, BYTE b, BYTE a);
 
 /*get the total amount of bits per pixel, based on colortype and bitdepth in the struct*/
-UI32 lodepng_get_bpp(const LodePNGColorMode* info);
+UI32 lodepng_get_bpp(const LodePNGColorModelib* info);
 /*get the amount of color channels used, based on colortype in the struct.
 If a palette is used, it counts as 1 channel.*/
-UI32 lodepng_get_channels(const LodePNGColorMode* info);
+UI32 lodepng_get_channels(const LodePNGColorModelib* info);
 /*is it a greyscale type? (only colortype 0 or 4)*/
-UI32 lodepng_is_greyscale_type(const LodePNGColorMode* info);
+UI32 lodepng_is_greyscale_type(const LodePNGColorModelib* info);
 /*has it got an alpha channel? (only colortype 2 or 6)*/
-UI32 lodepng_is_alpha_type(const LodePNGColorMode* info);
+UI32 lodepng_is_alpha_type(const LodePNGColorModelib* info);
 /*has it got a palette? (only colortype 3)*/
-UI32 lodepng_is_palette_type(const LodePNGColorMode* info);
+UI32 lodepng_is_palette_type(const LodePNGColorModelib* info);
 /*only returns true if there is a palette and there is a value in the palette with alpha < 255.
 Loops through the palette to check this.*/
-UI32 lodepng_has_palette_alpha(const LodePNGColorMode* info);
+UI32 lodepng_has_palette_alpha(const LodePNGColorModelib* info);
 /*
 Check if the given color info indicates the possibility of having non-opaque pixels in the PNG image.
 Returns true if the image can have translucent or invisible pixels (it still be opaque if it doesn't use such pixels).
@@ -293,13 +293,13 @@ Returns false if the image can only have opaque pixels.
 In detail, it returns true only if it's a color type with alpha, or has a palette with non-opaque values,
 or if "key_defined" is true.
 */
-UI32 lodepng_can_have_alpha(const LodePNGColorMode* info);
+UI32 lodepng_can_have_alpha(const LodePNGColorModelib* info);
 /*Returns the byte size of a raw image buffer with given width, height and color mode*/
-size_t lodepng_get_raw_size(UI32 w, UI32 h, const LodePNGColorMode* color);
+size_t lodepng_get_raw_size(UI32 w, UI32 h, const LodePNGColorModelib* color);
 
 #ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
 /*The information of a Time chunk in PNG.*/
-typedef struct LodePNGTime
+typedef struct LodePNGTimelib
 {
   UI32 year;    /*2 bytes used (0-65535)*/
   UI32 month;   /*1-12*/
@@ -311,13 +311,13 @@ typedef struct LodePNGTime
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
 
 /*Information about the PNG image, except pixels, width and height.*/
-typedef struct LodePNGInfo
+typedef struct LodePNGInfolib
 {
   /*header (IHDR), palette (PLTE) and transparency (tRNS) chunks*/
   UI32 compression_method;/*compression method of the original file. Always 0.*/
   UI32 filter_method;     /*filter method of the original file*/
   UI32 interlace_method;  /*interlace method of the original file*/
-  LodePNGColorMode color;     /*color type and bits, palette and transparency of the PNG file*/
+  LodePNGColorModelib color;     /*color type and bits, palette and transparency of the PNG file*/
 
 #ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
   /*
@@ -366,7 +366,7 @@ typedef struct LodePNGInfo
 
   /*time chunk (tIME)*/
   UI32 time_defined; /*set to 1 to make the encoder generate a tIME chunk*/
-  LodePNGTime time;
+  LodePNGTimelib time;
 
   /*phys chunk (pHYs)*/
   UI32 phys_defined; /*if 0, there is no pHYs chunk and the values below are undefined, if 1 else there is one*/
@@ -386,20 +386,20 @@ typedef struct LodePNGInfo
   BYTE* unknown_chunks_data[3];
   size_t unknown_chunks_size[3]; /*size in bytes of the unknown chunks, given for protection*/
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
-} LodePNGInfo;
+} LodePNGInfolib;
 
 /*init, cleanup and copy functions to use with this struct*/
-void lodepng_info_init(LodePNGInfo* info);
-void lodepng_info_cleanup(LodePNGInfo* info);
+void lodepng_info_init(LodePNGInfolib* info);
+void lodepng_info_cleanup(LodePNGInfolib* info);
 /*return value is error code (0 means no error)*/
-UI32 lodepng_info_copy(LodePNGInfo* dest, const LodePNGInfo* source);
+UI32 lodepng_info_copy(LodePNGInfolib* dest, const LodePNGInfolib* source);
 
 #ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
-void lodepng_clear_text(LodePNGInfo* info); /*use this to clear the texts again after you filled them in*/
-UI32 lodepng_add_text(LodePNGInfo* info, cstr key, cstr str); /*push back both texts at once*/
+void lodepng_clear_text(LodePNGInfolib* info); /*use this to clear the texts again after you filled them in*/
+UI32 lodepng_add_text(LodePNGInfolib* info, cstr key, cstr str); /*push back both texts at once*/
 
-void lodepng_clear_itext(LodePNGInfo* info); /*use this to clear the itexts again after you filled them in*/
-UI32 lodepng_add_itext(LodePNGInfo* info, cstr key, cstr langtag,
+void lodepng_clear_itext(LodePNGInfolib* info); /*use this to clear the itexts again after you filled them in*/
+UI32 lodepng_add_itext(LodePNGInfolib* info, cstr key, cstr langtag,
                            cstr transkey, cstr str); /*push back the 4 texts of 1 chunk at once*/
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
 
@@ -415,7 +415,7 @@ For 16-bit per channel colors, uses big endian format like PNG does.
 Return value is LodePNG error code
 */
 UI32 lodepng_convert(BYTE* out, const BYTE* in,
-                         LodePNGColorMode* mode_out, const LodePNGColorMode* mode_in,
+                         LodePNGColorModelib* mode_out, const LodePNGColorModelib* mode_in,
                          UI32 w, UI32 h);
 
 #ifdef LODEPNG_COMPILE_DECODER
@@ -423,9 +423,9 @@ UI32 lodepng_convert(BYTE* out, const BYTE* in,
 Settings for the decoder. This contains settings for the PNG and the Zlib
 decoder, but not the Info settings from the Info structs.
 */
-typedef struct LodePNGDecoderSettings
+typedef struct LodePNGDecoderSettingslib
 {
-  LodePNGDecompressSettings zlibsettings; /*in here is the setting to ignore Adler32 checksums*/
+  LodePNGDecompressSettingslib zlibsettings; /*in here is the setting to ignore Adler32 checksums*/
 
   UI32 ignore_crc; /*ignore CRC checksums*/
 
@@ -436,14 +436,14 @@ typedef struct LodePNGDecoderSettings
   /*store all bytes from unknown chunks in the LodePNGInfo (off by default, useful for a png editor)*/
   UI32 remember_unknown_chunks;
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
-} LodePNGDecoderSettings;
+} LodePNGDecoderSettingslib;
 
-void lodepng_decoder_settings_init(LodePNGDecoderSettings* settings);
+void lodepng_decoder_settings_init(LodePNGDecoderSettingslib* settings);
 #endif /*LODEPNG_COMPILE_DECODER*/
 
 #ifdef LODEPNG_COMPILE_ENCODER
 /*automatically use color type with less bits per pixel if losslessly possible. Default: AUTO*/
-typedef enum LodePNGFilterStrategy
+typedef enum LodePNGFilterStrategylib
 {
   /*every filter at zero*/
   LFS_ZERO,
@@ -459,11 +459,11 @@ typedef enum LodePNGFilterStrategy
   LFS_BRUTE_FORCE,
   /*use predefined_filters buffer: you specify the filter type for each scanline*/
   LFS_PREDEFINED
-} LodePNGFilterStrategy;
+} LodePNGFilterStrategylib;
 
 /*Gives characteristics about the colors of the image, which helps decide which color model to use for encoding.
 Used internally by default if "auto_convert" is enabled. Public because it's useful for custom algorithms.*/
-typedef struct LodePNGColorProfile
+typedef struct LodePNGColorProfilelib
 {
   UI32 colored; /*not greyscale*/
   UI32 key; /*if true, image is not opaque. Only if true and alpha is false, color key is possible.*/
@@ -474,24 +474,24 @@ typedef struct LodePNGColorProfile
   UI32 numcolors; /*amount of colors, up to 257. Not valid if bits == 16.*/
   BYTE palette[1024]; /*Remembers up to the first 256 RGBA colors, in no particular order*/
   UI32 bits; /*bits per channel (not for palette). 1,2 or 4 for greyscale only. 16 if 16-bit per channel required.*/
-} LodePNGColorProfile;
+} LodePNGColorProfilelib;
 
-void lodepng_color_profile_init(LodePNGColorProfile* profile);
+void lodepng_color_profile_init(LodePNGColorProfilelib* profile);
 
 /*Get a LodePNGColorProfile of the image.*/
-UI32 lodepng_get_color_profile(LodePNGColorProfile* profile,
+UI32 lodepng_get_color_profile(LodePNGColorProfilelib* profile,
                                    const BYTE* image, UI32 w, UI32 h,
-                                   const LodePNGColorMode* mode_in);
+                                   const LodePNGColorModelib* mode_in);
 /*The function LodePNG uses internally to decide the PNG color with auto_convert.
 Chooses an optimal color model, e.g. grey if only grey pixels, palette if < 256 colors, ...*/
-UI32 lodepng_auto_choose_color(LodePNGColorMode* mode_out,
+UI32 lodepng_auto_choose_color(LodePNGColorModelib* mode_out,
                                    const BYTE* image, UI32 w, UI32 h,
-                                   const LodePNGColorMode* mode_in);
+                                   const LodePNGColorModelib* mode_in);
 
 /*Settings for the encoder.*/
-typedef struct LodePNGEncoderSettings
+typedef struct LodePNGEncoderSettingslib
 {
-  LodePNGCompressSettings zlibsettings; /*settings for the zlib encoder, such as window size, ...*/
+  LodePNGCompressSettingslib zlibsettings; /*settings for the zlib encoder, such as window size, ...*/
 
   UI32 auto_convert; /*automatically choose output PNG color type. Default: true*/
 
@@ -502,7 +502,7 @@ typedef struct LodePNGEncoderSettings
   UI32 filter_palette_zero;
   /*Which filter strategy to use when not using zeroes due to filter_palette_zero.
   Set filter_palette_zero to 0 to ensure always using your chosen strategy. Default: LFS_MINSUM*/
-  LodePNGFilterStrategy filter_strategy;
+  LodePNGFilterStrategylib filter_strategy;
   /*used if filter_strategy is LFS_PREDEFINED. In that case, this must point to a buffer with
   the same length as the amount of scanlines in the image, and each value must <= 5. You
   have to cleanup this buffer, LodePNG will never free it. Don't forget that filter_palette_zero
@@ -520,33 +520,33 @@ typedef struct LodePNGEncoderSettings
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
 } LodePNGEncoderSettings;
 
-void lodepng_encoder_settings_init(LodePNGEncoderSettings* settings);
+void lodepng_encoder_settings_init(LodePNGEncoderSettingslib* settings);
 #endif /*LODEPNG_COMPILE_ENCODER*/
 
 
 #if defined(LODEPNG_COMPILE_DECODER) || defined(LODEPNG_COMPILE_ENCODER)
 /*The settings, state and information for extended encoding and decoding.*/
-typedef struct LodePNGState
+typedef struct LodePNGStatelib
 {
 #ifdef LODEPNG_COMPILE_DECODER
-  LodePNGDecoderSettings decoder; /*the decoding settings*/
+  LodePNGDecoderSettingslib decoder; /*the decoding settings*/
 #endif /*LODEPNG_COMPILE_DECODER*/
 #ifdef LODEPNG_COMPILE_ENCODER
-  LodePNGEncoderSettings encoder; /*the encoding settings*/
+  LodePNGEncoderSettingslib encoder; /*the encoding settings*/
 #endif /*LODEPNG_COMPILE_ENCODER*/
-  LodePNGColorMode info_raw; /*specifies the format in which you would like to get the raw pixel buffer*/
-  LodePNGInfo info_png; /*info of the PNG image obtained after decoding*/
+  LodePNGColorModelib info_raw; /*specifies the format in which you would like to get the raw pixel buffer*/
+  LodePNGInfolib info_png; /*info of the PNG image obtained after decoding*/
   UI32 error;
 #ifdef LODEPNG_COMPILE_CPP
   //For the lodepng::State subclass.
-  virtual ~LodePNGState(){}
+  virtual ~LodePNGStatelib(){}
 #endif
-} LodePNGState;
+} LodePNGStatelib;
 
 /*init, cleanup and copy functions to use with this struct*/
-void lodepng_state_init(LodePNGState* state);
-void lodepng_state_cleanup(LodePNGState* state);
-void lodepng_state_copy(LodePNGState* dest, const LodePNGState* source);
+void lodepng_state_init(LodePNGStatelib* state);
+void lodepng_state_cleanup(LodePNGStatelib* state);
+void lodepng_state_copy(LodePNGStatelib* dest, const LodePNGStatelib* source);
 #endif /* defined(LODEPNG_COMPILE_DECODER) || defined(LODEPNG_COMPILE_ENCODER) */
 
 #ifdef LODEPNG_COMPILE_DECODER
@@ -555,7 +555,7 @@ Same as lodepng_decode_memory, but uses a LodePNGState to allow custom settings 
 getting much more information about the PNG image and color mode.
 */
 UI32 lodepng_decode(BYTE** out, UI32* w, UI32* h,
-                        LodePNGState* state,
+                        LodePNGStatelib* state,
                         const BYTE* in, size_t insize);
 
 /*
@@ -564,7 +564,7 @@ that is in the header chunk of the PNG, such as width, height and color type. Th
 information is placed in the info_png field of the LodePNGState.
 */
 UI32 lodepng_inspect(UI32* w, UI32* h,
-                         LodePNGState* state,
+                         LodePNGStatelib* state,
                          const BYTE* in, size_t insize);
 #endif /*LODEPNG_COMPILE_DECODER*/
 
@@ -573,7 +573,7 @@ UI32 lodepng_inspect(UI32* w, UI32* h,
 /*This function allocates the out buffer with standard malloc and stores the size in *outsize.*/
 UI32 lodepng_encode(BYTE** out, size_t* outsize,
                         const BYTE* image, UI32 w, UI32 h,
-                        LodePNGState* state);
+                        LodePNGStatelib* state);
 #endif /*LODEPNG_COMPILE_ENCODER*/
 
 /*
@@ -657,7 +657,7 @@ part of zlib that is required for PNG, it does not support dictionaries.
 /*Inflate a buffer. Inflate is the decompression step of deflate. Out buffer must be freed after use.*/
 UI32 lodepng_inflate(BYTE** out, size_t* outsize,
                          const BYTE* in, size_t insize,
-                         const LodePNGDecompressSettings* settings);
+                         const LodePNGDecompressSettingslib* settings);
 
 /*
 Decompresses Zlib data. Reallocates the out buffer and appends the data. The
@@ -667,7 +667,7 @@ buffer and *outsize its size in bytes. out must be freed by user after usage.
 */
 UI32 lodepng_zlib_decompress(BYTE** out, size_t* outsize,
                                  const BYTE* in, size_t insize,
-                                 const LodePNGDecompressSettings* settings);
+                                 const LodePNGDecompressSettingslib* settings);
 #endif /*LODEPNG_COMPILE_DECODER*/
 
 #ifdef LODEPNG_COMPILE_ENCODER
@@ -680,7 +680,7 @@ buffer and *outsize its size in bytes. out must be freed by user after usage.
 */
 UI32 lodepng_zlib_compress(BYTE** out, size_t* outsize,
                                const BYTE* in, size_t insize,
-                               const LodePNGCompressSettings* settings);
+                               const LodePNGCompressSettingslib* settings);
 
 /*
 Find length-limited Huffman code for given frequencies. This function is in the
@@ -692,7 +692,7 @@ UI32 lodepng_huffman_code_lengths(UI32* lengths, const UI32* frequencies,
 /*Compress a buffer with deflate. See RFC 1951. Out buffer must be freed after use.*/
 UI32 lodepng_deflate(BYTE** out, size_t* outsize,
                          const BYTE* in, size_t insize,
-                         const LodePNGCompressSettings* settings);
+                         const LodePNGCompressSettingslib* settings);
 
 #endif /*LODEPNG_COMPILE_ENCODER*/
 #endif /*LODEPNG_COMPILE_ZLIB*/
@@ -702,22 +702,22 @@ UI32 lodepng_deflate(BYTE** out, size_t* outsize,
 namespace lodepng
 {
 #ifdef LODEPNG_COMPILE_PNG
-class State : public LodePNGState
+class Statelib : public LodePNGStatelib
 {
   public:
-    State();
-    State(const State& other);
-    virtual ~State();
-    State& operator=(const State& other);
+    Statelib();
+    Statelib(const Statelib& other);
+    virtual ~Statelib();
+    Statelib& operator=(const Statelib& other);
 };
 
 #ifdef LODEPNG_COMPILE_DECODER
 //Same as other lodepng::decode, but using a State for more settings and information.
 UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
-                State& state,
+                Statelib& state,
                 const BYTE* in, size_t insize);
 UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
-                State& state,
+                Statelib& state,
                 const std::vector<BYTE>& in);
 #endif /*LODEPNG_COMPILE_DECODER*/
 
@@ -725,10 +725,10 @@ UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
 //Same as other lodepng::encode, but using a State for more settings and information.
 UI32 encode(std::vector<BYTE>& out,
                 const BYTE* in, UI32 w, UI32 h,
-                State& state);
+                Statelib& state);
 UI32 encode(std::vector<BYTE>& out,
                 const std::vector<BYTE>& in, UI32 w, UI32 h,
-                State& state);
+                Statelib& state);
 #endif /*LODEPNG_COMPILE_ENCODER*/
 
 #endif //LODEPNG_COMPILE_PNG
@@ -737,21 +737,21 @@ UI32 encode(std::vector<BYTE>& out,
 #ifdef LODEPNG_COMPILE_DECODER
 //Zlib-decompress an BYTE buffer
 UI32 decompress(std::vector<BYTE>& out, const BYTE* in, size_t insize,
-                    const LodePNGDecompressSettings& settings = lodepng_default_decompress_settings);
+                    const LodePNGDecompressSettingslib& settings = lodepng_default_decompress_settings);
 
 //Zlib-decompress an std::vector
 UI32 decompress(std::vector<BYTE>& out, const std::vector<BYTE>& in,
-                    const LodePNGDecompressSettings& settings = lodepng_default_decompress_settings);
+                    const LodePNGDecompressSettingslib& settings = lodepng_default_decompress_settings);
 #endif //LODEPNG_COMPILE_DECODER
 
 #ifdef LODEPNG_COMPILE_ENCODER
 //Zlib-compress an BYTE buffer
 UI32 compress(std::vector<BYTE>& out, const BYTE* in, size_t insize,
-                  const LodePNGCompressSettings& settings = lodepng_default_compress_settings);
+                  const LodePNGCompressSettingslib& settings = lodepng_default_compress_settings);
 
 //Zlib-compress an std::vector
 UI32 compress(std::vector<BYTE>& out, const std::vector<BYTE>& in,
-                  const LodePNGCompressSettings& settings = lodepng_default_compress_settings);
+                  const LodePNGCompressSettingslib& settings = lodepng_default_compress_settings);
 #endif //LODEPNG_COMPILE_ENCODER
 #endif //LODEPNG_COMPILE_ZLIB
 } //namespace lodepng

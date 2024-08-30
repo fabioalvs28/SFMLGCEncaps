@@ -1,1 +1,1 @@
-..\..\ide\vs\SpriteSheetGenerator\Build\debug\spriteSheetGenerator.exe -i Sprites -o output -p 1 -R -F -T
+..\..\ide\vs\SpriteSheetGenerator\Build\debug\spriteSheetGenerator.exe -i ../../res/player -o ../../res/spritesheet -p 0 -R -F false -T

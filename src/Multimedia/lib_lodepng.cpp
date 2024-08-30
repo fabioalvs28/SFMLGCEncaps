@@ -1150,7 +1150,7 @@ static UI32 inflateNoCompression(ucvector* out, const BYTE* in, size_t* bp, size
 
 static UI32 lodepng_inflatev(ucvector* out,
                                  const BYTE* in, size_t insize,
-                                 const LodePNGDecompressSettings* settings)
+                                 const LodePNGDecompressSettingslib* settings)
 {
   /*bit pointer in the "in" data, current byte is bp >> 3, current bit is bp & 0x7 (from lsb to msb of the byte)*/
   size_t bp = 0;
@@ -1180,7 +1180,7 @@ static UI32 lodepng_inflatev(ucvector* out,
 
 UI32 lodepng_inflate(BYTE** out, size_t* outsize,
                          const BYTE* in, size_t insize,
-                         const LodePNGDecompressSettings* settings)
+                         const LodePNGDecompressSettingslib* settings)
 {
   UI32 error;
   ucvector v;
@@ -1193,7 +1193,7 @@ UI32 lodepng_inflate(BYTE** out, size_t* outsize,
 
 static UI32 inflate(BYTE** out, size_t* outsize,
                         const BYTE* in, size_t insize,
-                        const LodePNGDecompressSettings* settings)
+                        const LodePNGDecompressSettingslib* settings)
 {
   if(settings->custom_inflate)
   {
@@ -1622,7 +1622,7 @@ static void writeLZ77data(size_t* bp, ucvector* out, const uivector* lz77_encode
 /*Deflate for a block of type "dynamic", that is, with freely, optimally, created huffman trees*/
 static UI32 deflateDynamic(ucvector* out, size_t* bp, Hash* hash,
                                const BYTE* data, size_t datapos, size_t dataend,
-                               const LodePNGCompressSettings* settings, UI32 final)
+                               const LodePNGCompressSettingslib* settings, UI32 final)
 {
   UI32 error = 0;
 
@@ -1868,7 +1868,7 @@ static UI32 deflateDynamic(ucvector* out, size_t* bp, Hash* hash,
 static UI32 deflateFixed(ucvector* out, size_t* bp, Hash* hash,
                              const BYTE* data,
                              size_t datapos, size_t dataend,
-                             const LodePNGCompressSettings* settings, UI32 final)
+                             const LodePNGCompressSettingslib* settings, UI32 final)
 {
   HuffmanTree tree_ll; /*tree for literal values and length codes*/
   HuffmanTree tree_d; /*tree for distance codes*/
@@ -1914,7 +1914,7 @@ static UI32 deflateFixed(ucvector* out, size_t* bp, Hash* hash,
 }
 
 static UI32 lodepng_deflatev(ucvector* out, const BYTE* in, size_t insize,
-                                 const LodePNGCompressSettings* settings)
+                                 const LodePNGCompressSettingslib* settings)
 {
   UI32 error = 0;
   size_t i, blocksize, numdeflateblocks;
@@ -1954,7 +1954,7 @@ static UI32 lodepng_deflatev(ucvector* out, const BYTE* in, size_t insize,
 
 UI32 lodepng_deflate(BYTE** out, size_t* outsize,
                          const BYTE* in, size_t insize,
-                         const LodePNGCompressSettings* settings)
+                         const LodePNGCompressSettingslib* settings)
 {
   UI32 error;
   ucvector v;
@@ -1967,7 +1967,7 @@ UI32 lodepng_deflate(BYTE** out, size_t* outsize,
 
 static UI32 deflate(BYTE** out, size_t* outsize,
                         const BYTE* in, size_t insize,
-                        const LodePNGCompressSettings* settings)
+                        const LodePNGCompressSettingslib* settings)
 {
   if(settings->custom_deflate)
   {
@@ -2021,7 +2021,7 @@ static UI32 adler32(const BYTE* data, UI32 len)
 #ifdef LODEPNG_COMPILE_DECODER
 
 UI32 lodepng_zlib_decompress(BYTE** out, size_t* outsize, const BYTE* in,
-                                 size_t insize, const LodePNGDecompressSettings* settings)
+                                 size_t insize, const LodePNGDecompressSettingslib* settings)
 {
   UI32 error = 0;
   UI32 CM, CINFO, FDICT;
@@ -2066,7 +2066,7 @@ UI32 lodepng_zlib_decompress(BYTE** out, size_t* outsize, const BYTE* in,
 }
 
 static UI32 zlib_decompress(BYTE** out, size_t* outsize, const BYTE* in,
-                                size_t insize, const LodePNGDecompressSettings* settings)
+                                size_t insize, const LodePNGDecompressSettingslib* settings)
 {
   if(settings->custom_zlib)
   {
@@ -2083,7 +2083,7 @@ static UI32 zlib_decompress(BYTE** out, size_t* outsize, const BYTE* in,
 #ifdef LODEPNG_COMPILE_ENCODER
 
 UI32 lodepng_zlib_compress(BYTE** out, size_t* outsize, const BYTE* in,
-                               size_t insize, const LodePNGCompressSettings* settings)
+                               size_t insize, const LodePNGCompressSettingslib* settings)
 {
   /*initially, *out must be NULL and outsize 0, if you just give some random *out
   that's pointing to a non allocated buffer, this'll crash*/
@@ -2125,7 +2125,7 @@ UI32 lodepng_zlib_compress(BYTE** out, size_t* outsize, const BYTE* in,
 
 /* compress using the default or custom zlib function */
 static UI32 zlib_compress(BYTE** out, size_t* outsize, const BYTE* in,
-                              size_t insize, const LodePNGCompressSettings* settings)
+                              size_t insize, const LodePNGCompressSettingslib* settings)
 {
   if(settings->custom_zlib)
   {
@@ -2167,7 +2167,7 @@ static UI32 zlib_compress(BYTE** out, size_t* outsize, const BYTE* in,
 /*this is a good tradeoff between speed and compression ratio*/
 #define DEFAULT_WINDOWSIZE 2048
 
-void lodepng_compress_settings_init(LodePNGCompressSettings* settings)
+void lodepng_compress_settings_init(LodePNGCompressSettingslib* settings)
 {
   /*compress with dynamic huffman tree (not in the mathematical sense, just not the predefined one)*/
   settings->btype = 2;
@@ -2182,14 +2182,14 @@ void lodepng_compress_settings_init(LodePNGCompressSettings* settings)
   settings->custom_context = 0;
 }
 
-const LodePNGCompressSettings lodepng_default_compress_settings = {2, 1, DEFAULT_WINDOWSIZE, 3, 128, 1, 0, 0, 0};
+const LodePNGCompressSettingslib lodepng_default_compress_settings = {2, 1, DEFAULT_WINDOWSIZE, 3, 128, 1, 0, 0, 0};
 
 
 #endif /*LODEPNG_COMPILE_ENCODER*/
 
 #ifdef LODEPNG_COMPILE_DECODER
 
-void lodepng_decompress_settings_init(LodePNGDecompressSettings* settings)
+void lodepng_decompress_settings_init(LodePNGDecompressSettingslib* settings)
 {
   settings->ignore_adler32 = 0;
 
@@ -2198,7 +2198,7 @@ void lodepng_decompress_settings_init(LodePNGDecompressSettings* settings)
   settings->custom_context = 0;
 }
 
-const LodePNGDecompressSettings lodepng_default_decompress_settings = {0, 0, 0, 0};
+const LodePNGDecompressSettingslib lodepng_default_decompress_settings = {0, 0, 0, 0};
 
 #endif /*LODEPNG_COMPILE_DECODER*/
 
@@ -2437,7 +2437,7 @@ UI32 lodepng_chunk_create(BYTE** out, size_t* outlength, UI32 length,
 /* ////////////////////////////////////////////////////////////////////////// */
 
 /*return type is a LodePNG error code*/
-static UI32 checkColorValidity(LodePNGColorType colortype, UI32 bd) /*bd = bitdepth*/
+static UI32 checkColorValidity(LodePNGColorTypelib colortype, UI32 bd) /*bd = bitdepth*/
 {
   switch(colortype)
   {
@@ -2451,7 +2451,7 @@ static UI32 checkColorValidity(LodePNGColorType colortype, UI32 bd) /*bd = bitde
   return 0; /*allowed color type / bits combination*/
 }
 
-static UI32 getNumColorChannels(LodePNGColorType colortype)
+static UI32 getNumColorChannels(LodePNGColorTypelib colortype)
 {
   switch(colortype)
   {
@@ -2464,7 +2464,7 @@ static UI32 getNumColorChannels(LodePNGColorType colortype)
   return 0; /*unexisting color type*/
 }
 
-static UI32 lodepng_get_bpp_lct(LodePNGColorType colortype, UI32 bitdepth)
+static UI32 lodepng_get_bpp_lct(LodePNGColorTypelib colortype, UI32 bitdepth)
 {
   /*bits per pixel is amount of channels * bits per channel*/
   return getNumColorChannels(colortype) * bitdepth;
@@ -2472,7 +2472,7 @@ static UI32 lodepng_get_bpp_lct(LodePNGColorType colortype, UI32 bitdepth)
 
 /* ////////////////////////////////////////////////////////////////////////// */
 
-void lodepng_color_mode_init(LodePNGColorMode* info)
+void lodepng_color_mode_init(LodePNGColorModelib* info)
 {
   info->key_defined = 0;
   info->key_r = info->key_g = info->key_b = 0;
@@ -2482,12 +2482,12 @@ void lodepng_color_mode_init(LodePNGColorMode* info)
   info->palettesize = 0;
 }
 
-void lodepng_color_mode_cleanup(LodePNGColorMode* info)
+void lodepng_color_mode_cleanup(LodePNGColorModelib* info)
 {
   lodepng_palette_clear(info);
 }
 
-UI32 lodepng_color_mode_copy(LodePNGColorMode* dest, const LodePNGColorMode* source)
+UI32 lodepng_color_mode_copy(LodePNGColorModelib* dest, const LodePNGColorModelib* source)
 {
   size_t i;
   lodepng_color_mode_cleanup(dest);
@@ -2501,7 +2501,7 @@ UI32 lodepng_color_mode_copy(LodePNGColorMode* dest, const LodePNGColorMode* sou
   return 0;
 }
 
-static int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* b)
+static int lodepng_color_mode_equal(const LodePNGColorModelib* a, const LodePNGColorModelib* b)
 {
   size_t i;
   if(a->colortype != b->colortype) return 0;
@@ -2521,14 +2521,14 @@ static int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColo
   return 1;
 }
 
-void lodepng_palette_clear(LodePNGColorMode* info)
+void lodepng_palette_clear(LodePNGColorModelib* info)
 {
   if(info->palette) lodepng_free(info->palette);
   info->palette = 0;
   info->palettesize = 0;
 }
 
-UI32 lodepng_palette_add(LodePNGColorMode* info,
+UI32 lodepng_palette_add(LodePNGColorModelib* info,
                              BYTE r, BYTE g, BYTE b, BYTE a)
 {
   BYTE* data;
@@ -2549,33 +2549,33 @@ UI32 lodepng_palette_add(LodePNGColorMode* info,
   return 0;
 }
 
-UI32 lodepng_get_bpp(const LodePNGColorMode* info)
+UI32 lodepng_get_bpp(const LodePNGColorModelib* info)
 {
   /*calculate bits per pixel out of colortype and bitdepth*/
   return lodepng_get_bpp_lct(info->colortype, info->bitdepth);
 }
 
-UI32 lodepng_get_channels(const LodePNGColorMode* info)
+UI32 lodepng_get_channels(const LodePNGColorModelib* info)
 {
   return getNumColorChannels(info->colortype);
 }
 
-UI32 lodepng_is_greyscale_type(const LodePNGColorMode* info)
+UI32 lodepng_is_greyscale_type(const LodePNGColorModelib* info)
 {
   return info->colortype == LCT_GREY || info->colortype == LCT_GREY_ALPHA;
 }
 
-UI32 lodepng_is_alpha_type(const LodePNGColorMode* info)
+UI32 lodepng_is_alpha_type(const LodePNGColorModelib* info)
 {
   return (info->colortype & 4) != 0; /*4 or 6*/
 }
 
-UI32 lodepng_is_palette_type(const LodePNGColorMode* info)
+UI32 lodepng_is_palette_type(const LodePNGColorModelib* info)
 {
   return info->colortype == LCT_PALETTE;
 }
 
-UI32 lodepng_has_palette_alpha(const LodePNGColorMode* info)
+UI32 lodepng_has_palette_alpha(const LodePNGColorModelib* info)
 {
   size_t i;
   for(i = 0; i != info->palettesize; ++i)
@@ -2585,19 +2585,19 @@ UI32 lodepng_has_palette_alpha(const LodePNGColorMode* info)
   return 0;
 }
 
-UI32 lodepng_can_have_alpha(const LodePNGColorMode* info)
+UI32 lodepng_can_have_alpha(const LodePNGColorModelib* info)
 {
   return info->key_defined
       || lodepng_is_alpha_type(info)
       || lodepng_has_palette_alpha(info);
 }
 
-size_t lodepng_get_raw_size(UI32 w, UI32 h, const LodePNGColorMode* color)
+size_t lodepng_get_raw_size(UI32 w, UI32 h, const LodePNGColorModelib* color)
 {
   return (w * h * lodepng_get_bpp(color) + 7) / 8;
 }
 
-size_t lodepng_get_raw_size_lct(UI32 w, UI32 h, LodePNGColorType colortype, UI32 bitdepth)
+size_t lodepng_get_raw_size_lct(UI32 w, UI32 h, LodePNGColorTypelib colortype, UI32 bitdepth)
 {
   return (w * h * lodepng_get_bpp_lct(colortype, bitdepth) + 7) / 8;
 }
@@ -2606,7 +2606,7 @@ size_t lodepng_get_raw_size_lct(UI32 w, UI32 h, LodePNGColorType colortype, UI32
 #ifdef LODEPNG_COMPILE_PNG
 #ifdef LODEPNG_COMPILE_DECODER
 /*in an idat chunk, each scanline is a multiple of 8 bits, unlike the lodepng output buffer*/
-static size_t lodepng_get_raw_size_idat(UI32 w, UI32 h, const LodePNGColorMode* color)
+static size_t lodepng_get_raw_size_idat(UI32 w, UI32 h, const LodePNGColorModelib* color)
 {
   return h * ((w * lodepng_get_bpp(color) + 7) / 8);
 }
@@ -2615,20 +2615,20 @@ static size_t lodepng_get_raw_size_idat(UI32 w, UI32 h, const LodePNGColorMode* 
 
 #ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
 
-static void LodePNGUnknownChunks_init(LodePNGInfo* info)
+static void LodePNGUnknownChunks_init(LodePNGInfolib* info)
 {
   UI32 i;
   for(i = 0; i != 3; ++i) info->unknown_chunks_data[i] = 0;
   for(i = 0; i != 3; ++i) info->unknown_chunks_size[i] = 0;
 }
 
-static void LodePNGUnknownChunks_cleanup(LodePNGInfo* info)
+static void LodePNGUnknownChunks_cleanup(LodePNGInfolib* info)
 {
   UI32 i;
   for(i = 0; i != 3; ++i) lodepng_free(info->unknown_chunks_data[i]);
 }
 
-static UI32 LodePNGUnknownChunks_copy(LodePNGInfo* dest, const LodePNGInfo* src)
+static UI32 LodePNGUnknownChunks_copy(LodePNGInfolib* dest, const LodePNGInfolib* src)
 {
   UI32 i;
 
@@ -2651,14 +2651,14 @@ static UI32 LodePNGUnknownChunks_copy(LodePNGInfo* dest, const LodePNGInfo* src)
 
 /******************************************************************************/
 
-static void LodePNGText_init(LodePNGInfo* info)
+static void LodePNGText_init(LodePNGInfolib* info)
 {
   info->text_num = 0;
   info->text_keys = NULL;
   info->text_strings = NULL;
 }
 
-static void LodePNGText_cleanup(LodePNGInfo* info)
+static void LodePNGText_cleanup(LodePNGInfolib* info)
 {
   size_t i;
   for(i = 0; i != info->text_num; ++i)
@@ -2670,7 +2670,7 @@ static void LodePNGText_cleanup(LodePNGInfo* info)
   lodepng_free(info->text_strings);
 }
 
-static UI32 LodePNGText_copy(LodePNGInfo* dest, const LodePNGInfo* source)
+static UI32 LodePNGText_copy(LodePNGInfolib* dest, const LodePNGInfolib* source)
 {
   size_t i = 0;
   dest->text_keys = 0;
@@ -2683,12 +2683,12 @@ static UI32 LodePNGText_copy(LodePNGInfo* dest, const LodePNGInfo* source)
   return 0;
 }
 
-void lodepng_clear_text(LodePNGInfo* info)
+void lodepng_clear_text(LodePNGInfolib* info)
 {
   LodePNGText_cleanup(info);
 }
 
-UI32 lodepng_add_text(LodePNGInfo* info, cstr key, cstr str)
+UI32 lodepng_add_text(LodePNGInfolib* info, cstr key, cstr str)
 {
   char** new_keys = (char**)(lodepng_realloc(info->text_keys, sizeof(char*) * (info->text_num + 1)));
   char** new_strings = (char**)(lodepng_realloc(info->text_strings, sizeof(char*) * (info->text_num + 1)));
@@ -2714,7 +2714,7 @@ UI32 lodepng_add_text(LodePNGInfo* info, cstr key, cstr str)
 
 /******************************************************************************/
 
-static void LodePNGIText_init(LodePNGInfo* info)
+static void LodePNGIText_init(LodePNGInfolib* info)
 {
   info->itext_num = 0;
   info->itext_keys = NULL;
@@ -2723,7 +2723,7 @@ static void LodePNGIText_init(LodePNGInfo* info)
   info->itext_strings = NULL;
 }
 
-static void LodePNGIText_cleanup(LodePNGInfo* info)
+static void LodePNGIText_cleanup(LodePNGInfolib* info)
 {
   size_t i;
   for(i = 0; i != info->itext_num; ++i)
@@ -2739,7 +2739,7 @@ static void LodePNGIText_cleanup(LodePNGInfo* info)
   lodepng_free(info->itext_strings);
 }
 
-static UI32 LodePNGIText_copy(LodePNGInfo* dest, const LodePNGInfo* source)
+static UI32 LodePNGIText_copy(LodePNGInfolib* dest, const LodePNGInfolib* source)
 {
   size_t i = 0;
   dest->itext_keys = 0;
@@ -2755,12 +2755,12 @@ static UI32 LodePNGIText_copy(LodePNGInfo* dest, const LodePNGInfo* source)
   return 0;
 }
 
-void lodepng_clear_itext(LodePNGInfo* info)
+void lodepng_clear_itext(LodePNGInfolib* info)
 {
   LodePNGIText_cleanup(info);
 }
 
-UI32 lodepng_add_itext(LodePNGInfo* info, cstr key, cstr langtag,
+UI32 lodepng_add_itext(LodePNGInfolib* info, cstr key, cstr langtag,
                            cstr transkey, cstr str)
 {
   char** new_keys = (char**)(lodepng_realloc(info->itext_keys, sizeof(char*) * (info->itext_num + 1)));
@@ -2798,7 +2798,7 @@ UI32 lodepng_add_itext(LodePNGInfo* info, cstr key, cstr langtag,
 }
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
 
-void lodepng_info_init(LodePNGInfo* info)
+void lodepng_info_init(LodePNGInfolib* info)
 {
   lodepng_color_mode_init(&info->color);
   info->interlace_method = 0;
@@ -2818,7 +2818,7 @@ void lodepng_info_init(LodePNGInfo* info)
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
 }
 
-void lodepng_info_cleanup(LodePNGInfo* info)
+void lodepng_info_cleanup(LodePNGInfolib* info)
 {
   lodepng_color_mode_cleanup(&info->color);
 #ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
@@ -2829,7 +2829,7 @@ void lodepng_info_cleanup(LodePNGInfo* info)
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
 }
 
-UI32 lodepng_info_copy(LodePNGInfo* dest, const LodePNGInfo* source)
+UI32 lodepng_info_copy(LodePNGInfolib* dest, const LodePNGInfolib* source)
 {
   lodepng_info_cleanup(dest);
   *dest = *source;
@@ -2846,9 +2846,9 @@ UI32 lodepng_info_copy(LodePNGInfo* dest, const LodePNGInfo* source)
   return 0;
 }
 
-void lodepng_info_swap(LodePNGInfo* a, LodePNGInfo* b)
+void lodepng_info_swap(LodePNGInfolib* a, LodePNGInfolib* b)
 {
-  LodePNGInfo temp = *a;
+  LodePNGInfolib temp = *a;
   *a = *b;
   *b = temp;
 }
@@ -2942,7 +2942,7 @@ static void color_tree_add(ColorTree* tree,
 
 /*put a pixel, given its RGBA color, into image of any color type*/
 static UI32 rgba8ToPixel(BYTE* out, size_t i,
-                             const LodePNGColorMode* mode, ColorTree* tree /*for palette*/,
+                             const LodePNGColorModelib* mode, ColorTree* tree /*for palette*/,
                              BYTE r, BYTE g, BYTE b, BYTE a)
 {
   if(mode->colortype == LCT_GREY)
@@ -3016,7 +3016,7 @@ static UI32 rgba8ToPixel(BYTE* out, size_t i,
 
 /*put a pixel, given its RGBA16 color, into image of any color 16-bitdepth type*/
 static void rgba16ToPixel(BYTE* out, size_t i,
-                         const LodePNGColorMode* mode,
+                         const LodePNGColorModelib* mode,
                          UI16 r, UI16 g, UI16 b, UI16 a)
 {
   if(mode->colortype == LCT_GREY)
@@ -3059,7 +3059,7 @@ static void rgba16ToPixel(BYTE* out, size_t i,
 static void getPixelColorRGBA8(BYTE* r, BYTE* g,
                                BYTE* b, BYTE* a,
                                const BYTE* in, size_t i,
-                               const LodePNGColorMode* mode)
+                               const LodePNGColorModelib* mode)
 {
   if(mode->colortype == LCT_GREY)
   {
@@ -3168,7 +3168,7 @@ enough memory, if has_alpha is true the output is RGBA. mode has the color mode
 of the input buffer.*/
 static void getPixelColorsRGBA8(BYTE* buffer, size_t numpixels,
                                 UI32 has_alpha, const BYTE* in,
-                                const LodePNGColorMode* mode)
+                                const LodePNGColorModelib* mode)
 {
   UI32 num_channels = has_alpha ? 4 : 3;
   size_t i;
@@ -3301,7 +3301,7 @@ static void getPixelColorsRGBA8(BYTE* buffer, size_t numpixels,
 /*Get RGBA16 color of pixel with index i (y * width + x) from the raw image with
 given color type, but the given color type must be 16-bit itself.*/
 static void getPixelColorRGBA16(UI16* r, UI16* g, UI16* b, UI16* a,
-                                const BYTE* in, size_t i, const LodePNGColorMode* mode)
+                                const BYTE* in, size_t i, const LodePNGColorModelib* mode)
 {
   if(mode->colortype == LCT_GREY)
   {
@@ -3334,7 +3334,7 @@ static void getPixelColorRGBA16(UI16* r, UI16* g, UI16* b, UI16* a,
 }
 
 UI32 lodepng_convert(BYTE* out, const BYTE* in,
-                         LodePNGColorMode* mode_out, const LodePNGColorMode* mode_in,
+                         LodePNGColorModelib* mode_out, const LodePNGColorModelib* mode_in,
                          UI32 w, UI32 h)
 {
   size_t i;
@@ -3397,7 +3397,7 @@ UI32 lodepng_convert(BYTE* out, const BYTE* in,
 
 #ifdef LODEPNG_COMPILE_ENCODER
 
-void lodepng_color_profile_init(LodePNGColorProfile* profile)
+void lodepng_color_profile_init(LodePNGColorProfilelib* profile)
 {
   profile->colored = 0;
   profile->key = 0;
@@ -3431,9 +3431,9 @@ static UI32 getValueRequiredBits(BYTE value)
 
 /*profile must already have been inited with mode.
 It's ok to set some parameters of profile to done already.*/
-UI32 lodepng_get_color_profile(LodePNGColorProfile* profile,
+UI32 lodepng_get_color_profile(LodePNGColorProfilelib* profile,
                                    const BYTE* in, UI32 w, UI32 h,
-                                   const LodePNGColorMode* mode)
+                                   const LodePNGColorModelib* mode)
 {
   UI32 error = 0;
   size_t i;
@@ -3594,11 +3594,11 @@ output image, e.g. grey if there are only greyscale pixels, palette if there
 are less than 256 colors, ...
 Updates values of mode with a potentially smaller color model. mode_out should
 contain the user chosen color model, but will be overwritten with the new chosen one.*/
-UI32 lodepng_auto_choose_color(LodePNGColorMode* mode_out,
+UI32 lodepng_auto_choose_color(LodePNGColorModelib* mode_out,
                                    const BYTE* image, UI32 w, UI32 h,
-                                   const LodePNGColorMode* mode_in)
+                                   const LodePNGColorModelib* mode_in)
 {
-  LodePNGColorProfile prof;
+  LodePNGColorProfilelib prof;
   UI32 error = 0;
   UI32 i, n, palettebits, grey_ok, palette_ok;
 
@@ -3733,10 +3733,10 @@ static void Adam7_getpassvalues(UI32 passw[7], UI32 passh[7], size_t filter_pass
 /* ////////////////////////////////////////////////////////////////////////// */
 
 /*read the information from the header and store it in the LodePNGInfo. return value is error*/
-UI32 lodepng_inspect(UI32* w, UI32* h, LodePNGState* state,
+UI32 lodepng_inspect(UI32* w, UI32* h, LodePNGStatelib* state,
                          const BYTE* in, size_t insize)
 {
-  LodePNGInfo* info = &state->info_png;
+  LodePNGInfolib* info = &state->info_png;
   if(insize == 0 || in == 0)
   {
     CERROR_RETURN_ERROR(state->error, 48); /*error: the given data is empty*/
@@ -3764,7 +3764,7 @@ UI32 lodepng_inspect(UI32* w, UI32* h, LodePNGState* state,
   *w = lodepng_read32bitInt(&in[16]);
   *h = lodepng_read32bitInt(&in[20]);
   info->color.bitdepth = in[24];
-  info->color.colortype = (LodePNGColorType)in[25];
+  info->color.colortype = (LodePNGColorTypelib)in[25];
   info->compression_method = in[26];
   info->filter_method = in[27];
   info->interlace_method = in[28];
@@ -3992,7 +3992,7 @@ static void removePaddingBits(BYTE* out, const BYTE* in,
 the IDAT chunks (with filter index bytes and possible padding bits)
 return value is error*/
 static UI32 postProcessScanlines(BYTE* out, BYTE* in,
-                                     UI32 w, UI32 h, const LodePNGInfo* info_png)
+                                     UI32 w, UI32 h, const LodePNGInfolib* info_png)
 {
   /*
   This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
@@ -4041,7 +4041,7 @@ static UI32 postProcessScanlines(BYTE* out, BYTE* in,
   return 0;
 }
 
-static UI32 readChunk_PLTE(LodePNGColorMode* color, const BYTE* data, size_t chunkLength)
+static UI32 readChunk_PLTE(LodePNGColorModelib* color, const BYTE* data, size_t chunkLength)
 {
   UI32 pos = 0, i;
   if(color->palette) lodepng_free(color->palette);
@@ -4065,7 +4065,7 @@ static UI32 readChunk_PLTE(LodePNGColorMode* color, const BYTE* data, size_t chu
   return 0; /* OK */
 }
 
-static UI32 readChunk_tRNS(LodePNGColorMode* color, const BYTE* data, size_t chunkLength)
+static UI32 readChunk_tRNS(LodePNGColorModelib* color, const BYTE* data, size_t chunkLength)
 {
   UI32 i;
   if(color->colortype == LCT_PALETTE)
@@ -4101,7 +4101,7 @@ static UI32 readChunk_tRNS(LodePNGColorMode* color, const BYTE* data, size_t chu
 
 #ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
 /*background color chunk (bKGD)*/
-static UI32 readChunk_bKGD(LodePNGInfo* info, const BYTE* data, size_t chunkLength)
+static UI32 readChunk_bKGD(LodePNGInfolib* info, const BYTE* data, size_t chunkLength)
 {
   if(info->color.colortype == LCT_PALETTE)
   {
@@ -4134,7 +4134,7 @@ static UI32 readChunk_bKGD(LodePNGInfo* info, const BYTE* data, size_t chunkLeng
 }
 
 /*text chunk (tEXt)*/
-static UI32 readChunk_tEXt(LodePNGInfo* info, const BYTE* data, size_t chunkLength)
+static UI32 readChunk_tEXt(LodePNGInfolib* info, const BYTE* data, size_t chunkLength)
 {
   UI32 error = 0;
   char *key = 0, *str = 0;
@@ -4177,7 +4177,7 @@ static UI32 readChunk_tEXt(LodePNGInfo* info, const BYTE* data, size_t chunkLeng
 }
 
 /*compressed text chunk (zTXt)*/
-static UI32 readChunk_zTXt(LodePNGInfo* info, const LodePNGDecompressSettings* zlibsettings,
+static UI32 readChunk_zTXt(LodePNGInfolib* info, const LodePNGDecompressSettingslib* zlibsettings,
                                const BYTE* data, size_t chunkLength)
 {
   UI32 error = 0;
@@ -4226,7 +4226,7 @@ static UI32 readChunk_zTXt(LodePNGInfo* info, const LodePNGDecompressSettings* z
 }
 
 /*international text chunk (iTXt)*/
-static UI32 readChunk_iTXt(LodePNGInfo* info, const LodePNGDecompressSettings* zlibsettings,
+static UI32 readChunk_iTXt(LodePNGInfolib* info, const LodePNGDecompressSettingslib* zlibsettings,
                                const BYTE* data, size_t chunkLength)
 {
   UI32 error = 0;
@@ -4319,7 +4319,7 @@ static UI32 readChunk_iTXt(LodePNGInfo* info, const LodePNGDecompressSettings* z
   return error;
 }
 
-static UI32 readChunk_tIME(LodePNGInfo* info, const BYTE* data, size_t chunkLength)
+static UI32 readChunk_tIME(LodePNGInfolib* info, const BYTE* data, size_t chunkLength)
 {
   if(chunkLength != 7) return 73; /*invalid tIME chunk size*/
 
@@ -4334,7 +4334,7 @@ static UI32 readChunk_tIME(LodePNGInfo* info, const BYTE* data, size_t chunkLeng
   return 0; /* OK */
 }
 
-static UI32 readChunk_pHYs(LodePNGInfo* info, const BYTE* data, size_t chunkLength)
+static UI32 readChunk_pHYs(LodePNGInfolib* info, const BYTE* data, size_t chunkLength)
 {
   if(chunkLength != 9) return 74; /*invalid pHYs chunk size*/
 
@@ -4349,7 +4349,7 @@ static UI32 readChunk_pHYs(LodePNGInfo* info, const BYTE* data, size_t chunkLeng
 
 /*read a PNG, the result will be in the same color type as the PNG (hence "generic")*/
 static void decodeGeneric(BYTE** out, UI32* w, UI32* h,
-                          LodePNGState* state,
+                          LodePNGStatelib* state,
                           const BYTE* in, size_t insize)
 {
   BYTE IEND = 0;
@@ -4515,7 +4515,7 @@ static void decodeGeneric(BYTE** out, UI32* w, UI32* h,
   else
   {
     /*Adam-7 interlaced: predicted size is the sum of the 7 sub-images sizes*/
-    const LodePNGColorMode* color = &state->info_png.color;
+    const LodePNGColorModelib* color = &state->info_png.color;
     predict = 0;
     predict += lodepng_get_raw_size_idat((*w + 7) / 8, (*h + 7) / 8, color) + (*h + 7) / 8;
     if(*w > 4) predict += lodepng_get_raw_size_idat((*w + 3) / 8, (*h + 7) / 8, color) + (*h + 7) / 8;
@@ -4547,7 +4547,7 @@ static void decodeGeneric(BYTE** out, UI32* w, UI32* h,
 }
 
 UI32 lodepng_decode(BYTE** out, UI32* w, UI32* h,
-                        LodePNGState* state,
+                        LodePNGStatelib* state,
                         const BYTE* in, size_t insize)
 {
   *out = 0;
@@ -4592,10 +4592,10 @@ UI32 lodepng_decode(BYTE** out, UI32* w, UI32* h,
 }
 
 UI32 lodepng_decode_memory(BYTE** out, UI32* w, UI32* h, const BYTE* in,
-                               size_t insize, LodePNGColorType colortype, UI32 bitdepth)
+                               size_t insize, LodePNGColorTypelib colortype, UI32 bitdepth)
 {
   UI32 error;
-  LodePNGState state;
+  LodePNGStatelib state;
   lodepng_state_init(&state);
   state.info_raw.colortype = colortype;
   state.info_raw.bitdepth = bitdepth;
@@ -4614,7 +4614,7 @@ UI32 lodepng_decode24(BYTE** out, UI32* w, UI32* h, const BYTE* in, size_t insiz
   return lodepng_decode_memory(out, w, h, in, insize, LCT_RGB, 8);
 }
 
-void lodepng_decoder_settings_init(LodePNGDecoderSettings* settings)
+void lodepng_decoder_settings_init(LodePNGDecoderSettingslib* settings)
 {
   settings->color_convert = 1;
 #ifdef LODEPNG_COMPILE_ANCILLARY_CHUNKS
@@ -4629,7 +4629,7 @@ void lodepng_decoder_settings_init(LodePNGDecoderSettings* settings)
 
 #if defined(LODEPNG_COMPILE_DECODER) || defined(LODEPNG_COMPILE_ENCODER)
 
-void lodepng_state_init(LodePNGState* state)
+void lodepng_state_init(LodePNGStatelib* state)
 {
 #ifdef LODEPNG_COMPILE_DECODER
   lodepng_decoder_settings_init(&state->decoder);
@@ -4642,13 +4642,13 @@ void lodepng_state_init(LodePNGState* state)
   state->error = 1;
 }
 
-void lodepng_state_cleanup(LodePNGState* state)
+void lodepng_state_cleanup(LodePNGStatelib* state)
 {
   lodepng_color_mode_cleanup(&state->info_raw);
   lodepng_info_cleanup(&state->info_png);
 }
 
-void lodepng_state_copy(LodePNGState* dest, const LodePNGState* source)
+void lodepng_state_copy(LodePNGStatelib* dest, const LodePNGStatelib* source)
 {
   lodepng_state_cleanup(dest);
   *dest = *source;
@@ -4688,7 +4688,7 @@ static void writeSignature(ucvector* out)
 }
 
 static UI32 addChunk_IHDR(ucvector* out, UI32 w, UI32 h,
-                              LodePNGColorType colortype, UI32 bitdepth, UI32 interlace_method)
+                              LodePNGColorTypelib colortype, UI32 bitdepth, UI32 interlace_method)
 {
   UI32 error = 0;
   ucvector header;
@@ -4708,7 +4708,7 @@ static UI32 addChunk_IHDR(ucvector* out, UI32 w, UI32 h,
   return error;
 }
 
-static UI32 addChunk_PLTE(ucvector* out, const LodePNGColorMode* info)
+static UI32 addChunk_PLTE(ucvector* out, const LodePNGColorModelib* info)
 {
   UI32 error = 0;
   size_t i;
@@ -4725,7 +4725,7 @@ static UI32 addChunk_PLTE(ucvector* out, const LodePNGColorMode* info)
   return error;
 }
 
-static UI32 addChunk_tRNS(ucvector* out, const LodePNGColorMode* info)
+static UI32 addChunk_tRNS(ucvector* out, const LodePNGColorModelib* info)
 {
   UI32 error = 0;
   size_t i;
@@ -4771,7 +4771,7 @@ static UI32 addChunk_tRNS(ucvector* out, const LodePNGColorMode* info)
 }
 
 static UI32 addChunk_IDAT(ucvector* out, const BYTE* data, size_t datasize,
-                              LodePNGCompressSettings* zlibsettings)
+                              LodePNGCompressSettingslib* zlibsettings)
 {
   ucvector zlibdata;
   UI32 error = 0;
@@ -4811,7 +4811,7 @@ static UI32 addChunk_tEXt(ucvector* out, cstr keyword, cstr textstring)
 }
 
 static UI32 addChunk_zTXt(ucvector* out, cstr keyword, cstr textstring,
-                              LodePNGCompressSettings* zlibsettings)
+                              LodePNGCompressSettingslib* zlibsettings)
 {
   UI32 error = 0;
   ucvector data, compressed;
@@ -4838,7 +4838,7 @@ static UI32 addChunk_zTXt(ucvector* out, cstr keyword, cstr textstring,
 }
 
 static UI32 addChunk_iTXt(ucvector* out, UI32 compressed, cstr keyword, cstr langtag,
-                              cstr transkey, cstr textstring, LodePNGCompressSettings* zlibsettings)
+                              cstr transkey, cstr textstring, LodePNGCompressSettingslib* zlibsettings)
 {
   UI32 error = 0;
   ucvector data;
@@ -4878,7 +4878,7 @@ static UI32 addChunk_iTXt(ucvector* out, UI32 compressed, cstr keyword, cstr lan
   return error;
 }
 
-static UI32 addChunk_bKGD(ucvector* out, const LodePNGInfo* info)
+static UI32 addChunk_bKGD(ucvector* out, const LodePNGInfolib* info)
 {
   UI32 error = 0;
   ucvector bKGD;
@@ -4908,7 +4908,7 @@ static UI32 addChunk_bKGD(ucvector* out, const LodePNGInfo* info)
   return error;
 }
 
-static UI32 addChunk_tIME(ucvector* out, const LodePNGTime* time)
+static UI32 addChunk_tIME(ucvector* out, const LodePNGTimelib* time)
 {
   UI32 error = 0;
   BYTE* data = (BYTE*)lodepng_malloc(7);
@@ -4925,7 +4925,7 @@ static UI32 addChunk_tIME(ucvector* out, const LodePNGTime* time)
   return error;
 }
 
-static UI32 addChunk_pHYs(ucvector* out, const LodePNGInfo* info)
+static UI32 addChunk_pHYs(ucvector* out, const LodePNGInfolib* info)
 {
   UI32 error = 0;
   ucvector data;
@@ -5009,7 +5009,7 @@ static float flog2(float f)
 }
 
 static UI32 filter(BYTE* out, const BYTE* in, UI32 w, UI32 h,
-                       const LodePNGColorMode* info, const LodePNGEncoderSettings* settings)
+                       const LodePNGColorModelib* info, const LodePNGEncoderSettingslib* settings)
 {
   /*
   For PNG filter method 0
@@ -5025,7 +5025,7 @@ static UI32 filter(BYTE* out, const BYTE* in, UI32 w, UI32 h,
   const BYTE* prevline = 0;
   UI32 x, y;
   UI32 error = 0;
-  LodePNGFilterStrategy strategy = settings->filter_strategy;
+  LodePNGFilterStrategylib strategy = settings->filter_strategy;
 
   /*
   There is a heuristic called the minimum sum of absolute differences heuristic, suggested by the PNG standard:
@@ -5183,7 +5183,7 @@ static UI32 filter(BYTE* out, const BYTE* in, UI32 w, UI32 h,
     size_t smallest = 0;
     UI32 type = 0, bestType = 0;
     BYTE* dummy;
-    LodePNGCompressSettings zlibsettings = settings->zlibsettings;
+    LodePNGCompressSettingslib zlibsettings = settings->zlibsettings;
     /*use fixed tree on the attempts so that the tree is not adapted to the filtertype on purpose,
     to simulate the true case where the tree is the same for the whole image. Sometimes it gives
     better result with dynamic tree anyway. Using the fixed tree sometimes gives worse, but in rare
@@ -5314,7 +5314,7 @@ static void Adam7_interlace(BYTE* out, const BYTE* in, UI32 w, UI32 h, UI32 bpp)
 return value is error**/
 static UI32 preProcessScanlines(BYTE** out, size_t* outsize, const BYTE* in,
                                     UI32 w, UI32 h,
-                                    const LodePNGInfo* info_png, const LodePNGEncoderSettings* settings)
+                                    const LodePNGInfolib* info_png, const LodePNGEncoderSettingslib* settings)
 {
   /*
   This function converts the pure 2D image with the PNG's colortype, into filtered-padded-interlaced data. Steps:
@@ -5441,9 +5441,9 @@ static UI32 addUnknownChunks(ucvector* out, BYTE* data, size_t datasize)
 
 UI32 lodepng_encode(BYTE** out, size_t* outsize,
                         const BYTE* image, UI32 w, UI32 h,
-                        LodePNGState* state)
+                        LodePNGStatelib* state)
 {
-  LodePNGInfo info;
+  LodePNGInfolib info;
   ucvector outv;
   BYTE* data = 0; /*uncompressed version of the IDAT chunk data*/
   size_t datasize = 0;
@@ -5633,10 +5633,10 @@ UI32 lodepng_encode(BYTE** out, size_t* outsize,
 }
 
 UI32 lodepng_encode_memory(BYTE** out, size_t* outsize, const BYTE* image,
-                               UI32 w, UI32 h, LodePNGColorType colortype, UI32 bitdepth)
+                               UI32 w, UI32 h, LodePNGColorTypelib colortype, UI32 bitdepth)
 {
   UI32 error;
-  LodePNGState state;
+  LodePNGStatelib state;
   lodepng_state_init(&state);
   state.info_raw.colortype = colortype;
   state.info_raw.bitdepth = bitdepth;
@@ -5661,7 +5661,7 @@ UI32 lodepng_encode24(BYTE** out, size_t* outsize, const BYTE* image, UI32 w, UI
 UI32 lodepng_encodeEx(BYTE** out, size_t* outsize, const BYTE* rgba, UI32 w, UI32 h, int bits, bool gray)
 {
 	UI32 error;
-	LodePNGState state;
+	LodePNGStatelib state;
 	lodepng_state_init(&state);
 	state.info_raw.colortype = LCT_RGBA;
 	state.info_raw.bitdepth = 8;
@@ -5680,7 +5680,7 @@ UI32 lodepng_encodeEx(BYTE** out, size_t* outsize, const BYTE* rgba, UI32 w, UI3
 UI32 lodepng_encodeExOne(BYTE** out, size_t* outsize, const BYTE* buf, UI32 w, UI32 h)
 {
 	UI32 error;
-	LodePNGState state;
+	LodePNGStatelib state;
 	lodepng_state_init(&state);
 	state.info_raw.colortype = LCT_GREY;
 	state.info_raw.bitdepth = 8;
@@ -5692,7 +5692,7 @@ UI32 lodepng_encodeExOne(BYTE** out, size_t* outsize, const BYTE* buf, UI32 w, U
 	return error;
 }
 
-void lodepng_encoder_settings_init(LodePNGEncoderSettings* settings)
+void lodepng_encoder_settings_init(LodePNGEncoderSettingslib* settings)
 {
   lodepng_compress_settings_init(&settings->zlibsettings);
   settings->filter_palette_zero = 1;
@@ -5829,7 +5829,7 @@ namespace lodepng
 #ifdef LODEPNG_COMPILE_ZLIB
 #ifdef LODEPNG_COMPILE_DECODER
 UI32 decompress(std::vector<BYTE>& out, const BYTE* in, size_t insize,
-                    const LodePNGDecompressSettings& settings)
+                    const LodePNGDecompressSettingslib& settings)
 {
   BYTE* buffer = 0;
   size_t buffersize = 0;
@@ -5843,7 +5843,7 @@ UI32 decompress(std::vector<BYTE>& out, const BYTE* in, size_t insize,
 }
 
 UI32 decompress(std::vector<BYTE>& out, const std::vector<BYTE>& in,
-                    const LodePNGDecompressSettings& settings)
+                    const LodePNGDecompressSettingslib& settings)
 {
   return decompress(out, in.empty() ? 0 : &in[0], in.size(), settings);
 }
@@ -5851,7 +5851,7 @@ UI32 decompress(std::vector<BYTE>& out, const std::vector<BYTE>& in,
 
 #ifdef LODEPNG_COMPILE_ENCODER
 UI32 compress(std::vector<BYTE>& out, const BYTE* in, size_t insize,
-                  const LodePNGCompressSettings& settings)
+                  const LodePNGCompressSettingslib& settings)
 {
   BYTE* buffer = 0;
   size_t buffersize = 0;
@@ -5865,7 +5865,7 @@ UI32 compress(std::vector<BYTE>& out, const BYTE* in, size_t insize,
 }
 
 UI32 compress(std::vector<BYTE>& out, const std::vector<BYTE>& in,
-                  const LodePNGCompressSettings& settings)
+                  const LodePNGCompressSettingslib& settings)
 {
   return compress(out, in.empty() ? 0 : &in[0], in.size(), settings);
 }
@@ -5875,23 +5875,23 @@ UI32 compress(std::vector<BYTE>& out, const std::vector<BYTE>& in,
 
 #ifdef LODEPNG_COMPILE_PNG
 
-State::State()
+Statelib::Statelib()
 {
   lodepng_state_init(this);
 }
 
-State::State(const State& other)
+Statelib::Statelib(const Statelib& other)
 {
   lodepng_state_init(this);
   lodepng_state_copy(this, &other);
 }
 
-State::~State()
+Statelib::~Statelib()
 {
   lodepng_state_cleanup(this);
 }
 
-State& State::operator=(const State& other)
+Statelib& Statelib::operator=(const Statelib& other)
 {
   lodepng_state_copy(this, &other);
   return *this;
@@ -5900,13 +5900,13 @@ State& State::operator=(const State& other)
 #ifdef LODEPNG_COMPILE_DECODER
 
 UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h, const BYTE* in,
-                size_t insize, LodePNGColorType colortype, UI32 bitdepth)
+                size_t insize, LodePNGColorTypelib colortype, UI32 bitdepth)
 {
   BYTE* buffer;
   UI32 error = lodepng_decode_memory(&buffer, &w, &h, in, insize, colortype, bitdepth);
   if(buffer && !error)
   {
-    State state;
+    Statelib state;
     state.info_raw.colortype = colortype;
     state.info_raw.bitdepth = bitdepth;
     size_t buffersize = lodepng_get_raw_size(w, h, &state.info_raw);
@@ -5917,13 +5917,13 @@ UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h, const BYTE* in,
 }
 
 UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
-                const std::vector<BYTE>& in, LodePNGColorType colortype, UI32 bitdepth)
+                const std::vector<BYTE>& in, LodePNGColorTypelib colortype, UI32 bitdepth)
 {
   return decode(out, w, h, in.empty() ? 0 : &in[0], (UI32)in.size(), colortype, bitdepth);
 }
 
 UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
-                State& state,
+                Statelib& state,
                 const BYTE* in, size_t insize)
 {
   BYTE* buffer = NULL;
@@ -5938,7 +5938,7 @@ UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
 }
 
 UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
-                State& state,
+                Statelib& state,
                 const std::vector<BYTE>& in)
 {
   return decode(out, w, h, state, in.empty() ? 0 : &in[0], in.size());
@@ -5948,7 +5948,7 @@ UI32 decode(std::vector<BYTE>& out, UI32& w, UI32& h,
 
 #ifdef LODEPNG_COMPILE_ENCODER
 UI32 encode(std::vector<BYTE>& out, const BYTE* in, UI32 w, UI32 h,
-                LodePNGColorType colortype, UI32 bitdepth)
+                LodePNGColorTypelib colortype, UI32 bitdepth)
 {
   BYTE* buffer;
   size_t buffersize;
@@ -5963,7 +5963,7 @@ UI32 encode(std::vector<BYTE>& out, const BYTE* in, UI32 w, UI32 h,
 
 UI32 encode(std::vector<BYTE>& out,
                 const std::vector<BYTE>& in, UI32 w, UI32 h,
-                LodePNGColorType colortype, UI32 bitdepth)
+                LodePNGColorTypelib colortype, UI32 bitdepth)
 {
   if(lodepng_get_raw_size_lct(w, h, colortype, bitdepth) > in.size()) return 84;
   return encode(out, in.empty() ? 0 : &in[0], w, h, colortype, bitdepth);
@@ -5971,7 +5971,7 @@ UI32 encode(std::vector<BYTE>& out,
 
 UI32 encode(std::vector<BYTE>& out,
                 const BYTE* in, UI32 w, UI32 h,
-                State& state)
+                Statelib& state)
 {
   BYTE* buffer;
   size_t buffersize;
@@ -5986,7 +5986,7 @@ UI32 encode(std::vector<BYTE>& out,
 
 UI32 encode(std::vector<BYTE>& out,
                 const std::vector<BYTE>& in, UI32 w, UI32 h,
-                State& state)
+                Statelib& state)
 {
   if(lodepng_get_raw_size(w, h, &state.info_raw) > in.size()) return 84;
   return encode(out, in.empty() ? 0 : &in[0], w, h, state);

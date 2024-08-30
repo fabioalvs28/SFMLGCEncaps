@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "GCImage.h"
 #include "GCFile.h"
 #include <cstdint>

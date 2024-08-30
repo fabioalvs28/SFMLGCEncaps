@@ -1,6 +1,7 @@
 #include "pch.h"
+#include "../../src/core/framework.h"
 
-GC_SPRITESHEET_DATA GCSpriteSheetGeometryLoader::LoadSpriteSheet(const char* filename) {
+GC_SPRITESHEET_DATA GCSpriteSheetGeometryLoader::LoadSpriteSheets(const char* filename) {
 
     Metadata::Data data;
     GCFile file(filename, "rb");
@@ -108,12 +109,14 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
 
         std::vector<uint8_t> strBuffer;
         uint8_t lastVar = 0;
+
         while (strBuffer.size() == 0 || lastVar != 0x00)
         {
             strBuffer.emplace_back(buffer[offset]);
             offset += 1;
             lastVar = strBuffer.back();
         }
+
         std::memcpy(tex.textureName.data(), strBuffer.data(), strBuffer.size());
 
         std::memcpy(&tex.texturesize, buffer.data() + offset, sizeof(uint16_t));
@@ -126,7 +129,7 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
         {
             Metadata::Image img;
 
-            std::vector<uint8_t> strBuffer;
+            strBuffer.clear();
             uint8_t lastVar = 0;
             while (strBuffer.size() == 0 || lastVar != 0x00)
             {
