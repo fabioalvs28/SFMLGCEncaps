@@ -73,5 +73,6 @@ struct GCColor;
 // Other
 #include "GCString.h"
 #include "GCColor.h"
+#include "GCFile.h"
 
 #endif

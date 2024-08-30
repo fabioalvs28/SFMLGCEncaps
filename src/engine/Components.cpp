@@ -406,6 +406,7 @@ void GCAnimator::LoadSpriteSheet(std::string fileName, int spriteSheetID)
 /// @param firstFrame the first frame id of the animation in the spritesheet 
 /// @param frameNumber the number of frame in the spritesheet for the animation
 /// @param frameDisplayTime How long each frame will be display
+/// !!! 
 //////////////////////////////////////////////////////////////////////////////////
 GCAnimation* GCAnimator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime )
 {
@@ -413,7 +414,7 @@ GCAnimation* GCAnimator::CreateAnimation( std::string animationName, int firstFr
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
 	GCAnimation* pNewAnimation = new GCAnimation();
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
-	for ( int i = firstFrame; i < firstFrame + frameNumber; i++ )
+	for ( int i = firstFrame; i < firstFrame + frameNumber *2; i +=2 )
 		pNewAnimation->AddFrame( i, frameDisplayTime );
 	GC::GetActiveRenderManager()->AddAnimation( pNewAnimation , animationName );
 
@@ -436,7 +437,7 @@ GCAnimation* GCAnimator::CreateAnimationWithCustomFrames( std::string animationN
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
 
 	for ( int i = 0; i < frameList.size() ; i++ )
-		pNewAnimation->AddFrame( frameList[i] , frameDisplayTime );
+		pNewAnimation->AddFrame( frameList[i] + 1 , frameDisplayTime );
 	GC::GetActiveRenderManager()->AddAnimation( pNewAnimation , animationName );
 
 	return pNewAnimation;
