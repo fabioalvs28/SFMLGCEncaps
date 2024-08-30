@@ -465,6 +465,9 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
 GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
     // Obtenez le rapport d'aspect
     float aspectRatio = m_pRender->GetRenderResources()->GetCurrentWindow()->AspectRatio();
+    float screenWidth = m_pRender->GetRenderResources()->GetCurrentWindow()->GetClientWidth();
+    float screenHeight = m_pRender->GetRenderResources()->GetCurrentWindow()->GetClientHeight();
+
     float scaleX = 1.0f;
     float scaleY = 1.0f;
 
@@ -477,8 +480,8 @@ GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
     }
 
     // Adjust positions to respect the aspect ratio
-    float posX = (1.0f / scaleX) - 3.5 * scaleX ; // Adjust position X by the inverse of scaleX
-    float posY = (1.0f / scaleY) - scaleY; // Adjust position Y by the inverse of scaleY
+    float posX = (1.0f / scaleX) - 2.0f; // Adjust position X by the inverse of scaleX
+    float posY = (1.0f / scaleY); // Adjust position Y by the inverse of scaleY
 
     DirectX::XMMATRIX xmWorldMatrix = GCUtils::GCMATRIXToXMMATRIX(worldMatrix);
 
@@ -489,7 +492,7 @@ GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
     DirectX::XMMATRIX xmAdditionalScaleMatrix = DirectX::XMMatrixScaling(scaleX, scaleY, 1.0f);
 
     // Apply transformations in order: Translation first, then Scaling
-    DirectX::XMMATRIX xmWorldMatrixTransformed = xmAdditionalPosMatrix * xmAdditionalScaleMatrix * xmWorldMatrix;
+    DirectX::XMMATRIX xmWorldMatrixTransformed = xmAdditionalScaleMatrix * xmAdditionalPosMatrix * xmWorldMatrix;
 
     GCMATRIX scaledWorldMatrix = GCUtils::XMMATRIXToGCMATRIX(xmWorldMatrixTransformed);
 

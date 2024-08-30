@@ -23,9 +23,9 @@ void GCScriptBullet::Update()
 
         //Destroy Bullet when out of screen
         if (m_pGameObject->m_transform.m_position.x <= m_pCamera->GetPosition().x - m_pCamera->GetViewWidth()
-            || m_pGameObject->m_transform.m_position.y <= m_pCamera->GetPosition().y - m_pCamera->GetViewHeight() / 2
+            || m_pGameObject->m_transform.m_position.y <= m_pCamera->GetPosition().y - m_pCamera->GetViewHeight()
             || m_pGameObject->m_transform.m_position.x >= m_pCamera->GetPosition().x + m_pCamera->GetViewWidth()
-            || m_pGameObject->m_transform.m_position.y >= m_pCamera->GetPosition().y + m_pCamera->GetViewHeight() / 2)
+            || m_pGameObject->m_transform.m_position.y >= m_pCamera->GetPosition().y + m_pCamera->GetViewHeight())
         {
             m_pGameObject->Destroy();
         }
@@ -40,10 +40,10 @@ void GCScriptBullet::BulletShoot()
     m_pCamera = GC::GetActiveScene()->GetMainCamera();
 
     m_direction = GCVEC3::Zero();
-    m_direction.x = GCINPUTS::GetMousePos().x + rand() % 51;
-    m_direction.y = GCINPUTS::GetMousePos().y + rand() % 51;
+    m_direction.x = GCINPUTS::GetMousePos().x;
+    m_direction.y = GCINPUTS::GetMousePos().y;
 
-    m_direction -= m_pGameObject->m_transform.m_position * 100;
+    m_direction -= m_pGameObject->m_transform.m_position;
     m_direction.Normalize();
     m_direction *= m_attackSpeed;    
 }
