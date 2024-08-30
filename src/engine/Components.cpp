@@ -406,7 +406,7 @@ void GCAnimator::LoadSpriteSheet(std::string fileName, int spriteSheetID)
 /// @param firstFrame the first frame id of the animation in the spritesheet 
 /// @param frameNumber the number of frame in the spritesheet for the animation
 /// @param frameDisplayTime How long each frame will be display
-/// !!! 
+/// !!! Need to use 1 out of 2 frame because spritesheet generator create an empty frame every 1 out of 2 frame
 //////////////////////////////////////////////////////////////////////////////////
 GCAnimation* GCAnimator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime )
 {
