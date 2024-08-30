@@ -470,19 +470,28 @@ GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
 
     // Calculer les facteurs de mise à l'échelle
     if (aspectRatio > 1.0f) {
-        scaleX = 1.0f / aspectRatio;
+        scaleX = 1.0 / aspectRatio;
     }
     else {
         scaleY = aspectRatio;
     }
 
+    // Adjust positions to respect the aspect ratio
+    float posX = (1.0f / scaleX) - 3.5 * scaleX ; // Adjust position X by the inverse of scaleX
+    float posY = (1.0f / scaleY) - scaleY; // Adjust position Y by the inverse of scaleY
+
     DirectX::XMMATRIX xmWorldMatrix = GCUtils::GCMATRIXToXMMATRIX(worldMatrix);
 
+    // Apply position translation first
+    DirectX::XMMATRIX xmAdditionalPosMatrix = DirectX::XMMatrixTranslation(posX, posY, 0.0f);
+
+    // Apply scaling
     DirectX::XMMATRIX xmAdditionalScaleMatrix = DirectX::XMMatrixScaling(scaleX, scaleY, 1.0f);
 
-    DirectX::XMMATRIX xmWorldMatrixScaled = xmWorldMatrix * xmAdditionalScaleMatrix;
+    // Apply transformations in order: Translation first, then Scaling
+    DirectX::XMMATRIX xmWorldMatrixTransformed = xmAdditionalPosMatrix * xmAdditionalScaleMatrix * xmWorldMatrix;
 
-    GCMATRIX scaledWorldMatrix = GCUtils::XMMATRIXToGCMATRIX(xmWorldMatrixScaled);
+    GCMATRIX scaledWorldMatrix = GCUtils::XMMATRIXToGCMATRIX(xmWorldMatrixTransformed);
 
     return scaledWorldMatrix;
 }
