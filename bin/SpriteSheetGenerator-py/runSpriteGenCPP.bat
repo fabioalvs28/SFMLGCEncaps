@@ -1,0 +1,1 @@
+..\..\ide\vs\SpriteSheetGenerator\Build\debug\spriteSheetGenerator.exe -i Sprites -o output -p 1 -R -F -T

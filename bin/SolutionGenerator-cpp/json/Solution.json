@@ -17,10 +17,10 @@
             ]
         },
         "render": {
-            "projects": ["RenderApp.json"]
+            "projects": ["Render.json"]
         },
         "tools": {
-            "projects": ["Multimedia.json","Core.json"]
+            "projects": ["SpriteSheetGenerator.json", "Multimedia.json","Core.json"]
         },
         "qa": {
             "projects": []
