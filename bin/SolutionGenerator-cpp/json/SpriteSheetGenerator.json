@@ -1,9 +1,9 @@
 {
-    "name": "Multimedia",
-    "folder": "Multimedia/",
-    "dependencies": ["Core"],
+    "name": "SpriteSheetGenerator",
+    "folder": "SpriteSheetGenerator/",
+    "dependencies": ["Core", "Multimedia"],
     "vc_project_version": "17.0",
-    "root_namespace": "Multimedia",
+    "root_namespace": "SpriteSheetGenerator",
     "windows_target_platform_version": "10.0",
     "configuration": [
         {
@@ -19,9 +19,9 @@
             "subsystem": "Console",
             "language_standard": "stdcpp20",
             "generate_debug_information": "true",
-            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Core",
-            "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
-            "additional_dependencies" : "Core.lib;%(AdditionalDependencies)",
+            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Core;$(SolutionDir)..\\..\\src\\Multimedia",
+            "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);$(SolutionDir)Multimedia\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
+            "additional_dependencies" : "Core.lib;Multimedia.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         },
@@ -38,14 +38,16 @@
             "sdl_check": "true",
             "preprocessor_definitions": "NDEBUG;_CONSOLE;%(PreprocessorDefinitions)",
             "conformance_mode": "true",
+            "precompiled_header": "Use",
+            "precompiled_header_file": "pch.h",
             "subsystem": "Console",
             "language_standard": "stdcpp20",
             "enable_comdat_folding": "true",
             "optimize_references": "true",
             "generate_debug_information": "true",
-            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Core",
-            "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
-            "additional_dependencies" : "Core.lib;%(AdditionalDependencies)",
+            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Core;$(SolutionDir)..\\..\\src\\Multimedia",
+            "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);$(SolutionDir)Multimedia\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
+            "additional_dependencies" : "Core.lib;Multimedia.lib;%(AdditionalDependencies)",
             "out_dir": "$(ProjectDir)Build\\$(Configuration)\\",
             "int_dir": "$(ProjectDir)Build\\$(Configuration)\\intermediate\\"
         }

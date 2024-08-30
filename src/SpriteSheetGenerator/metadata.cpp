@@ -1,80 +1,42 @@
-#include "pch.h"
-#include "../../src/core/framework.h"
+#include "metadata.h"
 
-GC_SPRITESHEET_DATA GCSpriteSheetGeometryLoader::LoadSpriteSheets(const char* filename) {
+Metadata::Data Metadata::jsonToMetadataStruct(json data)
+{
+    Metadata::Data metadata;
+    unsigned char buffer[] = { 0x53, 0x53, 0x44, 0x47 };
+    memcpy(&metadata.header.magic, buffer, 4);
+    metadata.header.totalImageCount = data["totalImageCount"];
+    metadata.header.texturesCount = data["totalTextureCount"];
+    for (size_t i = 0; i < data["totalTextureCount"]; i++)
+    {
+        Metadata::Texture texture;
+        texture.textureName = std::string(data["textures"][i]["textureName"]).c_str();
+        texture.texturesize = data["textures"][i]["textureSize"];
+        texture.imageCount = data["textures"][i]["imageCount"];
 
-    Metadata::Data data;
-    GCFile file(filename, "rb");
-    Metadata::MetadataFileToStruct(file, data);
-
-    GCGraphicsLogger& logger = GCGraphicsLogger::GetInstance();
-
-    GC_SPRITESHEET_DATA spriteSheetData;
-
-    for (const auto& texture : data.textures) {
-
-        GC_SPRITESHEET spritesheet;
-        spritesheet.size = texture.texturesize;
-
-        CalculateUVs(spritesheet, texture.images);
-
-        spriteSheetData.spritesheets.push_back(spritesheet);
-    }
-    return spriteSheetData;
-}
-
-void GCSpriteSheetGeometryLoader::CalculateUVs(GC_SPRITESHEET& spritesheet, const std::vector<Metadata::Image>& images) {
-    spritesheet.sprites.clear();  
-    int index = 0;  
-
-    for (const auto& image : images) {
-        GC_SPRITE spriteInfo;
-
-        float u1 = static_cast<float>(image.x) / spritesheet.size;
-        float v1 = static_cast<float>(image.y + image.h) / spritesheet.size;
-
-        float u2 = static_cast<float>(image.x) / spritesheet.size;
-        float v2 = static_cast<float>(image.y) / spritesheet.size;
-
-        float u3 = static_cast<float>(image.x + image.w) / spritesheet.size;
-        float v3 = static_cast<float>(image.y) / spritesheet.size;
-
-        float u4 = static_cast<float>(image.x + image.w) / spritesheet.size;
-        float v4 = static_cast<float>(image.y + image.h) / spritesheet.size;
-
-        spriteInfo.uvs[0] = GCVEC2(u1, v1); // Bottom-left
-        spriteInfo.uvs[1] = GCVEC2(u2, v2); // Top-left
-        spriteInfo.uvs[2] = GCVEC2(u3, v3); // Top-right
-        spriteInfo.uvs[3] = GCVEC2(u4, v4); // Bottom-right
-
-        spriteInfo.width = image.w;
-        spriteInfo.height = image.h;
-
-
-        spritesheet.sprites[index++] = spriteInfo;
-    }
-}
-
-// Utils function to set sprite sheet info uv on 4 vertex plane
-void GCSpriteSheetGeometryLoader::SetSpriteUVs(GCGeometry* geometry, int spriteSheetID, int spriteID, const GC_SPRITESHEET_DATA& spriteSheetInfo) {
-
-    // Get wanted texture in spritesheet vector info
-    const GC_SPRITESHEET spriteSheet = spriteSheetInfo.spritesheets[spriteSheetID];
-
-    // Search and find sprite
-    auto it = spriteSheet.sprites.find(spriteID);
-    if (it != spriteSheet.sprites.end()) {
-        const GC_SPRITE& spriteInfo = it->second;
-
-        // Update uv
-        geometry->uv.resize(4);
-        for (int i = 0; i < 4; ++i) {
-            geometry->uv[i] = DirectX::XMFLOAT2(spriteInfo.uvs[i].x, spriteInfo.uvs[i].y);
+        for (size_t j = 0; j < data["textures"][i]["imageCount"]; j++)
+        {
+            Metadata::Image image;
+            image.filename = std::string(data["textures"][i]["images"][j]["filename"]).c_str();
+            image.x = data["textures"][i]["images"][j]["x"];
+            image.y = data["textures"][i]["images"][j]["y"];
+            image.w = data["textures"][i]["images"][j]["w"];
+            image.h = data["textures"][i]["images"][j]["h"];
+            image.rotated = data["textures"][i]["images"][j]["rotated"];
+            image.crop_x = data["textures"][i]["images"][j]["crop_x"];
+            image.crop_y = data["textures"][i]["images"][j]["crop_y"];
+            image.original_w = data["textures"][i]["images"][j]["original_w"];
+            image.original_h = data["textures"][i]["images"][j]["original_h"];
+            image.cropped = data["textures"][i]["images"][j]["cropped"];
+            texture.images.emplace_back(image);
         }
+        metadata.textures.emplace_back(texture);
     }
+
+    return metadata;
 }
 
-bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
+bool Metadata::MetadataFileToMetadataStruct(GCFile file, Metadata::Data& metadata)
 {
     size_t offset = 0;
 
@@ -91,7 +53,7 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
     }
     std::memcpy(&metadata.header.magic, buffer.data(), sizeof(uint32_t));
     offset += sizeof(uint32_t);
-
+    
     if (metadata.header.magic != 1195660115)
     {
         std::cerr << "Error : File isn't the right format" << std::endl;
@@ -109,14 +71,12 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
 
         std::vector<uint8_t> strBuffer;
         uint8_t lastVar = 0;
-
         while (strBuffer.size() == 0 || lastVar != 0x00)
         {
             strBuffer.emplace_back(buffer[offset]);
             offset += 1;
             lastVar = strBuffer.back();
         }
-
         std::memcpy(tex.textureName.data(), strBuffer.data(), strBuffer.size());
 
         std::memcpy(&tex.texturesize, buffer.data() + offset, sizeof(uint16_t));
@@ -129,7 +89,7 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
         {
             Metadata::Image img;
 
-            strBuffer.clear();
+            std::vector<uint8_t> strBuffer;
             uint8_t lastVar = 0;
             while (strBuffer.size() == 0 || lastVar != 0x00)
             {
@@ -147,9 +107,20 @@ bool Metadata::MetadataFileToStruct(GCFile file, Metadata::Data& metadata)
             offset += sizeof(uint16_t);
             std::memcpy(&img.h, buffer.data() + offset, sizeof(uint16_t));
             offset += sizeof(uint16_t);
-
             std::memcpy(&img.rotated, buffer.data() + offset, sizeof(uint8_t));
             offset += sizeof(uint8_t);
+
+            std::memcpy(&img.cropped, buffer.data() + offset, sizeof(uint8_t));
+            offset += sizeof(uint8_t);
+            std::memcpy(&img.crop_x, buffer.data() + offset, sizeof(uint16_t));
+            offset += sizeof(uint16_t);
+            std::memcpy(&img.crop_y, buffer.data() + offset, sizeof(uint16_t));
+            offset += sizeof(uint16_t);
+            std::memcpy(&img.original_w, buffer.data() + offset, sizeof(uint16_t));
+            offset += sizeof(uint16_t);
+            std::memcpy(&img.original_h, buffer.data() + offset, sizeof(uint16_t));
+            offset += sizeof(uint16_t);
+
             tex.images.emplace_back(img);
         }
         metadata.textures.emplace_back(tex);

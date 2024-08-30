@@ -26,7 +26,7 @@ public:
 
     struct Header
     {
-        uint32_t magic;
+        uint32_t magic; //??
         uint32_t totalImageCount;
         uint32_t texturesCount;
     };
@@ -65,7 +65,7 @@ struct GC_SPRITESHEET_DATA {
 class GCSpriteSheetGeometryLoader {
 public:
 
-    GC_SPRITESHEET_DATA LoadSpriteSheet(const char* filename);
+    GC_SPRITESHEET_DATA LoadSpriteSheets(const char* filename);
     void SetSpriteUVs(GCGeometry* geometry, int spriteSheetID, int spriteID, const GC_SPRITESHEET_DATA& spriteSheetInfo);
     void CalculateUVs(GC_SPRITESHEET& spritesheet, const std::vector<Metadata::Image>& images);
 
