@@ -77,6 +77,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_pMouse->m_transform.Scale(0.25f);
     GO_pMouse->SetLayer(1);
 
+
 #pragma endregion
     pGameManager->Run();
     return 0;

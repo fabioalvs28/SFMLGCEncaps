@@ -1,5 +1,7 @@
 #include "pch.h"
-
+//height : 74
+//width : 29
+//0,0 : 0 , 116
 GCFontGeometryLoader::GCFontGeometryLoader() {
     
 }
@@ -22,12 +24,12 @@ void GCFontGeometryLoader::LoadMetadata(const std::string& metadataFile) {
     logger.LogInfo("Metadata file opened successfully: " + metadataFile);
 
     std::string line;
-    int textureWidth, textureHeight;
+    int textureWidth, textureHeight = 0;
     if (std::getline(file, line)) {
         textureWidth = std::stoi(line);
     }
     if (std::getline(file, line)) {
-        textureHeight = std::stoi(line);
+        textureHeight = std::stoi(line) - 1;
     }
 
     logger.LogInfo("Texture size: " + std::to_string(textureWidth) + "x" + std::to_string(textureHeight));
@@ -60,7 +62,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
     geometry->uv.clear();
     geometry->indices.clear();
 
-    float xOffset = 0.5f;
+    float xOffset = 0.3f;
     float yOffset = 0.5f;
     float charWidth = 0.2f;
     float charHeight = 0.4f;
@@ -72,17 +74,29 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
             continue;
         }
         int startIdx = static_cast<int>(geometry->pos.size());
-
+        int asciiIndex;
         float u1, v1, u2, v2, u3, v3, u4, v4;
         bool found = false;
 
         for (const auto& data : metadata) {
             int charId;
             std::tie(charId, u1, v1, u2, v2, u3, v3, u4, v4) = data;
-            if (charId == static_cast<int>(c)) {
+
+            if (static_cast<int>(c) < 0)
+                asciiIndex = static_cast<int>(c) + 129 + 127;
+            else
+                asciiIndex = static_cast<int>(c);
+
+            if (charId == asciiIndex) {
                 found = true;
                 break;
             }
+        }
+
+        if (c == '\n')
+        {
+            xOffset = 0;
+            yOffset -= charHeight;
         }
 
         if (!found) {
