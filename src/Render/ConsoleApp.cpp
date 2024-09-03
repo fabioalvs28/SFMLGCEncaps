@@ -302,7 +302,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneAlphabet);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
-    std::string texturePath2 = "../../../src/Render/Textures/alphabet2.dds";
+    std::string texturePath2 = "../../../src/Render/Textures/font.dds";
     auto texture = graphics->CreateTexture(texturePath);
     auto textureText = graphics->CreateTexture(texturePath2);
 

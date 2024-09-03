@@ -60,6 +60,7 @@ bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
     m_pFontGeometryLoader = new GCFontGeometryLoader();
+    m_pFontGeometryLoader->GenerateFontMetadata("../../../src/Render/Fonts/LetterUV.txt");
     m_pSpriteSheetGeometryLoader = new GCSpriteSheetGeometryLoader;
 
     m_pPrimitiveFactory->Initialize();
