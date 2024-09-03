@@ -1,1 +1,1 @@
-..\..\ide\vs\SpriteSheetGenerator\Build\debug\spriteSheetGenerator.exe -i ../../res/player -o ../../res/spritesheet -p 0 -R -F false -T
+..\..\ide\vs\SpriteSheetGenerator\Build\debug\spriteSheetGenerator.exe -i ../../res/goats/DARK -o ../../res/spritesheet -p 0 -R -F false -T
