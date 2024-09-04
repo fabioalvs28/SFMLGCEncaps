@@ -68,6 +68,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
     float spacing = 0.1f;
     bool isBold = false;
     bool isItalic = false;
+    int letterAmount = 185;
 
     for (char c : text) {
         if (c == ' ') {
@@ -76,14 +77,10 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
         }
 
         if (c == '\b' && isItalic == false)
-        {
             isBold = !isBold;
-        }
-        
+
         if (c == '\i' && isBold == false)
-        {
             isItalic = !isItalic;
-        }
 
         int startIdx = static_cast<int>(geometry->pos.size());
         int asciiIndex;
@@ -95,7 +92,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
             std::tie(charId, u1, v1, u2, v2, u3, v3, u4, v4) = data;
 
             if (static_cast<int>(c) < 0)
-                asciiIndex = static_cast<int>(c) + 129 + 127 + 185 * isBold + 2 * 185 * isItalic;
+                asciiIndex = static_cast<int>(c) + 95 + 127 + letterAmount * isBold + 2 * letterAmount * isItalic;
             else
                 asciiIndex = static_cast<int>(c);
 
@@ -153,7 +150,7 @@ void GCFontGeometryLoader::GenerateFontMetadata(std::string filePath)
     int letterWidth = 210; //letter width in px
     int letterHeight = 260; ///letter height in px
     int fileWidth = 2940, fileHeight = 3640;
-    int letterAmount = 364;
+    int letterAmount = 3*185; // regular bold & italics
     int startIndex = 33; //start index from ascii (!)
     int startU = 0; //start coordX
     int startV = 0; //start coordY
@@ -178,6 +175,7 @@ void GCFontGeometryLoader::GenerateFontMetadata(std::string filePath)
             {
                 offsetX += letterWidth;
             }
+
             startIndex += 1;
         }
         outputFile.close();

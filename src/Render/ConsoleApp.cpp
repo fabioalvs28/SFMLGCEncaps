@@ -273,8 +273,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto geoPlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::DarkBlue));
     auto housePlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::White));
     graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
-    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyuiopqsdfghjklmwxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n123456789\n, ; :!? . / !$ *  ^  % & () = \n à");
-    //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("¡ à");
+    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyuiopqsdfghjklmwxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n123456789\n, ; :!? . / !$ *  ^  % & () = \n ");
+    //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("");
     char test = '¡';
     char test2 = '¢';
 
