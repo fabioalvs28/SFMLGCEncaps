@@ -68,7 +68,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
     float spacing = 0.1f;
     bool isBold = false;
     bool isItalic = false;
-    int letterAmount = 185;
+    int letterAmount = 186;
 
     for (char c : text) {
         if (c == ' ') {
@@ -77,10 +77,23 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
         }
 
         if (c == '\b' && isItalic == false)
+        {
             isBold = !isBold;
+            continue;
+        }
 
-        if (c == '\i' && isBold == false)
+        if (c == '\t' && isBold == false)
+        {
             isItalic = !isItalic;
+            continue;
+        }
+
+        if (c == '\n')
+        {
+            xOffset = 0;
+            yOffset -= charHeight;
+            continue;
+        }
 
         int startIdx = static_cast<int>(geometry->pos.size());
         int asciiIndex;
@@ -92,9 +105,11 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
             std::tie(charId, u1, v1, u2, v2, u3, v3, u4, v4) = data;
 
             if (static_cast<int>(c) < 0)
-                asciiIndex = static_cast<int>(c) + 95 + 127 + letterAmount * isBold + 2 * letterAmount * isItalic;
+                asciiIndex = static_cast<int>(c) + 95 + 127;
             else
                 asciiIndex = static_cast<int>(c);
+
+            asciiIndex += letterAmount * isBold + 2 * letterAmount * isItalic;
 
             if (charId == asciiIndex) {
                 found = true;
@@ -102,11 +117,6 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
             }
         }
 
-        if (c == '\n')
-        {
-            xOffset = 0;
-            yOffset -= charHeight;
-        }
 
 
         if (!found) {
@@ -147,10 +157,10 @@ void GCFontGeometryLoader::GenerateFontMetadata(std::string filePath)
     if(std::ifstream(filePath).good() == false)
          outputFile.open(filePath);
     
-    int letterWidth = 210; //letter width in px
+    int letterWidth = 220; //letter width in px
     int letterHeight = 260; ///letter height in px
-    int fileWidth = 2940, fileHeight = 3640;
-    int letterAmount = 3*185; // regular bold & italics
+    int fileWidth = 5280, fileHeight = 6240;
+    int letterAmount = 3*186; // regular bold & italics
     int startIndex = 33; //start index from ascii (!)
     int startU = 0; //start coordX
     int startV = 0; //start coordY
