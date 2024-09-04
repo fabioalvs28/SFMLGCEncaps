@@ -3,7 +3,6 @@
 //width : 29
 //0,0 : 0 , 116
 GCFontGeometryLoader::GCFontGeometryLoader() {
-    
 }
 
 void GCFontGeometryLoader::Initialize(const std::string& metadataFile) {
@@ -24,7 +23,7 @@ void GCFontGeometryLoader::LoadMetadata(const std::string& metadataFile) {
     logger.LogInfo("Metadata file opened successfully: " + metadataFile);
 
     std::string line;
-    int textureWidth, textureHeight = 0;
+    int textureWidth = 0, textureHeight = 0;
     if (std::getline(file, line)) {
         textureWidth = std::stoi(line);
     }
@@ -39,7 +38,7 @@ void GCFontGeometryLoader::LoadMetadata(const std::string& metadataFile) {
         int id;
         float u1, v1, u2, v2, u3, v3, u4, v4;
         if (iss >> id >> u1 >> v1 >> u2 >> v2 >> u3 >> v3 >> u4 >> v4) {
-            metadata.emplace_back(id, u1 / textureWidth, v1 / textureHeight, u2 / textureWidth, v2 / textureHeight, u3 / textureWidth, v3 / textureHeight, u4 / textureWidth, v4 / textureHeight);
+            m_metadata.emplace_back(id, u1 / textureWidth, v1 / textureHeight, u2 / textureWidth, v2 / textureHeight, u3 / textureWidth, v3 / textureHeight, u4 / textureWidth, v4 / textureHeight);
         }
         else {
             logger.LogWarning("Malformed line in metadata file: " + line);
@@ -67,23 +66,33 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
     float charWidth = 0.2f;
     float charHeight = 0.4f;
     float spacing = 0.1f;
+    bool isBold = false;
+    bool isItalic = false;
+    int letterAmount = 185;
 
     for (char c : text) {
         if (c == ' ') {
             xOffset += spacing;
             continue;
         }
+
+        if (c == '\b' && isItalic == false)
+            isBold = !isBold;
+
+        if (c == '\i' && isBold == false)
+            isItalic = !isItalic;
+
         int startIdx = static_cast<int>(geometry->pos.size());
         int asciiIndex;
         float u1, v1, u2, v2, u3, v3, u4, v4;
         bool found = false;
 
-        for (const auto& data : metadata) {
+        for (const auto& data : m_metadata) {
             int charId;
             std::tie(charId, u1, v1, u2, v2, u3, v3, u4, v4) = data;
 
             if (static_cast<int>(c) < 0)
-                asciiIndex = static_cast<int>(c) + 129 + 127;
+                asciiIndex = static_cast<int>(c) + 95 + 127 + letterAmount * isBold + 2 * letterAmount * isItalic;
             else
                 asciiIndex = static_cast<int>(c);
 
@@ -98,6 +107,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
             xOffset = 0;
             yOffset -= charHeight;
         }
+
 
         if (!found) {
             u1 = 0.040000f; v1 = 0.100000f;
@@ -128,4 +138,46 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
 
     geometry->vertexNumber = geometry->pos.size();
     geometry->indiceNumber = geometry->indices.size();
+}
+
+void GCFontGeometryLoader::GenerateFontMetadata(std::string filePath) 
+{
+    std::ofstream outputFile;
+
+    if(std::ifstream(filePath).good() == false)
+         outputFile.open(filePath);
+    
+    int letterWidth = 210; //letter width in px
+    int letterHeight = 260; ///letter height in px
+    int fileWidth = 2940, fileHeight = 3640;
+    int letterAmount = 3*185; // regular bold & italics
+    int startIndex = 33; //start index from ascii (!)
+    int startU = 0; //start coordX
+    int startV = 0; //start coordY
+    int offsetX = 0;
+    int offsetY = 0;
+
+    if (outputFile.is_open())
+    {
+        outputFile << fileWidth << std::endl;
+        outputFile << fileHeight << std::endl;
+
+        for (int i = 0; i < letterAmount; i++)
+        {
+            outputFile << startIndex << " " << startU + offsetX << " " << startV + letterHeight + offsetY << " " << startU + offsetX << " " << startV + offsetY << " " << startU + letterWidth + offsetX << " " << startV + offsetY << " " << startU + letterWidth + offsetX << " " << startV + letterHeight + offsetY << std::endl;
+            
+            if (startU + offsetX + letterWidth == fileWidth)//end of line
+            {
+                offsetY += letterHeight;
+                offsetX = 0;
+            }
+            else
+            {
+                offsetX += letterWidth;
+            }
+
+            startIndex += 1;
+        }
+        outputFile.close();
+    }
 }

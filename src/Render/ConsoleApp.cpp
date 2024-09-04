@@ -273,8 +273,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto geoPlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::DarkBlue));
     auto housePlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::White));
     graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
-    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyuiopqsdfghjklmwxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n123456789\n, ; :!? . / !$ *  ^  % & () = \n à");
-    //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("¡ à");
+    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyuiopqsdfghjklmwxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n123456789\n, ; :!? . / !$ *  ^  % & () = \n ");
+    //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("");
     char test = '¡';
     char test2 = '¢';
 
@@ -302,7 +302,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneAlphabet);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
-    std::string texturePath2 = "../../../src/Render/Textures/alphabet2.dds";
+    std::string texturePath2 = "../../../src/Render/Textures/font.dds";
     auto texture = graphics->CreateTexture(texturePath);
     auto textureText = graphics->CreateTexture(texturePath2);
 
