@@ -64,18 +64,22 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCScene* pHomeScne = GCScene::Create();
     pHomeScne->SetActive();
 
+    GCGameObject* GO_Title = pHomeScne->CreateGameObject();
+    GO_Title->AddComponent<GCText>()->SetText("WHO \tIS\t THE \bGOAT\b NOW");
+
+
     //Button prefab
     //GCGameObject* GO_pButton = pHomeScene->CreateGameObject();
     //GO_pButton->AddComponent<GCSpriteRenderer>();
     //GO_pButton->AddComponent<GCBoxCollider>();
     
     //Mouse collider
-    GCGameObject* GO_pMouse = pHomeScne->CreateGameObject();
-    GO_pMouse->AddComponent<GCBoxCollider>()->SetVisible(true);
-    GO_pMouse->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
-    GO_pMouse->AddComponent<GCScriptMouse>();
-    GO_pMouse->m_transform.Scale(0.25f);
-    GO_pMouse->SetLayer(1);
+    //GCGameObject* GO_pMouse = pHomeScne->CreateGameObject();
+    //GO_pMouse->AddComponent<GCBoxCollider>()->SetVisible(true);
+    //GO_pMouse->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
+    //GO_pMouse->AddComponent<GCScriptMouse>();
+    //GO_pMouse->m_transform.Scale(0.25f);
+    //GO_pMouse->SetLayer(1);
 
 
 #pragma endregion

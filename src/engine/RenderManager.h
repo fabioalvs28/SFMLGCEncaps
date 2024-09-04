@@ -14,6 +14,7 @@ friend class GCAnimator;
 friend class GCCamera;
 friend class GCGameObject;
 friend class GCGameManager;
+friend class GCText;
 
 private:
     GCRenderManager( Window* pWindow );

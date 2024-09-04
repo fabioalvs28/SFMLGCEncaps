@@ -344,6 +344,7 @@ public:
 
     float GetViewWidth() { return m_viewWidth; };
     float GetViewHeight() { return m_viewHeight; };
+
 protected:
     GCCamera();
     ~GCCamera() override {}
@@ -357,7 +358,6 @@ protected:
 
     GCMATRIX GetViewMatrix() { return m_viewMatrix; }
     GCMATRIX GetProjMatrix() { return m_projectionMatrix; }
-
 
 protected:
     inline static const int m_ID = ++GCComponent::componentCount;
@@ -376,6 +376,40 @@ protected:
 
 };
 
+
+class GCText : public GCComponent
+{
+friend class GCGameObject;
+friend class GCRenderManager;
+friend class GCSceneManager;
+friend class GCTextManager;
+
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+    void SetText(std::string text);
+
+protected:
+    GCText();
+    ~GCText() override {};
+
+    GCText* Duplicate() override { return new GCText(); }
+    void CopyTo(GCComponent* pDestination) override;
+
+
+    void Render() override;
+
+    FLAGS GetFlags() override { return RENDER; }
+
+protected:
+    inline static const int m_ID = ++GCComponent::componentCount;
+
+    GCMesh* m_pMesh;
+    GCGeometry* m_pGeometry;
+
+    std::string m_text;
+};
 
 
 class GCScript : public GCComponent

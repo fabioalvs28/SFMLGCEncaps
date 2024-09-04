@@ -44,3 +44,6 @@ GCScene* GC::GetActiveScene()
 
 GCRenderManager* GC::GetActiveRenderManager()
 { return m_pActiveGameManager->m_pRenderManager; }
+
+GCTextManager* GC::GetActiveTextManager()
+{ return m_pActiveGameManager->m_pTextManager; }

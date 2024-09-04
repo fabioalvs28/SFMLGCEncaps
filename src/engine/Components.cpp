@@ -515,6 +515,39 @@ void GCCamera::Update()
 
 
 
+GCText::GCText()
+{
+	m_pGeometry = nullptr;
+	m_pMesh = nullptr;
+};
+
+void GCText::CopyTo(GCComponent* pDestination)
+{
+	GCComponent::CopyTo(pDestination);
+	GCText* pText = static_cast<GCText*>(pDestination);
+
+	pText->m_pMesh = m_pMesh;
+	pText->m_pGeometry = m_pGeometry;
+	pText->m_text = m_text;	
+}
+
+void GCText::SetText(std::string text)
+{
+	m_text = text;
+	GC::GetActiveTextManager()->CreateText(this);
+}
+
+void GCText::Render()
+{
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+	pGraphics->UpdateWorldConstantBuffer(GC::GetActiveTextManager()->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix());
+	pGraphics->GetRender()->DrawObject(m_pMesh, GC::GetActiveTextManager()->m_pMaterial, true);
+}
+
+
+
+
+
 GCScript::GCScript()
 { m_pTriggerNode = nullptr; }
 
