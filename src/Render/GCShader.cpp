@@ -50,7 +50,7 @@ GC_GRAPHICS_ERROR GCShader::Initialize(GCRenderContext* pRender, const std::stri
 {
 	if (!GC_CHECK_POINTERSNULL("Render ptr is not null", "Render pointer is null", pRender))
 		return GCRENDER_ERROR_POINTER_NULL;
-	if (!GC_CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully"))
+	if (!GC_CHECK_FILE(filePath, "Shader not found: " + filePath, "Shader file: " + filePath + " loaded successfully\n"))
 		return GCRENDER_ERROR_SHADER_CREATION_FAILED;
 
 	std::wstring baseCsoPath(csoDestinationPath.begin(), csoDestinationPath.end());

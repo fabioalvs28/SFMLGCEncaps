@@ -8,5 +8,6 @@ public:
 	static DirectX::XMMATRIX GCMATRIXToXMMATRIX(const GCMATRIX& mat);
 	static DirectX::XMMATRIX CreateBillboardMatrix(DirectX::XMVECTOR objectPosition, DirectX::XMVECTOR cameraPosition, DirectX::XMVECTOR cameraUp);
 	static DirectX::XMVECTOR GCVEC3ToXMVECTOR(const GCVEC3& mat);
+	static DirectX::XMFLOAT4 GCColorToXMFLOAT4(const GCColor& color);
 };
 

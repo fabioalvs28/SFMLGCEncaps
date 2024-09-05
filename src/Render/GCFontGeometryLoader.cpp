@@ -49,17 +49,19 @@ void GCFontGeometryLoader::LoadMetadata(const std::string& metadataFile) {
     logger.LogInfo("Metadata loading completed.");
 }
 
-GCGeometry* GCFontGeometryLoader::CreateText(const std::string& text) {
-    GCGeometry* geometry = new GCGeometry;
-    GenerateMesh(geometry, text);
+GCGeometry* GCFontGeometryLoader::CreateText(const std::string& text, GCColor textColor) {
+    GCGeometry* pGeometry = new GCGeometry;
+    m_textColor = GCUtils::GCColorToXMFLOAT4(textColor);
+    GenerateMesh(pGeometry, text);
 
-    return geometry;
+    return pGeometry;
 }
 
-void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string& text) {
-    geometry->pos.clear();
-    geometry->uv.clear();
-    geometry->indices.clear();
+void GCFontGeometryLoader::GenerateMesh(GCGeometry* pGeometry, const std::string& text) {
+    pGeometry->pos.clear();
+    pGeometry->uv.clear();
+    pGeometry->indices.clear();
+    pGeometry->color.clear();
 
     float xOffset = 0.3f;
     float yOffset = 0.5f;
@@ -95,7 +97,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
             continue;
         }
 
-        int startIdx = static_cast<int>(geometry->pos.size());
+        int startIdx = static_cast<int>(pGeometry->pos.size());
         int asciiIndex;
         float u1, v1, u2, v2, u3, v3, u4, v4;
         bool found = false;
@@ -126,28 +128,33 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* geometry, const std::string&
             u4 = 0.080000f; v4 = 0.100000f;
         }
 
-        geometry->pos.push_back(DirectX::XMFLOAT3(xOffset, yOffset, 0.0f));
-        geometry->pos.push_back(DirectX::XMFLOAT3(xOffset, yOffset + charHeight, 0.0f));
-        geometry->pos.push_back(DirectX::XMFLOAT3(xOffset + charWidth, yOffset + charHeight, 0.0f));
-        geometry->pos.push_back(DirectX::XMFLOAT3(xOffset + charWidth, yOffset, 0.0f));
+        pGeometry->pos.push_back(DirectX::XMFLOAT3(xOffset, yOffset, 0.0f));
+        pGeometry->pos.push_back(DirectX::XMFLOAT3(xOffset, yOffset + charHeight, 0.0f));
+        pGeometry->pos.push_back(DirectX::XMFLOAT3(xOffset + charWidth, yOffset + charHeight, 0.0f));
+        pGeometry->pos.push_back(DirectX::XMFLOAT3(xOffset + charWidth, yOffset, 0.0f));
 
-        geometry->indices.push_back(startIdx + 0);
-        geometry->indices.push_back(startIdx + 1);
-        geometry->indices.push_back(startIdx + 2);
-        geometry->indices.push_back(startIdx + 0);
-        geometry->indices.push_back(startIdx + 2);
-        geometry->indices.push_back(startIdx + 3);
+        pGeometry->color.push_back(DirectX::XMFLOAT4(m_textColor));
+        pGeometry->color.push_back(DirectX::XMFLOAT4(m_textColor));
+        pGeometry->color.push_back(DirectX::XMFLOAT4(m_textColor));
+        pGeometry->color.push_back(DirectX::XMFLOAT4(m_textColor));
 
-        geometry->uv.push_back(DirectX::XMFLOAT2(u1, v1));
-        geometry->uv.push_back(DirectX::XMFLOAT2(u2, v2));
-        geometry->uv.push_back(DirectX::XMFLOAT2(u3, v3));
-        geometry->uv.push_back(DirectX::XMFLOAT2(u4, v4));
+        pGeometry->indices.push_back(startIdx + 0);
+        pGeometry->indices.push_back(startIdx + 1);
+        pGeometry->indices.push_back(startIdx + 2);
+        pGeometry->indices.push_back(startIdx + 0);
+        pGeometry->indices.push_back(startIdx + 2);
+        pGeometry->indices.push_back(startIdx + 3);
+
+        pGeometry->uv.push_back(DirectX::XMFLOAT2(u1, v1));
+        pGeometry->uv.push_back(DirectX::XMFLOAT2(u2, v2));
+        pGeometry->uv.push_back(DirectX::XMFLOAT2(u3, v3));
+        pGeometry->uv.push_back(DirectX::XMFLOAT2(u4, v4));
 
         xOffset += charWidth + spacing;
     }
 
-    geometry->vertexNumber = geometry->pos.size();
-    geometry->indiceNumber = geometry->indices.size();
+    pGeometry->vertexNumber = pGeometry->pos.size();
+    pGeometry->indiceNumber = pGeometry->indices.size();
 }
 
 void GCFontGeometryLoader::GenerateFontMetadata(std::string filePath) 
