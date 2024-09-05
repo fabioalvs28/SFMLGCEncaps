@@ -64,7 +64,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* pGeometry, const std::string
     pGeometry->color.clear();
 
     float xOffset = 0.0f;
-    float yOffset = 0.5f;
+    float yOffset = 0.0f;
     float charWidth = 0.2f;
     float charHeight = 0.4f;
     float spacing = 0.1f;
