@@ -267,13 +267,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
     GC_SET_FLAG(flagsLightTexture, GC_VERTEX_NORMAL);
 
+    int flagsColorTexture = 0;
+    GC_SET_FLAG(flagsColorTexture, GC_VERTEX_POSITION);
+    GC_SET_FLAG(flagsColorTexture, GC_VERTEX_COLOR);
+    GC_SET_FLAG(flagsColorTexture, GC_VERTEX_UV);
+
     //Create geometries
     //"textures/alphabet2.dds"
 
     auto geoPlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::DarkBlue));
     auto housePlane = graphics->CreateGeometryPrimitive(Plane, XMFLOAT4(Colors::White));
     graphics->m_pFontGeometryLoader->Initialize("../../../src/Render/Fonts/LetterUV.txt");
-    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyu\biopqs\bdf\tghjklm\twxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n123456789\n, ; :!? . / !$ *  ^  % & () = \n ");
+    UI8 red = 255;
+    UI8 green = 0;
+    UI8 blue = 0;
+    UI8 alpha = 255;
+    GCColor textColor(red, green, blue);
+    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyu\biopqs\bdf\tghjklm\twxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n0123456789\n, ; :!? . / !$ *  ^  % & () = \n ", textColor);
     //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("");
     char test = '¡';
     char test2 = '¢';
@@ -293,13 +303,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     auto shaderLightSkyBox = graphics->CreateShaderCustom(shaderFilePath1, csoDestinationPath1, flagsLightColor, D3D12_CULL_MODE_NONE);
 
+    std::string shaderTextFilePath = "../../../src/Render/Shaders/textTexture.hlsl";
+    std::string csoDestinationTextPath = "../../../src/Render/CsoCompiled/textTexture";
+    auto shaderText = graphics->CreateShaderCustom(shaderTextFilePath, csoDestinationTextPath, flagsColorTexture);
+
     auto shaderTexture = graphics->CreateShaderTexture();
 
     auto shaderColor = graphics->CreateShaderColor();
     graphics->InitializeGraphicsResourcesStart();
 
     auto meshBackground = graphics->CreateMeshCustom(geoPlane.resource, flagsLightColor);
-    auto meshPlaneAlphabet = graphics->CreateMeshTexture(geoPlaneAlphabet);
+    auto meshPlaneAlphabet = graphics->CreateMeshCustom(geoPlaneAlphabet, flagsColorTexture);
 
     std::string texturePath = "../../../src/Render/Textures/texture.dds";
     std::string texturePath2 = "../../../src/Render/Textures/TimesFont.dds";
@@ -329,7 +343,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     
     graphics->InitializeGraphicsResourcesEnd();
 
-    auto materialText = graphics->CreateMaterial(shaderTexture.resource);
+    auto materialText = graphics->CreateMaterial(shaderText.resource);
     materialText.resource->SetTexture(textureText.resource);
 
     auto materialBackground = graphics->CreateMaterial(shaderLightColor.resource);
@@ -380,7 +394,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     }
 
     //Setting up matrixes
-    XMMATRIX worldMatrixText = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-10.0f, 0.0f, 0.0f); // Cube interne centré
+    XMMATRIX worldMatrixText = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-9.0f, 0.0f, 0.0f); // Cube interne centré
     XMMATRIX worldMatrixBackground = XMMatrixScaling(100.0f, 100.0f, 100.0f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f); // Cube interne centré
 
     GCMATRIX worldText = GCUtils::XMMATRIXToGCMATRIX(worldMatrixText);
