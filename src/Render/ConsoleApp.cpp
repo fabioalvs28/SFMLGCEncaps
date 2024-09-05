@@ -283,7 +283,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     UI8 blue = 0;
     UI8 alpha = 255;
     GCColor textColor(red, green, blue);
-    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyu\biopqs\bdf\tghjklm\twxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n123456789\n, ; :!? . / !$ *  ^  % & () = \n ", textColor);
+    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyu\biopqs\bdf\tghjklm\twxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n0123456789\n, ; :!? . / !$ *  ^  % & () = \n ", textColor);
     //auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("");
     char test = '¡';
     char test2 = '¢';
@@ -394,7 +394,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     }
 
     //Setting up matrixes
-    XMMATRIX worldMatrixText = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-10.0f, 0.0f, 0.0f); // Cube interne centré
+    XMMATRIX worldMatrixText = XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-9.0f, 0.0f, 0.0f); // Cube interne centré
     XMMATRIX worldMatrixBackground = XMMatrixScaling(100.0f, 100.0f, 100.0f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f); // Cube interne centré
 
     GCMATRIX worldText = GCUtils::XMMATRIXToGCMATRIX(worldMatrixText);
