@@ -14,6 +14,8 @@ private:
 	void CreateText(GCText* pTextComponent);
 
 private:
+	int m_flagsColorTexture;
+
 	GCGraphics* m_pGraphics;
 
 	GCTexture* m_pTexture;

@@ -15,7 +15,7 @@ void GCScriptPlayerBehaviour::Start()
 	m_pInputSystem->Initialize();
 }
 
-void GCScriptPlayerBehaviour::Update()
+void GCScriptPlayerBehaviour::FixedUpdate()
 {
 	GCVEC3 translation;
 	//Player movements
@@ -54,7 +54,10 @@ void GCScriptPlayerBehaviour::Update()
 	//apply translation
 	translation *= m_velocity;
 	m_pGameObject->m_transform.Translate(translation);
+}
 
+void GCScriptPlayerBehaviour::Update()
+{
 	//Actions
 	for (int input : m_pInputSystem->GetActions()->Shoot.inputs) //Shoot
 	{

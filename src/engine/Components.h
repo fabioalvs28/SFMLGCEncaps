@@ -54,7 +54,7 @@ protected:
     virtual void Render() {}
     virtual void OnActivate() {}
     virtual void OnDeactivate() {}
-    virtual void Destroy() {}
+    virtual void Destroy();
     
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
@@ -99,7 +99,7 @@ public:
 
 protected:
 	GCSpriteRenderer();
-    ~GCSpriteRenderer() override {}
+    ~GCSpriteRenderer() override;
 
     GCSpriteRenderer* Duplicate() override { return new GCSpriteRenderer(); }
     void CopyTo( GCComponent* pDestination ) override;
@@ -200,6 +200,8 @@ public:
 protected:
     GCCircleCollider() {}
     ~GCCircleCollider() override {}
+
+    void Render() override {};
     
     GCCircleCollider* Duplicate() override { return new GCCircleCollider(); }
     void CopyTo( GCComponent* pDestination ) override;
@@ -269,7 +271,7 @@ public:
 
 protected:
     GCAnimator();
-    ~GCAnimator() override {}
+    ~GCAnimator() override;
 
     GCAnimator* Duplicate() override { return new GCAnimator(); }
     void CopyTo( GCComponent* pDestination ) override;
@@ -388,7 +390,8 @@ public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
 
-    void SetText(std::string text);
+    void SetText(std::string text, GCColor color = GCColor(255,255,255));
+    void SetColor(GCColor color);
 
 protected:
     GCText();
@@ -408,6 +411,7 @@ protected:
     GCMesh* m_pMesh;
     GCGeometry* m_pGeometry;
 
+    GCColor m_color;
     std::string m_text;
 };
 

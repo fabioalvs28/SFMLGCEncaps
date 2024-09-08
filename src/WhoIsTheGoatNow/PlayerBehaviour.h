@@ -4,6 +4,7 @@
 CREATE_SCRIPT_START(PlayerBehaviour)
 public:
 	void Start() override;
+	void FixedUpdate() override;
 	void Update() override;
 
 	void PlayerShoot();

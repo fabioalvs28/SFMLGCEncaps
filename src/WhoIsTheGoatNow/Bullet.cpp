@@ -17,7 +17,7 @@ void GCScriptBullet::CopyTo(GCComponent * pDestination)
     pNewComponent->m_pOrigin = m_pOrigin;
 }
 
-void GCScriptBullet::Update()
+void GCScriptBullet::FixedUpdate()
 {
         m_pGameObject->m_transform.Translate(m_direction);
 
@@ -33,7 +33,7 @@ void GCScriptBullet::Update()
 
 void GCScriptBullet::BulletShoot()
 {
-    m_attackSpeed = 0.01f;
+    m_attackSpeed = 0.06f;
 
     m_pGameObject->m_transform.SetPosition(m_pOrigin->m_transform.m_position);
 

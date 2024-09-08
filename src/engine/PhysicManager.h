@@ -1,6 +1,8 @@
 #pragma once
 #include "pch.h"
 
+constexpr float GC_FIXED_UPDATE_TIME = 1.0f / 60.0f;
+
 class GCPhysicManager
 {
 friend class GCComponent;
@@ -23,6 +25,8 @@ private:
 	bool CheckCollision( GCCircleCollider* pFirst, GCCircleCollider* pSecond );
 
 private:
+	float m_lag; // Time past since last FixedUpdate has been called
+
 	GCList<GCComponent*> m_componentsList; // A list of pointers to the Components that need to be fixed updated
 	GCList<GCCollider*> m_collidersList; // A list of pointers to the Colliders that need to be checked for collisions
 

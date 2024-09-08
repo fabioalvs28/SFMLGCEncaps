@@ -18,6 +18,17 @@ GCComponent::GCComponent()
 }
 
 
+void GCComponent::Destroy()
+{
+	m_pGameObject = nullptr;
+
+	if ( m_pUpdateNode != nullptr )
+		m_pUpdateNode->Delete();
+	if ( m_pPhysicsNode != nullptr )
+		m_pPhysicsNode->Delete();
+	if ( m_pRenderNode != nullptr )
+		m_pRenderNode->Delete();
+}
 
 void GCComponent::RegisterToManagers()
 {
@@ -159,6 +170,8 @@ GCSpriteRenderer::GCSpriteRenderer()
 { m_pSprite = nullptr; }
 
 
+GCSpriteRenderer::~GCSpriteRenderer()
+{ m_pSprite = nullptr; }
 
 void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 {
@@ -230,8 +243,6 @@ void GCCollider::CopyTo( GCComponent* pDestination )
 	GCCollider* pCollider = static_cast<GCCollider*>( pDestination );
 	pCollider->m_trigger = m_trigger;
 	pCollider->m_visible = m_visible;
-	// *( pCollider->m_pMesh ) = *m_pMesh; 
-	// *( pCollider->m_pMaterial ) = *m_pMaterial;
 }
 
 
@@ -312,6 +323,11 @@ GCAnimator::GCAnimator()
 }
 
 
+GCAnimator::~GCAnimator()
+{
+	m_pCurrentAnimation = nullptr;
+	m_pSpriteRenderer = nullptr;
+}
 
 void GCAnimator::Start()
 {
@@ -454,8 +470,8 @@ GCCamera::GCCamera()
 	m_target.SetZero();
 	m_up.SetZero();
 	
-	m_viewWidth = 10.0f;
-	m_viewHeight = 10.0f;
+	m_viewWidth = GC::GetWindow()->GetClientWidth()/50;
+	m_viewHeight = GC::GetWindow()->GetClientHeight()/50;
 	m_nearZ = 1.0f;
 	m_farZ = 1000.0f;
 	
@@ -519,6 +535,7 @@ GCText::GCText()
 {
 	m_pGeometry = nullptr;
 	m_pMesh = nullptr;
+	m_color = GCColor(255,255,255);
 };
 
 void GCText::CopyTo(GCComponent* pDestination)
@@ -531,9 +548,16 @@ void GCText::CopyTo(GCComponent* pDestination)
 	pText->m_text = m_text;	
 }
 
-void GCText::SetText(std::string text)
+void GCText::SetText(std::string text, GCColor color)
 {
+	m_color = color;
 	m_text = text;
+	GC::GetActiveTextManager()->CreateText(this);
+}
+
+void GCText::SetColor(GCColor color)
+{
+	m_color = color;
 	GC::GetActiveTextManager()->CreateText(this);
 }
 
