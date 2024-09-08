@@ -96,6 +96,8 @@ public:
     
     void SetSprite( GCSprite* pSprite );
     GCSprite* GetSprite() { return m_pSprite; };
+    void FlipX();
+    void FlipY();
 
 protected:
 	GCSpriteRenderer();
@@ -112,9 +114,12 @@ protected:
 
     void SetAnimatedSprite( GCGeometry* pGeometry );
 
+
 protected:
     inline static const int m_ID = ++GCComponent::componentCount;
     GCSprite* m_pSprite;
+    bool m_isFlippedX;
+    bool m_isFlippedY;
 
 };
 

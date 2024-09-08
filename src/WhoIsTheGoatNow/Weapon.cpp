@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Weapon.h"
 
+# define M_PIl          3.141592653589793238462643383279502884L 
+
 void GCScriptWeapon::CopyTo(GCComponent* pDestination)
 {
 	GCComponent::CopyTo(pDestination);
@@ -12,6 +14,8 @@ void GCScriptWeapon::CopyTo(GCComponent* pDestination)
 void GCScriptWeapon::Start()
 {
 	m_distanceToPlayer = 1.0f;
+	m_isFlipped = false;
+
 }
 
 void GCScriptWeapon::Update()
@@ -25,13 +29,9 @@ void GCScriptWeapon::Update()
 	float deltaX = GCINPUTS::GetMousePos().x - position->x;
 	float deltaY = GCINPUTS::GetMousePos().y - position->y;
 
-	float angle = atan2(deltaX, deltaY);
+	float angle = atan2f(deltaX, deltaY);
 
-	float angleDegrees = angle * (180.0f / 3.141592653589793238463);
-
-	//float currentRotation = atan2(currentRotationMatrix->_11, currentRotationMatrix->_21) * (180.0f / 3.141592653589793238463);
-
-	//float angleInterpolated = currentRotation + (angleDegrees - currentRotation) * rotationSpeed;
+	float angleDegrees = angle * (180.0f / M_PIl) - 90;
 
 	m_direction = GCVEC3::Zero();
 	m_direction.x = GCINPUTS::GetMousePos().x;
@@ -40,8 +40,18 @@ void GCScriptWeapon::Update()
 	m_direction -= m_pGameObject->GetParent()->m_transform.m_position;
 	m_direction.Normalize();
 	m_direction *= m_distanceToPlayer;
+	if ( GCINPUTS::GetMousePos().x < 0 && m_isFlipped == false)
+	{
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->FlipY();
+		m_isFlipped = true;
+	}
+	else if (GCINPUTS::GetMousePos().x > 0 && m_isFlipped)
+	{
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->FlipY();
+		m_isFlipped = false;
+	}
 
-	m_pGameObject->m_transform.SetPosition(m_direction);
-	//m_pGameObject->m_transform.SetRotation(0.0f,0.0f, angleDegrees * rotationSpeed - 90);
-	m_pGameObject->m_transform.Rotate(0.0f,0.0f, 0.01f);
+
+    m_pGameObject->m_transform.SetPosition(m_direction);
+	m_pGameObject->m_transform.SetRotation(0.0f,0.0f, angleDegrees * rotationSpeed);
 }

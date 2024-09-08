@@ -8,7 +8,7 @@ public:
 
     GC_GRAPHICS_ERROR Initialize(GCRenderContext* pRender, GCGeometry* pGeometry, int& flagEnabledBits);
 
-    void UpdateGeometryData(float deltaTime);
+    void UpdateGeometryData();
 
     inline GC_MESH_BUFFER_DATA* GetBufferGeometryData() { return  m_pBufferGeometryData; }
     inline int GetFlagEnabledBits() const { return m_flagEnabledBits; }

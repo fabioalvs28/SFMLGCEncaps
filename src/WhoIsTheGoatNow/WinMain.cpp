@@ -59,10 +59,11 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //GCGameObject* GO_pEnemySpawner = pScene->CreateGameObject();
     //GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->SetTemplate(GO_pEnemy);
 
-    GCSprite SP_Weapon("weapon.dds");
+    GCSprite SP_Weapon("Shotgun.dds");
     GCGameObject* GO_pWeapon = GO_pPlayer->CreateChild();
     GO_pWeapon->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_Weapon);
     GO_pWeapon->AddComponent<GCScriptWeapon>();
+    GO_pWeapon->AddComponent<GCText>()->SetText(std::to_string(GCINPUTS::GetMousePos().x));
     //GO_pWeapon->m_transform.Scale(GCVEC3(1.0f, 0.4f, 0.0f));
 
     

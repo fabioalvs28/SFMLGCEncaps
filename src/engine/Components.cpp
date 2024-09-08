@@ -167,7 +167,9 @@ void GCComponent::SetActive( bool active )
 
 
 GCSpriteRenderer::GCSpriteRenderer()
-{ m_pSprite = nullptr; }
+{
+	m_pSprite = nullptr; m_isFlippedX = false;  m_isFlippedY = false;
+}
 
 
 GCSpriteRenderer::~GCSpriteRenderer()
@@ -211,8 +213,34 @@ void GCSpriteRenderer::SetAnimatedSprite( GCGeometry* pGeometry )
 	pGraphics->InitializeGraphicsResourcesEnd();
 }
 
+void GCSpriteRenderer::FlipX()
+{
 
+	DirectX::XMFLOAT2 uv0 = m_pSprite->m_pGeometry->uv[0];
+	DirectX::XMFLOAT2 uv1 = m_pSprite->m_pGeometry->uv[1];
 
+	m_pSprite->m_pGeometry->uv[0] = m_pSprite->m_pGeometry->uv[2];
+	m_pSprite->m_pGeometry->uv[2] = uv0;
+	m_pSprite->m_pGeometry->uv[1] = m_pSprite->m_pGeometry->uv[3];
+	m_pSprite->m_pGeometry->uv[3] = uv1;
+
+	//GC::GetActiveRenderManager()->m_pGraphics->
+	m_pSprite->m_pMesh->UpdateGeometryData();
+}
+
+void GCSpriteRenderer::FlipY()
+{
+
+	DirectX::XMFLOAT2 uv0 = m_pSprite->m_pGeometry->uv[0];
+	DirectX::XMFLOAT2 uv2 = m_pSprite->m_pGeometry->uv[2];
+
+	m_pSprite->m_pGeometry->uv[0] = m_pSprite->m_pGeometry->uv[1];
+	m_pSprite->m_pGeometry->uv[1] = uv0;
+	m_pSprite->m_pGeometry->uv[2] = m_pSprite->m_pGeometry->uv[3];
+	m_pSprite->m_pGeometry->uv[3] = uv2;
+
+	m_pSprite->m_pMesh->UpdateGeometryData();
+}
 
 
 GCCollider::GCCollider()

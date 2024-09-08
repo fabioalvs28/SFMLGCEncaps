@@ -11,4 +11,6 @@ private:
 	GCVEC3 m_direction;
 	float m_distanceToPlayer;
 	float m_interpolatedRotation;
+	bool m_isFlipped;
+
 CREATE_SCRIPT_END
