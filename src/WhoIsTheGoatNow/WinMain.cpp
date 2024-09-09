@@ -64,7 +64,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_pWeapon->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_Weapon);
     GO_pWeapon->AddComponent<GCScriptWeapon>();
     GO_pWeapon->AddComponent<GCText>()->SetText(std::to_string(GCINPUTS::GetMousePos().x));
-    //GO_pWeapon->m_transform.Scale(GCVEC3(1.0f, 0.4f, 0.0f));
 
     
 #pragma endregion
