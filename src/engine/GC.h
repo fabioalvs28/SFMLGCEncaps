@@ -26,6 +26,7 @@ public:
     static GCSceneManager* GetActiveSceneManager();
     static GCScene* GetActiveScene();
     static GCRenderManager* GetActiveRenderManager();
+    static GCSpriteSheetHandler* GetActiveSpriteSheetHandler();
     static GCTextManager* GetActiveTextManager();
 
 private:

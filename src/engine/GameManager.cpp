@@ -18,6 +18,7 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
     m_pPhysicManager = new GCPhysicManager();
     m_pUpdateManager = new GCUpdateManager();
     m_pSceneManager = new GCSceneManager();
+    m_pSpriteSheetHandler = new GCSpriteSheetHandler("../../../res/spritesheet", "../../../res/sprites");
     m_pRenderManager = new GCRenderManager( m_pWindow );
     m_pTextManager = new GCTextManager( m_pRenderManager->m_pGraphics );
 

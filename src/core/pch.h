@@ -48,7 +48,9 @@ struct GCColor;
 
 
 
-
+#include <cstdint>
+#include <vector>
+#include <type_traits>
 
 
 // Containers
@@ -74,5 +76,11 @@ struct GCColor;
 #include "GCString.h"
 #include "GCColor.h"
 #include "GCFile.h"
+#include "GCImage.h"
+#include "BMPHeader.h"
+#include "dds.hpp"
+#include "savedds.h"
+#include "stb_dxt.h"
+#include "GCSpriteSheetHandler.h"
 
 #endif

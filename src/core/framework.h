@@ -14,6 +14,14 @@
 #include "GCString.h"
 #include "GCColor.h"
 #include "Log.h"
+#include "metadata.h"
+#include "lodepng.h"
+
+
+//#include "dds.h"
+//#include "dds_formats.h"
+//#include "savedds.h"
+//#include "stb_dxt.h"
 
 #include "GCFile.h"
 

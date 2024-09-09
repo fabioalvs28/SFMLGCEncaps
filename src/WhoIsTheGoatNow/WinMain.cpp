@@ -39,6 +39,11 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCSprite SP_player("blue_square.dds");
 
     GCGameObject* GO_pPlayer = pScene->CreateGameObject();
+    GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
+    GCAnimator* pAnimator = GO_pPlayer->AddComponent<GCAnimator>();
+    pAnimator->LoadSpriteSheet("spritesheet_0.dds", 0);
+    pAnimator->CreateAnimation("aaa", 0, 5, 0.3f);
+    pAnimator->PlayAnimation("aaa",true);
     //GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
     GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>()->SetBulletTemplate(GO_pBullet);
