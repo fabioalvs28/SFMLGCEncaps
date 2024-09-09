@@ -323,21 +323,24 @@ void GCMouseInputManager::Update()
 
     GetCursorPos(&mousePos);
 
+    //!! 0;0 at center and value not in pixel.
+
     RECT rect = { NULL };
     Window* pWindow = GC::GetWindow();
+    GCCamera* pCamera = GC::GetActiveScene()->GetMainCamera();
     GetWindowRect(pWindow->GetHMainWnd(), &rect);
     mousePos.x -= rect.left;
     mousePos.y -= rect.top;
-    m_mousePos.x = mousePos.x;
-    m_mousePos.y = mousePos.y;
-    if (m_mousePos.x < 0)
-        m_mousePos.x = 0;
-    if (m_mousePos.y < 0)
-        m_mousePos.y = 0;
-    if (m_mousePos.x > pWindow->GetClientWidth())
-        m_mousePos.x = pWindow->GetClientWidth();
-    if (m_mousePos.y > pWindow->GetClientHeight())
-        m_mousePos.y = pWindow->GetClientHeight();
+
+    //mousePos.x -= pWindow->GetClientWidth() / 2;
+    //mousePos.y -= pWindow->GetClientHeight() / 2;
+   
+    XMFLOAT3 mousePosNotPixel = GCUtils::PixelToWorld(mousePos.x, mousePos.y, pWindow->GetClientWidth(), pWindow->GetClientHeight(), GCUtils::GCMATRIXToXMFLOAT4x4(pCamera->m_projectionMatrix), GCUtils::GCMATRIXToXMFLOAT4x4(pCamera->m_viewMatrix));
+    //! CHANGE FAST FAST FAST
+
+    m_mousePos.x = mousePosNotPixel.x;
+
+    m_mousePos.y = mousePosNotPixel.y;
 }
 #pragma endregion
 

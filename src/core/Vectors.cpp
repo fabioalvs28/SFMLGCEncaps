@@ -585,6 +585,11 @@ void GCVEC3::Clamp( const GCVEC3& min, const GCVEC3& max )
 ////////////////////////////////////////////////////////////////////////////////
 void GCVEC3::Normalize()
 {
+    if (GetNorm() == 0)
+    {
+        this->SetZero();
+        return;
+    }
     float invNorm = 1 / GetNorm();
     x *= invNorm;
     y *= invNorm;

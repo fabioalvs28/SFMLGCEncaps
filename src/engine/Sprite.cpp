@@ -17,3 +17,4 @@ GCSprite::GCSprite( std::string filename )
     m_pMaterial = pGraphics->CreateMaterial( pGraphics->CreateShaderTexture().resource ).resource;
 	m_pMaterial->SetTexture( pTexture );
 }
+

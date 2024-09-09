@@ -58,6 +58,7 @@ class GCStateManager;
 class GCFrame;
 class GCAnimation;
 class GCAnimationManager;
+class GCTextManager;
 
 class Layer;
 class UILayer;
@@ -106,6 +107,7 @@ class GC;
 #include "Frame.h"
 #include "Animation.h"
 #include "AnimationManager.h"
+#include "TextManager.h"
 #include "UpdateManager.h"
 #include "PhysicManager.h"
 #include "Layer.h"

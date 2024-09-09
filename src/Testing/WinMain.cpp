@@ -11,6 +11,9 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCSprite pPlayerSprite( "caow.dds" );
     GCGameObject* pPlayer = pScene->CreateGameObject();
     pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite( &pPlayerSprite );
+    pPlayer->AddComponent<GCAnimator>()->LoadSpriteSheet("spritesheet/0.dds", 0);
+    pPlayer->GetComponent<GCAnimator>()->CreateAnimation("walk", 24, 1, 0.5f);
+    pPlayer->GetComponent<GCAnimator>()->PlayAnimation("walk",true);
     pPlayer->AddComponent<GCBoxCollider>()->SetVisible( false );
     pPlayer->AddComponent<GCScriptPlayerMovement>();
     pPlayer->SetLayer(1);

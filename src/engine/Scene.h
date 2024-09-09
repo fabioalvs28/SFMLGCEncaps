@@ -42,6 +42,7 @@ public:
 	GCCamera* GetMainCamera();
 
 protected:
+	void Deactivate();
 	void MoveGameObjectToScene( GCGameObject* pGameObject );
 	void RemoveGameObjectFromScene( GCGameObject* pGameObject );
 

@@ -9,7 +9,7 @@ GCColor::GCColor() {
     a = 255;
 }
 
-GCColor::GCColor(UI8 r, UI8 g, UI8 b, UI8 a = 255) {
+GCColor::GCColor(UI8 r, UI8 g, UI8 b, UI8 a) {
     this->r = r;
     this->g = g;
     this->b = b;

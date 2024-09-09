@@ -20,7 +20,7 @@ struct GCColor {
 	/// <param name="g">Green element of the color</param>
 	/// <param name="b">Blue element of the color</param>
 	/// <param name="a">Alpha element of the color</param>
-	GCColor(UI8 r, UI8 g, UI8 b, UI8 a);
+	GCColor(UI8 r, UI8 g, UI8 b, UI8 a = 255);
 
 	/// <summary>
 	///  Constructor using hexadecimal code parameters

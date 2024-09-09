@@ -73,3 +73,15 @@ DirectX::XMMATRIX GCUtils::CreateBillboardMatrix(DirectX::XMVECTOR objectPositio
 
 	return DirectX::XMMatrixTranspose(billboardMatrix);
 }
+
+DirectX::XMFLOAT4 GCUtils::GCColorToXMFLOAT4(const GCColor& color)
+{
+	DirectX::XMFLOAT4 result;
+
+	result.x = color.r / 255.0;
+	result.y = color.g / 255.0;
+	result.z = color.b / 255.0;
+	result.w = color.a / 255.0;
+
+	return result;
+}

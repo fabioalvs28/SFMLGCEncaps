@@ -29,7 +29,19 @@ GCScene* GCScene::Create()
 /// @brief Sets this Scene as the active Scene.
 //////////////////////////////////////////////////
 void GCScene::SetActive()
-{ GC::GetActiveSceneManager()->SetActiveScene( this ); }
+{
+	if ( m_active == false )
+		for (GCListNode<GCGameObject*>* pListNode = m_gameObjectsList.GetFirstNode(); pListNode != nullptr; pListNode = pListNode->GetNext())
+			pListNode->GetData()->RegisterComponents();
+	GC::GetActiveSceneManager()->SetActiveScene( this );
+}
+
+void GCScene::Deactivate()
+{
+	if ( m_active == true )
+		for (GCListNode<GCGameObject*>* pListNode = m_gameObjectsList.GetFirstNode(); pListNode != nullptr; pListNode = pListNode->GetNext())
+			pListNode->GetData()->UnregisterComponents();
+}
 
 //////////////////////////////
 /// @brief Loads the Scene.

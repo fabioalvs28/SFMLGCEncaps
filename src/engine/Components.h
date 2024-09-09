@@ -54,7 +54,7 @@ protected:
     virtual void Render() {}
     virtual void OnActivate() {}
     virtual void OnDeactivate() {}
-    virtual void Destroy() {}
+    virtual void Destroy();
     
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
@@ -70,6 +70,7 @@ protected:
     bool m_globalActive;
     bool m_selfActive;
     
+    bool m_registered;
     bool m_created;
     
     GCListNode<GCComponent*>* m_pUpdateNode;
@@ -95,10 +96,12 @@ public:
     
     void SetSprite( GCSprite* pSprite );
     GCSprite* GetSprite() { return m_pSprite; };
+    void FlipX();
+    void FlipY();
 
 protected:
 	GCSpriteRenderer();
-    ~GCSpriteRenderer() override {}
+    ~GCSpriteRenderer() override;
 
     GCSpriteRenderer* Duplicate() override { return new GCSpriteRenderer(); }
     void CopyTo( GCComponent* pDestination ) override;
@@ -111,9 +114,12 @@ protected:
 
     void SetAnimatedSprite( GCGeometry* pGeometry );
 
+
 protected:
     inline static const int m_ID = ++GCComponent::componentCount;
     GCSprite* m_pSprite;
+    bool m_isFlippedX;
+    bool m_isFlippedY;
 
 };
 
@@ -199,6 +205,8 @@ public:
 protected:
     GCCircleCollider() {}
     ~GCCircleCollider() override {}
+
+    void Render() override {};
     
     GCCircleCollider* Duplicate() override { return new GCCircleCollider(); }
     void CopyTo( GCComponent* pDestination ) override;
@@ -268,7 +276,7 @@ public:
 
 protected:
     GCAnimator();
-    ~GCAnimator() override {}
+    ~GCAnimator() override;
 
     GCAnimator* Duplicate() override { return new GCAnimator(); }
     void CopyTo( GCComponent* pDestination ) override;
@@ -333,10 +341,16 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class GCMouseInputManager;
 
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
+
+    GCVEC3 GetPosition() { return m_position; };
+
+    float GetViewWidth() { return m_viewWidth; };
+    float GetViewHeight() { return m_viewHeight; };
 
 protected:
     GCCamera();
@@ -348,6 +362,9 @@ protected:
     void Update() override;
     
     FLAGS GetFlags() override { return NONE; }
+
+    GCMATRIX GetViewMatrix() { return m_viewMatrix; }
+    GCMATRIX GetProjMatrix() { return m_projectionMatrix; }
 
 protected:
     inline static const int m_ID = ++GCComponent::componentCount;
@@ -366,6 +383,42 @@ protected:
 
 };
 
+
+class GCText : public GCComponent
+{
+friend class GCGameObject;
+friend class GCRenderManager;
+friend class GCSceneManager;
+friend class GCTextManager;
+
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+    void SetText(std::string text, GCColor color = GCColor(255,255,255));
+    void SetColor(GCColor color);
+
+protected:
+    GCText();
+    ~GCText() override {};
+
+    GCText* Duplicate() override { return new GCText(); }
+    void CopyTo(GCComponent* pDestination) override;
+
+
+    void Render() override;
+
+    FLAGS GetFlags() override { return RENDER; }
+
+protected:
+    inline static const int m_ID = ++GCComponent::componentCount;
+
+    GCMesh* m_pMesh;
+    GCGeometry* m_pGeometry;
+
+    GCColor m_color;
+    std::string m_text;
+};
 
 
 class GCScript : public GCComponent
