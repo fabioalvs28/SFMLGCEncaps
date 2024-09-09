@@ -58,7 +58,7 @@ void GCAnimation::SetSpriteSheet(std::string filename, int spriteSheetID)
 	m_spriteSheetID = spriteSheetID;
 
 	m_pGraphics->InitializeGraphicsResourcesStart();
-	GCTexture* pTexture = m_pGraphics->CreateTexture(std::string("../../../res/") + filename).resource;
+	GCTexture* pTexture = m_pGraphics->CreateTexture(std::string("../../../res/spritesheet/") + filename).resource;
 	m_pGraphics->InitializeGraphicsResourcesEnd();
 
 	m_pMaterial = m_pGraphics->CreateMaterial(m_pGraphics->CreateShaderTexture().resource).resource;

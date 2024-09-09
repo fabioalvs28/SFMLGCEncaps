@@ -414,7 +414,7 @@ GCAnimation* GCAnimator::CreateAnimation( std::string animationName, int firstFr
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
 	GCAnimation* pNewAnimation = new GCAnimation();
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
-	for ( int i = firstFrame; i < firstFrame + frameNumber *2; i +=2 )
+	for ( int i = firstFrame; i < firstFrame + frameNumber; i ++ )
 		pNewAnimation->AddFrame( i, frameDisplayTime );
 	GC::GetActiveRenderManager()->AddAnimation( pNewAnimation , animationName );
 
@@ -437,7 +437,7 @@ GCAnimation* GCAnimator::CreateAnimationWithCustomFrames( std::string animationN
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
 
 	for ( int i = 0; i < frameList.size() ; i++ )
-		pNewAnimation->AddFrame( frameList[i] + 1 , frameDisplayTime );
+		pNewAnimation->AddFrame( frameList[i], frameDisplayTime );
 	GC::GetActiveRenderManager()->AddAnimation( pNewAnimation , animationName );
 
 	return pNewAnimation;
