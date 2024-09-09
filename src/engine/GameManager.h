@@ -39,7 +39,8 @@ protected:
     GCSceneManager* m_pSceneManager; // A pointer to the GameManager's SceneManager
     GCRenderManager* m_pRenderManager; // A pointer to the GameManager's RenderManager
     GCSpriteSheetHandler* m_pSpriteSheetHandler; // A pointer to the GameManager's RenderManager
-
+    GCTextManager* m_pTextManager; // A pointer to the GameManager's TextManager
+    
     GCMap<unsigned int, GCScript*> m_scriptsList; // A list of pointers to the GameManager's Scripts
 };
 

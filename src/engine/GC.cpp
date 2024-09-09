@@ -47,3 +47,6 @@ GCRenderManager* GC::GetActiveRenderManager()
 
 GCSpriteSheetHandler* GC::GetActiveSpriteSheetHandler()
 { return m_pActiveGameManager->m_pSpriteSheetHandler; }
+
+GCTextManager* GC::GetActiveTextManager()
+{ return m_pActiveGameManager->m_pTextManager; }

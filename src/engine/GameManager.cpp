@@ -20,6 +20,7 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
     m_pSceneManager = new GCSceneManager();
     m_pSpriteSheetHandler = new GCSpriteSheetHandler("../../../res/spritesheet", "../../../res/sprites");
     m_pRenderManager = new GCRenderManager( m_pWindow );
+    m_pTextManager = new GCTextManager( m_pRenderManager->m_pGraphics );
 
     m_pInputSystem->SetEventManager( m_pEventManager );
 }

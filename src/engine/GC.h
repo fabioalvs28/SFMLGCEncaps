@@ -27,6 +27,7 @@ public:
     static GCScene* GetActiveScene();
     static GCRenderManager* GetActiveRenderManager();
     static GCSpriteSheetHandler* GetActiveSpriteSheetHandler();
+    static GCTextManager* GetActiveTextManager();
 
 private:
     inline static GCList<GCGameManager*> m_gameManagersList = GCList<GCGameManager*>();

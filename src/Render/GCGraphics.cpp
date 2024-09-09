@@ -481,7 +481,7 @@ GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
     }
 
     // Adjust positions to respect the aspect ratio
-    float posX = (1.0f / scaleX) - 2.0f; // Adjust position X by the inverse of scaleX
+    float posX = (1.0f / scaleX); // Adjust position X by the inverse of scaleX
     float posY = (1.0f / scaleY); // Adjust position Y by the inverse of scaleY
 
     DirectX::XMMATRIX xmWorldMatrix = GCUtils::GCMATRIXToXMMATRIX(worldMatrix);
@@ -576,9 +576,9 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
     //Additional scaling for Screen Ratio not equilibrate, not ponderate
     if (m_pRender->GetRenderMode() == 0)//2D
     {
-        GCMATRIX matrix = UpdateScalingRatio(worldMatrix);
+        //GCMATRIX matrix = UpdateScalingRatio(worldMatrix);
 
-        worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(matrix);
+        worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
     }
     else if (m_pRender->GetRenderMode() == 1)//3D
     {

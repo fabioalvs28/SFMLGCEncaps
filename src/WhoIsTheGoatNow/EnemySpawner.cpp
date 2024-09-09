@@ -20,7 +20,7 @@ void GCScriptEnemySpawner::FixedUpdate()
 void GCScriptEnemySpawner::SpawnEnemies(float deltaTime)
 {
 	m_counter += deltaTime;
-	if (m_counter > 100.0f)
+	if (m_counter > 10.0f)
 	{
 		m_counter = 0.0f;
 		GCGameObject* newEnemy = m_pEnemyTemplate->Duplicate();

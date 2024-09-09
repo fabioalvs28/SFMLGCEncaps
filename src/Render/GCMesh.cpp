@@ -158,7 +158,7 @@ void GCMesh::EditGeometryPositionAt(int index, DirectX::XMFLOAT3 newPosition)
     m_geometryPositions[index] = newPosition;
 }
 
-void GCMesh::UpdateGeometryData(float deltaTime)
+void GCMesh::UpdateGeometryData()
 {
     std::vector<float> vertexData;
     size_t vertexSize = 0;

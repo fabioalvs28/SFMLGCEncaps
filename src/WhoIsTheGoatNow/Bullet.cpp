@@ -17,15 +17,15 @@ void GCScriptBullet::CopyTo(GCComponent * pDestination)
     pNewComponent->m_pOrigin = m_pOrigin;
 }
 
-void GCScriptBullet::Update()
+void GCScriptBullet::FixedUpdate()
 {
         m_pGameObject->m_transform.Translate(m_direction);
 
         //Destroy Bullet when out of screen
-        if (m_pGameObject->m_transform.m_position.x <= m_pCamera->GetPosition().x - m_pCamera->GetViewWidth()
-            || m_pGameObject->m_transform.m_position.y <= m_pCamera->GetPosition().y - m_pCamera->GetViewHeight()
-            || m_pGameObject->m_transform.m_position.x >= m_pCamera->GetPosition().x + m_pCamera->GetViewWidth()
-            || m_pGameObject->m_transform.m_position.y >= m_pCamera->GetPosition().y + m_pCamera->GetViewHeight())
+        if (m_pGameObject->m_transform.m_position.x <= m_pCamera->GetPosition().x - m_pCamera->GetViewWidth() / 2
+            || m_pGameObject->m_transform.m_position.y <= m_pCamera->GetPosition().y - m_pCamera->GetViewHeight() / 2
+            || m_pGameObject->m_transform.m_position.x >= m_pCamera->GetPosition().x + m_pCamera->GetViewWidth() / 2
+            || m_pGameObject->m_transform.m_position.y >= m_pCamera->GetPosition().y + m_pCamera->GetViewHeight() / 2)
         {
             m_pGameObject->Destroy();
         }
@@ -33,7 +33,7 @@ void GCScriptBullet::Update()
 
 void GCScriptBullet::BulletShoot()
 {
-    m_attackSpeed = 0.1f;
+    m_attackSpeed = 0.06f;
 
     m_pGameObject->m_transform.SetPosition(m_pOrigin->m_transform.m_position);
 

@@ -13,7 +13,8 @@ public:
     inline ID3D12Resource* GetUploadTexture() const { return m_pUploadTexture; }
     inline CD3DX12_GPU_DESCRIPTOR_HANDLE GetTextureAddress() const { return m_textureAddress; }
     inline UINT GetMipLevels() const { return m_mipLevels; }
-
+    inline int GetWidth() const { return m_width; }
+    inline int GetHeight() const { return m_height; }
 
 private:
     UINT m_cbvSrvUavDescriptorSize;

@@ -18,6 +18,17 @@ GCComponent::GCComponent()
 }
 
 
+void GCComponent::Destroy()
+{
+	m_pGameObject = nullptr;
+
+	if ( m_pUpdateNode != nullptr )
+		m_pUpdateNode->Delete();
+	if ( m_pPhysicsNode != nullptr )
+		m_pPhysicsNode->Delete();
+	if ( m_pRenderNode != nullptr )
+		m_pRenderNode->Delete();
+}
 
 void GCComponent::RegisterToManagers()
 {
@@ -156,9 +167,13 @@ void GCComponent::SetActive( bool active )
 
 
 GCSpriteRenderer::GCSpriteRenderer()
+{
+	m_pSprite = nullptr; m_isFlippedX = false;  m_isFlippedY = false;
+}
+
+
+GCSpriteRenderer::~GCSpriteRenderer()
 { m_pSprite = nullptr; }
-
-
 
 void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 {
@@ -198,8 +213,34 @@ void GCSpriteRenderer::SetAnimatedSprite( GCGeometry* pGeometry )
 	pGraphics->InitializeGraphicsResourcesEnd();
 }
 
+void GCSpriteRenderer::FlipX()
+{
 
+	DirectX::XMFLOAT2 uv0 = m_pSprite->m_pGeometry->uv[0];
+	DirectX::XMFLOAT2 uv1 = m_pSprite->m_pGeometry->uv[1];
 
+	m_pSprite->m_pGeometry->uv[0] = m_pSprite->m_pGeometry->uv[2];
+	m_pSprite->m_pGeometry->uv[2] = uv0;
+	m_pSprite->m_pGeometry->uv[1] = m_pSprite->m_pGeometry->uv[3];
+	m_pSprite->m_pGeometry->uv[3] = uv1;
+
+	//GC::GetActiveRenderManager()->m_pGraphics->
+	m_pSprite->m_pMesh->UpdateGeometryData();
+}
+
+void GCSpriteRenderer::FlipY()
+{
+
+	DirectX::XMFLOAT2 uv0 = m_pSprite->m_pGeometry->uv[0];
+	DirectX::XMFLOAT2 uv2 = m_pSprite->m_pGeometry->uv[2];
+
+	m_pSprite->m_pGeometry->uv[0] = m_pSprite->m_pGeometry->uv[1];
+	m_pSprite->m_pGeometry->uv[1] = uv0;
+	m_pSprite->m_pGeometry->uv[2] = m_pSprite->m_pGeometry->uv[3];
+	m_pSprite->m_pGeometry->uv[3] = uv2;
+
+	m_pSprite->m_pMesh->UpdateGeometryData();
+}
 
 
 GCCollider::GCCollider()
@@ -230,8 +271,6 @@ void GCCollider::CopyTo( GCComponent* pDestination )
 	GCCollider* pCollider = static_cast<GCCollider*>( pDestination );
 	pCollider->m_trigger = m_trigger;
 	pCollider->m_visible = m_visible;
-	// *( pCollider->m_pMesh ) = *m_pMesh; 
-	// *( pCollider->m_pMaterial ) = *m_pMaterial;
 }
 
 
@@ -312,6 +351,11 @@ GCAnimator::GCAnimator()
 }
 
 
+GCAnimator::~GCAnimator()
+{
+	m_pCurrentAnimation = nullptr;
+	m_pSpriteRenderer = nullptr;
+}
 
 void GCAnimator::Start()
 {
@@ -454,8 +498,8 @@ GCCamera::GCCamera()
 	m_target.SetZero();
 	m_up.SetZero();
 	
-	m_viewWidth = 10.0f;
-	m_viewHeight = 10.0f;
+	m_viewWidth = GC::GetWindow()->GetClientWidth()/50;
+	m_viewHeight = GC::GetWindow()->GetClientHeight()/50;
 	m_nearZ = 1.0f;
 	m_farZ = 1000.0f;
 	
@@ -510,6 +554,47 @@ void GCCamera::Update()
 	GC::GetActiveRenderManager()->m_pGraphics->CreateViewProjConstantBuffer( m_position, m_target, m_up, 0.0f, 0.0f, m_nearZ, m_farZ, m_viewWidth, m_viewHeight, GC_PROJECTION_TYPE::ORTHOGRAPHIC, m_projectionMatrix, m_viewMatrix );
 }
 
+
+
+
+
+
+GCText::GCText()
+{
+	m_pGeometry = nullptr;
+	m_pMesh = nullptr;
+	m_color = GCColor(255,255,255);
+};
+
+void GCText::CopyTo(GCComponent* pDestination)
+{
+	GCComponent::CopyTo(pDestination);
+	GCText* pText = static_cast<GCText*>(pDestination);
+
+	pText->m_pMesh = m_pMesh;
+	pText->m_pGeometry = m_pGeometry;
+	pText->m_text = m_text;	
+}
+
+void GCText::SetText(std::string text, GCColor color)
+{
+	m_color = color;
+	m_text = text;
+	GC::GetActiveTextManager()->CreateText(this);
+}
+
+void GCText::SetColor(GCColor color)
+{
+	m_color = color;
+	GC::GetActiveTextManager()->CreateText(this);
+}
+
+void GCText::Render()
+{
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+	pGraphics->UpdateWorldConstantBuffer(GC::GetActiveTextManager()->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix());
+	pGraphics->GetRender()->DrawObject(m_pMesh, GC::GetActiveTextManager()->m_pMaterial, true);
+}
 
 
 
