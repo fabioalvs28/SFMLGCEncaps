@@ -498,8 +498,8 @@ GCCamera::GCCamera()
 	m_target.SetZero();
 	m_up.SetZero();
 	
-	m_viewWidth = GC::GetWindow()->GetClientWidth()/50;
-	m_viewHeight = GC::GetWindow()->GetClientHeight()/50;
+	m_viewWidth = GC::GetWindow()->GetClientWidth()/100;
+	m_viewHeight = GC::GetWindow()->GetClientHeight()/100;
 	m_nearZ = 1.0f;
 	m_farZ = 1000.0f;
 	
