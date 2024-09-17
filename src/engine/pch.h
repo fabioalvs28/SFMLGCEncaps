@@ -19,10 +19,10 @@
 #include <tuple>
 
 //Core Elements
-#include "../core/framework.h"
+#include "framework.h"
 
 //Render Elements
-#include "../Render/pch.h" //! To change
+#include "$(ProjectDir)../../..//Render/pch.h" //! To change
 
 
 // Gameplay classes

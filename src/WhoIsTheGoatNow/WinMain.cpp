@@ -75,10 +75,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
 
 #pragma region HOMESCENE
 
-    GCScene* pHomeScne = GCScene::Create();
+    GCScene* pHomeScene = GCScene::Create();
     //pHomeScne->SetActive();
 
-    GCGameObject* GO_Title = pHomeScne->CreateGameObject();
+    GCGameObject* GO_Title = pHomeScene->CreateGameObject();
     GO_Title->m_transform.SetPosition(GCVEC3(0, 0, 0));
     GO_Title->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_Title->AddComponent<GCText>()->SetText("WHO \tIS\t THE \bGOAT\b NOW", GCColor(0,0,255));

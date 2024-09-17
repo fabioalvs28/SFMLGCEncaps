@@ -227,8 +227,8 @@ void GCRenderContext::CreateDeferredLightPassResources() {
 
 		//Shader light pass
 		m_pDeferredLightPassShader = new GCShader();
-		std::string shaderFilePath = "../../../src/Render/Shaders/DeferredLightPass.hlsl";
-		std::string csoDestinationPath = "../../../src/Render/CsoCompiled/PostProcessing";
+		std::string shaderFilePath = "../../../res/Shaders/DeferredLightPass.hlsl";
+		std::string csoDestinationPath = "../../../res/CsoCompiled/PostProcessing";
 
 		int flags = 0;
 		GC_SET_FLAG(flags, GC_VERTEX_POSITION);

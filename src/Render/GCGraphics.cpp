@@ -60,7 +60,7 @@ bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
     m_pPrimitiveFactory = new GCPrimitiveFactory();
     m_pModelParserFactory = new GCModelParserObj();
     m_pFontGeometryLoader = new GCFontGeometryLoader();
-    m_pFontGeometryLoader->GenerateFontMetadata("../../../src/Render/Fonts/LetterUV.txt");
+    m_pFontGeometryLoader->GenerateFontMetadata("../../../res/Fonts/LetterUV.txt");
     m_pSpriteSheetGeometryLoader = new GCSpriteSheetGeometryLoader;
 
     m_pPrimitiveFactory->Initialize();
@@ -201,7 +201,7 @@ GC_RESOURCE_CREATION_RESULT<GCShader*> GCGraphics::CreateShaderColor()
     GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB0);
     GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB1);
 
-    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/color.hlsl", "../../../src/Render/CsoCompiled/color", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../res/Shaders/color.hlsl", "../../../res/CsoCompiled/color", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     if (errorState != 0)
         return GC_RESOURCE_CREATION_RESULT<GCShader*>(false, nullptr, errorState);
     errorState = pShader->Load();
@@ -226,7 +226,7 @@ GC_RESOURCE_CREATION_RESULT<GCShader*> GCGraphics::CreateShaderTexture()
     GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_CB1);
     GC_SET_FLAG(rootParametersFlag, GC_ROOT_PARAMETER_DESCRIPTOR_TABLE_SLOT1);
 
-    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../src/Render/Shaders/texture.hlsl", "../../../src/Render/CsoCompiled/texture", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
+    GC_GRAPHICS_ERROR errorState = pShader->Initialize(m_pRender, "../../../res/Shaders/texture.hlsl", "../../../res/CsoCompiled/texture", vertexFlags, D3D12_CULL_MODE_BACK, rootParametersFlag);
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
     if (errorState != 0)
         return GC_RESOURCE_CREATION_RESULT<GCShader*>(false, nullptr, errorState);

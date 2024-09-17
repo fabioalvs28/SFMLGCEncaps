@@ -5,6 +5,7 @@
     "vc_project_version": "17.0",
     "root_namespace": "WITGN",
     "windows_target_platform_version": "10.0",
+    "isStartupProject": "true",
     "configuration": [
         {
             "name": "Debug|x64",
