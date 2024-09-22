@@ -7,7 +7,7 @@ public:
 	void FixedUpdate() override;
 
 	void Spawn();
-	void Die();
+	virtual void Die();
 
 	void SetTarget(GCGameObject* pTarget) { m_pTarget = pTarget; };
 	GCGameObject* GetTarget() { return m_pTarget; };

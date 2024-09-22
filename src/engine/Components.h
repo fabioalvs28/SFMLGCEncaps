@@ -274,6 +274,8 @@ public:
 
     std::string GetActiveAnimation() { return m_activeAnimationName; }
 
+    bool IsAnimationEnded() { return m_lastFrameIndex == m_currentFrameIndex; }
+
 protected:
     GCAnimator();
     ~GCAnimator() override;
