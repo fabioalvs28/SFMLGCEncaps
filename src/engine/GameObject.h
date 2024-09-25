@@ -12,6 +12,7 @@ friend class GCScene;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class GCMouseInputManager;
 friend class GC;
 
 protected:
@@ -70,6 +71,9 @@ protected:
     void OnTriggerStay( GCCollider* pCollider );
     void OnTriggerExit( GCCollider* pCollider );
     
+    void RegisterScriptsToClicked( GCScript* pScript );
+    void OnClick();
+    
     void RegisterComponents();
     void UnregisterComponents();
 
@@ -99,6 +103,7 @@ protected:
     
     std::map<int, GCComponent*> m_componentsList; // The list of Components the GameObject has.
     GCList<GCScript*> m_scriptTriggerList; // The list of Scripts that will be called when a trigger collision happens with this GameObject
+    GCList<GCScript*> m_scriptClickedList; // The list of Scripts that will be called when the mouse clicks on this GameObject
 
 };
 
