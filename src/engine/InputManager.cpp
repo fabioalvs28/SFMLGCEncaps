@@ -236,6 +236,12 @@ GCMouseInputManager::GCMouseInputManager()
 
 }
 
+void GCMouseInputManager::RegisterButton( GCButton* pButton )
+{
+    ASSERT( pButton != nullptr, LOG_FATAL, "Trying to register a nullptr pButton to the MouseInputManager" );
+    pButton->m_pButtonNode = m_buttonComponentsList.PushBack( pButton );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 /// @brief Return true if the given key have been pressed or relased in the frame
 /// 
@@ -276,7 +282,18 @@ bool GCMouseInputManager::GetKeyUp( int key )
 /// @param sate The new state of the key.
 ////////////////////////////////////////////////////////////////
 void GCMouseInputManager::SendEvent( int index, BYTE state )
-{ m_buttonState[ index ] = state; }
+{
+    m_buttonState[ index ] = state;
+    if ( state != GCMouseInputManager::DOWN )
+        return;
+    
+    for ( GCListNode<GCButton*>* pButtonNode = m_buttonComponentsList.GetFirstNode(); pButtonNode != nullptr; pButtonNode = pButtonNode->GetNext() )
+    {
+        GCButton* pButton = pButtonNode->GetData();
+        if ( pButton->IsClicked( &m_mousePos ) )
+            pButton->m_pGameObject->OnClick();
+    }
+}
 
 /////////////////////////////////////////////////////////
 /// @brief Update all the keys in the buttonList list.

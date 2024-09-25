@@ -224,6 +224,7 @@ class GCMouseInputManager : public GCInputManager
 {
 friend class GCInputManager;
 friend class GCInputSystem;
+friend class GCButton;
 
 public: 
     GCMouseInputManager();
@@ -248,7 +249,7 @@ public:
     };
 
 private:
-
+    void RegisterButton( GCButton* pButton );
 
     void Update();
 
@@ -257,6 +258,7 @@ private:
     int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
     std::vector<BYTE> m_buttonState;
     GCVEC2 m_mousePos;
+    GCList<GCButton*> m_buttonComponentsList;
     void SendEvent( int index, BYTE state );
     
 };
