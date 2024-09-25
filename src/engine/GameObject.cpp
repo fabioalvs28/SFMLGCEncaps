@@ -470,17 +470,41 @@ void GCGameObject::OnTriggerExit( GCCollider* pCollider )
         pScriptNode->GetData()->OnTriggerExit( pCollider );
 }
 
+
+
+////////////////////////////////////////////////////////////
+/// @brief Registers the Script in the scriptClickedList.
+/// 
+/// @param pScript A pointer to the Script to register.
+////////////////////////////////////////////////////////////
+void GCGameObject::RegisterScriptsToClicked( GCScript* pScript )
+{
+    ASSERT( pScript != nullptr, LOG_FATAL, "Trying to register a nullptr pScript to the scriptClickedList" );
+    pScript->m_pClickedNode = m_scriptClickedList.PushBack( pScript );
+}
+
+/////////////////////////////////////////////////////////////
+/// @brief Calls every registered Script's OnClick method.
+/////////////////////////////////////////////////////////////
+void GCGameObject::OnClick()
+{
+    for ( GCListNode<GCScript*>* pScriptNode = m_scriptClickedList.GetFirstNode(); pScriptNode != nullptr; pScriptNode = pScriptNode->GetNext() )
+        pScriptNode->GetData()->OnClick();
+}
+
+
+
 void GCGameObject::RegisterComponents()
 {
-    for (auto it : m_componentsList)
-        if (it.second->m_created == true && it.second->m_registered == false)
+    for ( auto it : m_componentsList )
+        if ( it.second->m_created == true && it.second->m_registered == false )
             it.second->RegisterToManagers();
 }
 
 void GCGameObject::UnregisterComponents()
 {
-    for (auto it : m_componentsList)
-        if (it.second->m_created == true && it.second->m_registered == true)
+    for ( auto it : m_componentsList )
+        if ( it.second->m_created == true && it.second->m_registered == true )
             it.second->UnregisterFromManagers();
 }
 

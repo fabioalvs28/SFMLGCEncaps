@@ -14,7 +14,8 @@ enum FLAGS
 	UPDATE          = 1 << 0,
 	FIXED_UPDATE    = 1 << 1,
     RENDER          = 1 << 2,
-    TRIGGER         = 1 << 3,
+    // TRIGGER         = 1 << 3,
+    // BUTTON          = 1 << 4,
 };
 inline FLAGS operator|( FLAGS a, FLAGS b ) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
@@ -405,7 +406,6 @@ protected:
     GCText* Duplicate() override { return new GCText(); }
     void CopyTo(GCComponent* pDestination) override;
 
-
     void Render() override;
 
     FLAGS GetFlags() override { return RENDER; }
@@ -418,6 +418,42 @@ protected:
 
     GCColor m_color;
     std::string m_text;
+};
+
+
+
+class GCButton : public GCComponent
+{
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCSceneManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
+friend class GCMouseInputManager;
+
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+protected:
+	GCButton() {}
+    ~GCButton() override {}
+    
+    void RegisterToManagers() override;
+    void UnregisterFromManagers() override;
+    
+    GCButton* Duplicate() override { return new GCButton(); }
+    void CopyTo( GCComponent* pDestination ) override;
+    
+    bool IsClicked( GCVEC2* pMousePos );
+    
+    FLAGS GetFlags() override { return NONE; }
+
+protected:
+    inline static const int m_ID = ++GCComponent::componentCount;
+    
+    GCListNode<GCButton*>* m_pButtonNode;
+
 };
 
 
@@ -442,11 +478,14 @@ protected:
     virtual void OnTriggerStay( GCCollider* collider ) {}
     virtual void OnTriggerExit( GCCollider* collider ) {}
     
-    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE | TRIGGER; }
+    virtual void OnClick() {};
+    
+    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
 
 protected:
     inline static int scriptCount = ( 1 << 15 ) - 1;
     GCListNode<GCScript*>* m_pTriggerNode;
+    GCListNode<GCScript*>* m_pClickedNode;
 
 };
 
@@ -478,7 +517,9 @@ protected:
          \
         void OnTriggerEnter( GCCollider* collider ) override; \
         void OnTriggerStay( GCCollider* collider ) override; \
-        void OnTriggerExit( GCCollider* collider ) override;*/ \
+        void OnTriggerExit( GCCollider* collider ) override; \
+         \
+        void OnClick() override;*/ \
      \
     protected: \
         inline static const int m_ID = ++GCScript::scriptCount; \
