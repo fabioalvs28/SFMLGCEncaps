@@ -463,43 +463,6 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
     return GCRENDER_ERROR_RESOURCE_TO_REMOVE_DONT_FIND;
 }
 
-GCMATRIX GCGraphics::UpdateScalingRatio(const GCMATRIX& worldMatrix) {
-    // Obtenez le rapport d'aspect
-    float aspectRatio = m_pRender->GetRenderResources()->GetCurrentWindow()->AspectRatio();
-    float screenWidth = m_pRender->GetRenderResources()->GetCurrentWindow()->GetClientWidth();
-    float screenHeight = m_pRender->GetRenderResources()->GetCurrentWindow()->GetClientHeight();
-
-    float scaleX = 1.0f;
-    float scaleY = 1.0f;
-
-    // Calculer les facteurs de mise à l'échelle
-    if (aspectRatio > 1.0f) {
-        scaleX = 1.0 / aspectRatio;
-    }
-    else {
-        scaleY = aspectRatio;
-    }
-
-    // Adjust positions to respect the aspect ratio
-    float posX = (1.0f / scaleX); // Adjust position X by the inverse of scaleX
-    float posY = (1.0f / scaleY); // Adjust position Y by the inverse of scaleY
-
-    DirectX::XMMATRIX xmWorldMatrix = GCUtils::GCMATRIXToXMMATRIX(worldMatrix);
-
-    // Apply position translation first
-    DirectX::XMMATRIX xmAdditionalPosMatrix = DirectX::XMMatrixTranslation(posX, posY, 0.0f);
-
-    // Apply scaling
-    DirectX::XMMATRIX xmAdditionalScaleMatrix = DirectX::XMMatrixScaling(scaleX, scaleY, 1.0f);
-
-    // Apply transformations in order: Translation first, then Scaling
-    DirectX::XMMATRIX xmWorldMatrixTransformed = xmAdditionalScaleMatrix * xmAdditionalPosMatrix * xmWorldMatrix;
-
-    GCMATRIX scaledWorldMatrix = GCUtils::XMMATRIXToGCMATRIX(xmWorldMatrixTransformed);
-
-    return scaledWorldMatrix;
-}
-
 bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;

@@ -346,12 +346,15 @@ void GCMouseInputManager::Update()
     Window* pWindow = GC::GetWindow();
     GCCamera* pCamera = GC::GetActiveScene()->GetMainCamera();
     GetWindowRect(pWindow->GetHMainWnd(), &rect);
-    mousePos.x -= rect.left;
-    mousePos.y -= rect.top;
+    //mousePos.x -= rect.left; //!doesn't change ?
+    //mousePos.y -= rect.top; //! to change
 
     //mousePos.x -= pWindow->GetClientWidth() / 2;
     //mousePos.y -= pWindow->GetClientHeight() / 2;
-   
+
+    mousePos.x -= 7; //! CHANGE VERY VERY FAST
+    mousePos.y -= 20; //! QUICK
+
     XMFLOAT3 mousePosNotPixel = GCUtils::PixelToWorld(mousePos.x, mousePos.y, pWindow->GetClientWidth(), pWindow->GetClientHeight(), GCUtils::GCMATRIXToXMFLOAT4x4(pCamera->m_projectionMatrix), GCUtils::GCMATRIXToXMFLOAT4x4(pCamera->m_viewMatrix));
     //! CHANGE FAST FAST FAST
 

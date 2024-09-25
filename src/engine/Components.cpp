@@ -185,8 +185,8 @@ void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 void GCSpriteRenderer::Render()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	pGraphics->UpdateWorldConstantBuffer( m_pSprite->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
-	pGraphics->GetRender()->DrawObject( m_pSprite->m_pMesh, m_pSprite->m_pMaterial, true );
+	pGraphics->UpdateWorldConstantBuffer( m_pSprite->m_pMaterial , m_pGameObject->m_transform.GetWorldMatrix() );
+	pGraphics->GetRender()->DrawObject( m_pSprite->m_pMesh , m_pSprite->m_pMaterial , true );
 }
 
 
@@ -626,9 +626,9 @@ void GCButton::UnregisterFromManagers()
 bool GCButton::IsClicked( GCVEC2* pMousePosition )
 {
 	GCVEC3 gameObjectPosition = m_pGameObject->m_transform.GetWorldPosition();
-	GCVEC3 gameObjectSize = m_pGameObject->m_transform.GetWorldPosition();
-	return gameObjectPosition.x < pMousePosition->x && pMousePosition->x < gameObjectPosition.x + gameObjectSize.x &&
-		   gameObjectPosition.y < pMousePosition->y && pMousePosition->y < gameObjectPosition.y + gameObjectSize.y;
+	GCVEC3 gameObjectScale = m_pGameObject->m_transform.GetWorldScale();
+	return gameObjectPosition.x < pMousePosition->x && pMousePosition->x < gameObjectPosition.x + gameObjectScale.x &&
+		   gameObjectPosition.y < pMousePosition->y && pMousePosition->y < gameObjectPosition.y + gameObjectScale.y;
 }
 
 
@@ -639,16 +639,16 @@ GCScript::GCScript()
 { m_pTriggerNode = nullptr; }
 
 
-
 void GCScript::RegisterToManagers()
 {
 	GCComponent::RegisterToManagers();
 	m_pGameObject->RegisterScriptToTrigger( this );
-	// 
+	m_pGameObject->RegisterScriptToClicked( this );
 }
 
 void GCScript::UnregisterFromManagers()
 {
 	GCComponent::UnregisterFromManagers();
 	m_pTriggerNode->Delete();
+	m_pClickedNode->Delete();
 }

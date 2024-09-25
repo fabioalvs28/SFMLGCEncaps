@@ -40,6 +40,7 @@ class GCAnimator;
 class GCSoundMixer;
 class GCCamera;
 class GCScript;
+class GCButton;
 
 class GCGameObject;
 class GCScene;

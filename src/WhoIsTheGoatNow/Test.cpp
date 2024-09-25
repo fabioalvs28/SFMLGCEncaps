@@ -10,12 +10,10 @@ void GCScriptTest::CopyTo(GCComponent* pDestination)
 
 void GCScriptTest::Update()
 {
-    count += 1;
-    float fps = GC::GetActiveTimer()->DeltaTime();
-    std::cout << fps << std::endl;
-    if (count == 100) {
-        std::string txtfps = std::to_string(fps);
-        pText->SetText(txtfps, GCColor(255, 0, 0));
-        count = 0;
-    }
+}
+
+void GCScriptTest::OnClick()
+{
+    counter += 25;
+    pText->SetColor( GCColor( 0 , counter , 0 ) );
 }

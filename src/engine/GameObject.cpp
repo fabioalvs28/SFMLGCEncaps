@@ -477,7 +477,7 @@ void GCGameObject::OnTriggerExit( GCCollider* pCollider )
 /// 
 /// @param pScript A pointer to the Script to register.
 ////////////////////////////////////////////////////////////
-void GCGameObject::RegisterScriptsToClicked( GCScript* pScript )
+void GCGameObject::RegisterScriptToClicked( GCScript* pScript )
 {
     ASSERT( pScript != nullptr, LOG_FATAL, "Trying to register a nullptr pScript to the scriptClickedList" );
     pScript->m_pClickedNode = m_scriptClickedList.PushBack( pScript );
