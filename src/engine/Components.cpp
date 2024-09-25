@@ -331,14 +331,6 @@ void GCRigidBody::Update()
 
 
 
-
-void GCSoundMixer::CopyTo( GCComponent* pDestination )
-{ GCComponent::CopyTo( pDestination ); }
-
-
-
-
-
 GCAnimator::GCAnimator()
 {
 	m_pCurrentAnimation = nullptr;
@@ -492,6 +484,14 @@ GCAnimation* GCAnimator::CreateAnimationWithCustomFrames( std::string animationN
 
 
 
+void GCSoundMixer::CopyTo( GCComponent* pDestination )
+{ GCComponent::CopyTo( pDestination ); }
+
+
+
+
+
+
 GCCamera::GCCamera()
 {
 	m_position.SetZero();
@@ -563,13 +563,13 @@ GCText::GCText()
 {
 	m_pGeometry = nullptr;
 	m_pMesh = nullptr;
-	m_color = GCColor(255,255,255);
+	m_color = GCColor( 255, 255, 255 );
 };
 
-void GCText::CopyTo(GCComponent* pDestination)
+void GCText::CopyTo( GCComponent* pDestination )
 {
-	GCComponent::CopyTo(pDestination);
-	GCText* pText = static_cast<GCText*>(pDestination);
+	GCComponent::CopyTo( pDestination );
+	GCText* pText = static_cast<GCText*>( pDestination );
 
 	pText->m_pMesh = m_pMesh;
 	pText->m_pGeometry = m_pGeometry;
@@ -580,20 +580,55 @@ void GCText::SetText(std::string text, GCColor color)
 {
 	m_color = color;
 	m_text = text;
-	GC::GetActiveTextManager()->CreateText(this);
+	GC::GetActiveTextManager()->CreateText( this );
 }
 
 void GCText::SetColor(GCColor color)
 {
 	m_color = color;
-	GC::GetActiveTextManager()->CreateText(this);
+	GC::GetActiveTextManager()->CreateText( this );
 }
 
 void GCText::Render()
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	pGraphics->UpdateWorldConstantBuffer(GC::GetActiveTextManager()->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix());
-	pGraphics->GetRender()->DrawObject(m_pMesh, GC::GetActiveTextManager()->m_pMaterial, true);
+	pGraphics->UpdateWorldConstantBuffer( GC::GetActiveTextManager()->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
+	pGraphics->GetRender()->DrawObject( m_pMesh, GC::GetActiveTextManager()->m_pMaterial, true );
+}
+
+
+
+
+
+
+void GCButton::CopyTo( GCComponent* pDestination )
+{
+	GCComponent::CopyTo( pDestination );
+    GCButton* pButton = static_cast<GCButton*>( pDestination );
+}
+
+
+
+void GCButton::RegisterToManagers()
+{
+	GCComponent::RegisterToManagers();
+	GC::GetActiveInputSystem()->m_pMouse->RegisterButton( this );
+}
+
+void GCButton::UnregisterFromManagers()
+{
+	GCComponent::UnregisterFromManagers();
+	m_pButtonNode->Delete();
+}
+
+
+
+bool GCButton::IsClicked( GCVEC2* pMousePosition )
+{
+	GCVEC3 gameObjectPosition = m_pGameObject->m_transform.GetWorldPosition();
+	GCVEC3 gameObjectSize = m_pGameObject->m_transform.GetWorldPosition();
+	return gameObjectPosition.x < pMousePosition->x && pMousePosition->x < gameObjectPosition.x + gameObjectSize.x &&
+		   gameObjectPosition.y < pMousePosition->y && pMousePosition->y < gameObjectPosition.y + gameObjectSize.y;
 }
 
 
@@ -609,6 +644,7 @@ void GCScript::RegisterToManagers()
 {
 	GCComponent::RegisterToManagers();
 	m_pGameObject->RegisterScriptToTrigger( this );
+	// 
 }
 
 void GCScript::UnregisterFromManagers()
