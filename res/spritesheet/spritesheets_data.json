@@ -403,6 +403,91 @@
                     "y": 100
                 }
             ]
+        },
+        {
+            "SpritesheetSize": 128,
+            "Spritesheet_ID": "2",
+            "imageCount": 6,
+            "images": [
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "sheepBack1.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "sheepBack2.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 50,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "sheepRightWalk1.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 0,
+                    "y": 50
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "sheepRightWalk2.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 50,
+                    "y": 50
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "sheepWalk1.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 0,
+                    "y": 100
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "sheepWalk2.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 50,
+                    "y": 100
+                }
+            ]
         }
     ],
     "spriteIndex": {
@@ -435,8 +520,14 @@
         "DUMBwalk2.png": "1, 11",
         "DUMBwalk3.png": "1, 12",
         "DUMBwalk4.png": "1, 13",
-        "DUMBwalk5.png": "1, 14"
+        "DUMBwalk5.png": "1, 14",
+        "sheepBack1.png": "2, 0",
+        "sheepBack2.png": "2, 1",
+        "sheepRightWalk1.png": "2, 2",
+        "sheepRightWalk2.png": "2, 3",
+        "sheepWalk1.png": "2, 4",
+        "sheepWalk2.png": "2, 5"
     },
-    "totalImageCount": 30,
-    "totalSpritesheetCount": 2
+    "totalImageCount": 36,
+    "totalSpritesheetCount": 3
 }

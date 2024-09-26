@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "../Render/pch.h"
 
 ///////////////////////////////////////////////////////////////////
 /// @brief Default constructor for the GameManager class.

@@ -22,6 +22,8 @@ struct GCMATRIX
 	static GCMATRIX Identity() { return GCMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f); };
 	static GCMATRIX Zero() { return GCMATRIX(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f); };
 	void operator*=(const GCMATRIX& other); //multiplie la matrice par une autre matrice
+	void operator+=( const GCMATRIX& other ); //additionne une autre matrice à la matrice
+	void operator-=( const GCMATRIX& other ); //soustrait une autre matrice à la matrice
 
 	void SetZero(); //set les valeurs de la matrice a 0
 	void SetIdentity(); //set les valeurs de la matrice a l'identite

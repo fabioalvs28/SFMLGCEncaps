@@ -71,7 +71,7 @@ protected:
     void OnTriggerStay( GCCollider* pCollider );
     void OnTriggerExit( GCCollider* pCollider );
     
-    void RegisterScriptsToClicked( GCScript* pScript );
+    void RegisterScriptToClicked( GCScript* pScript );
     void OnClick();
     
     void RegisterComponents();

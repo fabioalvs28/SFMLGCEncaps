@@ -19,10 +19,10 @@
 #include <tuple>
 
 //Core Elements
-#include "../core/framework.h"
+#include "framework.h"
 
 //Render Elements
-#include "../Render/pch.h" //! To change
+#include "$(ProjectDir)../../..//Render/pch.h" //! To change
 
 
 // Gameplay classes
@@ -40,6 +40,7 @@ class GCAnimator;
 class GCSoundMixer;
 class GCCamera;
 class GCScript;
+class GCButton;
 
 class GCGameObject;
 class GCScene;
