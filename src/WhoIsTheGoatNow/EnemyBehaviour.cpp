@@ -18,12 +18,12 @@ void GCScriptEnemyBehaviour::FixedUpdate()
 {
     if (m_pTarget != NULL)
     {
-        GCVEC3 direction = m_pTarget->m_transform.m_position;
-        direction -= m_pGameObject->m_transform.m_position;
-        direction.Normalize();
-        direction *= m_speed;
+        m_direction = m_pTarget->m_transform.m_position;
+        m_direction -= m_pGameObject->m_transform.m_position;
+        m_direction.Normalize();
+        m_direction;
 
-        m_pGameObject->m_transform.Translate(direction);
+        m_pGameObject->m_transform.Translate(m_direction * m_speed);
     }
 }
 

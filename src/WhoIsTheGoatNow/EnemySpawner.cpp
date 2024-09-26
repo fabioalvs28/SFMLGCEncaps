@@ -25,9 +25,6 @@ void GCScriptEnemySpawner::SpawnEnemies(float deltaTime)
 		m_counter = 0.0f;
 		GCGameObject* newEnemy = m_pEnemyTemplate->Duplicate();
 		newEnemy->Activate();
-
-		newEnemy->GetComponent<GCScriptEnemyBehaviour>()->SetTarget(
-						m_pEnemyTemplate->GetComponent<GCScriptEnemyBehaviour>()->GetTarget());
 	}
 }
 

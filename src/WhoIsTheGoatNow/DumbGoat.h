@@ -2,8 +2,6 @@
 
 CREATE_SCRIPT_INHERIT_START(DumbGoat, EnemyBehaviour)
 
-void Die() override;
-
 void Update() override;
 
 protected:
