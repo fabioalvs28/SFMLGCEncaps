@@ -56,17 +56,17 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //Enemy prefab
 
     GCGameObject* GO_pEnemy = pScene->CreateGameObject();
-    GO_pEnemy->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
+    GO_pEnemy->AddComponent<GCSpriteRenderer>();
     GCAnimator* pDarkGoatAnimator = GO_pEnemy->AddComponent<GCAnimator>();
     pDarkGoatAnimator->LoadSpriteSheet("spritesheet_0.dds", 0);
 
-    pDarkGoatAnimator->CreateAnimation("DarkGoatForward", 5, 5, 0.05f);
+    pDarkGoatAnimator->CreateAnimation("DarkGoatForward", 5, 5, 0.5f);
     pDarkGoatAnimator->CreateAnimation("DarkGoatBackWard", 0, 5, 0.05f);
     pDarkGoatAnimator->CreateAnimation("DarkGoatLeft", 10, 5, 0.05f);
     pDarkGoatAnimator->CreateAnimation("DarkGoatRight", 10, 5, 0.05f);
-
     //dGO_pEnemy->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_pEnemy->AddComponent<GCScriptDarkGoat>()->SetTarget(GO_pPlayer);
+    GO_pEnemy->m_transform.SetPosition(GCVEC3(5, -3, 0));
     GO_pEnemy->AddTag("enemy");
     GO_pEnemy->Deactivate();
 

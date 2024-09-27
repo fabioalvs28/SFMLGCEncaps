@@ -60,3 +60,11 @@ void GCScriptDarkGoat::SetAnimationWalk(int animation)
         m_lastAnimation = animation;
     }
 }
+
+void GCScriptDarkGoat::Summon()
+{
+    GCGameObject* newEnemy = m_pSummonedGoat->Duplicate();
+    GCVEC3 summonerPos = m_pGameObject->m_transform.m_position;
+
+    //newEnemy->m_transform.SetPosition()
+}

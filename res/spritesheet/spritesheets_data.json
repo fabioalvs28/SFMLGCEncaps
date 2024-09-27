@@ -488,6 +488,12 @@
                     "y": 100
                 }
             ]
+        },
+        {
+            "SpritesheetSize": 1,
+            "Spritesheet_ID": "3",
+            "imageCount": 0,
+            "images": []
         }
     ],
     "spriteIndex": {
@@ -529,5 +535,5 @@
         "sheepWalk2.png": "2, 5"
     },
     "totalImageCount": 36,
-    "totalSpritesheetCount": 3
+    "totalSpritesheetCount": 4
 }

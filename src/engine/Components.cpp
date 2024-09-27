@@ -168,7 +168,7 @@ void GCComponent::SetActive( bool active )
 
 GCSpriteRenderer::GCSpriteRenderer()
 {
-	m_pSprite = nullptr; m_isFlippedX = false;  m_isFlippedY = false;
+	m_pSprite = new GCSprite(); m_isFlippedX = false;  m_isFlippedY = false;
 }
 
 
@@ -179,11 +179,12 @@ void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 {
 	GCComponent::CopyTo( pDestination );
 	GCSpriteRenderer* pSpriteRenderer = static_cast<GCSpriteRenderer*>( pDestination );
-	pSpriteRenderer->m_pSprite = m_pSprite;
 }
 
 void GCSpriteRenderer::Render()
 {
+	if (m_pSprite->m_pMesh == nullptr)
+		return;
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 	pGraphics->UpdateWorldConstantBuffer( m_pSprite->m_pMaterial , m_pGameObject->m_transform.GetWorldMatrix() );
 	pGraphics->GetRender()->DrawObject( m_pSprite->m_pMesh , m_pSprite->m_pMaterial , true );
@@ -193,24 +194,23 @@ void GCSpriteRenderer::Render()
 
 void GCSpriteRenderer::SetSprite( GCSprite* pSprite )
 {
-	if ( m_pSprite == nullptr )
-	{
-		m_pSprite = pSprite;
-		return;
-	}
-	m_pSprite->m_pGeometry = pSprite->m_pGeometry;
-	m_pSprite->m_pMaterial = pSprite->m_pMaterial;
-	m_pSprite->m_pMesh = pSprite->m_pMesh;
+	m_pSprite = pSprite;
 }
 
 void GCSpriteRenderer::SetAnimatedSprite( GCGeometry* pGeometry )
 {
-	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 	m_pSprite->m_pGeometry = pGeometry;
-	
-	pGraphics->InitializeGraphicsResourcesStart();
-	m_pSprite->m_pMesh = pGraphics->CreateMeshTexture( m_pSprite->m_pGeometry ).resource;
-	pGraphics->InitializeGraphicsResourcesEnd();
+
+	if (m_pSprite->m_pMesh == nullptr)
+	{
+		GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+		pGraphics->InitializeGraphicsResourcesStart();
+		m_pSprite->m_pMesh = pGraphics->CreateMeshTexture(pGeometry).resource;
+		pGraphics->InitializeGraphicsResourcesEnd();
+		return;
+	}
+
+	m_pSprite->m_pMesh->UpdateGeometryData();
 }
 
 void GCSpriteRenderer::FlipX()
@@ -405,6 +405,7 @@ void GCAnimator::PlayAnimation( std::string animationName, bool isLoop )
 	m_lastFrameIndex = pAnimation->GetLastFrameIndex();
 	m_pCurrentAnimation->StartAnimation();
 	m_pSpriteRenderer->m_pSprite->m_pMaterial = m_pCurrentAnimation->m_pMaterial;
+	m_pSpriteRenderer->m_pSprite->m_pMesh = nullptr;
 	m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 }
 
