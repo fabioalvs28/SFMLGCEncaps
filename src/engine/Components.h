@@ -19,8 +19,6 @@ enum FLAGS
 };
 inline FLAGS operator|( FLAGS a, FLAGS b ) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
-
-
 class GCComponent
 {
 friend class GCGameObject;
@@ -100,6 +98,21 @@ public:
     void FlipX();
     void FlipY();
 
+    enum OriginType
+    {
+        BottomLeft ,
+        BottomRight ,
+        TopLeft ,
+        TopRight ,
+        Center ,
+        Left ,
+        Right ,
+        Top ,
+        Bottom
+    };
+
+    void SetOrigin( int originType );
+
 protected:
 	GCSpriteRenderer();
     ~GCSpriteRenderer() override;
@@ -115,8 +128,7 @@ protected:
 
     void SetAnimatedSprite( GCGeometry* pGeometry );
 
-
-protected:
+    
     inline static const int m_ID = ++GCComponent::componentCount;
     GCSprite* m_pSprite;
     bool m_isFlippedX;

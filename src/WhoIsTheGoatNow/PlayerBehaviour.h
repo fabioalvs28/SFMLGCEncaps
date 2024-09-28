@@ -7,7 +7,7 @@ public:
 	void FixedUpdate() override;
 	void Update() override;
 
-	void PlayerShoot();
+	void Shoot();
 	void SetBulletTemplate(GCGameObject* pBullet) { m_pBulletTemplate = pBullet; };
 
 private:

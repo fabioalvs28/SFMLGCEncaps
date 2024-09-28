@@ -25,15 +25,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //GCGameObject* GO_pGameScene = pScene->CreateGameObject();
 
     //Bullet prefab 
-    GCSprite SP_bullet("black_small_square.dds");
-
-    GCGameObject* GO_pBullet = pScene->CreateGameObject();
-    GO_pBullet->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_bullet);
-    //GO_pBullet->AddComponent<GCBoxCollider>()->SetVisible(true);
-    GO_pBullet->AddComponent<GCScriptBullet>();
-    GO_pBullet->AddTag("bullet");
-    GO_pBullet->m_transform.Scale(0.5f);
-    GO_pBullet->Deactivate();
 
     //Player creation
     GCSprite SP_player("blue_square.dds");
@@ -44,13 +35,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pAnimator->LoadSpriteSheet("spritesheet_0.dds", 0);
     pAnimator->CreateAnimation("aaa", 0, 5, 0.3f);
     pAnimator->PlayAnimation("aaa",true);
-    //GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
     GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(true);
-    GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>()->SetBulletTemplate(GO_pBullet);
     GO_pPlayer->AddTag("player");
     GO_pPlayer->SetLayer(1);
 
-    GO_pBullet->GetComponent<GCScriptBullet>()->SetOrigin(GO_pPlayer);
 
     //Enemy prefab
 
@@ -68,15 +56,24 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCGameObject* GO_pWeapon = GO_pPlayer->CreateChild();
     GO_pWeapon->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_Weapon);
     GO_pWeapon->AddComponent<GCScriptWeapon>();
-    GO_pWeapon->AddComponent<GCText>()->SetText(std::to_string(GCINPUTS::GetMousePos().x));
 
+    GCSprite SP_bullet("bullet.dds");
+
+    GCGameObject* GO_pBullet = pScene->CreateGameObject();
+    GO_pBullet->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_bullet);
+    //GO_pBullet->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pBullet->AddComponent<GCScriptBullet>();
+    GO_pBullet->AddTag("bullet");
+    GO_pBullet->Deactivate();
+
+    GO_pWeapon->GetComponent<GCScriptWeapon>()->SetBulletTemplate( GO_pBullet );
     
 #pragma endregion
 
 #pragma region HOMESCENE
 
     GCScene* pHomeScene = GCScene::Create();
-    pHomeScene->SetActive();
+    //pHomeScene->SetActive();
 
     GCGameObject* GO_Title = pHomeScene->CreateGameObject();
     GO_Title->m_transform.SetPosition(GCVEC3(0, 0, 0));

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "PlayerBehaviour.h"
-#include "Bullet.h"
+#include "Weapon.h"
 
 void GCScriptPlayerBehaviour::CopyTo(GCComponent* pDestination)
 {
@@ -58,20 +58,10 @@ void GCScriptPlayerBehaviour::FixedUpdate()
 
 void GCScriptPlayerBehaviour::Update()
 {
-	//Actions
-	for (int input : m_pInputSystem->GetActions()->Shoot.inputs) //Shoot
-	{
-		if (GCINPUTS::GetKeyDown(GCKEYBOARD(input)))
-		{
-			PlayerShoot();
-		}
-	}
+
 }
 
-void GCScriptPlayerBehaviour::PlayerShoot()
+void GCScriptPlayerBehaviour::Shoot()
 {
-	GCGameObject* newBullet = m_pBulletTemplate->Duplicate();
-	newBullet->Activate();
-	newBullet->GetComponent<GCScriptBullet>()->BulletShoot();
 }
 

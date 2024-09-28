@@ -243,6 +243,67 @@ void GCSpriteRenderer::FlipY()
 }
 
 
+
+void GCSpriteRenderer::SetOrigin( int originType )
+{
+	// Vertices of a unit 1:1:1 cube (assuming Z=0 for a 2D plane)
+	// Initially centered at (0,0,0)
+	GCVEC2 origin( 0.0f , 0.0f );
+
+	// Adjust the origin based on the selected origin type
+	switch ( originType )
+	{
+	case BottomLeft:
+		// Origin at bottom-left of the unit square (no adjustment needed)
+		origin = GCVEC2( 0.0f , 0.0f );
+		break;
+	case BottomRight:
+		// Move origin to bottom-right of the unit square
+		origin = GCVEC2( -1.0f , 0.0f );
+		break;
+	case TopLeft:
+		// Move origin to top-left of the unit square
+		origin = GCVEC2( 0.0f , -1.0f );
+		break;
+	case TopRight:
+		// Move origin to top-right of the unit square
+		origin = GCVEC2( -1.0f , -1.0f );
+		break;
+	case Center:
+		// Move origin to center of the unit square
+		origin = GCVEC2( -0.5f , -0.5f );
+		break;
+	case Left:
+		// Move origin to the left center of the unit square
+		origin = GCVEC2( 0.0f , -0.5f );
+		break;
+	case Right:
+		// Move origin to the right center of the unit square
+		origin = GCVEC2( -1.0f , -0.5f );
+		break;
+	case Top:
+		// Move origin to the top center of the unit square
+		origin = GCVEC2( -0.5f , -1.0f );
+		break;
+	case Bottom:
+		// Move origin to the bottom center of the unit square
+		origin = GCVEC2( -0.5f , 0.0f );
+		break;
+	default:
+		break;
+	}
+
+	// Now set the vertices counterclockwise starting from the bottom-left
+	// Vertices for a 1x1 square on the XY plane
+	m_pSprite->m_pGeometry->pos[ 0 ] = XMFLOAT3( origin.x , origin.y , 0.0f );         // Bottom-left
+	m_pSprite->m_pGeometry->pos[ 1 ] = XMFLOAT3( origin.x , origin.y + 1.0f , 0.0f );  // Top-left
+	m_pSprite->m_pGeometry->pos[ 2 ] = XMFLOAT3( origin.x + 1.0f , origin.y + 1.0f , 0.0f );  // Top-right
+	m_pSprite->m_pGeometry->pos[ 3 ] = XMFLOAT3( origin.x + 1.0f , origin.y , 0.0f );  // Bottom-right
+
+	m_pSprite->m_pMesh->UpdateGeometryData();
+
+}
+
 GCCollider::GCCollider()
 {
 	m_trigger = false;
