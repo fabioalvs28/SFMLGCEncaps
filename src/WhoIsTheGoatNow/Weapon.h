@@ -23,18 +23,19 @@ public:
 	void SetBulletTemplate( GCGameObject* bulletTemplate ) { m_pBulletTemplate = bulletTemplate; }
 
 private:
+	float m_currentDeltaTime;
 	GCVEC3 m_direction;
 	float m_distanceToPlayer;
 	float m_interpolatedRotation;
 	bool m_isFlipped;
 	GCVEC3 m_centralizer;
-	InputSystem* m_pInputSystem;
 	GCGameObject* m_pBulletTemplate;
+	InputSystem* m_pInputSystem;
 
 protected:
 	int m_penetration;
 	float m_range;
-	float m_speed;
+	float m_attackSpeed;
 
 	float m_shootCooldown;
 
@@ -43,6 +44,5 @@ CREATE_SCRIPT_END
 CREATE_SCRIPT_INHERIT_START(Sniper, Weapon)
 public:
 	void Start() override;
-
 
 CREATE_SCRIPT_END

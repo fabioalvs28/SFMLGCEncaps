@@ -31,6 +31,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
 
     GCGameObject* GO_pPlayer = pScene->CreateGameObject();
     GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
+    GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>();
     GCAnimator* pAnimator = GO_pPlayer->AddComponent<GCAnimator>();
     pAnimator->LoadSpriteSheet("spritesheet_0.dds", 0);
     pAnimator->CreateAnimation("aaa", 0, 5, 0.3f);
