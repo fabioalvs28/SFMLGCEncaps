@@ -91,6 +91,7 @@ void GCScriptDarkGoat::Summon()
         GCVEC3 summonerPos = m_pGameObject->m_transform.m_position;
         newEnemy->GetComponent<GCScriptDumbGoat>()->m_spawning = true;
         newEnemy->m_transform.SetPosition(summonerPos);
+        newEnemy->GetComponent<GCAnimator>()->PlayAnimation("DumbGoatSpawn", false);
     }
 
 }
@@ -130,22 +131,27 @@ void GCScriptDumbGoat::Update()
         side.y = -1;
 
     if (m_spawning == true)
-        return;
-
-    if (m_direction.x * side.x > m_direction.y * side.y)
     {
-        if (m_direction.x > 0)
-            SetAnimationWalk(Right);
-        if (m_direction.x < 0)
-            SetAnimationWalk(Left);
+        if ( m_pAnimator->AnimationHasEnded() )
+            m_spawning = false;
     }
-
-    if (m_direction.y * side.y > m_direction.x * side.x)
+    else
     {
-        if (m_direction.y > 0)
-            SetAnimationWalk(Backward);
-        if (m_direction.y < 0)
-            SetAnimationWalk(Forward);
+        if (m_direction.x * side.x > m_direction.y * side.y)
+        {
+            if (m_direction.x > 0)
+                SetAnimationWalk(Right);
+            if (m_direction.x < 0)
+                SetAnimationWalk(Left);
+        }
+
+        if (m_direction.y * side.y > m_direction.x * side.x)
+        {
+            if (m_direction.y > 0)
+                SetAnimationWalk(Backward);
+            if (m_direction.y < 0)
+                SetAnimationWalk(Forward);
+        }
     }
 
 }

@@ -27,7 +27,7 @@ protected:
         Forward, Backward, Left, Right, AnimSummon, count
     };
 
-    CREATE_SCRIPT_END
+CREATE_SCRIPT_END
 
 
 

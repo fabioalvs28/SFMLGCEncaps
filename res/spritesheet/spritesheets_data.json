@@ -385,9 +385,9 @@
             ]
         },
         {
-            "SpritesheetSize": 256,
+            "SpritesheetSize": 512,
             "Spritesheet_ID": "1",
-            "imageCount": 20,
+            "imageCount": 27,
             "images": [
                 {
                     "crop_x": 0,
@@ -464,6 +464,71 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
+                    "x": 250,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBFACE2.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 300,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBFACE3.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 350,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBFACE4.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 400,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBFACE5.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 450,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBSPAWN1.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
                     "x": 0,
                     "y": 50
                 },
@@ -471,7 +536,7 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
-                    "filename": "DUMBFACE2.png",
+                    "filename": "DUMBSPAWN2.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
@@ -484,7 +549,7 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
-                    "filename": "DUMBFACE3.png",
+                    "filename": "DUMBSPAWN3.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
@@ -497,7 +562,7 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
-                    "filename": "DUMBFACE4.png",
+                    "filename": "DUMBSPAWN4.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
@@ -510,13 +575,39 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
-                    "filename": "DUMBFACE5.png",
+                    "filename": "DUMBSPAWN5.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
                     "x": 200,
+                    "y": 50
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBSPAWN6.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 250,
+                    "y": 50
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBSPAWN7.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 300,
                     "y": 50
                 },
                 {
@@ -529,8 +620,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 0,
-                    "y": 100
+                    "x": 350,
+                    "y": 50
                 },
                 {
                     "crop_x": 0,
@@ -542,8 +633,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 50,
-                    "y": 100
+                    "x": 400,
+                    "y": 50
                 },
                 {
                     "crop_x": 0,
@@ -555,8 +646,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 100,
-                    "y": 100
+                    "x": 450,
+                    "y": 50
                 },
                 {
                     "crop_x": 0,
@@ -568,7 +659,7 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 150,
+                    "x": 0,
                     "y": 100
                 },
                 {
@@ -581,7 +672,7 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 200,
+                    "x": 50,
                     "y": 100
                 },
                 {
@@ -594,8 +685,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 0,
-                    "y": 150
+                    "x": 100,
+                    "y": 100
                 },
                 {
                     "crop_x": 0,
@@ -607,8 +698,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 50,
-                    "y": 150
+                    "x": 150,
+                    "y": 100
                 },
                 {
                     "crop_x": 0,
@@ -620,8 +711,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 100,
-                    "y": 150
+                    "x": 200,
+                    "y": 100
                 },
                 {
                     "crop_x": 0,
@@ -633,8 +724,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 150,
-                    "y": 150
+                    "x": 250,
+                    "y": 100
                 },
                 {
                     "crop_x": 0,
@@ -646,8 +737,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 200,
-                    "y": 150
+                    "x": 300,
+                    "y": 100
                 }
             ]
         },
@@ -803,16 +894,23 @@
         "DUMBFACE3.png": "1, 7",
         "DUMBFACE4.png": "1, 8",
         "DUMBFACE5.png": "1, 9",
-        "DUMBwalk1.png": "1, 10",
-        "DUMBwalk2.png": "1, 11",
-        "DUMBwalk3.png": "1, 12",
-        "DUMBwalk4.png": "1, 13",
-        "DUMBwalk5.png": "1, 14",
-        "DUMBwalkleft1.png": "1, 15",
-        "DUMBwalkleft2.png": "1, 16",
-        "DUMBwalkleft3.png": "1, 17",
-        "DUMBwalkleft4.png": "1, 18",
-        "DUMBwalkleft5.png": "1, 19",
+        "DUMBSPAWN1.png": "1, 10",
+        "DUMBSPAWN2.png": "1, 11",
+        "DUMBSPAWN3.png": "1, 12",
+        "DUMBSPAWN4.png": "1, 13",
+        "DUMBSPAWN5.png": "1, 14",
+        "DUMBSPAWN6.png": "1, 15",
+        "DUMBSPAWN7.png": "1, 16",
+        "DUMBwalk1.png": "1, 17",
+        "DUMBwalk2.png": "1, 18",
+        "DUMBwalk3.png": "1, 19",
+        "DUMBwalk4.png": "1, 20",
+        "DUMBwalk5.png": "1, 21",
+        "DUMBwalkleft1.png": "1, 22",
+        "DUMBwalkleft2.png": "1, 23",
+        "DUMBwalkleft3.png": "1, 24",
+        "DUMBwalkleft4.png": "1, 25",
+        "DUMBwalkleft5.png": "1, 26",
         "sheepBack1.png": "2, 0",
         "sheepBack2.png": "2, 1",
         "sheepLeftWalk1.png": "2, 2",
@@ -822,6 +920,6 @@
         "sheepWalk1.png": "2, 6",
         "sheepWalk2.png": "2, 7"
     },
-    "totalImageCount": 57,
+    "totalImageCount": 64,
     "totalSpritesheetCount": 3
 }

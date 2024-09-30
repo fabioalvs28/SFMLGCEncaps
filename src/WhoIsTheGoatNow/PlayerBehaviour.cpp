@@ -13,6 +13,7 @@ void GCScriptPlayerBehaviour::Start()
 	m_velocity = 0.05f;
 	m_pInputSystem = new InputSystem();
 	m_pInputSystem->Initialize();
+	m_pAnimator = m_pGameObject->GetComponent<GCAnimator>();
 }
 
 void GCScriptPlayerBehaviour::FixedUpdate()
@@ -24,6 +25,7 @@ void GCScriptPlayerBehaviour::FixedUpdate()
 		if (GCINPUTS::GetKeyStay(GCKEYBOARD(input)))
 		{
 			translation += GCVEC3::Up();
+			m_pAnimator->PlayAnimation("PlayerBackward", true);
 		}
 	}
 
@@ -32,6 +34,7 @@ void GCScriptPlayerBehaviour::FixedUpdate()
 		if (GCINPUTS::GetKeyStay(GCKEYBOARD(input)))
 		{
 			translation -= GCVEC3::Up();
+			m_pAnimator->PlayAnimation("PlayerForward", true);
 		}
 	}
 
@@ -40,6 +43,7 @@ void GCScriptPlayerBehaviour::FixedUpdate()
 		if (GCINPUTS::GetKeyStay(GCKEYBOARD(input)))
 		{
 			translation -= GCVEC3::Right();
+			m_pAnimator->PlayAnimation("PlayerLeft", true);
 		}
 	}
 
@@ -48,6 +52,7 @@ void GCScriptPlayerBehaviour::FixedUpdate()
 		if (GCINPUTS::GetKeyStay(GCKEYBOARD(input)))
 		{
 			translation += GCVEC3::Right();
+			m_pAnimator->PlayAnimation("PlayerRight", true);
 		}
 	}
 

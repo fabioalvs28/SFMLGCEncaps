@@ -42,9 +42,12 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCGameObject* GO_pPlayer = pScene->CreateGameObject();
     GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
     GCAnimator* pAnimator = GO_pPlayer->AddComponent<GCAnimator>();
-    pAnimator->LoadSpriteSheet("spritesheet_0.dds", 0);
-    pAnimator->CreateAnimation("aaa", 0, 5, 0.3f);
-    pAnimator->PlayAnimation("aaa",true);
+    pAnimator->LoadSpriteSheet("spritesheet_2.dds", 2);
+    pAnimator->CreateAnimation("PlayerForward", 6, 2, 0.3f);
+    pAnimator->CreateAnimation("PlayerBackward", 0, 2, 0.3f);
+    pAnimator->CreateAnimation("PlayerLeft", 2, 2, 0.3f);
+    pAnimator->CreateAnimation("PlayerRight", 4, 2, 0.3f);
+    pAnimator->PlayAnimation("PlayerBackward", true);
     //GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
     GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>()->SetBulletTemplate(GO_pBullet);
@@ -62,8 +65,9 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pDumbGoatAnimator->LoadSpriteSheet("spritesheet_1.dds", 1);
     pDumbGoatAnimator->CreateAnimation("DumbGoatForward", 5, 5, 0.05f);
     pDumbGoatAnimator->CreateAnimation("DumbGoatBackWard", 0, 5, 0.05f);
-    pDumbGoatAnimator->CreateAnimation("DumbGoatLeft", 15, 5, 0.05f);
-    pDumbGoatAnimator->CreateAnimation("DumbGoatRight", 10, 5, 0.05f);
+    pDumbGoatAnimator->CreateAnimation("DumbGoatLeft", 22, 5, 0.05f);
+    pDumbGoatAnimator->CreateAnimation("DumbGoatRight", 17, 5, 0.05f);
+    pDumbGoatAnimator->CreateAnimation("DumbGoatSpawn", 10, 7, 0.2f);
     //GO_pEnemy->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_pDumbGoat->AddComponent<GCScriptDumbGoat>()->SetTarget(GO_pPlayer);
     GO_pDumbGoat->m_transform.SetPosition(GCVEC3(5, -3, 0));
@@ -78,21 +82,21 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pDarkGoatAnimator->CreateAnimation("DarkGoatBackWard", 0, 5, 0.05f);
     pDarkGoatAnimator->CreateAnimation("DarkGoatLeft", 24, 5, 0.05f);
     pDarkGoatAnimator->CreateAnimation("DarkGoatRight", 19, 5, 0.05f);
-    pDarkGoatAnimator->CreateAnimation("DarkGoatSummon", 10, 9, 0.6f);
+    pDarkGoatAnimator->CreateAnimation("DarkGoatSummon", 10, 9, 0.2f);
     //GO_pEnemy->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_pDarkGoat->AddComponent<GCScriptDarkGoat>()->SetTarget(GO_pPlayer);
     GO_pDarkGoat->GetComponent<GCScriptDarkGoat>()->SetSummonedEnemy(GO_pDumbGoat);
     GO_pDarkGoat->m_transform.SetPosition(GCVEC3(5, -3, 0));
     GO_pDarkGoat->AddTag("enemy");
     GO_pDarkGoat->SetLayer(1);
-    //GO_pDarkGoat->Deactivate();
+    GO_pDarkGoat->Deactivate();
 
 
-    //GCGameObject* GO_pEnemySpawner = pScene->CreateGameObject();
-    //GO_pEnemySpawner->AddComponent<GCText>()->SetText(std::to_string(0));
-    //GO_pEnemySpawner->m_transform.SetPosition(GCVEC3(-4, 3, 0));
-    //GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->AddEnemyInList(0, GO_pDarkGoat);
-    //GO_pEnemySpawner->GetComponent<GCScriptEnemySpawner>()->AddEnemyInList(1, GO_pDumbGoat);
+    GCGameObject* GO_pEnemySpawner = pScene->CreateGameObject();
+    GO_pEnemySpawner->AddComponent<GCText>()->SetText(std::to_string(0));
+    GO_pEnemySpawner->m_transform.SetPosition(GCVEC3(-4, 3, 0));
+    GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->AddEnemyInList(0, GO_pDarkGoat);
+    GO_pEnemySpawner->GetComponent<GCScriptEnemySpawner>()->AddEnemyInList(1, GO_pDumbGoat);
 
     GCSprite SP_Weapon("Shotgun.dds");
     GCGameObject* GO_pWeapon = GO_pPlayer->CreateChild();
