@@ -8,11 +8,14 @@ void SetAnimationWalk(int animation);
 void Summon();
 
 public:
+void SetSummonedEnemy(GCGameObject* pGoat) { m_pSummonedGoat = pGoat; }
     //void SetAnimator(GCAnimator* pAnimator) { m_pAnimator = pAnimator; }
 
 protected:
-    bool m_spawning;
-
+    bool m_summoning;
+    float m_summonCount;
+    float m_summonfrequency;
+    int m_summoningAmmount;
     std::vector<std::string> m_animationList;
     GCAnimator* m_pAnimator;
     GCVEC3 m_lastDirection;
@@ -24,11 +27,13 @@ protected:
         Forward, Backward, Left, Right, AnimSummon, count
     };
 
-CREATE_SCRIPT_END
+    CREATE_SCRIPT_END
 
 
 
 CREATE_SCRIPT_INHERIT_START(DumbGoat, EnemyBehaviour)
+
+friend class GCScriptDarkGoat;
 
 void Start() override;
 void Update() override;

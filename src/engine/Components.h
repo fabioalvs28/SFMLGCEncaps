@@ -269,6 +269,8 @@ public:
     void PlayAnimation( std::string animationName, bool isLoop );
     void StopAnimation();
 
+    bool AnimationHasEnded() { return m_isEnded; }
+
     void LoadSpriteSheet( std::string fileName ,int spriteSheetID );
     GCAnimation* CreateAnimation( std::string animationName , int firstFrame , int frameNumber , float frameDisplayTime = 0.1f );
     GCAnimation* CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList , float frameDisplayTime = 0.1f );
@@ -299,6 +301,7 @@ private:
     std::string m_activeAnimationName;
     GCAnimation* m_pCurrentAnimation;
 
+    bool m_isEnded;
     bool m_isLoop;
     int m_lastFrameIndex;
     int m_currentFrameIndex;

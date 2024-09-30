@@ -1,9 +1,9 @@
 {
     "Spritesheets": [
         {
-            "SpritesheetSize": 256,
+            "SpritesheetSize": 512,
             "Spritesheet_ID": "0",
-            "imageCount": 15,
+            "imageCount": 29,
             "images": [
                 {
                     "crop_x": 0,
@@ -80,6 +80,71 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
+                    "x": 250,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKFORWARD2.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 300,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKFORWARD3.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 350,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKFORWARD4.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 400,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKFORWARD5.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 450,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKSUMMON.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
                     "x": 0,
                     "y": 50
                 },
@@ -87,7 +152,7 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
-                    "filename": "DARKFORWARD2.png",
+                    "filename": "DARKSUMMON2.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
@@ -100,7 +165,7 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
-                    "filename": "DARKFORWARD3.png",
+                    "filename": "DARKSUMMON3.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
@@ -113,7 +178,7 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
-                    "filename": "DARKFORWARD4.png",
+                    "filename": "DARKSUMMON4.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
@@ -126,13 +191,65 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
-                    "filename": "DARKFORWARD5.png",
+                    "filename": "DARKSUMMON5.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
                     "x": 200,
+                    "y": 50
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKSUMMON6.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 250,
+                    "y": 50
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKSUMMON7.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 300,
+                    "y": 50
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKSUMMON8.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 350,
+                    "y": 50
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKSUMMON9.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 400,
                     "y": 50
                 },
                 {
@@ -145,8 +262,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 0,
-                    "y": 100
+                    "x": 450,
+                    "y": 50
                 },
                 {
                     "crop_x": 0,
@@ -158,7 +275,7 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 50,
+                    "x": 0,
                     "y": 100
                 },
                 {
@@ -171,7 +288,7 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 100,
+                    "x": 50,
                     "y": 100
                 },
                 {
@@ -184,7 +301,7 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 150,
+                    "x": 100,
                     "y": 100
                 },
                 {
@@ -197,7 +314,72 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
+                    "x": 150,
+                    "y": 100
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKwalleftk1.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
                     "x": 200,
+                    "y": 100
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKwalleftk2.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 250,
+                    "y": 100
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKwalleftk3.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 300,
+                    "y": 100
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKwalleftk4.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 350,
+                    "y": 100
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DARKwalleftk5.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 400,
                     "y": 100
                 }
             ]
@@ -205,7 +387,7 @@
         {
             "SpritesheetSize": 256,
             "Spritesheet_ID": "1",
-            "imageCount": 15,
+            "imageCount": 20,
             "images": [
                 {
                     "crop_x": 0,
@@ -401,13 +583,78 @@
                     "w": 50,
                     "x": 200,
                     "y": 100
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBwalkleft1.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 0,
+                    "y": 150
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBwalkleft2.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 50,
+                    "y": 150
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBwalkleft3.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 100,
+                    "y": 150
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBwalkleft4.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 150,
+                    "y": 150
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "DUMBwalkleft5.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 200,
+                    "y": 150
                 }
             ]
         },
         {
-            "SpritesheetSize": 128,
+            "SpritesheetSize": 256,
             "Spritesheet_ID": "2",
-            "imageCount": 6,
+            "imageCount": 8,
             "images": [
                 {
                     "crop_x": 0,
@@ -439,14 +686,40 @@
                     "crop_x": 0,
                     "crop_y": 0,
                     "cropped": false,
+                    "filename": "sheepLeftWalk1.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 100,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
+                    "filename": "sheepLeftWalk2.png",
+                    "h": 50,
+                    "original_h": 0,
+                    "original_w": 0,
+                    "rotated": false,
+                    "w": 50,
+                    "x": 150,
+                    "y": 0
+                },
+                {
+                    "crop_x": 0,
+                    "crop_y": 0,
+                    "cropped": false,
                     "filename": "sheepRightWalk1.png",
                     "h": 50,
                     "original_h": 0,
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 0,
-                    "y": 50
+                    "x": 200,
+                    "y": 0
                 },
                 {
                     "crop_x": 0,
@@ -458,7 +731,7 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 50,
+                    "x": 0,
                     "y": 50
                 },
                 {
@@ -471,8 +744,8 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 0,
-                    "y": 100
+                    "x": 50,
+                    "y": 50
                 },
                 {
                     "crop_x": 0,
@@ -484,16 +757,10 @@
                     "original_w": 0,
                     "rotated": false,
                     "w": 50,
-                    "x": 50,
-                    "y": 100
+                    "x": 100,
+                    "y": 50
                 }
             ]
-        },
-        {
-            "SpritesheetSize": 1,
-            "Spritesheet_ID": "3",
-            "imageCount": 0,
-            "images": []
         }
     ],
     "spriteIndex": {
@@ -507,11 +774,25 @@
         "DARKFORWARD3.png": "0, 7",
         "DARKFORWARD4.png": "0, 8",
         "DARKFORWARD5.png": "0, 9",
-        "DARKwalk1.png": "0, 10",
-        "DARKwalk2.png": "0, 11",
-        "DARKwalk3.png": "0, 12",
-        "DARKwalk4.png": "0, 13",
-        "DARKwalk5.png": "0, 14",
+        "DARKSUMMON.png": "0, 10",
+        "DARKSUMMON2.png": "0, 11",
+        "DARKSUMMON3.png": "0, 12",
+        "DARKSUMMON4.png": "0, 13",
+        "DARKSUMMON5.png": "0, 14",
+        "DARKSUMMON6.png": "0, 15",
+        "DARKSUMMON7.png": "0, 16",
+        "DARKSUMMON8.png": "0, 17",
+        "DARKSUMMON9.png": "0, 18",
+        "DARKwalk1.png": "0, 19",
+        "DARKwalk2.png": "0, 20",
+        "DARKwalk3.png": "0, 21",
+        "DARKwalk4.png": "0, 22",
+        "DARKwalk5.png": "0, 23",
+        "DARKwalleftk1.png": "0, 24",
+        "DARKwalleftk2.png": "0, 25",
+        "DARKwalleftk3.png": "0, 26",
+        "DARKwalleftk4.png": "0, 27",
+        "DARKwalleftk5.png": "0, 28",
         "DUMBBACK1.png": "1, 0",
         "DUMBBACK2.png": "1, 1",
         "DUMBBACK3.png": "1, 2",
@@ -527,13 +808,20 @@
         "DUMBwalk3.png": "1, 12",
         "DUMBwalk4.png": "1, 13",
         "DUMBwalk5.png": "1, 14",
+        "DUMBwalkleft1.png": "1, 15",
+        "DUMBwalkleft2.png": "1, 16",
+        "DUMBwalkleft3.png": "1, 17",
+        "DUMBwalkleft4.png": "1, 18",
+        "DUMBwalkleft5.png": "1, 19",
         "sheepBack1.png": "2, 0",
         "sheepBack2.png": "2, 1",
-        "sheepRightWalk1.png": "2, 2",
-        "sheepRightWalk2.png": "2, 3",
-        "sheepWalk1.png": "2, 4",
-        "sheepWalk2.png": "2, 5"
+        "sheepLeftWalk1.png": "2, 2",
+        "sheepLeftWalk2.png": "2, 3",
+        "sheepRightWalk1.png": "2, 4",
+        "sheepRightWalk2.png": "2, 5",
+        "sheepWalk1.png": "2, 6",
+        "sheepWalk2.png": "2, 7"
     },
-    "totalImageCount": 36,
-    "totalSpritesheetCount": 4
+    "totalImageCount": 57,
+    "totalSpritesheetCount": 3
 }

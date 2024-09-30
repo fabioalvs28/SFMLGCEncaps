@@ -11,12 +11,13 @@ void GCScriptEnemyBehaviour::Start()
 {
 	m_hp = 1;
     m_speed = 0.03f;
+    m_spawning = false;
     Spawn();
 }
 
 void GCScriptEnemyBehaviour::FixedUpdate()
 {
-    if (m_pTarget != NULL)
+    if (m_pTarget != NULL && m_spawning == false)
     {
         m_direction = m_pTarget->m_transform.m_position;
         m_direction -= m_pGameObject->m_transform.m_position;

@@ -377,14 +377,15 @@ void GCAnimator::Update()
 	if ( m_pCurrentAnimation == nullptr )
 		return;
 
+	m_pCurrentAnimation->Update(&m_currentFrameIndex, &m_currentFrameTime);
+		//m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 	if ( m_isLoop == false && m_currentFrameIndex == m_pCurrentAnimation->GetLastFrameIndex() )
 	{
+		m_isEnded = true;
 		StopAnimation();
 		return;
 	}
 
-	if ( m_pCurrentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
-		m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 }
 
 
@@ -405,8 +406,10 @@ void GCAnimator::PlayAnimation( std::string animationName, bool isLoop )
 	m_lastFrameIndex = pAnimation->GetLastFrameIndex();
 	m_pCurrentAnimation->StartAnimation();
 	m_pSpriteRenderer->m_pSprite->m_pMaterial = m_pCurrentAnimation->m_pMaterial;
-	m_pSpriteRenderer->m_pSprite->m_pMesh = nullptr;
-	m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
+	m_pSpriteRenderer->m_pSprite->m_pGeometry = m_pCurrentAnimation->m_pGeometry;
+	m_pSpriteRenderer->m_pSprite->m_pMesh = m_pCurrentAnimation->m_pMesh;
+	m_isEnded = false;
+	//m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 }
 
 /////////////////////////////////////////////////////////////

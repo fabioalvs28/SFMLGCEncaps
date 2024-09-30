@@ -18,5 +18,6 @@ protected:
     float m_speed;
     GCVEC3 m_direction;
     GCGameObject* m_pTarget;
+    bool m_spawning;
 
 CREATE_SCRIPT_END

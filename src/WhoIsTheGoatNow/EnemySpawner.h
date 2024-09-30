@@ -13,6 +13,8 @@ public:
 private:
 	GCGameObject* m_pEnemyTemplate;
 	std::map<int,GCGameObject*> m_pEnemies;
+	GCText* m_pText;
 	float m_counter;
+	int m_enemyCount;
 
 CREATE_SCRIPT_END
