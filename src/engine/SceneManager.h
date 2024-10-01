@@ -35,6 +35,7 @@ private:
 	GCScene* CreateScene();
 
 private:
+	GCScene* m_pNewActiveScene;
     GCScene* m_pActiveScene; // A pointer to the active Scene
 	
 	GCList<GCScene*> m_scenesList; // A list of pointers to every existing Scenes in the Game

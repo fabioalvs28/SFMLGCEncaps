@@ -24,6 +24,8 @@ void GCScriptBullet::CopyTo(GCComponent * pDestination)
 
 void GCScriptBullet::FixedUpdate()
 {
+    //if (m_pPlayer == nullptr)
+    //    return;
 
     m_pGameObject->m_transform.Translate(m_direction);
     float first = ( m_pGameObject->m_transform.m_position.x - m_pPlayer->m_transform.m_position.x + m_centralizer.x ) * ( m_pGameObject->m_transform.m_position.x - m_pPlayer->m_transform.m_position.x + m_centralizer.x );
