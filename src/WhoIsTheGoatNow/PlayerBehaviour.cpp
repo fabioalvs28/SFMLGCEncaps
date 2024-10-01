@@ -2,6 +2,7 @@
 #include "PlayerBehaviour.h"
 #include "Weapon.h"
 
+
 void GCScriptPlayerBehaviour::CopyTo(GCComponent* pDestination)
 {
 	GCComponent::CopyTo(pDestination);
@@ -56,12 +57,22 @@ void GCScriptPlayerBehaviour::FixedUpdate()
 	m_pGameObject->m_transform.Translate(translation);
 }
 
-void GCScriptPlayerBehaviour::Update()
+void GCScriptPlayerBehaviour::SetWeapon( int weapon )
 {
-
-}
-
-void GCScriptPlayerBehaviour::Shoot()
-{
+	switch ( weapon )
+	{
+	case Sniper:
+		m_pGameObject->GetChildren().GetFirstNode()->GetData()->Activate();
+		break;
+	case Shotgun:
+		m_pGameObject->GetChildren().GetLastNode()->GetData()->Activate();
+		break;
+	case MachineGun:
+		m_pGameObject->GetChildren().GetFirstNode()->GetNext()->GetData()->Activate();
+		break;
+	default:
+		m_pGameObject->GetChildren().GetFirstNode()->GetData()->Activate();
+		break;
+	}
 }
 

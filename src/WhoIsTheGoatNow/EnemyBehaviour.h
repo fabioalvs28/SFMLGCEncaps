@@ -12,6 +12,7 @@ public:
 	void SetTarget(GCGameObject* pTarget) { m_pTarget = pTarget; };
 	GCGameObject* GetTarget() { return m_pTarget; };
 
+
 private:
 	int m_hp;
 	float m_speed;

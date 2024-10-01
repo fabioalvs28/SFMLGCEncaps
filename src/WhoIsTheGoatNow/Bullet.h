@@ -5,8 +5,11 @@ CREATE_SCRIPT_START(Bullet)
 public:
 	void Start() override;
 	void FixedUpdate() override;
-	void Shoot();
+	void Shoot(int bulletIndex = 0);
 	void OnTriggerStay(GCCollider* pCollider) override;
+
+	void SetDirection( GCVEC3 newDirection ) { m_direction = newDirection; }
+	GCVEC3 GetDirection() { return m_direction; }
 	
 	void SetPlayer( GCGameObject* pPlayer ) { m_pPlayer = pPlayer; }
 	void SetOrigin( GCGameObject* pOrigin ) { m_pOrigin = pOrigin; }
@@ -24,6 +27,7 @@ private:
 	bool m_isFlipped;
 	float m_startRotationZ;
 
+	GCVEC3 m_centralizer;
 	GCVEC3 m_startPosition;
 	GCVEC3 m_direction;
 	GCCamera* m_pCamera;
