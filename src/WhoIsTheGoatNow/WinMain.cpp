@@ -117,7 +117,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_Title->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_Title->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
     GO_Title->AddComponent<GCText>()->SetText("WHO \tIS\t THE \bGOAT\b NOW", GCColor(0,0,255));
-    GO_Title->AddComponent<GCScriptTest>()->pText = GO_Title->GetComponent<GCText>();
+    //GO_Title->AddComponent<GCScriptTest>()->pText = GO_Title->GetComponent<GCText>();
     GO_Title->AddComponent<GCButton>();
 
     //Button prefab

@@ -4,6 +4,7 @@ class GCSprite
 {
 friend class GCSpriteRenderer;
 friend class GCAnimator;
+friend class GCAnimation;
 friend class GCBoxCollider;
 friend class GCCircleCollider;
 

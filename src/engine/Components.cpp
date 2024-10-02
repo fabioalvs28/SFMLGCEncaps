@@ -407,9 +407,7 @@ void GCAnimator::PlayAnimation( std::string animationName, bool isLoop )
 	m_pCurrentAnimation->StartAnimation();
 	m_currentFrameIndex = 0;
 	m_currentFrameTime = 0.0f;
-	m_pSpriteRenderer->m_pSprite->m_pMaterial = m_pCurrentAnimation->m_pMaterial;
-	m_pSpriteRenderer->m_pSprite->m_pGeometry = m_pCurrentAnimation->m_pGeometry;
-	m_pSpriteRenderer->m_pSprite->m_pMesh = m_pCurrentAnimation->m_pMesh;
+	m_pSpriteRenderer->m_pSprite = m_pCurrentAnimation->m_pSprite;
 	m_isEnded = false;
 	//m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 }

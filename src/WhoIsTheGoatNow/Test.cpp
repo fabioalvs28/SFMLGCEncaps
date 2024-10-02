@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "GCEngine.h"
 #include "Test.h"
 
 void GCScriptTest::CopyTo(GCComponent* pDestination)

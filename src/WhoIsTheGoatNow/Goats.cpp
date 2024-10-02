@@ -1,7 +1,5 @@
 #include "pch.h"
-#include "GCEngine.h"
 #include "Goats.h"
-#include "EnemyBehaviour.h"
 
 #pragma region DARKGOAT
 
