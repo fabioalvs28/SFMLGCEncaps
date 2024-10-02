@@ -8,13 +8,14 @@
 #include "Test.h";
 #include "Mouse.h"
 #include "Weapon.h"
+#include "ButtonSelect.h"
 
 int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
 
 #pragma region GAMESCENE
-    GCScene* pScene = GCScene::Create();
+    GCScene* SC_pGame = GCScene::Create();
     
     GCSprite SP_enemy("red_square.dds");
 
@@ -26,21 +27,13 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //GCGameObject* GO_pGameScene = pScene->CreateGameObject();
 
     //Bullet prefab 
-    GCSprite SP_bullet("black_small_square.dds");
-
-    GCGameObject* GO_pBullet = pScene->CreateGameObject();
-    GO_pBullet->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_bullet);
-    //GO_pBullet->AddComponent<GCBoxCollider>()->SetVisible(true);
-    GO_pBullet->AddComponent<GCScriptBullet>();
-    GO_pBullet->AddTag("bullet");
-    GO_pBullet->m_transform.Scale(0.5f);
-    GO_pBullet->Deactivate();
 
     //Player creation
     GCSprite SP_player("blue_square.dds");
 
-    GCGameObject* GO_pPlayer = pScene->CreateGameObject();
+    GCGameObject* GO_pPlayer = SC_pGame->CreateGameObject();
     GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
+    GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>();
     GCAnimator* pAnimator = GO_pPlayer->AddComponent<GCAnimator>();
     pAnimator->LoadSpriteSheet("spritesheet_2.dds", 2);
     pAnimator->CreateAnimation("PlayerForward", 6, 2, 0.3f);
@@ -50,11 +43,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pAnimator->PlayAnimation("PlayerBackward", true);
     //GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
     GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(true);
-    GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>()->SetBulletTemplate(GO_pBullet);
     GO_pPlayer->AddTag("player");
     GO_pPlayer->SetLayer(1);
-
-    GO_pBullet->GetComponent<GCScriptBullet>()->SetOrigin(GO_pPlayer);
 
     //Enemy prefab
 
@@ -98,21 +88,52 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->AddEnemyInList(0, GO_pDarkGoat);
     GO_pEnemySpawner->GetComponent<GCScriptEnemySpawner>()->AddEnemyInList(1, GO_pDumbGoat);
 
-    GCSprite SP_Weapon("Shotgun.dds");
-    GCGameObject* GO_pWeapon = GO_pPlayer->CreateChild();
-    GO_pWeapon->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_Weapon);
-    GO_pWeapon->AddComponent<GCScriptWeapon>();
-    GO_pWeapon->AddComponent<GCText>()->SetText(std::to_string(GCINPUTS::GetMousePos().x));
+    //SniperPrefab
+    GCSprite SP_sniper("Shotgun.dds");
+    GCSprite SP_sniperBullet("bullet.dds");
+    GCGameObject* GO_pSniper = GO_pPlayer->CreateChild();
+    GO_pSniper->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_sniper );
+    GO_pSniper->AddComponent<GCScriptSniper>()->SetBulletSprite(&SP_sniperBullet);
 
+    //MachineGune prefab
+    GCSprite SP_machineGun("Shotgun.dds");
+    GCSprite SP_machineGunBullet("bulletMG.dds");
+    GCGameObject* GO_pMachineGun = GO_pPlayer->CreateChild();
+    GO_pMachineGun->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_machineGun );
+    GO_pMachineGun->AddComponent<GCScriptMachineGun>()->SetBulletSprite( &SP_machineGunBullet );
+
+    //Shotgun prefab
+    GCSprite SP_shotgun("Shotgun.dds");
+    GCSprite SP_shotgunBullet("bulletSG.dds");
+    GCGameObject* GO_pShotgun = GO_pPlayer->CreateChild();
+    GO_pShotgun->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_shotgun );
+    GO_pShotgun->AddComponent<GCScriptShotgun>()->SetBulletSprite( &SP_shotgunBullet );
+
+    //bullet prefab
+    GCGameObject* GO_pBullet = SC_pGame->CreateGameObject();
+    GO_pBullet->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pBullet->AddComponent<GCScriptBullet>();
+    GO_pBullet->AddTag("bullet");
+    GO_pBullet->Deactivate();
+
+    GO_pSniper->GetComponent<GCScriptSniper>()->SetBulletTemplate( GO_pBullet );
+    GO_pMachineGun->GetComponent<GCScriptMachineGun>()->SetBulletTemplate( GO_pBullet );
+    GO_pShotgun->GetComponent<GCScriptShotgun>()->SetBulletTemplate( GO_pBullet );
+
+    GO_pSniper->Deactivate();
+    GO_pMachineGun->Deactivate();
+    GO_pShotgun->Deactivate();
+
+    //GO_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->SetWeapon( 0 );
     
 #pragma endregion
 
 #pragma region HOMESCENE
 
-    GCScene* pHomeScene = GCScene::Create();
+    GCScene* SC_pHome = GCScene::Create();
     //pHomeScene->SetActive();
 
-    GCGameObject* GO_Title = pHomeScene->CreateGameObject();
+    GCGameObject* GO_Title = SC_pHome->CreateGameObject();
     GO_Title->m_transform.SetPosition(GCVEC3(0, 0, 0));
     GO_Title->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_Title->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
@@ -133,6 +154,31 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //GO_pMouse->m_transform.Scale(0.25f);
     //GO_pMouse->SetLayer(1);
 
+
+#pragma endregion
+
+#pragma region SELECTWEAPONSCENE
+    
+    GCScene* SC_pWeaponSelect = GCScene::Create();
+    SC_pWeaponSelect->SetActive();
+
+    GCGameObject* GO_pButtonSelect = SC_pWeaponSelect->CreateGameObject();
+    GO_pButtonSelect->AddComponent<GCButton>();
+    GCScriptButtonSelect* SR_pButtonSelect = GO_pButtonSelect->AddComponent<GCScriptButtonSelect>();
+    SR_pButtonSelect->SetGameScene( SC_pGame );
+    SR_pButtonSelect->SetPlayer( GO_pPlayer );
+    GO_pButtonSelect->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_enemy );
+    
+    GCGameObject* GO_pSelectSniper = GO_pButtonSelect->Duplicate();
+    GO_pSelectSniper->GetComponent<GCScriptButtonSelect>()->SetWeapon( 0 );
+    GO_pSelectSniper->m_transform.Translate( GCVEC3( -2.0f , 0.0f , 0.0f ) );
+
+    GCGameObject* GO_pSelectSG = GO_pButtonSelect->Duplicate();
+    GO_pSelectSG->GetComponent<GCScriptButtonSelect>()->SetWeapon( 1 );
+
+    GCGameObject* GO_pSelectMG = GO_pButtonSelect->Duplicate();
+    GO_pSelectMG->GetComponent<GCScriptButtonSelect>()->SetWeapon( 2 );
+    GO_pSelectMG->m_transform.Translate( GCVEC3( 2.0f , 0.0f , 0.0f ) );
 
 #pragma endregion
     pGameManager->Run();

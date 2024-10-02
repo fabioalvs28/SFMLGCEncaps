@@ -13,6 +13,7 @@ public:
     GCSprite( std::string filename );
     ~GCSprite() {};
 
+    GCGeometry* GetGeometry() { return m_pGeometry; };
 private:
     GCGeometry* m_pGeometry;
     GCMesh* m_pMesh;

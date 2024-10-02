@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PlayerBehaviour.h"
-#include "Bullet.h"
+#include "Weapon.h"
+
 
 void GCScriptPlayerBehaviour::CopyTo(GCComponent* pDestination)
 {
@@ -61,22 +62,22 @@ void GCScriptPlayerBehaviour::FixedUpdate()
 	m_pGameObject->m_transform.Translate(translation);
 }
 
-void GCScriptPlayerBehaviour::Update()
+void GCScriptPlayerBehaviour::SetWeapon( int weapon )
 {
-	//Actions
-	for (int input : m_pInputSystem->GetActions()->Shoot.inputs) //Shoot
+	switch ( weapon )
 	{
-		if (GCINPUTS::GetKeyDown(GCKEYBOARD(input)))
-		{
-			PlayerShoot();
-		}
+	case Sniper:
+		m_pGameObject->GetChildren().GetFirstNode()->GetData()->Activate();
+		break;
+	case Shotgun:
+		m_pGameObject->GetChildren().GetLastNode()->GetData()->Activate();
+		break;
+	case MachineGun:
+		m_pGameObject->GetChildren().GetFirstNode()->GetNext()->GetData()->Activate();
+		break;
+	default:
+		m_pGameObject->GetChildren().GetFirstNode()->GetData()->Activate();
+		break;
 	}
-}
-
-void GCScriptPlayerBehaviour::PlayerShoot()
-{
-	GCGameObject* newBullet = m_pBulletTemplate->Duplicate();
-	newBullet->Activate();
-	newBullet->GetComponent<GCScriptBullet>()->BulletShoot();
 }
 

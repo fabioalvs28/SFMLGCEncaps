@@ -7,6 +7,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCSceneManager::Update()
 {
+	if (m_pNewActiveScene != nullptr)
+		m_pNewActiveScene->Activate();
+
 	for ( GCListNode<GCComponent*>* pComponentNode = m_componentsToCreateList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
 		CreateComponent( pComponentNode->GetData() );
 	m_componentsToCreateList.Clear();

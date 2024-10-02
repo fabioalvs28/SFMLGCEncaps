@@ -19,8 +19,6 @@ enum FLAGS
 };
 inline FLAGS operator|( FLAGS a, FLAGS b ) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
-
-
 class GCComponent
 {
 friend class GCGameObject;
@@ -99,6 +97,21 @@ public:
     GCSprite* GetSprite() { return m_pSprite; };
     void FlipX();
     void FlipY();
+
+    enum OriginType
+    {
+        BottomLeft ,
+        BottomRight ,
+        TopLeft ,
+        TopRight ,
+        Center ,
+        Left ,
+        Right ,
+        Top ,
+        Bottom
+    };
+
+    void SetOrigin( int originType );
 
 protected:
 	GCSpriteRenderer();
