@@ -41,6 +41,9 @@ const char* g_contentMain =
 	"		DispatchMessage(&msg);\n"
 	"	}\n"
 	"\n"
+	"#ifdef _DEBUG\n"
+	"	_CrtDumpMemoryLeaks();\n"
+	"#endif\n\n"
 	"	return 0;\n"
 	"}\n"
 	"\n"
@@ -73,6 +76,18 @@ const char* g_contentMain =
 	"			break;\n"
 	"		}\n"
 	"	}\n"
+	"	return 0;\n"
+	"}\n";
+
+const char* g_contentMain2 =
+	"#include \"pch.h\"\n"
+	"#include \"main.h\"\n"
+	"\n"
+	"int main()\n"
+	"{\n"
+	"#ifdef _DEBUG\n"
+	"	_CrtDumpMemoryLeaks();\n"
+	"#endif\n\n"
 	"	return 0;\n"
 	"}\n";
 
@@ -204,4 +219,11 @@ const char* g_contentRes =
 	"#define _APS_NEXT_CONTROL_VALUE		1000\n"
 	"#define _APS_NEXT_SYMED_VALUE		110\n"
 	"#endif\n"
+	"#endif\n";
+
+const char* g_contentPch =
+	"#ifdef _DEBUG\n"
+	"#include <crtdbg.h>\n"
+    "#define DEBUG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )\n"
+    "#define new DEBUG_NEW\n"
 	"#endif\n";

@@ -11,8 +11,10 @@ using namespace std;
 using json = nlohmann::json;
 namespace fs = filesystem;
 extern const char* g_contentMain;
+extern const char* g_contentMain2;
 extern const char* g_contentRc;
 extern const char* g_contentRes;
+extern const char* g_contentPch;
 
 void EnableANSIColors();
 void ShowHelpForMakeAndCreate();
@@ -86,7 +88,7 @@ int main(int argc, char* argv[])
 			if ( windows )
 				data = g_contentMain;
 			else
-				data = "#include \"pch.h\"\n#include \"main.h\"\n\nint main()\n{\n\treturn 0;\n}\n";
+				data = g_contentMain2;
             ofstream maincpp(s_srcPath + "/" + project_name + "/main.cpp");
 			maincpp.write(data.c_str(), data.length());
 			maincpp.close();
@@ -101,6 +103,7 @@ int main(int argc, char* argv[])
 				data = "#pragma once\n\n#include <windows.h>\n\n#include \"resource.h\"\n\n";
 			else
 				data = "#pragma once\n\n";
+			data += g_contentPch;
 			pch.write(data.c_str(), data.length());
 			pch.close();
 
