@@ -12,6 +12,7 @@ void GCScriptEnemyBehaviour::Start()
 	m_hp = 1;
     m_speed = 0.03f;
     m_spawning = false;
+    m_destroyed = false;
     Spawn();
 }
 
@@ -64,4 +65,11 @@ void GCScriptEnemyBehaviour::Spawn()
 void GCScriptEnemyBehaviour::Die()
 {
     m_pGameObject->Destroy();
+    m_destroyed = true;
+}
+
+void GCScriptEnemyBehaviour::OnTriggerStay(GCCollider* pCollider)
+{
+    if (pCollider->GetGameObject()->HasTag("bullet") && m_destroyed == false)
+        Die();
 }
