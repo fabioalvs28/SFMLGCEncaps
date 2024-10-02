@@ -17,8 +17,16 @@ void GCScriptPlayerBehaviour::Start()
 	m_pAnimator = m_pGameObject->GetComponent<GCAnimator>();
 }
 
+
+void GCScriptPlayerBehaviour::Update()
+{
+	if (GCINPUTS::GetKeyDown(GCKEYBOARD::ESC))
+		m_pPauseScene->SetActive();
+}
+
 void GCScriptPlayerBehaviour::FixedUpdate()
 {
+
 	GCVEC3 translation;
 	//Player movements
 	for (int input : m_pInputSystem->GetDirections()->Up.inputs) //Up
