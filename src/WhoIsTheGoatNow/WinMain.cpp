@@ -11,6 +11,7 @@
 #include "ButtonSelect.h"
 #include "ExpText.h"
 #include "HpText.h"
+#include "Card.h"
 
 int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -145,9 +146,11 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCGameObject* GO_cardTemplate = SC_pCards->CreateGameObject();
     GO_cardTemplate->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_enemy );
     GO_cardTemplate->AddComponent<GCButton>();
-    GO_cardTemplate->AddComponent<GCScriptCard>();
-
+    GO_cardTemplate->AddComponent<GCScriptCard>()->SetGameScene(SC_pGame);
+    GO_cardTemplate->GetComponent<GCScriptCard>()->SetPlayer(GO_pPlayer);
     
+    SR_pPlayerScript->SetUpgradeScene( SC_pCards );
+    SR_pPlayerScript->SetCardTemplate(GO_cardTemplate);
 
 #pragma endregion
 

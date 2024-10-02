@@ -15,12 +15,21 @@ public:
 
 	void SetWeapon( int weapon );
 	void GetWeapon();
+
 	void SetDeathScene( GCScene* deathScene ) { m_pDeathScene = deathScene; };
+	void SetUpgradeScene( GCScene* upgradeScene ) { m_pUpgradeScene = upgradeScene; };
+	void SetCardTemplate( GCGameObject* pCard ) { m_pCardTemplate = pCard; }
 
 	int GetHp() { return m_hp; }
 	int GetLife() { return m_life; }
 	int GetExp() { return m_exp; }
 	int GetLevel() { return m_level; }
+	int GetLevelAmount() { return m_levelAmount; }
+	int GetWeaponIndex() { return m_weaponIndex; }
+
+	void UpgradeVelocity( float value ) { m_velocity += value; }
+	void UpgradeHP( int value ) { m_hp += value; }
+	void UpgradeMaxHealth( int value ) { m_life += value; }
 
 	void AddExp( int value ) { m_exp += value; }
 
@@ -39,7 +48,9 @@ private:
 
 	GCAnimator* m_pAnimator;
 	InputSystem* m_pInputSystem;
+	GCGameObject* m_pCardTemplate;
 	GCGameObject* m_pBulletTemplate;
 	GCScene* m_pDeathScene;
+	GCScene* m_pUpgradeScene;
 
 CREATE_SCRIPT_END

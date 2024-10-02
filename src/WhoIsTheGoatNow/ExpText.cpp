@@ -13,5 +13,6 @@ void GCScriptExpText::Update()
 {
 	int playerExp = m_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->GetExp();
 	int playerLevel = m_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->GetLevel();
-	m_pGameObject->GetComponent<GCText>()->SetText("EXP : " + std::to_string(playerExp) + "/" + std::to_string(playerLevel));
+	int playerLevelAmount = m_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->GetLevelAmount();
+	m_pGameObject->GetComponent<GCText>()->SetText("LVL : " + std::to_string( playerLevelAmount ) + "(" + std::to_string(playerExp) + "/" + std::to_string(playerLevel) + ")");
 }

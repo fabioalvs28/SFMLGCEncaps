@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "PlayerBehaviour.h"
 #include "Weapon.h"
-
+#include "Card.h"
 
 void GCScriptPlayerBehaviour::CopyTo(GCComponent* pDestination)
 {
@@ -112,4 +112,11 @@ void GCScriptPlayerBehaviour::LevelUp()
 	m_exp -= m_level;
 	m_level += 2;
 	m_levelAmount += 1;
+	for ( int i = -1; i < 2; i++ )
+	{
+		GCGameObject* newCard = m_pCardTemplate->Duplicate();
+		newCard->GetComponent<GCScriptCard>()->SetUpgrade(rand() % 8);
+		newCard->m_transform.SetPosition(GCVEC3(i * 2, 0,0));
+	}
+	m_pUpgradeScene->SetActive();
 }
