@@ -11,19 +11,21 @@ void GCScriptEnemyBehaviour::Start()
 {
 	m_hp = 1;
     m_speed = 0.03f;
+    m_spawning = false;
+    m_destroyed = false;
     Spawn();
 }
 
 void GCScriptEnemyBehaviour::FixedUpdate()
 {
-    if (m_pTarget != NULL)
+    if (m_pTarget != NULL && m_spawning == false)
     {
-        GCVEC3 direction = m_pTarget->m_transform.m_position;
-        direction -= m_pGameObject->m_transform.m_position;
-        direction.Normalize();
-        direction *= m_speed;
+        m_direction = m_pTarget->m_transform.m_position;
+        m_direction -= m_pGameObject->m_transform.m_position;
+        m_direction.Normalize();
+        m_direction;
 
-        m_pGameObject->m_transform.Translate(direction);
+        m_pGameObject->m_transform.Translate(m_direction * m_speed);
     }
 }
 
@@ -63,4 +65,11 @@ void GCScriptEnemyBehaviour::Spawn()
 void GCScriptEnemyBehaviour::Die()
 {
     m_pGameObject->Destroy();
+    m_destroyed = true;
+}
+
+void GCScriptEnemyBehaviour::OnTriggerStay(GCCollider* pCollider)
+{
+    if (pCollider->GetGameObject()->HasTag("bullet") && m_destroyed == false)
+        Die();
 }

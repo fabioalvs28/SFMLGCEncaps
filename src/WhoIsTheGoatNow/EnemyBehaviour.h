@@ -1,21 +1,24 @@
 #pragma once
-#include "pch.h"
 
 CREATE_SCRIPT_START(EnemyBehaviour)
 public:
-	void Start() override;
-	void FixedUpdate() override;
+    void Die();
+    virtual void Start() override;
+    void FixedUpdate() override;
+    void OnTriggerStay(GCCollider* pCollider);
 
-	void Spawn();
-	void Die();
+    void Spawn();
 
-	void SetTarget(GCGameObject* pTarget) { m_pTarget = pTarget; };
-	GCGameObject* GetTarget() { return m_pTarget; };
+public:
+    void SetTarget(GCGameObject * pTarget) { m_pTarget = pTarget; };
+    GCGameObject* GetTarget() { return m_pTarget; };
 
+protected:
+    bool m_destroyed;
+    int m_hp;
+    float m_speed;
+    GCVEC3 m_direction;
+    GCGameObject* m_pTarget;
+    bool m_spawning;
 
-private:
-	int m_hp;
-	float m_speed;
-	GCGameObject* m_pTarget;
-	
 CREATE_SCRIPT_END

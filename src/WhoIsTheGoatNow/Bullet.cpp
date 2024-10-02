@@ -70,7 +70,6 @@ void GCScriptBullet::OnTriggerStay(GCCollider* pCollider)
 {
     if (pCollider->GetGameObject()->HasTag("enemy") && m_destroyed == false)
     {
-        pCollider->GetGameObject()->GetComponent<GCScriptEnemyBehaviour>()->Die();
         if ( m_penetration <= 0 )
         {
             m_pGameObject->Destroy();

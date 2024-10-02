@@ -4,10 +4,12 @@ class GCSprite
 {
 friend class GCSpriteRenderer;
 friend class GCAnimator;
+friend class GCAnimation;
 friend class GCBoxCollider;
 friend class GCCircleCollider;
 
 public:
+    GCSprite() { m_pGeometry = nullptr; m_pMesh = nullptr; m_pMaterial = nullptr; }
     GCSprite( std::string filename );
     ~GCSprite() {};
 

@@ -22,8 +22,10 @@ public:
 	void SetSpriteSheet(std::string filename, int spriteSheetID );
 
 private:
+	GCSprite* m_pSprite;
 	GCGraphics* m_pGraphics;
 	int m_spriteSheetID;
+	GCMesh* m_pMesh;
 	GCGeometry* m_pGeometry; 
 	GCMaterial* m_pMaterial;
 	std::vector<GCFrame*> m_pFrames;

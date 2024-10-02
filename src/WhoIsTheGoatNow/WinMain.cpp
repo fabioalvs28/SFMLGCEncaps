@@ -3,6 +3,7 @@
 #include "PlayerBehaviour.h"
 #include "EnemyBehaviour.h"
 #include "EnemySpawner.h"
+#include "Goats.h"
 #include "Bullet.h"
 #include "Test.h";
 #include "Mouse.h"
@@ -32,26 +33,60 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
 
     GCGameObject* GO_pPlayer = SC_pGame->CreateGameObject();
     GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
-    GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>();
     GCAnimator* pAnimator = GO_pPlayer->AddComponent<GCAnimator>();
-    pAnimator->LoadSpriteSheet("spritesheet_0.dds", 0);
-    pAnimator->CreateAnimation("aaa", 0, 5, 0.3f);
-    pAnimator->PlayAnimation("aaa",true);
+    pAnimator->LoadSpriteSheet("spritesheet_2.dds", 2);
+    pAnimator->CreateAnimation("PlayerForward", 6, 2, 0.3f);
+    pAnimator->CreateAnimation("PlayerBackward", 0, 2, 0.3f);
+    pAnimator->CreateAnimation("PlayerLeft", 2, 2, 0.3f);
+    pAnimator->CreateAnimation("PlayerRight", 4, 2, 0.3f);
+    pAnimator->PlayAnimation("PlayerBackward", true);
+    //GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
     GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>();
     GO_pPlayer->AddTag("player");
     GO_pPlayer->SetLayer(1);
 
     //Enemy prefab
 
-    GCGameObject* GO_pEnemy = SC_pGame->CreateGameObject();
-    GO_pEnemy->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
-    GO_pEnemy->AddComponent<GCBoxCollider>()->SetVisible(true);
-    GO_pEnemy->AddComponent<GCScriptEnemyBehaviour>()->SetTarget(GO_pPlayer);
-    GO_pEnemy->AddTag("enemy");
-    GO_pEnemy->Deactivate();
+
+    GCGameObject* GO_pDumbGoat = SC_pGame->CreateGameObject();
+    GO_pDumbGoat->AddComponent<GCSpriteRenderer>();
+    GCAnimator* pDumbGoatAnimator = GO_pDumbGoat->AddComponent<GCAnimator>();
+    pDumbGoatAnimator->LoadSpriteSheet("spritesheet_1.dds", 1);
+    pDumbGoatAnimator->CreateAnimation("DumbGoatForward", 5, 5, 0.05f);
+    pDumbGoatAnimator->CreateAnimation("DumbGoatBackWard", 0, 5, 0.05f);
+    pDumbGoatAnimator->CreateAnimation("DumbGoatLeft", 22, 5, 0.05f);
+    pDumbGoatAnimator->CreateAnimation("DumbGoatRight", 17, 5, 0.05f);
+    pDumbGoatAnimator->CreateAnimation("DumbGoatSpawn", 10, 7, 0.2f);
+    GO_pDumbGoat->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pDumbGoat->AddComponent<GCScriptDumbGoat>()->SetTarget(GO_pPlayer);
+    GO_pDumbGoat->m_transform.SetPosition(GCVEC3(5, -3, 0));
+    GO_pDumbGoat->AddTag("enemy");
+    GO_pDumbGoat->Deactivate();
+
+    GCGameObject* GO_pDarkGoat = SC_pGame->CreateGameObject();
+    GO_pDarkGoat->AddComponent<GCSpriteRenderer>();
+    GCAnimator* pDarkGoatAnimator = GO_pDarkGoat->AddComponent<GCAnimator>();
+    pDarkGoatAnimator->LoadSpriteSheet("spritesheet_0.dds", 0);
+    pDarkGoatAnimator->CreateAnimation("DarkGoatForward", 5, 5, 0.05f);
+    pDarkGoatAnimator->CreateAnimation("DarkGoatBackWard", 0, 5, 0.05f);
+    pDarkGoatAnimator->CreateAnimation("DarkGoatLeft", 24, 5, 0.05f);
+    pDarkGoatAnimator->CreateAnimation("DarkGoatRight", 19, 5, 0.05f);
+    pDarkGoatAnimator->CreateAnimation("DarkGoatSummon", 10, 9, 0.2f);
+    GO_pDarkGoat->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pDarkGoat->AddComponent<GCScriptDarkGoat>()->SetTarget(GO_pPlayer);
+    GO_pDarkGoat->GetComponent<GCScriptDarkGoat>()->SetSummonedEnemy(GO_pDumbGoat);
+    GO_pDarkGoat->m_transform.SetPosition(GCVEC3(5, -3, 0));
+    GO_pDarkGoat->AddTag("enemy");
+    GO_pDarkGoat->SetLayer(1);
+    GO_pDarkGoat->Deactivate();
+
 
     GCGameObject* GO_pEnemySpawner = SC_pGame->CreateGameObject();
-    GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->SetTemplate(GO_pEnemy);
+    GO_pEnemySpawner->AddComponent<GCText>()->SetText(std::to_string(0));
+    GO_pEnemySpawner->m_transform.SetPosition(GCVEC3(-4, 3, 0));
+    GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->AddEnemyInList(0, GO_pDarkGoat);
+    GO_pEnemySpawner->GetComponent<GCScriptEnemySpawner>()->AddEnemyInList(1, GO_pDumbGoat);
 
     //SniperPrefab
     GCSprite SP_sniper("Shotgun.dds");
@@ -103,7 +138,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_Title->AddComponent<GCBoxCollider>()->SetVisible(true);
     GO_Title->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
     GO_Title->AddComponent<GCText>()->SetText("WHO \tIS\t THE \bGOAT\b NOW", GCColor(0,0,255));
-    GO_Title->AddComponent<GCScriptTest>()->pText = GO_Title->GetComponent<GCText>();
+    //GO_Title->AddComponent<GCScriptTest>()->pText = GO_Title->GetComponent<GCText>();
     GO_Title->AddComponent<GCButton>();
 
     //Button prefab
@@ -136,14 +171,16 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     
     GCGameObject* GO_pSelectSniper = GO_pButtonSelect->Duplicate();
     GO_pSelectSniper->GetComponent<GCScriptButtonSelect>()->SetWeapon( 0 );
-    GO_pSelectSniper->m_transform.Translate( GCVEC3( -2.0f , 0.0f , 0.0f ) );
+    GO_pSelectSniper->m_transform.SetPosition( GCVEC3( -2.0f , 0.0f , 0.0f ) );
 
     GCGameObject* GO_pSelectSG = GO_pButtonSelect->Duplicate();
     GO_pSelectSG->GetComponent<GCScriptButtonSelect>()->SetWeapon( 1 );
 
     GCGameObject* GO_pSelectMG = GO_pButtonSelect->Duplicate();
     GO_pSelectMG->GetComponent<GCScriptButtonSelect>()->SetWeapon( 2 );
-    GO_pSelectMG->m_transform.Translate( GCVEC3( 2.0f , 0.0f , 0.0f ) );
+    GO_pSelectMG->m_transform.SetPosition( GCVEC3( 2.0f , 0.0f , 0.0f ) );
+
+    GO_pButtonSelect->Deactivate();
 
 #pragma endregion
     pGameManager->Run();

@@ -128,8 +128,9 @@ protected:
 
     void SetAnimatedSprite( GCGeometry* pGeometry );
 
-    
-    inline static const int m_ID = ++GCComponent::componentCount;
+
+protected:
+    inline static const int m_ID = 1;
     GCSprite* m_pSprite;
     bool m_isFlippedX;
     bool m_isFlippedY;
@@ -197,7 +198,7 @@ protected:
     void Render() override;
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID =2;
 
 };
 
@@ -225,7 +226,7 @@ protected:
     void CopyTo( GCComponent* pDestination ) override;
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 3;
 
 };
 
@@ -259,7 +260,7 @@ protected:
     FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 4;
     GCVEC3 m_velocity;
 
 };
@@ -281,11 +282,15 @@ public:
     void PlayAnimation( std::string animationName, bool isLoop );
     void StopAnimation();
 
+    bool AnimationHasEnded() { return m_isEnded; }
+
     void LoadSpriteSheet( std::string fileName ,int spriteSheetID );
     GCAnimation* CreateAnimation( std::string animationName , int firstFrame , int frameNumber , float frameDisplayTime = 0.1f );
     GCAnimation* CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList , float frameDisplayTime = 0.1f );
 
     std::string GetActiveAnimation() { return m_activeAnimationName; }
+
+    bool IsAnimationEnded() { return m_lastFrameIndex == m_currentFrameIndex; }
 
 protected:
     GCAnimator();
@@ -300,7 +305,7 @@ protected:
     FLAGS GetFlags() override { return UPDATE; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 5;
 
 private:
     std::string m_spritesheetName;
@@ -309,6 +314,7 @@ private:
     std::string m_activeAnimationName;
     GCAnimation* m_pCurrentAnimation;
 
+    bool m_isEnded;
     bool m_isLoop;
     int m_lastFrameIndex;
     int m_currentFrameIndex;
@@ -341,7 +347,7 @@ protected:
     FLAGS GetFlags() override { return UPDATE; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 6;
 
 };
 
@@ -380,7 +386,7 @@ protected:
     GCMATRIX GetProjMatrix() { return m_projectionMatrix; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID =7;
     
     GCVEC3 m_position;
     GCVEC3 m_target;
@@ -423,7 +429,7 @@ protected:
     FLAGS GetFlags() override { return RENDER; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 8;
 
     GCMesh* m_pMesh;
     GCGeometry* m_pGeometry;
@@ -462,7 +468,7 @@ protected:
     FLAGS GetFlags() override { return NONE; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 9;
     
     GCListNode<GCButton*>* m_pButtonNode;
 

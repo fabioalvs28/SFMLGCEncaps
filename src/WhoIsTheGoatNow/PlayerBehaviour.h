@@ -18,6 +18,7 @@ private:
 	int m_ammunitions;
 	float m_velocity;
 
+	GCAnimator* m_pAnimator;
 	InputSystem* m_pInputSystem;
 	GCGameObject* m_pBulletTemplate;
 
