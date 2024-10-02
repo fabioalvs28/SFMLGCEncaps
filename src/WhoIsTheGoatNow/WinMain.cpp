@@ -9,6 +9,8 @@
 #include "Mouse.h"
 #include "Weapon.h"
 #include "ButtonSelect.h"
+#include "ExpText.h"
+#include "HpText.h"
 
 int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -42,7 +44,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pAnimator->PlayAnimation("PlayerBackward", true);
     //GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
     GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(true);
-    GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>();
+    GCScriptPlayerBehaviour* SR_pPlayerScript = GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>();
     GO_pPlayer->AddTag("player");
     GO_pPlayer->SetLayer(1);
 
@@ -124,8 +126,29 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_pMachineGun->Deactivate();
     GO_pShotgun->Deactivate();
 
-    //GO_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->SetWeapon( 0 );
+
+    GCGameObject* GO_pExp = SC_pGame->CreateGameObject();
+    GO_pExp->AddComponent<GCText>();
+    GO_pExp->AddComponent<GCScriptExpText>()->SetPlayer( GO_pPlayer );
+    GO_pExp->m_transform.SetPosition(GCVEC3(-4, 4, 0));
+
+    GCGameObject* GO_pHp = SC_pGame->CreateGameObject();
+    GO_pHp->AddComponent<GCText>();
+    GO_pHp->AddComponent<GCScriptHpText>()->SetPlayer(GO_pPlayer);
+    GO_pHp->m_transform.SetPosition(GCVEC3(-7, 4, 0));
     
+#pragma endregion
+
+#pragma region CARDSCENE
+    GCScene* SC_pCards = GCScene::Create();
+
+    GCGameObject* GO_cardTemplate = SC_pCards->CreateGameObject();
+    GO_cardTemplate->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_enemy );
+    GO_cardTemplate->AddComponent<GCButton>();
+    GO_cardTemplate->AddComponent<GCScriptCard>();
+
+    
+
 #pragma endregion
 
 #pragma region HOMESCENE
@@ -154,7 +177,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //GO_pMouse->m_transform.Scale(0.25f);
     //GO_pMouse->SetLayer(1);
 
-
+    SR_pPlayerScript->SetDeathScene( SC_pHome );
 #pragma endregion
 
 #pragma region SELECTWEAPONSCENE

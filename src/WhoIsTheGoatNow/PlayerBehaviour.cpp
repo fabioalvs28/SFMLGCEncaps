@@ -11,10 +11,16 @@ void GCScriptPlayerBehaviour::CopyTo(GCComponent* pDestination)
 
 void GCScriptPlayerBehaviour::Start()
 {
-	m_velocity = 0.05f;
 	m_pInputSystem = new InputSystem();
 	m_pInputSystem->Initialize();
 	m_pAnimator = m_pGameObject->GetComponent<GCAnimator>();
+
+	m_velocity = 0.05f;
+	m_life = 3;
+	m_hp = m_life;
+	m_exp = 0;
+	m_levelAmount = 0;
+	m_level = 5;
 }
 
 void GCScriptPlayerBehaviour::FixedUpdate()
@@ -60,10 +66,14 @@ void GCScriptPlayerBehaviour::FixedUpdate()
 	//apply translation
 	translation *= m_velocity;
 	m_pGameObject->m_transform.Translate(translation);
+
+	if ( m_exp >= m_level )
+		LevelUp();
 }
 
 void GCScriptPlayerBehaviour::SetWeapon( int weapon )
 {
+	m_weaponIndex = weapon;
 	switch ( weapon )
 	{
 	case Sniper:
@@ -81,3 +91,25 @@ void GCScriptPlayerBehaviour::SetWeapon( int weapon )
 	}
 }
 
+void GCScriptPlayerBehaviour::Hit( int damage )
+{
+	m_hp -= damage;
+	if ( m_hp <= 0 )
+	{
+		Die();
+	}
+}
+
+void GCScriptPlayerBehaviour::Die()
+{
+	m_pGameObject->m_transform.SetPosition( GCVEC3( 0 , 0 , 0 ) );
+	m_hp = m_life;
+	m_pDeathScene->SetActive();
+}
+
+void GCScriptPlayerBehaviour::LevelUp()
+{
+	m_exp -= m_level;
+	m_level += 2;
+	m_levelAmount += 1;
+}
