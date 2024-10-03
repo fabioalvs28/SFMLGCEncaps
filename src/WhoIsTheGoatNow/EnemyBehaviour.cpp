@@ -64,6 +64,8 @@ void GCScriptEnemyBehaviour::Spawn()
 
 void GCScriptEnemyBehaviour::Die()
 {
+    if ( m_destroyed )
+        return;
     m_pGameObject->Destroy();
     m_destroyed = true;
 }

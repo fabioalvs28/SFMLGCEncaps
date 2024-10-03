@@ -144,7 +144,7 @@ void GCScriptMachineGun::Start()
 	m_range = 3.5f;
 	m_penetration = 0;
 
-	m_shootCooldown = 0.25f;
+	m_shootCooldown = 0.05f;
 
 	m_pInputSystem = new InputSystem();
 	m_pInputSystem->Initialize();

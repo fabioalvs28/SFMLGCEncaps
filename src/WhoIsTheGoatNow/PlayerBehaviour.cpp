@@ -123,7 +123,9 @@ void GCScriptPlayerBehaviour::LevelUp()
 	for ( int i = -1; i < 2; i++ )
 	{
 		GCGameObject* newCard = m_pCardTemplate->Duplicate();
-		newCard->GetComponent<GCScriptCard>()->SetUpgrade(rand() % 8);
+		newCard->Activate();
+		newCard->GetComponent<GCScriptCard>()->SetUpgrade(rand() % 7 + 3);
+		newCard->GetComponent<GCScriptCard>()->ALED();
 		newCard->m_transform.SetPosition(GCVEC3(i * 2, 0,0));
 	}
 	m_pUpgradeScene->SetActive();

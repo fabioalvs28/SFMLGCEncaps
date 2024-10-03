@@ -10,7 +10,7 @@ void GCScriptEnemySpawner::CopyTo(GCComponent * pDestination)
 void GCScriptEnemySpawner::Start()
 {
 	m_counter = 0.0f;
-	m_pText = m_pGameObject->GetComponent<GCText>();
+	//m_pText = m_pGameObject->GetComponent<GCText>();
 	m_enemyCount = 0;
 
 }
@@ -33,7 +33,7 @@ void GCScriptEnemySpawner::SpawnEnemies(float deltaTime)
 		m_counter = 0.0f;
 		GCGameObject* newEnemy = m_pEnemies[enemyId]->Duplicate();
 		newEnemy->Activate();
-		m_pText->SetText(std::to_string(m_enemyCount));
+		//m_pText->SetText(std::to_string(m_enemyCount));
 	}
 }
 

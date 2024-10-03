@@ -19,7 +19,7 @@ void GCScriptDarkGoat::Start()
     m_spawning = false;
     m_summonCount = 0.0f;
     m_summonfrequency = 25.0f;
-    m_summoningAmmount = 3;
+    m_summoningAmmount = 1;
     m_lastAnimation = -1;
     m_animationList = { "DarkGoatForward","DarkGoatBackWard","DarkGoatLeft","DarkGoatRight","DarkGoatSummon" };
     Spawn();

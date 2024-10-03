@@ -50,11 +50,11 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pAnimator->CreateAnimation("PlayerRight", 4, 2, 0.3f);
     pAnimator->PlayAnimation("PlayerBackward", true);
     //GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
-    GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pPlayer->AddComponent<GCBoxCollider>()->SetVisible(false);
 
     GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>()->SetPauseScene(SC_pPause);
 
-    GCScriptPlayerBehaviour* SR_pPlayerScript = GO_pPlayer->AddComponent<GCScriptPlayerBehaviour>();
+    GCScriptPlayerBehaviour* SR_pPlayerScript = GO_pPlayer->GetComponent<GCScriptPlayerBehaviour>();
 
     GO_pPlayer->AddTag("player");
     GO_pPlayer->SetLayer(1);
@@ -71,7 +71,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pDumbGoatAnimator->CreateAnimation("DumbGoatLeft", 22, 5, 0.05f);
     pDumbGoatAnimator->CreateAnimation("DumbGoatRight", 17, 5, 0.05f);
     pDumbGoatAnimator->CreateAnimation("DumbGoatSpawn", 10, 7, 0.2f);
-    GO_pDumbGoat->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pDumbGoat->AddComponent<GCBoxCollider>()->SetVisible(false);
     GO_pDumbGoat->AddComponent<GCScriptDumbGoat>()->SetTarget(GO_pPlayer);
     GO_pDumbGoat->m_transform.SetPosition(GCVEC3(5, -3, 0));
     GO_pDumbGoat->AddTag("enemy");
@@ -86,7 +86,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pDarkGoatAnimator->CreateAnimation("DarkGoatLeft", 24, 5, 0.05f);
     pDarkGoatAnimator->CreateAnimation("DarkGoatRight", 19, 5, 0.05f);
     pDarkGoatAnimator->CreateAnimation("DarkGoatSummon", 10, 9, 0.2f);
-    GO_pDarkGoat->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pDarkGoat->AddComponent<GCBoxCollider>()->SetVisible(false);
     GO_pDarkGoat->AddComponent<GCScriptDarkGoat>()->SetTarget(GO_pPlayer);
     GO_pDarkGoat->GetComponent<GCScriptDarkGoat>()->SetSummonedEnemy(GO_pDumbGoat);
     GO_pDarkGoat->m_transform.SetPosition(GCVEC3(5, -3, 0));
@@ -96,7 +96,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
 
 
     GCGameObject* GO_pEnemySpawner = SC_pGame->CreateGameObject();
-    GO_pEnemySpawner->AddComponent<GCText>()->SetText(std::to_string(0));
+    GO_pEnemySpawner->AddComponent<GCText>();// ->SetText( std::to_string( 0 ) );
     GO_pEnemySpawner->m_transform.SetPosition(GCVEC3(-4, 3, 0));
     GO_pEnemySpawner->AddComponent<GCScriptEnemySpawner>()->AddEnemyInList(0, GO_pDarkGoat);
     GO_pEnemySpawner->GetComponent<GCScriptEnemySpawner>()->AddEnemyInList(1, GO_pDumbGoat);
@@ -127,7 +127,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
 
     //bullet prefab
     GCGameObject* GO_pBullet = SC_pGame->CreateGameObject();
-    GO_pBullet->AddComponent<GCBoxCollider>()->SetVisible(true);
+    GO_pBullet->AddComponent<GCBoxCollider>()->SetVisible(false);
     GO_pBullet->AddComponent<GCScriptBullet>();
     GO_pBullet->AddTag("bullet");
     GO_pBullet->Deactivate();
@@ -156,56 +156,25 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
 
 #pragma region CARDSCENE
     GCScene* SC_pCards = GCScene::Create();
-
     GCGameObject* GO_cardTemplate = SC_pCards->CreateGameObject();
-    GO_cardTemplate->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_enemy );
+    GO_cardTemplate->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
     GO_cardTemplate->AddComponent<GCButton>();
     GO_cardTemplate->AddComponent<GCScriptCard>()->SetGameScene(SC_pGame);
     GO_cardTemplate->GetComponent<GCScriptCard>()->SetPlayer(GO_pPlayer);
+    GO_cardTemplate->Deactivate();
     
     SR_pPlayerScript->SetUpgradeScene( SC_pCards );
     SR_pPlayerScript->SetCardTemplate(GO_cardTemplate);
 
 #pragma endregion
 
-#pragma region HOMESCENE
-
-    GCScene* SC_pHome = GCScene::Create();
-    //pHomeScene->SetActive();
-
-    GCGameObject* GO_Title = SC_pHome->CreateGameObject();
-    GO_Title->m_transform.SetPosition(GCVEC3(0, 0, 0));
-    GO_Title->AddComponent<GCBoxCollider>()->SetVisible(true);
-    GO_Title->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
-    GO_Title->AddComponent<GCText>()->SetText("WHO \tIS\t THE \bGOAT\b NOW", GCColor(0,0,255));
-    //GO_Title->AddComponent<GCScriptTest>()->pText = GO_Title->GetComponent<GCText>();
-    GO_Title->AddComponent<GCButton>();
-
-    //Button prefab
-    //GCGameObject* GO_pButton = pHomeScene->CreateGameObject();
-    //GO_pButton->AddComponent<GCSpriteRenderer>();
-    //GO_pButton->AddComponent<GCBoxCollider>();
-    
-    //Mouse collider
-    //GCGameObject* GO_pMouse = pHomeScne->CreateGameObject();
-    //GO_pMouse->AddComponent<GCBoxCollider>()->SetVisible(true);
-    //GO_pMouse->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_enemy);
-    //GO_pMouse->AddComponent<GCScriptMouse>();
-    //GO_pMouse->m_transform.Scale(0.25f);
-    //GO_pMouse->SetLayer(1);
-
-    SR_pPlayerScript->SetDeathScene( SC_pHome );
-#pragma endregion
-
 #pragma region SELECTWEAPONSCENE
     
     GCScene* SC_pWeaponSelect = GCScene::Create();
-    //SC_pWeaponSelect->SetActive();
 
     GCGameObject* GO_pWeaponTitle = SC_pWeaponSelect->CreateGameObject();
     GO_pWeaponTitle->AddComponent<GCText>()->SetText(std::string("\bChoose   your   woolpon \b"));
     GO_pWeaponTitle->m_transform.SetPosition(GCVEC3(-2.5, 3, 0));
-
 
     GCGameObject* GO_pButtonSelect = SC_pWeaponSelect->CreateGameObject();
     GO_pButtonSelect->AddComponent<GCButton>();
@@ -285,10 +254,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
 #pragma endregion
 
 #pragma region PAUSESCENE
-
-
-    //SC_pPause->SetActive();
-
 
     GCGameObject* GO_pPlayButton = SC_pPause->CreateGameObject();
     GO_pPlayButton->m_transform.SetPosition(GCVEC3(-1.25, 1, 0));

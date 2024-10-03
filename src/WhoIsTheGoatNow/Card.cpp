@@ -7,20 +7,61 @@ void GCScriptCard::CopyTo( GCComponent* pDestination )
 	GCComponent::CopyTo( pDestination );
 	GCScriptCard* pNewComponent = static_cast< GCScriptCard* >( pDestination );
 	pNewComponent->m_pPlayer = m_pPlayer;
-	pNewComponent->m_upgrade = m_upgrade;
+	//pNewComponent->m_upgrade = m_upgrade;
 	pNewComponent->m_pGameScene = m_pGameScene;
+}
+
+void GCScriptCard::ALED()
+{
+	m_weaponIndex = m_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->GetWeaponIndex();
+
+	GCSprite* SP_AttackSpeed = new GCSprite( std::string("attSpeed.dds" ) );
+	GCSprite* SP_ShootingSpeed = new GCSprite( std::string( "ShootingSpeed.dds" ) );
+	GCSprite* SP_Range = new GCSprite( std::string( "Range.dds" ) );
+	GCSprite* SP_Pene = new GCSprite( std::string( "Pene.dds" ) );
+	GCSprite* SP_Wspeed = new GCSprite( std::string( "WSpeed.dds" ) );
+	GCSprite* SP_Hp = new GCSprite( std::string( "hp.dds" ) );
+	GCSprite* SP_MaxHp = new GCSprite( std::string( "MaxHP.dds" ) );
+
+	switch ( m_upgrade )
+	{
+	case AttackSpeed:
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->SetSprite( SP_AttackSpeed );
+		break;
+	case ShootingSpeed:
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->SetSprite( SP_ShootingSpeed );
+		break;
+	case Range:
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->SetSprite( SP_Range );
+		break;
+	case Penetration:
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->SetSprite( SP_Pene );
+		break;
+	case WalkSpeed:
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->SetSprite( SP_Wspeed );
+		break;
+	case PV:
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->SetSprite( SP_Hp );
+		break;
+
+	case MaxHealth:
+		m_pGameObject->GetComponent<GCSpriteRenderer>()->SetSprite( SP_MaxHp );
+		break;
+	}
 }
 
 void GCScriptCard::OnClick()
 {
+
+
 	GCScriptPlayerBehaviour* pPlayerScript = m_pPlayer->GetComponent<GCScriptPlayerBehaviour>();
-	int weaponIndex = pPlayerScript->GetWeaponIndex();
+	
 	GCGameObject* pWeaponGO = m_pPlayer->GetChildren().GetFirstNode()->GetData();
 
 	switch ( m_upgrade )
 	{
 	case AttackSpeed:
-		switch ( weaponIndex )
+		switch ( m_weaponIndex )
 		{
 		case 0:
 		{
@@ -30,22 +71,22 @@ void GCScriptCard::OnClick()
 		}
 		case 1:
 		{
-			GCScriptShotgun* pWeaponScript1 = pWeaponGO->GetComponent<GCScriptShotgun>();
-			pWeaponScript1->UpgradeAttackSpeed( 0.02f );
+			GCScriptShotgun* pWeaponScript = pWeaponGO->GetComponent<GCScriptShotgun>();
+			pWeaponScript->UpgradeAttackSpeed( 0.02f );
 			break;
 		}
 		case 2:
 		{
-			GCScriptMachineGun* pWeaponScript2 = pWeaponGO->GetComponent<GCScriptMachineGun>();
-			pWeaponScript2->UpgradeAttackSpeed( 0.05f );
+			GCScriptMachineGun* pWeaponScript = pWeaponGO->GetComponent<GCScriptMachineGun>();
+			pWeaponScript->UpgradeAttackSpeed( 0.05f );
 			break;
 		}
 		}
 		break;
-		
+
 
 	case ShootingSpeed:
-		switch ( weaponIndex )
+		switch ( m_weaponIndex )
 		{
 		case 0:
 		{
@@ -55,21 +96,21 @@ void GCScriptCard::OnClick()
 		}
 		case 1:
 		{
-			GCScriptShotgun* pWeaponScript1 = pWeaponGO->GetComponent<GCScriptShotgun>();
-			pWeaponScript1->UpgradeShootCooldown( -0.05 );
+			GCScriptShotgun* pWeaponScript = pWeaponGO->GetComponent<GCScriptShotgun>();
+			pWeaponScript->UpgradeShootCooldown( -0.05 );
 			break;
 		}
 		case 2:
 		{
-			GCScriptMachineGun* pWeaponScript2 = pWeaponGO->GetComponent<GCScriptMachineGun>();
-			pWeaponScript2->UpgradeShootCooldown( -0.1 );
+			GCScriptMachineGun* pWeaponScript = pWeaponGO->GetComponent<GCScriptMachineGun>();
+			pWeaponScript->UpgradeShootCooldown( -0.1 );
 			break;
 		}
 		}
 		break;
-		
+
 	case Range:
-		switch ( weaponIndex )
+		switch ( m_weaponIndex )
 		{
 		case 0:
 		{
@@ -79,20 +120,20 @@ void GCScriptCard::OnClick()
 		}
 		case 1:
 		{
-			GCScriptShotgun* pWeaponScript1 = pWeaponGO->GetComponent<GCScriptShotgun>();
-			pWeaponScript1->UpgradeRange( 1.5f );
+			GCScriptShotgun* pWeaponScript = pWeaponGO->GetComponent<GCScriptShotgun>();
+			pWeaponScript->UpgradeRange( 1.5f );
 			break;
 		}
 		case 2:
 		{
-			GCScriptMachineGun* pWeaponScript2 = pWeaponGO->GetComponent<GCScriptMachineGun>();
-			pWeaponScript2->UpgradeRange( 1 );
+			GCScriptMachineGun* pWeaponScript = pWeaponGO->GetComponent<GCScriptMachineGun>();
+			pWeaponScript->UpgradeRange( 1 );
 			break;
 		}
 		}
 		break;
 	case Penetration:
-		switch ( weaponIndex )
+		switch ( m_weaponIndex )
 		{
 		case 0:
 		{
@@ -102,14 +143,14 @@ void GCScriptCard::OnClick()
 		}
 		case 1:
 		{
-			GCScriptShotgun* pWeaponScript1 = pWeaponGO->GetComponent<GCScriptShotgun>();
-			pWeaponScript1->UpgradePenetration( 1 );
+			GCScriptShotgun* pWeaponScript = pWeaponGO->GetComponent<GCScriptShotgun>();
+			pWeaponScript->UpgradePenetration( 1 );
 			break;
 		}
 		case 2:
 		{
-			GCScriptMachineGun* pWeaponScript2 = pWeaponGO->GetComponent<GCScriptMachineGun>();
-			pWeaponScript2->UpgradePenetration( 0.5f );
+			GCScriptMachineGun* pWeaponScript = pWeaponGO->GetComponent<GCScriptMachineGun>();
+			pWeaponScript->UpgradePenetration( 0.5f );
 			break;
 		}
 		}
@@ -125,8 +166,9 @@ void GCScriptCard::OnClick()
 	case MaxHealth:
 		pPlayerScript->UpgradeMaxHealth( 1 );
 		break;
-		
+
 	}
+
 
 	m_pGameScene->SetActive();
 }
