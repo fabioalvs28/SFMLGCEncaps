@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Bullet.h"
 #include "Weapon.h"
+#include "PlayerBehaviour.h"
+
 # define M_PIl          3.141592653589793238462643383279502884L 
 
 
@@ -72,11 +74,13 @@ void GCScriptBullet::OnTriggerStay(GCCollider* pCollider)
     {
         if ( m_penetration <= 0 )
         {
+            m_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->AddExp(2);  
             m_pGameObject->Destroy();
             m_destroyed = true;
         }
         else
         {
+            m_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->AddExp(2);  
             m_penetration -= 1;
         }
     }
