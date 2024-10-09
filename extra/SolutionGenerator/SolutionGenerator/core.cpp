@@ -270,17 +270,35 @@ void GCSolutionGenerator::GenerateSln()
     // Add the global section
     outputFile << "Global" << endl;
     outputFile << "\tGlobalSection(SolutionConfigurationPlatforms) = preSolution" << endl;
-    outputFile << "\t\tDebug|x64 = Debug|x64" << endl;
-    outputFile << "\t\tRelease|x64 = Release|x64" << endl;
+    //outputFile << "\t\tDebug|x64 = Debug|x64" << endl;
+    //outputFile << "\t\tRelease|x64 = Release|x64" << endl;
+    for (const auto& project : projects)
+	{
+		auto& configs = project["configuration"];
+		for ( auto& config : configs )
+		{
+			string name = GetStr(config, "name");
+		    outputFile << "\t\t" << name << " = " << name << endl;
+		}
+	}
+
     outputFile << "\tEndGlobalSection" << endl;
 
     // Add project configurations
     outputFile << "\tGlobalSection(ProjectConfigurationPlatforms) = postSolution" << endl;
-    for (const auto& project : projects) {
-		outputFile << "\t\t" << project["guid"].get<string>() << ".Debug|x64.ActiveCfg = Debug|x64" << endl;
-		outputFile << "\t\t" << project["guid"].get<string>() << ".Debug|x64.Build.0 = Debug|x64" << endl;
-		outputFile << "\t\t" << project["guid"].get<string>() << ".Release|x64.ActiveCfg = Release|x64" << endl;
-		outputFile << "\t\t" << project["guid"].get<string>() << ".Release|x64.Build.0 = Release|x64" << endl;
+    for (const auto& project : projects)
+	{
+		//outputFile << "\t\t" << project["guid"].get<string>() << ".Debug|x64.ActiveCfg = Debug|x64" << endl;
+		//outputFile << "\t\t" << project["guid"].get<string>() << ".Debug|x64.Build.0 = Debug|x64" << endl;
+		//outputFile << "\t\t" << project["guid"].get<string>() << ".Release|x64.ActiveCfg = Release|x64" << endl;
+		//outputFile << "\t\t" << project["guid"].get<string>() << ".Release|x64.Build.0 = Release|x64" << endl;
+		auto& configs = project["configuration"];
+		for ( auto& config : configs )
+		{
+			string name = GetStr(config, "name");
+			outputFile << "\t\t" << project["guid"].get<string>() << "." << name << ".ActiveCfg = " << name << endl;
+			outputFile << "\t\t" << project["guid"].get<string>() << "." << name << ".Build.0 = " << name << endl;
+		}
 	}
     outputFile << "\tEndGlobalSection" << endl;
 
@@ -317,95 +335,6 @@ void GCSolutionGenerator::GenerateSln()
     std::cout << fs::absolute(filePath) << GREEN << " generated successfully!" << RESET << endl;
 }
 
-void GCSolutionGenerator::GenerateNewSln()
-{
-    string solutionName = m_data["solution_name"];
-    json& projects = m_data["projects"];
-
-    const map<string, string> typeGuid = 
-    {
-        {"project", "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"}
-    };
-
-    json guids = {
-        {"projects", json::object()}
-    };
-
-    // Générer GUIDs pour les projets
-    for (auto& project : projects)
-    {
-        string guid = GenerateGuid();
-        string projectName = project["name"];
-        project["guid"] = guid;
-        guids["projects"][projectName] = guid;
-    }
-
-    // Créer un fichier et écrire dedans
-    fs::path filePath = s_vsPath + solutionName + ".sln";
-    fs::create_directories(s_vsPath);
-
-    ofstream outputFile(filePath);
-    if (!outputFile.is_open()) 
-    {
-        cerr << "Failed to create file: " << filePath << endl;
-        exit(1);
-    }
-
-    outputFile << endl;
-    outputFile << "Microsoft Visual Studio Solution File, Format Version " << m_data["format_version"].get<string>() << endl;
-    outputFile << "# Visual Studio Version " << m_data["version"].get<string>() << endl;
-    outputFile << "VisualStudioVersion = " << m_data["version_full"].get<string>() << endl;
-    outputFile << "MinimumVisualStudioVersion = " << m_data["minimum_version"].get<string>() << endl;
-
-    // Ajouter les projets
-    for (const auto& project : projects) 
-    {
-        outputFile << "Project(\"" << typeGuid.at("project") << "\") = " << project["name"] << ", \"" << project["folder"].get<string>() << project["name"].get<string>() << ".vcxproj" << "\", " << project["guid"] << endl;
-
-        // Ajouter les dépendances
-        if (project.find("dependencies") != project.end()) {
-            outputFile << "\tProjectSection(ProjectDependencies) = postProject" << endl;
-            for (const auto& dependency : project["dependencies"]) {
-                string guid = guids["projects"][dependency].get<string>();
-                outputFile << "\t\t" << guid << " = " << guid << endl;
-            }
-            outputFile << "\tEndProjectSection" << endl;
-        }
-        outputFile << "EndProject" << endl;
-    }
-
-    // Ajouter la section globale
-    outputFile << "Global" << endl;
-    outputFile << "\tGlobalSection(SolutionConfigurationPlatforms) = preSolution" << endl;
-    outputFile << "\t\tDebug|x64 = Debug|x64" << endl;
-    outputFile << "\t\tRelease|x64 = Release|x64" << endl;
-    outputFile << "\tEndGlobalSection" << endl;
-
-    // Ajouter les configurations de projets
-    outputFile << "\tGlobalSection(ProjectConfigurationPlatforms) = postSolution" << endl;
-    for (const auto& project : projects) {
-        outputFile << "\t\t" << project["guid"].get<string>() << ".Debug|x64.ActiveCfg = Debug|x64" << endl;
-        outputFile << "\t\t" << project["guid"].get<string>() << ".Debug|x64.Build.0 = Debug|x64" << endl;
-        outputFile << "\t\t" << project["guid"].get<string>() << ".Release|x64.ActiveCfg = Release|x64" << endl;
-        outputFile << "\t\t" << project["guid"].get<string>() << ".Release|x64.Build.0 = Release|x64" << endl;
-    }
-    outputFile << "\tEndGlobalSection" << endl;
-
-    outputFile << "\tGlobalSection(SolutionProperties) = preSolution" << endl;
-    outputFile << "\t\tHideSolutionNode = FALSE" << endl;
-    outputFile << "\tEndGlobalSection" << endl;
-
-    outputFile << "\tGlobalSection(ExtensibilityGlobals) = postSolution" << endl;
-    outputFile << "\t\tSolutionGuid = " << GenerateGuid() << endl;
-    outputFile << "\tEndGlobalSection" << endl;
-
-    outputFile << "EndGlobal" << endl;
-
-    outputFile.close();
-
-    std::cout << fs::absolute(filePath) << GREEN << " generated successfully!" << RESET << endl;
-}
-
 void GCSolutionGenerator::GenerateVcxproj(json& project)
 {
     tinyxml2::XMLDocument doc;
@@ -423,13 +352,19 @@ void GCSolutionGenerator::GenerateVcxproj(json& project)
     itemGroup->SetAttribute("Label", "ProjectConfigurations");
     proj->InsertEndChild(itemGroup);
 
-    array<string, 2> configs = { "Debug", "Release" };
-    for (const string& config : configs) {
+	auto& configs = project["configuration"];
+	for ( auto& config : configs )
+	{
+		string name = GetStr(config, "name");
+		size_t pos = name.find('|');
+		if ( pos==string::npos )
+			continue;
+		string sub = name.substr(0, pos);
 		XMLElement* projectConfig = doc.NewElement("ProjectConfiguration");
-		projectConfig->SetAttribute("Include", (config + "|x64").c_str());
+		projectConfig->SetAttribute("Include", name.c_str());
 		itemGroup->InsertEndChild(projectConfig);
 
-        AddTextElement(&doc, projectConfig, "Configuration", config);
+        AddTextElement(&doc, projectConfig, "Configuration", sub);
         AddTextElement(&doc, projectConfig, "Platform", "x64");
 	}
 
@@ -543,23 +478,35 @@ void GCSolutionGenerator::GenerateVcxproj(json& project)
     // Item Groups for source files
     XMLElement* itemGroupCompile = doc.NewElement("ItemGroup");
     proj->InsertEndChild(itemGroupCompile);
-    for (const auto& source : project["source_files"]) {
+    for (const auto& source : project["source_files"])
+	{
         //cout << source << endl;
         string str = source.get<string>();
         XMLElement* clCompile = doc.NewElement("ClCompile");
         clCompile->SetAttribute("Include", str.c_str());
         itemGroupCompile->InsertEndChild(clCompile);
-        if (str.ends_with("pch.cpp")) {
-            XMLElement* precompiledHeader = doc.NewElement("PrecompiledHeader");
-            precompiledHeader->SetAttribute("Condition", "'$(Configuration)|$(Platform)'=='Debug|x64'");
-            precompiledHeader->SetText("Create");
-            clCompile->InsertEndChild(precompiledHeader);
+        if (str.ends_with("pch.cpp"))
+		{
+			for (const auto& config : project["configuration"])
+			{
+				string configName = GetStr(config, "name");			
+				XMLElement* precompiledHeader = doc.NewElement("PrecompiledHeader");
+				string cond = "'$(Configuration)|$(Platform)'=='" + configName + "'";
+			    precompiledHeader->SetAttribute("Condition", cond.c_str());
+			    precompiledHeader->SetText("Create");
+				clCompile->InsertEndChild(precompiledHeader);
+			}
+		}
 
-            precompiledHeader = doc.NewElement("PrecompiledHeader");
-            precompiledHeader->SetAttribute("Condition", "'$(Configuration)|$(Platform)'=='Release|x64'");
-            precompiledHeader->SetText("Create");
-            clCompile->InsertEndChild(precompiledHeader);
-        }
+            //XMLElement* precompiledHeader = doc.NewElement("PrecompiledHeader");
+            //precompiledHeader->SetAttribute("Condition", "'$(Configuration)|$(Platform)'=='Debug|x64'");
+            //precompiledHeader->SetText("Create");
+            //clCompile->InsertEndChild(precompiledHeader);
+			//
+            //precompiledHeader = doc.NewElement("PrecompiledHeader");
+            //precompiledHeader->SetAttribute("Condition", "'$(Configuration)|$(Platform)'=='Release|x64'");
+            //precompiledHeader->SetText("Create");
+            //clCompile->InsertEndChild(precompiledHeader);
     }
 
     // Item Groups for header files
@@ -646,7 +593,6 @@ void GCSolutionGenerator::GenerateFilters(json& project)
     AddFilesToItemGroup(&doc, itemGroup, "ClCompile", project["source_files"], "Source Files");
     AddFilesToItemGroup(&doc, itemGroup, "ClInclude", project["header_files"], "Header Files");
     AddFilesToItemGroup(&doc, itemGroup, "None", project["resource_files"], "Resource Files");
-
 
     // Save the vcxproj file
     string folderPath = s_vsPath + project["folder"].get<string>();
@@ -1223,16 +1169,4 @@ const std::string GCSolutionGenerator::FindFirstSolFile(const std::string& direc
         }
     }
     return "";
-}
-
-const std::string GCSolutionGenerator::FindSolutionJSONFile(const std::string& directory)
-{
-    for (const auto& entry : fs::directory_iterator(directory))
-    {
-        if (entry.path().filename() == "Solution.json")
-        {
-            return entry.path().string();
-        }
-	}
-	return "";
 }

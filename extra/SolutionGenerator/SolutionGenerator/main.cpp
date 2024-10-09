@@ -5,7 +5,7 @@
 #include <windows.h>
 #include "json.hpp"
 
-#define VERSION		"1.1"
+#define VERSION		"1.4"
 
 using namespace std;
 using json = nlohmann::json;
@@ -227,7 +227,7 @@ void ShowHelpForMakeAndCreate()
 {
 	cout << "Usage: GCSolutionGenerator [options]" << endl;
 	cout << "Options:" << endl;
-    cout << "\t-create <repo_name> <solution_name> <project_name>" << endl;
+    cout << "\t-create <repo_name> <solution_name> <project_name> {-windows}" << endl;
     cout << endl;
     cout << "\t\t<repo_name>\t\tCreate a new project using the master folder name (project root by default)" << endl;
     cout << "\t\t<solution_name>\t\tThe new solution name" << endl;

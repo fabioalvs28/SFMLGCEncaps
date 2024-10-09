@@ -36,8 +36,8 @@ public:
 
 	static void WriteJsonFile(const std::string& fileName, const nlohmann::ordered_json& data);
 	static const std::string FindFirstSolFile(const std::string& directory);
-	static const std::string FindSolutionJSONFile(const std::string& directory);
 	static void EnsureJsonFileExists(const std::string& solutionFileName, const std::string& projectFileName, const std::string& projectName, const std::string& solutionName, bool windows);
+
 private:
 	GCSolutionGenerator() = delete;
 
@@ -51,7 +51,6 @@ private:
 
 	// File Generation
 	static void GenerateSln();
-	static void GenerateNewSln();
 	static void GenerateVcxproj(nlohmann::json& project);
 	static void GenerateFilters(nlohmann::json& project);
 
