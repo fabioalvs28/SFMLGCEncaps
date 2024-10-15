@@ -57,11 +57,7 @@ private:
 	// Getting data
 	static void FillData();
 	static void FindAndReadSolFiles(const std::string& path, nlohmann::json& data);
-	static void ReadSolFile(const std::string& path, nlohmann::json& data);
-	static void ReadPrjFile(const std::string& path, nlohmann::json& data);
-
 	static void FillDataWithSolAndPrj();
-	static void FillDataNewJSON();
 	static void PopulateIncludeFiles(nlohmann::json& project);
 
 	// Utils

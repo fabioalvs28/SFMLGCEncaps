@@ -5,7 +5,7 @@
 #include <windows.h>
 #include "json.hpp"
 
-#define VERSION		"1.4"
+#define VERSION		"1.6"
 
 using namespace std;
 using json = nlohmann::json;
@@ -60,27 +60,17 @@ int main(int argc, char* argv[])
         string s_vsPath = s_idePath + "/vs/";
 
         // Create project folder
-        if (!fs::exists(parent_path))
-        {
+        if (fs::exists(parent_path)==false)
             fs::create_directories(parent_path);
-        }
-        if (!fs::exists(parent_path + "/config"))
-        {
+        if (fs::exists(parent_path + "/config")==false)
             fs::create_directories(parent_path + "/" + "config");
-        }
-        if (!fs::exists(s_idePath))
-        {
+        if (fs::exists(s_idePath)==false)
             fs::create_directories(s_idePath);
-        }
-        if (!fs::exists(s_vsPath))
-        {
+        if (fs::exists(s_vsPath)==false)
             fs::create_directories(s_vsPath);
-        }
-        if (!fs::exists(s_srcPath))
-        {
+        if (fs::exists(s_srcPath)==false)
             fs::create_directories(s_srcPath);
-        }
-        if (!fs::exists(s_srcPath + "/" + project_name))
+        if (fs::exists(s_srcPath + "/" + project_name)==false)
         {
             fs::create_directories(s_srcPath + "/" + project_name);
 			string data = "";
@@ -128,25 +118,17 @@ int main(int argc, char* argv[])
             ofstream icosm(s_srcPath + "/" + project_name + "/small.ico");
 			icosm.close();
         }
-        if (!fs::exists(parent_path + "/bin"))
-        {
+        if (fs::exists(parent_path + "/bin")==false)
             fs::create_directories(parent_path + "/bin");
-        }
-        if (!fs::exists(parent_path + "/res"))
-        {
+        if (fs::exists(parent_path + "/res")==false)
             fs::create_directories(parent_path + "/res");
-        }
-        if (!fs::exists(parent_path + "/doc"))
-        {
+        if (fs::exists(parent_path + "/doc")==false)
             fs::create_directories(parent_path + "/doc");
-        }
 
 		// Read the json file
 		ifstream inputFile(parent_path + "/" + "config");
-        if (!inputFile.is_open()) 
-        {
+        if (inputFile.is_open()==false) 
             GCSolutionGenerator::EnsureJsonFileExists(solutionFileName, projectFileName, project_name, solution_name, windows);
-		}
         json data;
         ifstream newInputFile(solutionFileName);
         newInputFile >> data;
@@ -159,10 +141,8 @@ int main(int argc, char* argv[])
             {"project_name", project_name}
         };
 
-        string token = "all";
-        args.insert({ "all", token });
-
         GCSolutionGenerator::GenerateNewSolution(args);
+		return 0;
     }
 
     if (command == "-make")
@@ -193,11 +173,7 @@ int main(int argc, char* argv[])
 			{"sol_folder", sol_folder}
         };
 
-        string token = "all";
-        args.insert({ "all", token });
-
         GCSolutionGenerator::GenerateSolutionSolAndPrj(args, isForceRemove);
-
         return 0;
     }
 
