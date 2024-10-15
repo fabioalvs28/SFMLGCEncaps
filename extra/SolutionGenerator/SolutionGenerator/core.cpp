@@ -225,8 +225,6 @@ void GCSolutionGenerator::GenerateSln()
     // Add the projects
     for (const auto& project : projects)
 	{
-        //cout << project.dump(1) << endl;
-        //outputFile << "Project(\"" << typeGuid.at("project") << "\") = " << project["name"] << ", \"" << project["folder"].get<string>() << project["name"].get<string>() << ".vcxproj" << "\", " << project["guid"] << endl;
         outputFile << "Project(\"" << typeGuid << "\") = " << project["name"] << ", \"" << project["folder"].get<string>() << project["name"].get<string>() << ".vcxproj" << "\", " << project["guid"] << endl;
 
         // Add the dependencies
@@ -242,13 +240,6 @@ void GCSolutionGenerator::GenerateSln()
         }
         outputFile << "EndProject" << endl;
 	}
-
-    // Add the folders
-    //for (const auto& folder : folders)
-	//{
-    //    outputFile << "Project(\"" << typeGuid.at("folder") << "\") = " << folder["name"] << ", " << folder["name"] << ", " << folder["guid"] << endl;
-    //    outputFile << "EndProject" << endl;
-    //}
 
     // Add the global section
     outputFile << "Global" << endl;
@@ -292,13 +283,6 @@ void GCSolutionGenerator::GenerateSln()
             outputFile << "\t\t" << guid << " = " << nested << endl;
 		}
 	}
-    //for (const auto& folder : folders) {
-    //    if (folder.find("nested") != folder.end()) {
-    //        string guid = folder["guid"].get<string>();
-    //        string nested = guids["folders"][folder["nested"]].get<string>();
-    //        outputFile << "\t\t" << guid << " = " << nested << endl;
-    //    }
-    //}
     outputFile << "\tEndGlobalSection" << endl;
 
     outputFile << "\tGlobalSection(ExtensibilityGlobals) = postSolution" << endl;
@@ -419,11 +403,6 @@ void GCSolutionGenerator::GenerateVcxproj(json& project)
         element->SetAttribute("Label", "LocalAppDataPlatform");
         importGroup->InsertEndChild(element);
     }
-
-    // User Macros
-    //propertyGroup = doc.NewElement("PropertyGroup");
-    //propertyGroup->SetAttribute("Label", "UserMacros");
-    //importGroup->InsertEndChild(propertyGroup);
 
     // Output Directory
     for (const auto& config : project["configuration"])
