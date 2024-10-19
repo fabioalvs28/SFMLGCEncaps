@@ -1,6 +1,6 @@
 ﻿#include "core.h"
 
-const char* g_contentMain =
+const char* g_contentMainWindows =
 	"#include \"pch.h\"\n"
 	"#include \"main.h\"\n"
 	"\n"
@@ -79,7 +79,7 @@ const char* g_contentMain =
 	"	return 0;\n"
 	"}\n";
 
-const char* g_contentMain2 =
+const char* g_contentMainConsole =
 	"#include \"pch.h\"\n"
 	"#include \"main.h\"\n"
 	"\n"
@@ -90,6 +90,11 @@ const char* g_contentMain2 =
 	"#endif\n\n"
 	"	return 0;\n"
 	"}\n";
+
+const char* g_contentMainLib =
+	"#include \"pch.h\"\n"
+	"#include \"main.h\"\n"
+	"\n";
 
 const char* g_contentRc =
 	"//Microsoft Visual C++ generated resource script.\n"

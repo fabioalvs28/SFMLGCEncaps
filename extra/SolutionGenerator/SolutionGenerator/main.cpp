@@ -5,216 +5,109 @@
 #include <windows.h>
 #include "json.hpp"
 
-#define VERSION		"1.6"
+#define VERSION		"1.7"
 
 using namespace std;
 using json = nlohmann::json;
 namespace fs = filesystem;
-extern const char* g_contentMain;
-extern const char* g_contentMain2;
-extern const char* g_contentRc;
-extern const char* g_contentRes;
-extern const char* g_contentPch;
 
 void EnableANSIColors();
 void ShowHelpForMakeAndCreate();
 
 int main(int argc, char* argv[])
 {
-	SetConsoleOutputCP(1251);
+	HRESULT hr = CoInitialize(NULL);
+	if ( FAILED(hr) )
+	{
+		cerr << RED << "Erreur lors de l'initialisation de COM" << RESET << endl;
+		return -1;
+	}
+
+	SetConsoleOutputCP(1252);
 	cout << "Solution Generator " << VERSION << endl;
 	cout << "Copyright © 2024 Quest Education" << endl;
 
-    EnableANSIColors();
-    if (argc < 2)
-    {
-        cerr << "Incorrect number of arguments. Use -help to see available commands." << endl;
-        return 1;
+	EnableANSIColors();
+	if (argc < 2)
+	{
+		cerr << "Incorrect number of arguments. Use -help to see available commands." << endl;
+		return 1;
 	}
 
-    string command = argv[1];
+	string command = argv[1];
+	vector<string> args;
+	for ( int i=2 ; i<argc ; i++ )
+		args.push_back(argv[i]);
 
-    if (command == "-help" || command == "-h" )
-    {
-        ShowHelpForMakeAndCreate();
-		return 0;
-    }
+	bool result = false;
+	if ( command=="-help" || command=="-h" )
+	{
+		ShowHelpForMakeAndCreate();
+		result = true;
+	}
 
-    if (command == "-create")
-    {
-        if (argc < 5)
-        {
-            cerr << "Incorrect number of arguments. Use -help to see available commands." << endl;
-            return 1;
-		}
-		string parent_path = argv[2];
-        string solution_name = argv[3];
-        string project_name = argv[4];
-		bool windows = argc>=6 ? _stricmp(argv[5], "-windows")==0 : false;
+	if ( command=="-create" )
+	{
+		GCSolutionGenerator sg;
+		result = sg.CommandCreate(args);
+	}
 
-        string solutionFileName = parent_path + "/" +"config/" + solution_name + ".sol";
-        string projectFileName = parent_path + "/" + "config/" + project_name + ".prj";
+	if ( command=="-add" )
+	{
+		GCSolutionGenerator sg;
+		result = sg.CommandAdd(args);
+	}
 
-        string s_srcPath = parent_path + "/src";
-        string s_idePath = parent_path + "/ide";
-        string s_vsPath = s_idePath + "/vs/";
+	if ( command=="-make" )
+	{
+		GCSolutionGenerator sg;
+		result = sg.CommandMake(args);
+	}
 
-        // Create project folder
-        if (fs::exists(parent_path)==false)
-            fs::create_directories(parent_path);
-        if (fs::exists(parent_path + "/config")==false)
-            fs::create_directories(parent_path + "/" + "config");
-        if (fs::exists(s_idePath)==false)
-            fs::create_directories(s_idePath);
-        if (fs::exists(s_vsPath)==false)
-            fs::create_directories(s_vsPath);
-        if (fs::exists(s_srcPath)==false)
-            fs::create_directories(s_srcPath);
-        if (fs::exists(s_srcPath + "/" + project_name)==false)
-        {
-            fs::create_directories(s_srcPath + "/" + project_name);
-			string data = "";
-
-			if ( windows )
-				data = g_contentMain;
-			else
-				data = g_contentMain2;
-            ofstream maincpp(s_srcPath + "/" + project_name + "/main.cpp");
-			maincpp.write(data.c_str(), data.length());
-			maincpp.close();
-
-            ofstream mainh(s_srcPath + "/" + project_name + "/main.h");
-			data = "#pragma once\n\n";
-			mainh.write(data.c_str(), data.length());
-			mainh.close();
-
-            ofstream pch(s_srcPath + "/" + project_name + "/pch.h");
-			if ( windows )
-				data = "#pragma once\n\n#include <windows.h>\n\n#include \"resource.h\"\n\n";
-			else
-				data = "#pragma once\n\n";
-			data += g_contentPch;
-			pch.write(data.c_str(), data.length());
-			pch.close();
-
-            ofstream pchcpp(s_srcPath + "/" + project_name + "/pch.cpp");
-			data = "#include \"pch.h\"\n\n";
-			pchcpp.write(data.c_str(), data.length());
-			pchcpp.close();
-
-            ofstream rc(s_srcPath + "/" + project_name + "/app.rc");
-			data = g_contentRc;
-			rc.write(data.c_str(), data.length());
-			rc.close();
-
-            ofstream res(s_srcPath + "/" + project_name + "/resource.h");
-			data = g_contentRes;
-			res.write(data.c_str(), data.length());
-			res.close();
-
-            ofstream ico(s_srcPath + "/" + project_name + "/app.ico");
-			ico.close();
-
-            ofstream icosm(s_srcPath + "/" + project_name + "/small.ico");
-			icosm.close();
-        }
-        if (fs::exists(parent_path + "/bin")==false)
-            fs::create_directories(parent_path + "/bin");
-        if (fs::exists(parent_path + "/res")==false)
-            fs::create_directories(parent_path + "/res");
-        if (fs::exists(parent_path + "/doc")==false)
-            fs::create_directories(parent_path + "/doc");
-
-		// Read the json file
-		ifstream inputFile(parent_path + "/" + "config");
-        if (inputFile.is_open()==false) 
-            GCSolutionGenerator::EnsureJsonFileExists(solutionFileName, projectFileName, project_name, solution_name, windows);
-        json data;
-        ifstream newInputFile(solutionFileName);
-        newInputFile >> data;
-        newInputFile.close();
-
-        unordered_map<string, string> args =
-		{
-            {"parent_path", parent_path},
-            {"solution_name", solution_name},
-            {"project_name", project_name}
-        };
-
-        GCSolutionGenerator::GenerateNewSolution(args);
-		return 0;
-    }
-
-    if (command == "-make")
-    {
-        if ( argc<3 )
-        {
-            cerr << "Incorrect number of arguments. Use -help to see available commands." << endl;
-            return 1;
-        }
-        string root_folder = argv[2];
-
-        bool isForceRemove = false;
-		if ( argc>=4 && std::string(argv[3])=="-clean" )
-			isForceRemove = true;
-
-        string config_folder = root_folder + "/config";
-        std::string sol_folder = GCSolutionGenerator::FindFirstSolFile(config_folder);
-        if (sol_folder.empty())
-        {
-            std::cerr << "No .sol file found in the folder " << config_folder << std::endl;
-            return 1;
-        }
-
-        unordered_map<string, string> args =
-        {
-            {"root_folder", root_folder},
-            {"config_folder", config_folder},
-			{"sol_folder", sol_folder}
-        };
-
-        GCSolutionGenerator::GenerateSolutionSolAndPrj(args, isForceRemove);
-        return 0;
-    }
-
-    return 1;
+	CoUninitialize();
+	return result ? 0 : 1;
 }
 
 void EnableANSIColors() 
 {
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (hOut == INVALID_HANDLE_VALUE) {
-        return;
-    }
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hOut == INVALID_HANDLE_VALUE) {
+		return;
+	}
 
-    DWORD dwMode = 0;
-    if (GetConsoleMode(hOut, &dwMode)==FALSE) {
-        return;
-    }
+	DWORD dwMode = 0;
+	if (GetConsoleMode(hOut, &dwMode)==FALSE) {
+		return;
+	}
 
-    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleMode(hOut, dwMode);
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(hOut, dwMode);
 
-    // Enable ANSI encoding in console in order to have accents
-    SetConsoleOutputCP(1252);
+	// Enable ANSI encoding in console in order to have accents
+	SetConsoleOutputCP(1252);
 }
 
 void ShowHelpForMakeAndCreate()
 {
-	cout << "Usage: GCSolutionGenerator [options]" << endl;
+	cout << "Usage: SolutionGenerator [options]" << endl;
 	cout << "Options:" << endl;
-    cout << "\t-create <repo_name> <solution_name> <project_name> {-windows}" << endl;
-    cout << endl;
-    cout << "\t\t<repo_name>\t\tCreate a new project using the master folder name (project root by default)" << endl;
-    cout << "\t\t<solution_name>\t\tThe new solution name" << endl;
-    cout << "\t\t<project_name>\t\tThe new project name" << endl;
-    cout << "\t\t-windows\t\tWindows project (optional)" << endl;
-    cout << endl;
-    cout << "\t-make <root_folder> {-clean}" << endl;
-    cout << endl;
-    cout << "\t\t<root_folder>\t\tGenerate the solution using the root folder" << endl;
-    cout << "\t\t-clean\t\t\tRemove existing files (optional)" << endl;
-    cout << endl;
-    cout << "\t-help \t\t\t\tShow this help message." << endl;
-    cout << endl;
+	cout << "\t-create <repo_folder> <solution_name> <project_name> {-windows} {-lib}" << endl;
+	cout << "\t\trepo_folder\t\tThe main folder" << endl;
+	cout << "\t\tsolution_name\t\tThe new solution name" << endl;
+	cout << "\t\tproject_name\t\tThe new project name" << endl;
+	cout << "\t\t-windows\t\tWindows project (optional)" << endl;
+	cout << "\t\t-lib\t\t\tStatic library (optional)" << endl;
+	cout << endl;
+	cout << "\t-add <repo_folder> <project_name> {-windows} {-lib}" << endl;
+	cout << "\t\trepo_folder\t\tThe main folder" << endl;
+	cout << "\t\tproject_name\t\tThe new project name" << endl;
+	cout << "\t\t-windows\t\tWindows project (optional)" << endl;
+	cout << "\t\t-lib\t\t\tStatic library (optional)" << endl;
+	cout << endl;
+	cout << "\t-make <root_folder> {-clean}" << endl;
+	cout << "\t\trepo_folder\t\tThe main folder" << endl;
+	cout << "\t\t-clean\t\t\tRemove existing files (optional)" << endl;
+	cout << endl;
+	cout << "\t-help" << endl;
+	cout << endl;
 }

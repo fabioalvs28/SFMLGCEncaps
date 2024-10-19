@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_set>
 #include <string>
+#include <vector>
 #include "json.hpp"
 #include "tinyxml2.h"
 
@@ -13,64 +14,70 @@
 class GCSolutionGenerator
 {
 public:
-	// Main function to generate the whole solution
-	static void GenerateSolution(std::unordered_map<std::string, std::string> args, bool deleteFolder);
-	static void GenerateNewSolution(std::unordered_map<std::string, std::string> args);
-	static void GenerateSolutionSolAndPrj(std::unordered_map<std::string, std::string> args, bool deleteFolder);
-	// Paths
-	static std::string s_root;
-	static std::string s_jsonPath;
-	static std::string s_idePath;
-	static std::string s_vsPath;
-	static std::string s_srcPath;
-	static std::string s_configPath;
-	static std::string s_solFolder;
+	GCSolutionGenerator();
 
-	static std::string s_projectName;
-	static std::string s_solutionName;
-
-
-	//Create the solution when there's isn't one
-	static void CreateJSONSolution(const std::string& fileName, std::string ProjectName, std::string SolutionName);
-	static void CreateJSONProject(const std::string& fileName, std::string ProjectName, bool windows);
-
-	static void WriteJsonFile(const std::string& fileName, const nlohmann::ordered_json& data);
-	static const std::string FindFirstSolFile(const std::string& directory);
-	static void EnsureJsonFileExists(const std::string& solutionFileName, const std::string& projectFileName, const std::string& projectName, const std::string& solutionName, bool windows);
+	// Commands
+	bool CommandCreate(std::vector<std::string>& args);
+	bool CommandAdd(std::vector<std::string>& args);
+	bool CommandMake(std::vector<std::string>& args);
 
 private:
-	GCSolutionGenerator() = delete;
 
-	// Extensions
-	static const std::string s_srcExt;
-	static const std::string s_hExt;
-	static const std::string s_rcExt;
-	// Data
-	static nlohmann::json m_data;
-	static std::unordered_map<std::string, std::string> m_args;
+	// Create/Add
+	void CreateJsonSolution(std::string folder, std::string solutionName, std::string projectName);
+	void ModifyJsonSolution(std::string folder, std::string projectNameToAdd);
+	void CreateJsonProject(std::string folder, std::string projectName, bool windows, bool lib);
+	bool CreateProjectFiles(std::string folder, std::string projectName, bool flagWindows, bool flagLib);
+	std::string FindFirstSolFile(std::string folder);
 
-	// File Generation
-	static void GenerateSln();
-	static void GenerateVcxproj(nlohmann::json& project);
-	static void GenerateFilters(nlohmann::json& project);
+	// Make
+	bool GenerateSolutionSolAndPrj(std::string folder, bool deleteFolder);
+	void GenerateSln();
+	void GenerateVcxproj(nlohmann::json& project);
+	void GenerateFilters(nlohmann::json& project);
 
-	// Getting data
-	static void FillData();
-	static void FindAndReadSolFiles(const std::string& path, nlohmann::json& data);
-	static void FillDataWithSolAndPrj();
-	static void PopulateIncludeFiles(nlohmann::json& project);
+
+
+
+
+	void WriteJsonFile(const std::string& fileName, const nlohmann::ordered_json& data);
+
+	void FillData();
+	void FindAndReadSolFiles(const std::string& path, nlohmann::json& data);
+	void FillDataWithSolAndPrj();
+	void PopulateIncludeFiles(nlohmann::json& project);
 
 	// Utils
-	static nlohmann::json ReadJsonFile(std::string fileName);
-	static std::string GenerateGuid();
-	static std::unordered_set<std::string> SplitString(std::string str, char delimiter);
-	static std::string RelativePath(const std::string& from, const std::string& to);
-	static void AddTextElement(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::string name, const std::string value);
-	static void AddFilesToItemGroup(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* itemGroup, const std::string tag, nlohmann::json files, const std::string filterName);
-	static std::string GetStr(nlohmann::json obj, std::string key);
-	static bool DeleteFolderSafe(std::string path);
-	static bool MoveFileToSource(std::string path);
+	nlohmann::json ReadJsonFile(std::string fileName);
+	std::string GenerateGuid();
+	std::unordered_set<std::string> SplitString(std::string str, char delimiter);
+	std::string RelativePath(const std::string& from, const std::string& to);
+	void AddTextElement(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::string name, const std::string value);
+	void AddFilesToItemGroup(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* itemGroup, const std::string tag, nlohmann::json files, const std::string filterName);
+	std::string GetStr(nlohmann::json obj, std::string key);
+	bool DeleteFolderSafe(std::string path);
+	bool MoveFileToSource(std::string path);
+	std::string ToFolder(std::string folder);
 
+private:
+	// Paths
+	std::string m_folder;
+	std::string m_configFolder;
+	std::string m_solutionPath;
+	std::string m_ideFolder;
+	std::string m_vsFolder;
+	std::string m_srcFolder;
+
+	std::string m_projectName;
+	std::string m_solutionName;
+
+	// Extensions
+	std::string m_srcExt;
+	std::string m_hExt;
+	std::string m_rcExt;
+
+	// Data
+	nlohmann::json m_data;
 };
 
 
