@@ -5,7 +5,7 @@
 #include <windows.h>
 #include "json.hpp"
 
-#define VERSION		"1.7"
+#define VERSION "1.9"
 
 using namespace std;
 using json = nlohmann::json;
@@ -71,14 +71,12 @@ int main(int argc, char* argv[])
 void EnableANSIColors() 
 {
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (hOut == INVALID_HANDLE_VALUE) {
+	if ( hOut==INVALID_HANDLE_VALUE )
 		return;
-	}
 
 	DWORD dwMode = 0;
-	if (GetConsoleMode(hOut, &dwMode)==FALSE) {
+	if ( GetConsoleMode(hOut, &dwMode)==FALSE )
 		return;
-	}
 
 	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 	SetConsoleMode(hOut, dwMode);
