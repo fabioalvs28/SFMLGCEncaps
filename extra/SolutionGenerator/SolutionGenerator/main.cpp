@@ -5,7 +5,7 @@
 #include <windows.h>
 #include "json.hpp"
 
-#define VERSION "1.9"
+#define VERSION "1.10"
 
 using namespace std;
 using json = nlohmann::json;

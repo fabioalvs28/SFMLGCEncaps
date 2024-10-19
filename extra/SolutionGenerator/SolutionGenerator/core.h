@@ -31,33 +31,35 @@ private:
 	std::string FindFirstSolFile(std::string folder);
 
 	// Make
-	bool GenerateSolutionSolAndPrj(std::string folder, bool deleteFolder);
+	bool GenerateVisualSolution(std::string folder, bool deleteFolder);
 	void GenerateSln();
 	void GenerateVcxproj(nlohmann::json& project);
 	void GenerateFilters(nlohmann::json& project);
 
-
-
-
-
-	void WriteJsonFile(const std::string& fileName, const nlohmann::ordered_json& data);
-
-	void FillData();
-	void FindAndReadSolFiles(const std::string& path, nlohmann::json& data);
+	// Data
 	void FillDataWithSolAndPrj();
 	void PopulateIncludeFiles(nlohmann::json& project);
 
-	// Utils
+	// Json
+	void WriteJsonFile(const std::string& fileName, const nlohmann::ordered_json& data);
 	nlohmann::json ReadJsonFile(std::string fileName);
-	std::string GenerateGuid();
-	std::unordered_set<std::string> SplitString(std::string str, char delimiter);
-	std::string RelativePath(const std::string& from, const std::string& to);
+	std::string GetStr(nlohmann::json obj, std::string key);
+
+	// XML
 	void AddTextElement(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::string name, const std::string value);
 	void AddFilesToItemGroup(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* itemGroup, const std::string tag, nlohmann::json files, const std::string filterName);
-	std::string GetStr(nlohmann::json obj, std::string key);
+
+	// String
+	std::unordered_set<std::string> SplitString(std::string str, char delimiter);
+
+	// Disk
+	std::string ToFolder(std::string folder);
+	std::string RelativePath(const std::string& from, const std::string& to);
 	bool DeleteFolderSafe(std::string path);
 	bool MoveFileToSource(std::string path);
-	std::string ToFolder(std::string folder);
+
+	// System
+	std::string GenerateGuid();
 
 private:
 	// Paths
@@ -68,9 +70,6 @@ private:
 	std::string m_vsFolder;
 	std::string m_srcFolder;
 
-	std::string m_projectName;
-	std::string m_solutionName;
-
 	// Extensions
 	std::string m_srcExt;
 	std::string m_hExt;
@@ -79,5 +78,3 @@ private:
 	// Data
 	nlohmann::json m_data;
 };
-
-
