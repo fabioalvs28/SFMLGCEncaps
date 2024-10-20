@@ -370,8 +370,10 @@ bool GCSolutionGenerator::GenerateVisualSolution(string folder, bool deleteFolde
 	}
 
 	m_folder = folder;
-	m_configFolder = m_folder + "config\\";
 	m_solutionPath = solutionPath;
+	m_binFolder = m_ideFolder + "bin\\";
+	m_configFolder = m_folder + "config\\";
+	m_docFolder = m_ideFolder + "doc\\";
 	m_srcFolder = m_folder + "src\\";
 	m_ideFolder = m_folder + "ide\\";
 	m_vsFolder = m_ideFolder + "vs\\";
@@ -385,7 +387,7 @@ bool GCSolutionGenerator::GenerateVisualSolution(string folder, bool deleteFolde
 
 	// Generate
 	GenerateSln();
-	for (auto& project : m_data["contents"])
+	for ( auto& project : m_data["contents"] )
 	{
 		PopulateIncludeFiles(project);
 		GenerateVcxproj(project);
@@ -581,7 +583,7 @@ void GCSolutionGenerator::GenerateVcxproj(json& project)
 	proj->InsertEndChild(importGroup);
 
 	// Configurations
-	for (const auto& config : project["configuration"])
+	for ( const auto& config : project["configuration"] )
 	{
 		string condition = "'$(Configuration)|$(Platform)'=='" + GetStr(config, "name") + "'";
 		XMLElement* propertyGroup = doc.NewElement("PropertyGroup");
@@ -683,11 +685,12 @@ void GCSolutionGenerator::GenerateVcxproj(json& project)
 	proj->InsertEndChild(itemGroupCompile);
 	for ( const auto& source : project["source_files"] )
 	{
-		//cout << source << endl;
 		string str = source.get<string>();
 		XMLElement* clCompile = doc.NewElement("ClCompile");
 		clCompile->SetAttribute("Include", str.c_str());
 		itemGroupCompile->InsertEndChild(clCompile);
+
+		// PCH
 		if ( str.ends_with("pch.cpp") )
 		{
 			for ( const auto& config : project["configuration"] )
@@ -762,17 +765,28 @@ void GCSolutionGenerator::GenerateFilters(json& project)
 	XMLElement* itemGroup = doc.NewElement("ItemGroup");
 	proj->InsertEndChild(itemGroup);
 
-	unordered_map<string, string> filters = {
-		{"Source Files", m_srcExt},
-		{"Header Files", m_hExt},
-		{"Resource Files", m_rcExt}
+	map<string, string> filters = {
+		{"header", m_hExt},
+		{"resource", m_rcExt},
+		{"source", m_srcExt}
 		};
 
+	for ( const auto& filter : filters )
+	{
+		string key = filter.first + "_files";
+		for ( auto path : project[key] )
+		{
+			string name = filter.first + GetFilter(ToRelativeProjectPath(path));
+			if ( name!="" && filters.find(name)==filters.end() )
+				filters.insert(make_pair(name, filter.second));
+		}
+	}
+
 	// Create filters
-	for ( const auto& pair : filters )
+	for ( const auto& filter : filters )
 	{
 		XMLElement* filterElement = doc.NewElement("Filter");
-		filterElement->SetAttribute("Include", pair.first.c_str());
+		filterElement->SetAttribute("Include", filter.first.c_str());
 		itemGroup->InsertEndChild(filterElement);
 
 		XMLElement* elem = doc.NewElement("UniqueIdentifier");
@@ -780,16 +794,16 @@ void GCSolutionGenerator::GenerateFilters(json& project)
 		filterElement->InsertEndChild(elem);
 
 		elem = doc.NewElement("Extensions");
-		elem->SetText(pair.second.c_str());
+		elem->SetText(filter.second.c_str());
 		filterElement->InsertEndChild(elem);
 	}
 
 	// Add files to their respective filters
 	itemGroup = doc.NewElement("ItemGroup");
 	proj->InsertEndChild(itemGroup);
-	AddFilesToItemGroup(&doc, itemGroup, "ClCompile", project["source_files"], "Source Files");
-	AddFilesToItemGroup(&doc, itemGroup, "ClInclude", project["header_files"], "Header Files");
-	AddFilesToItemGroup(&doc, itemGroup, "None", project["resource_files"], "Resource Files");
+	AddFilesToItemGroup(&doc, itemGroup, "ClCompile", project["source_files"], "source");
+	AddFilesToItemGroup(&doc, itemGroup, "ClInclude", project["header_files"], "header");
+	AddFilesToItemGroup(&doc, itemGroup, "None", project["resource_files"], "resource");
 
 	// Save the vcxproj file
 	string folderPath = m_vsFolder + project["folder"].get<string>();
@@ -829,7 +843,7 @@ void GCSolutionGenerator::FillDataWithSolAndPrj()
 	for ( auto project : data["projects"] )
 	{
 		string name = project.get<string>();
-		json file_data = ReadJsonFile(fs::path(m_solutionPath).parent_path().string() + "/" + name);
+		json file_data = ReadJsonFile(fs::path(m_solutionPath).parent_path().string() + "\\" + name);
 		data["contents"].push_back(file_data);
 
 		json folder = json::object();
@@ -849,7 +863,7 @@ void GCSolutionGenerator::PopulateIncludeFiles(json& project)
 	array<string, 4> filters = { "source_files", "header_files", "resource_files", "other_files" };
 	for ( const string& filter : filters )
 	{
-		if (project.find(filter) == project.end())
+		if ( project.find(filter)==project.end() )
 			project[filter] = json::array();
 	}
 
@@ -858,31 +872,31 @@ void GCSolutionGenerator::PopulateIncludeFiles(json& project)
 	{
 		for ( const auto& entry : fs::recursive_directory_iterator(path) )
 		{
-			if ( fs::is_regular_file(entry) )
-			{
-				//cout << "Fichier : " << entry.path().string() << endl;
-				string ext = entry.path().extension().string().substr(1);
-				string relPath = RelativePath(m_vsFolder+project["folder"].get<string>(), entry.path().string());
-				bool nowhere = true;
+			if ( fs::is_regular_file(entry)==false )
+				continue;
 
-				if ( find(srcExt.begin(), srcExt.end(), ext)!=srcExt.end() )
-				{
-					project["source_files"].push_back(relPath);
-					nowhere = false;
-				}
-				if ( find(hExt.begin(), hExt.end(), ext)!=hExt.end() )
-				{
-					project["header_files"].push_back(relPath);
-					nowhere = false;
-				}
-				if ( find(rcExt.begin(), rcExt.end(), ext)!=rcExt.end() )
-				{
-					project["resource_files"].push_back(relPath);
-					nowhere = false;
-				}
-				if ( nowhere )
-					project["other_files"].push_back(relPath);
+			//cout << "Fichier : " << entry.path().string() << endl;
+			string ext = entry.path().extension().string().substr(1);
+			string relPath = RelativePath(m_vsFolder+project["folder"].get<string>(), entry.path().string());
+			bool nowhere = true;
+
+			if ( find(srcExt.begin(), srcExt.end(), ext)!=srcExt.end() )
+			{
+				project["source_files"].push_back(relPath);
+				nowhere = false;
 			}
+			if ( find(hExt.begin(), hExt.end(), ext)!=hExt.end() )
+			{
+				project["header_files"].push_back(relPath);
+				nowhere = false;
+			}
+			if ( find(rcExt.begin(), rcExt.end(), ext)!=rcExt.end() )
+			{
+				project["resource_files"].push_back(relPath);
+				nowhere = false;
+			}
+			if ( nowhere )
+				project["other_files"].push_back(relPath);
 		}
 	}
 	else
@@ -946,17 +960,18 @@ void GCSolutionGenerator::AddTextElement(tinyxml2::XMLDocument* doc, XMLElement*
 	parent->InsertEndChild(element);
 }
 
-void GCSolutionGenerator::AddFilesToItemGroup(tinyxml2::XMLDocument* doc, XMLElement* itemGroup, const string tag, json files, const string filterName)
+void GCSolutionGenerator::AddFilesToItemGroup(tinyxml2::XMLDocument* doc, XMLElement* itemGroup, const string tag, json files, const string root)
 {
 	for ( const auto& file : files )
 	{
 		XMLElement* element = doc->NewElement(tag.c_str());
-		string str = file.get<string>();
-		element->SetAttribute("Include", str.c_str());
+		string path = file.get<string>();
+		element->SetAttribute("Include", path.c_str());
 		itemGroup->InsertEndChild(element);
 
 		XMLElement* filterElement = doc->NewElement("Filter");
-		filterElement->SetText(filterName.c_str());
+		string name = root + GetFilter(ToRelativeProjectPath(path));
+		filterElement->SetText(name.c_str());
 		element->InsertEndChild(filterElement);
 	}
 }
@@ -988,6 +1003,35 @@ string GCSolutionGenerator::ToFolder(string folder)
 		return folder;
 
 	return folder + "\\";
+}
+
+string GCSolutionGenerator::GetFolder(string file)
+{
+	size_t index = file.rfind("\\");
+	if ( index==string::npos )
+		return "";
+	return file.substr(0, index+1);
+}
+
+string GCSolutionGenerator::GetFilter(string file)
+{
+	size_t index = file.rfind("\\");
+	if ( index==string::npos )
+		return "";
+	return "\\" + file.substr(0, index);
+}
+
+string GCSolutionGenerator::ToRelativeProjectPath(string relativeSolutionPath)
+{
+	string path = relativeSolutionPath.substr(13);
+	size_t index = path.find("\\");
+	if ( index==string::npos )
+		return "";
+	path = path.substr(index+1);
+	index = path.find("\"");
+	if ( index==string::npos )
+		return path;
+	return path.substr(0, index);
 }
 
 string GCSolutionGenerator::RelativePath(const string& from, const string& to)

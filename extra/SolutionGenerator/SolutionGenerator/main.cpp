@@ -3,32 +3,33 @@
 #include <fstream>
 #define NOMINMAX
 #include <windows.h>
-#include "json.hpp"
-
-#define VERSION "1.10"
 
 using namespace std;
-using json = nlohmann::json;
-namespace fs = filesystem;
 
-void EnableANSIColors();
+#define VERSION "1.11"
+
 void ShowHelpForMakeAndCreate();
 
 int main(int argc, char* argv[])
 {
 	HRESULT hr = CoInitialize(NULL);
 	if ( FAILED(hr) )
-	{
-		cerr << RED << "Erreur lors de l'initialisation de COM" << RESET << endl;
-		return -1;
-	}
+		return 1;
 
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if ( hOut==INVALID_HANDLE_VALUE )
+		return 1;
+	DWORD dwMode = 0;
+	if ( GetConsoleMode(hOut, &dwMode)==FALSE )
+		return 1;
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(hOut, dwMode);
 	SetConsoleOutputCP(1252);
+
 	cout << "Solution Generator " << VERSION << endl;
 	cout << "Copyright © 2024 Quest Education" << endl;
 
-	EnableANSIColors();
-	if (argc < 2)
+	if ( argc<2 )
 	{
 		cerr << "Incorrect number of arguments. Use -help to see available commands." << endl;
 		return 1;
@@ -66,23 +67,6 @@ int main(int argc, char* argv[])
 
 	CoUninitialize();
 	return result ? 0 : 1;
-}
-
-void EnableANSIColors() 
-{
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	if ( hOut==INVALID_HANDLE_VALUE )
-		return;
-
-	DWORD dwMode = 0;
-	if ( GetConsoleMode(hOut, &dwMode)==FALSE )
-		return;
-
-	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-	SetConsoleMode(hOut, dwMode);
-
-	// Enable ANSI encoding in console in order to have accents
-	SetConsoleOutputCP(1252);
 }
 
 void ShowHelpForMakeAndCreate()

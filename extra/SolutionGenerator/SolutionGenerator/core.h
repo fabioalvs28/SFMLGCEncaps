@@ -47,13 +47,16 @@ private:
 
 	// XML
 	void AddTextElement(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::string name, const std::string value);
-	void AddFilesToItemGroup(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* itemGroup, const std::string tag, nlohmann::json files, const std::string filterName);
+	void AddFilesToItemGroup(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* itemGroup, const std::string tag, nlohmann::json files, const std::string root);
 
 	// String
 	std::unordered_set<std::string> SplitString(std::string str, char delimiter);
 
 	// Disk
 	std::string ToFolder(std::string folder);
+	std::string GetFolder(std::string file);
+	std::string GetFilter(std::string file);
+	std::string ToRelativeProjectPath(std::string relativeSolutionPath);
 	std::string RelativePath(const std::string& from, const std::string& to);
 	bool DeleteFolderSafe(std::string path);
 	bool MoveFileToSource(std::string path);
@@ -64,11 +67,13 @@ private:
 private:
 	// Paths
 	std::string m_folder;
+	std::string m_binFolder;
 	std::string m_configFolder;
-	std::string m_solutionPath;
+	std::string m_docFolder;
 	std::string m_ideFolder;
-	std::string m_vsFolder;
 	std::string m_srcFolder;
+	std::string m_vsFolder;
+	std::string m_solutionPath;
 
 	// Extensions
 	std::string m_srcExt;
