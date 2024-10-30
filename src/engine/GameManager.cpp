@@ -37,7 +37,7 @@ void GCGameManager::Run()
     SetActiveGameManager();
     if ( m_pSceneManager->GetActiveScene() == nullptr )
         GCScene::Create();
-    m_pRenderManager->m_pSpriteCollider = new GCSprite( "BoxColliderSquare.dds" );
+    m_pRenderManager->m_pSpriteCollider = new GCSprite("Engine", "BoxColliderSquare.dds" );
     GameLoop();
 }
 

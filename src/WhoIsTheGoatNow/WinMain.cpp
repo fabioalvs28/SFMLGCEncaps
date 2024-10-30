@@ -26,7 +26,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
 
     GCScene* SC_pGame = GCScene::Create();
     
-    GCSprite SP_enemy("red_square.dds");
+    GCSprite SP_enemy("WhoIsTheGoatNow", "red_square.dds");
 
     //GCGameObject* ptest = pScene->CreateGameObject();
     //ptest->AddComponent<GCText>();
@@ -38,7 +38,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //Bullet prefab 
 
     //Player creation
-    GCSprite SP_player("blue_square.dds");
+    GCSprite SP_player("WhoIsTheGoatNow", "blue_square.dds");
 
     GCGameObject* GO_pPlayer = SC_pGame->CreateGameObject();
     GO_pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite(&SP_player);
@@ -102,24 +102,24 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GO_pEnemySpawner->GetComponent<GCScriptEnemySpawner>()->AddEnemyInList(1, GO_pDumbGoat);
 
     //SniperPrefab
-    GCSprite SP_sniper("sniper.dds");
-    GCSprite SP_sniperBullet("bullet.dds");
+    GCSprite SP_sniper("WhoIsTheGoatNow", "sniper.dds");
+    GCSprite SP_sniperBullet("WhoIsTheGoatNow", "bullet.dds");
     GCGameObject* GO_pSniper = GO_pPlayer->CreateChild();
     GO_pSniper->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_sniper );
     GO_pSniper->AddComponent<GCScriptSniper>()->SetBulletSprite(&SP_sniperBullet);
     GO_pSniper->SetLayer(3);
 
     //MachineGune prefab
-    GCSprite SP_machineGun("Minigun.dds");
-    GCSprite SP_machineGunBullet("bulletMG.dds");
+    GCSprite SP_machineGun("WhoIsTheGoatNow", "Minigun.dds");
+    GCSprite SP_machineGunBullet("WhoIsTheGoatNow", "bulletMG.dds");
     GCGameObject* GO_pMachineGun = GO_pPlayer->CreateChild();
     GO_pMachineGun->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_machineGun );
     GO_pMachineGun->AddComponent<GCScriptMachineGun>()->SetBulletSprite( &SP_machineGunBullet );
     GO_pMachineGun->SetLayer(3);
 
     //Shotgun prefab
-    GCSprite SP_shotgun("Shotgun.dds");
-    GCSprite SP_shotgunBullet("bulletSG.dds");
+    GCSprite SP_shotgun("WhoIsTheGoatNow", "Shotgun.dds");
+    GCSprite SP_shotgunBullet("WhoIsTheGoatNow", "bulletSG.dds");
     GCGameObject* GO_pShotgun = GO_pPlayer->CreateChild();
     GO_pShotgun->AddComponent<GCSpriteRenderer>()->SetSprite( &SP_shotgun );
     GO_pShotgun->AddComponent<GCScriptShotgun>()->SetBulletSprite( &SP_shotgunBullet );
@@ -183,9 +183,9 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     SR_pButtonSelect->SetPlayer( GO_pPlayer );
     GO_pButtonSelect->AddComponent<GCSpriteRenderer>();
 
-    GCSprite SP_SelectSniper = GCSprite(std::string("SelectSniper.dds"));
-    GCSprite SP_SelectSG = GCSprite(std::string("SelectShotgun.dds"));
-    GCSprite SP_SelectMG = GCSprite(std::string("SelectMinigun.dds"));
+    GCSprite SP_SelectSniper = GCSprite("WhoIsTheGoatNow", std::string("SelectSniper.dds"));
+    GCSprite SP_SelectSG = GCSprite("WhoIsTheGoatNow", std::string("SelectShotgun.dds"));
+    GCSprite SP_SelectMG = GCSprite("WhoIsTheGoatNow", std::string("SelectMinigun.dds"));
     
     GCGameObject* GO_pSelectSniper = GO_pButtonSelect->Duplicate();
     GO_pSelectSniper->GetComponent<GCScriptButtonSelect>()->SetWeapon( 0 );
@@ -214,7 +214,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCScene* SC_pHome = GCScene::Create();
     SC_pHome->SetActive();
 
-    GCSprite SP_Title = GCSprite(std::string("WITGN.dds"));
+    GCSprite SP_Title = GCSprite("WhoIsTheGoatNow", std::string("WITGN.dds"));
 
     GCGameObject* GO_pTitle = SC_pHome->CreateGameObject();
     GO_pTitle->m_transform.SetPosition(GCVEC3(-2.5, -1, 0));
@@ -230,8 +230,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     //GO_CreditRight->m_transform.SetPosition(GCVEC3(4.5, 4, 0));
     //GO_CreditRight->AddComponent<GCText>()->SetText(std::string("\b Alexandre GLATZ \b"));
 
-    GCSprite SP_Play = GCSprite(std::string("Play.dds"));
-    GCSprite SP_Quit = GCSprite(std::string("QUIT.dds"));
+    GCSprite SP_Play = GCSprite("WhoIsTheGoatNow", std::string("Play.dds"));
+    GCSprite SP_Quit = GCSprite("WhoIsTheGoatNow", std::string("QUIT.dds"));
 
     GCGameObject* GO_pMainPlayButton = SC_pHome->CreateGameObject();
     GO_pMainPlayButton->m_transform.SetPosition(GCVEC3(-4, -3, 0));

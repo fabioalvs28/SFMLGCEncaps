@@ -2,7 +2,7 @@
 
 
 
-GCSprite::GCSprite( std::string filename )
+GCSprite::GCSprite(std::string projectname, std::string filename )
 {
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 	m_pGeometry = pGraphics->CreateGeometryPrimitive( Plane, XMFLOAT4( Colors::Blue ) ).resource;
@@ -10,7 +10,7 @@ GCSprite::GCSprite( std::string filename )
     pGraphics->InitializeGraphicsResourcesStart();
 	
     m_pMesh = pGraphics->CreateMeshTexture( m_pGeometry ).resource;
-	GCTexture* pTexture = pGraphics->CreateTexture( std::string( "../../../res/" ) + filename ).resource;
+	GCTexture* pTexture = pGraphics->CreateTexture( std::string( "../../../res/" ) + projectname + std::string("/Textures/") + filename).resource;
 	
     pGraphics->InitializeGraphicsResourcesEnd();
 	

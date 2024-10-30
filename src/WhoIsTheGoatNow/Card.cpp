@@ -15,13 +15,13 @@ void GCScriptCard::ALED()
 {
 	m_weaponIndex = m_pPlayer->GetComponent<GCScriptPlayerBehaviour>()->GetWeaponIndex();
 
-	GCSprite* SP_AttackSpeed = new GCSprite( std::string("attSpeed.dds" ) );
-	GCSprite* SP_ShootingSpeed = new GCSprite( std::string( "ShootingSpeed.dds" ) );
-	GCSprite* SP_Range = new GCSprite( std::string( "Range.dds" ) );
-	GCSprite* SP_Pene = new GCSprite( std::string( "Pene.dds" ) );
-	GCSprite* SP_Wspeed = new GCSprite( std::string( "WSpeed.dds" ) );
-	GCSprite* SP_Hp = new GCSprite( std::string( "hp.dds" ) );
-	GCSprite* SP_MaxHp = new GCSprite( std::string( "MaxHP.dds" ) );
+	GCSprite* SP_AttackSpeed = new GCSprite("WhoIsTheGoatNow", std::string("attSpeed.dds" ) );
+	GCSprite* SP_ShootingSpeed = new GCSprite("WhoIsTheGoatNow", std::string( "ShootingSpeed.dds" ) );
+	GCSprite* SP_Range = new GCSprite("WhoIsTheGoatNow", std::string( "Range.dds" ) );
+	GCSprite* SP_Pene = new GCSprite("WhoIsTheGoatNow", std::string( "Pene.dds" ) );
+	GCSprite* SP_Wspeed = new GCSprite("WhoIsTheGoatNow", std::string( "WSpeed.dds" ) );
+	GCSprite* SP_Hp = new GCSprite("WhoIsTheGoatNow", std::string( "hp.dds" ) );
+	GCSprite* SP_MaxHp = new GCSprite("WhoIsTheGoatNow", std::string( "MaxHP.dds" ) );
 
 	switch ( m_upgrade )
 	{
