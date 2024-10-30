@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Window.h"
 
 LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -185,6 +186,7 @@ LRESULT Window::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		// WM_DESTROY is sent when the window is being destroyed.
 	case WM_DESTROY:
+		m_IsClosed = true;
 		PostQuitMessage(0);
 		return 0;
 
@@ -307,4 +309,9 @@ int Window::GetClientHeight() {
 
 HWND Window::GetHMainWnd() {
 	return m_hMainWnd;
+}
+
+bool Window::IsClosed()
+{
+	return m_IsClosed;
 }

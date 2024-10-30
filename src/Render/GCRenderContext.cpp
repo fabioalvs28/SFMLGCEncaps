@@ -407,7 +407,7 @@ bool GCRenderContext::PrepareDraw()
 	m_pGCRenderResources->m_pCommandList->RSSetViewports(1, &m_pGCRenderResources->m_ScreenViewport);
 	m_pGCRenderResources->m_pCommandList->RSSetScissorRects(1, &m_pGCRenderResources->m_ScissorRect);
 
-	m_pGCRenderResources->m_pCommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::SeaGreen, 1, &m_pGCRenderResources->m_ScissorRect);
+	m_pGCRenderResources->m_pCommandList->ClearRenderTargetView(m_pGCRenderResources->CurrentBackBufferViewAddress(), DirectX::Colors::LightBlue, 1, &m_pGCRenderResources->m_ScissorRect);
 	m_pGCRenderResources->m_pCommandList->ClearDepthStencilView(m_pGCRenderResources->GetDepthStencilViewAddress(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 

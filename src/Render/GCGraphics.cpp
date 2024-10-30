@@ -528,8 +528,8 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
 // Update per object constant buffer
 bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId)
 {
-    if (GC_CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
-        return false;
+    //if (GC_CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
+        //return false;
 
     if (pMaterial->GetCount() >= pMaterial->GetCbObjectInstance().size()) {
         pMaterial->AddCbPerObject<GCWORLDCB>();
