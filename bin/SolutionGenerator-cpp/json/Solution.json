@@ -17,7 +17,7 @@
             ]
         },
         "render": {
-            "projects": ["Render.json"]
+            "projects": ["Render.json", "Core.json"]
         },
         "tools": {
             "projects": ["SpriteSheetGenerator.json", "Multimedia.json","Core.json"]
