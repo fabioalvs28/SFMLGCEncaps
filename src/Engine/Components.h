@@ -14,11 +14,10 @@ enum FLAGS
 	UPDATE          = 1 << 0,
 	FIXED_UPDATE    = 1 << 1,
     RENDER          = 1 << 2,
-    TRIGGER         = 1 << 3,
+    // TRIGGER         = 1 << 3,
+    // BUTTON          = 1 << 4,
 };
 inline FLAGS operator|( FLAGS a, FLAGS b ) { return static_cast<FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
-
-
 
 class GCComponent
 {
@@ -54,7 +53,7 @@ protected:
     virtual void Render() {}
     virtual void OnActivate() {}
     virtual void OnDeactivate() {}
-    virtual void Destroy() {}
+    virtual void Destroy();
     
     virtual FLAGS GetFlags() = 0;
     bool IsFlagSet( FLAGS flag ) { return ( GetFlags() & flag ) != 0; }
@@ -70,6 +69,7 @@ protected:
     bool m_globalActive;
     bool m_selfActive;
     
+    bool m_registered;
     bool m_created;
     
     GCListNode<GCComponent*>* m_pUpdateNode;
@@ -95,10 +95,27 @@ public:
     
     void SetSprite( GCSprite* pSprite );
     GCSprite* GetSprite() { return m_pSprite; };
+    void FlipX();
+    void FlipY();
+
+    enum OriginType
+    {
+        BottomLeft ,
+        BottomRight ,
+        TopLeft ,
+        TopRight ,
+        Center ,
+        Left ,
+        Right ,
+        Top ,
+        Bottom
+    };
+
+    void SetOrigin( int originType );
 
 protected:
 	GCSpriteRenderer();
-    ~GCSpriteRenderer() override {}
+    ~GCSpriteRenderer() override;
 
     GCSpriteRenderer* Duplicate() override { return new GCSpriteRenderer(); }
     void CopyTo( GCComponent* pDestination ) override;
@@ -111,9 +128,12 @@ protected:
 
     void SetAnimatedSprite( GCGeometry* pGeometry );
 
+
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 1;
     GCSprite* m_pSprite;
+    bool m_isFlippedX;
+    bool m_isFlippedY;
 
 };
 
@@ -178,7 +198,7 @@ protected:
     void Render() override;
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID =2;
 
 };
 
@@ -199,12 +219,14 @@ public:
 protected:
     GCCircleCollider() {}
     ~GCCircleCollider() override {}
+
+    void Render() override {};
     
     GCCircleCollider* Duplicate() override { return new GCCircleCollider(); }
     void CopyTo( GCComponent* pDestination ) override;
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 3;
 
 };
 
@@ -238,7 +260,7 @@ protected:
     FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 4;
     GCVEC3 m_velocity;
 
 };
@@ -260,15 +282,19 @@ public:
     void PlayAnimation( std::string animationName, bool isLoop );
     void StopAnimation();
 
+    bool AnimationHasEnded() { return m_isEnded; }
+
     void LoadSpriteSheet( std::string fileName ,int spriteSheetID );
     GCAnimation* CreateAnimation( std::string animationName , int firstFrame , int frameNumber , float frameDisplayTime = 0.1f );
     GCAnimation* CreateAnimationWithCustomFrames( std::string animationName , std::vector<int> frameList , float frameDisplayTime = 0.1f );
 
     std::string GetActiveAnimation() { return m_activeAnimationName; }
 
+    bool IsAnimationEnded() { return m_lastFrameIndex == m_currentFrameIndex; }
+
 protected:
     GCAnimator();
-    ~GCAnimator() override {}
+    ~GCAnimator() override;
 
     GCAnimator* Duplicate() override { return new GCAnimator(); }
     void CopyTo( GCComponent* pDestination ) override;
@@ -279,7 +305,7 @@ protected:
     FLAGS GetFlags() override { return UPDATE; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 5;
 
 private:
     std::string m_spritesheetName;
@@ -288,6 +314,7 @@ private:
     std::string m_activeAnimationName;
     GCAnimation* m_pCurrentAnimation;
 
+    bool m_isEnded;
     bool m_isLoop;
     int m_lastFrameIndex;
     int m_currentFrameIndex;
@@ -320,7 +347,7 @@ protected:
     FLAGS GetFlags() override { return UPDATE; }
 
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID = 6;
 
 };
 
@@ -333,10 +360,16 @@ friend class GCUpdateManager;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class GCMouseInputManager;
 
 public:
     static const int GetIDStatic() { return m_ID; }
     const int GetID() override { return m_ID; }
+
+    GCVEC3 GetPosition() { return m_position; };
+
+    float GetViewWidth() { return m_viewWidth; };
+    float GetViewHeight() { return m_viewHeight; };
 
 protected:
     GCCamera();
@@ -349,8 +382,11 @@ protected:
     
     FLAGS GetFlags() override { return NONE; }
 
+    GCMATRIX GetViewMatrix() { return m_viewMatrix; }
+    GCMATRIX GetProjMatrix() { return m_projectionMatrix; }
+
 protected:
-    inline static const int m_ID = ++GCComponent::componentCount;
+    inline static const int m_ID =7;
     
     GCVEC3 m_position;
     GCVEC3 m_target;
@@ -366,6 +402,77 @@ protected:
 
 };
 
+
+class GCText : public GCComponent
+{
+friend class GCGameObject;
+friend class GCRenderManager;
+friend class GCSceneManager;
+friend class GCTextManager;
+
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+    void SetText(std::string text, GCColor color = GCColor(255,255,255));
+    void SetColor(GCColor color);
+
+protected:
+    GCText();
+    ~GCText() override {};
+
+    GCText* Duplicate() override { return new GCText(); }
+    void CopyTo(GCComponent* pDestination) override;
+
+    void Render() override;
+
+    FLAGS GetFlags() override { return RENDER; }
+
+protected:
+    inline static const int m_ID = 8;
+
+    GCMesh* m_pMesh;
+    GCGeometry* m_pGeometry;
+
+    GCColor m_color;
+    std::string m_text;
+};
+
+
+
+class GCButton : public GCComponent
+{
+friend class GCGameObject;
+friend class GCUpdateManager;
+friend class GCSceneManager;
+friend class GCPhysicManager;
+friend class GCRenderManager;
+friend class GCMouseInputManager;
+
+public:
+    static const int GetIDStatic() { return m_ID; }
+    const int GetID() override { return m_ID; }
+
+protected:
+	GCButton() {}
+    ~GCButton() override {}
+    
+    void RegisterToManagers() override;
+    void UnregisterFromManagers() override;
+    
+    GCButton* Duplicate() override { return new GCButton(); }
+    void CopyTo( GCComponent* pDestination ) override;
+    
+    bool IsClicked( GCVEC2* pMousePos );
+    
+    FLAGS GetFlags() override { return NONE; }
+
+protected:
+    inline static const int m_ID = 9;
+    
+    GCListNode<GCButton*>* m_pButtonNode;
+
+};
 
 
 class GCScript : public GCComponent
@@ -389,11 +496,14 @@ protected:
     virtual void OnTriggerStay( GCCollider* collider ) {}
     virtual void OnTriggerExit( GCCollider* collider ) {}
     
-    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE | TRIGGER; }
+    virtual void OnClick() {};
+    
+    FLAGS GetFlags() override { return UPDATE | FIXED_UPDATE; }
 
 protected:
     inline static int scriptCount = ( 1 << 15 ) - 1;
     GCListNode<GCScript*>* m_pTriggerNode;
+    GCListNode<GCScript*>* m_pClickedNode;
 
 };
 
@@ -425,7 +535,9 @@ protected:
          \
         void OnTriggerEnter( GCCollider* collider ) override; \
         void OnTriggerStay( GCCollider* collider ) override; \
-        void OnTriggerExit( GCCollider* collider ) override;*/ \
+        void OnTriggerExit( GCCollider* collider ) override; \
+         \
+        void OnClick() override;*/ \
      \
     protected: \
         inline static const int m_ID = ++GCScript::scriptCount; \

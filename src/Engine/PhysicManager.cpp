@@ -3,9 +3,10 @@
 
 GCPhysicManager::GCPhysicManager() {}
 
-GCPhysicManager::~GCPhysicManager() {}
-
-
+GCPhysicManager::~GCPhysicManager()
+{
+	m_lag = 0.0;
+}
 
 void GCPhysicManager::RegisterComponent( GCComponent* pComponent )
 { pComponent->m_pPhysicsNode = m_componentsList.PushBack( pComponent ); }
@@ -17,23 +18,30 @@ void GCPhysicManager::RegisterCollider( GCCollider* pCollider )
 
 void GCPhysicManager::Update()
 {
-	for ( GCListNode<GCComponent*>* pComponentNode = m_componentsList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
-		pComponentNode->GetData()->FixedUpdate();
+	m_lag += GC::GetActiveTimer()->DeltaTime();
 
-	for ( GCListNode<GCCollider*>* pColliderNode = m_collidersList.GetFirstNode(); pColliderNode != nullptr; pColliderNode = pColliderNode->GetNext() )
+	if ( m_lag >= GC_FIXED_UPDATE_TIME )
 	{
-		GCCollider* pCollider = pColliderNode->GetData();
-		for ( GCListNode<GCCollider*>* pNextColliderNode = pColliderNode->GetNext(); pNextColliderNode != nullptr; pNextColliderNode = pNextColliderNode->GetNext() )
+
+		for (GCListNode<GCComponent*>* pComponentNode = m_componentsList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext())
+			pComponentNode->GetData()->FixedUpdate();
+
+		for (GCListNode<GCCollider*>* pColliderNode = m_collidersList.GetFirstNode(); pColliderNode != nullptr; pColliderNode = pColliderNode->GetNext())
 		{
-			GCCollider* pNextCollider = pNextColliderNode->GetData();
-			
-			if ( CheckCollision( pCollider, pNextCollider ) == false )
-				continue;
-			
-			LogEngineDebug( "Collision detected" );
-			pCollider->m_pGameObject->OnTriggerStay( pNextCollider );
-			pNextCollider->m_pGameObject->OnTriggerStay( pCollider );
+			GCCollider* pCollider = pColliderNode->GetData();
+			for (GCListNode<GCCollider*>* pNextColliderNode = pColliderNode->GetNext(); pNextColliderNode != nullptr; pNextColliderNode = pNextColliderNode->GetNext())
+			{
+				GCCollider* pNextCollider = pNextColliderNode->GetData();
+
+				if (CheckCollision(pCollider, pNextCollider) == false)
+					continue;
+
+				LogEngineDebug("Collision detected");
+				pCollider->m_pGameObject->OnTriggerStay(pNextCollider);
+				pNextCollider->m_pGameObject->OnTriggerStay(pCollider);
+			}
 		}
+		m_lag -= GC_FIXED_UPDATE_TIME;
 	}
 }
 

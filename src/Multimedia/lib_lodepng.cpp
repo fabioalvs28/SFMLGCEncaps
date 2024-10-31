@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "lib_lodepng.h"
 
 #ifdef LODEPNG_COMPILE_CPP

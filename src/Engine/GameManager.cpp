@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "../Render/pch.h"
 
 ///////////////////////////////////////////////////////////////////
 /// @brief Default constructor for the GameManager class.
@@ -18,7 +17,9 @@ GCGameManager::GCGameManager( HINSTANCE hInstance )
     m_pPhysicManager = new GCPhysicManager();
     m_pUpdateManager = new GCUpdateManager();
     m_pSceneManager = new GCSceneManager();
+    m_pSpriteSheetHandler = new GCSpriteSheetHandler("../../../res/spritesheet", "../../../res/sprites");
     m_pRenderManager = new GCRenderManager( m_pWindow );
+    m_pTextManager = new GCTextManager( m_pRenderManager->m_pGraphics );
 
     m_pInputSystem->SetEventManager( m_pEventManager );
 }
@@ -36,7 +37,7 @@ void GCGameManager::Run()
     SetActiveGameManager();
     if ( m_pSceneManager->GetActiveScene() == nullptr )
         GCScene::Create();
-    m_pRenderManager->m_pSpriteCollider = new GCSprite( "BoxColliderSquare.dds" );
+    m_pRenderManager->m_pSpriteCollider = new GCSprite("Engine", "BoxColliderSquare.dds" );
     GameLoop();
 }
 

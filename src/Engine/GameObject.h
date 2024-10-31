@@ -12,6 +12,7 @@ friend class GCScene;
 friend class GCSceneManager;
 friend class GCPhysicManager;
 friend class GCRenderManager;
+friend class GCMouseInputManager;
 friend class GC;
 
 protected:
@@ -70,6 +71,12 @@ protected:
     void OnTriggerStay( GCCollider* pCollider );
     void OnTriggerExit( GCCollider* pCollider );
     
+    void RegisterScriptToClicked( GCScript* pScript );
+    void OnClick();
+    
+    void RegisterComponents();
+    void UnregisterComponents();
+
     void RemoveComponent( int ID );
 
 public:
@@ -94,8 +101,9 @@ protected:
     GCList<const char*> m_tagsList; // The list of tags the GameObject has.
     int m_layer; // The GameObject's layer.
     
-    GCMap<int, GCComponent*> m_componentsList; // The list of Components the GameObject has.
+    std::map<int, GCComponent*> m_componentsList; // The list of Components the GameObject has.
     GCList<GCScript*> m_scriptTriggerList; // The list of Scripts that will be called when a trigger collision happens with this GameObject
+    GCList<GCScript*> m_scriptClickedList; // The list of Scripts that will be called when the mouse clicks on this GameObject
 
 };
 
@@ -116,7 +124,7 @@ T* GCGameObject::AddComponent()
     pComponent->m_pGameObject = this;
 	pComponent->Start();
     pComponent->m_globalActive = IsActive();
-    m_componentsList.Insert( T::GetIDStatic(), pComponent );
+    m_componentsList.insert( std::pair<int, T*>( T::GetIDStatic(), pComponent ) );
     GC::GetActiveSceneManager()->AddToCreateQueue( pComponent );
     return pComponent;
 }
@@ -129,9 +137,10 @@ T* GCGameObject::AddComponent()
 template <class T>
 T* GCGameObject::GetComponent()
 {
-    GCComponent* pComponent;
-    if ( m_componentsList.Find( T::GetIDStatic(), pComponent ) == true )
-        return (T*) pComponent;
+    std::map<int, GCComponent*>::iterator it;
+    it = m_componentsList.find(T::GetIDStatic());
+    if ( it != m_componentsList.end() )
+        return (T*) it->second;
     return nullptr;
 }
 

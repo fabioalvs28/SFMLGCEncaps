@@ -1,5 +1,5 @@
 #pragma once
-#include "../core/framework.h"
+#include "framework.h"
 
 class GCAnimation; 
 

@@ -31,6 +31,8 @@ public:
     int GetClientHeight();
     HWND GetHMainWnd();
 
+    bool IsClosed();
+
 private:
     void OnResize();
 
@@ -52,7 +54,7 @@ private:
     bool      mMaximized = false;  // is the application maximized?
     bool      mResizing = false;   // are the resize bars being dragged?
     bool      mFullscreenState = false;// fullscreen enabled
-
+    bool      m_IsClosed = false;
     // Set true to use 4X MSAA (§4.1.8).  The default is false.
 
     // Used to keep track of the “delta-time” and game time (§4.4).

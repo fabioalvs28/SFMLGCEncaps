@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include "savedds.h"
+
 #define STB_DXT_IMPLEMENTATION
 #pragma warning(push)
 #pragma warning(disable: 4244) // conversion from 'int' to 'unsigned char', possible loss of data

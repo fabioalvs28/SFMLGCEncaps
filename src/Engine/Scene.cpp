@@ -29,7 +29,31 @@ GCScene* GCScene::Create()
 /// @brief Sets this Scene as the active Scene.
 //////////////////////////////////////////////////
 void GCScene::SetActive()
-{ GC::GetActiveSceneManager()->SetActiveScene( this ); }
+{
+	if (m_active == false)
+		GC::GetActiveSceneManager()->m_pNewActiveScene = this;
+}
+
+void GCScene::Activate()
+{
+	for (GCListNode<GCGameObject*>* pListNode = m_gameObjectsList.GetFirstNode(); pListNode != nullptr; pListNode = pListNode->GetNext())
+	{
+		GCGameObject* pGameObject = pListNode->GetData();
+		if ( pGameObject->m_selfActive == true )
+			pGameObject->RegisterComponents();
+	}
+	GC::GetActiveSceneManager()->SetActiveScene(this);
+
+	GC::GetActiveSceneManager()->m_pNewActiveScene = nullptr;
+}
+
+
+void GCScene::Deactivate()
+{
+	if ( m_active == true )
+		for (GCListNode<GCGameObject*>* pListNode = m_gameObjectsList.GetFirstNode(); pListNode != nullptr; pListNode = pListNode->GetNext())
+			pListNode->GetData()->UnregisterComponents();
+}
 
 //////////////////////////////
 /// @brief Loads the Scene.
@@ -83,6 +107,7 @@ GCGameObject* GCScene::CreateGameObject( GCGameObject* pParent )
 	pGameObject->m_pParent = pParent;
 	pGameObject->m_pChildNode = pParent->m_childrenList.PushBack( pGameObject );
 	pGameObject->m_globalActive = pParent->IsActive();
+	pGameObject->m_pSceneNode = m_gameObjectsList.PushBack(pGameObject);
 	return pGameObject;
 }
 

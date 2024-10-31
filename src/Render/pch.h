@@ -7,8 +7,6 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 
-
-
 //#define WIN32_LEAN_AND_MEAN             // Exclure les en-têtes Windows rarement utilisés
 // Fichiers d'en-tête Windows
 #include <windows.h>
@@ -104,13 +102,12 @@ struct GCVEC3;
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
-#include "../core/framework.h"
-
+#include "framework.h"
 
 // Add William 
-#include "./GCGraphicsLogger.h"
-#include "./GCShaderConstantBufferStruct.h"
-#include "./GCMeshBufferData.h"
+#include "GCGraphicsLogger.h"
+#include "GCShaderConstantBufferStruct.h"
+#include "GCMeshBufferData.h"
 #include "GCPrimitiveIdEnum.h"
 
 

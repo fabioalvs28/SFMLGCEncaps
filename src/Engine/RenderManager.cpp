@@ -6,7 +6,7 @@ GCRenderManager::GCRenderManager( Window* pWindow )
 {
     m_pGraphics = new GCGraphics();
     m_pGraphics->Initialize(pWindow,1920,1080);
-    m_spriteSheetData = m_pGraphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheets("../../../src/Textures/SS_data.ssdg");
+    m_spriteSheetData = m_pGraphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheets("../../../res/spritesheet/SpriteSheetData.ssdg");
 }
 
 GCRenderManager::~GCRenderManager() {}
@@ -46,7 +46,7 @@ void GCRenderManager::RegisterComponent( GCComponent* pComponent )
     {
         if ( pFirstNode->GetData()->m_pGameObject->GetLayer() < pComponent->m_pGameObject->GetLayer() )
         {
-            m_componentsList.PushBack(pComponent);
+            pComponent->m_pRenderNode = m_componentsList.PushBack(pComponent);
             return;
         }
 
@@ -54,12 +54,13 @@ void GCRenderManager::RegisterComponent( GCComponent* pComponent )
         {
             if ( pFirstNode->GetData()->GetComponentLayer() < pComponent->GetComponentLayer() )
             {
-                m_componentsList.PushBack( pComponent );
+                pComponent->m_pRenderNode = m_componentsList.PushBack( pComponent );
                 return;
             }
         }
 
-        m_componentsList.PushFront( pComponent );
+        pComponent->m_pRenderNode = m_componentsList.PushFront( pComponent );
+        return;
     }
 
 
@@ -84,7 +85,7 @@ void GCRenderManager::RegisterComponent( GCComponent* pComponent )
         }
     }
 
-    m_componentsList.PushFront( pComponent );
+    pComponent->m_pRenderNode = m_componentsList.PushFront( pComponent );
 }
 
 

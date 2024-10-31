@@ -38,8 +38,6 @@
             "sdl_check": "true",
             "preprocessor_definitions": "NDEBUG;_CONSOLE;%(PreprocessorDefinitions)",
             "conformance_mode": "true",
-            "precompiled_header": "Use",
-            "precompiled_header_file": "pch.h",
             "subsystem": "Console",
             "language_standard": "stdcpp20",
             "enable_comdat_folding": "true",

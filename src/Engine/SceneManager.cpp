@@ -7,6 +7,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GCSceneManager::Update()
 {
+	if (m_pNewActiveScene != nullptr)
+		m_pNewActiveScene->Activate();
+
 	for ( GCListNode<GCComponent*>* pComponentNode = m_componentsToCreateList.GetFirstNode(); pComponentNode != nullptr; pComponentNode = pComponentNode->GetNext() )
 		CreateComponent( pComponentNode->GetData() );
 	m_componentsToCreateList.Clear();
@@ -30,11 +33,15 @@ void GCSceneManager::Update()
 void GCSceneManager::SetActiveScene( GCScene* pScene )
 {
 	ASSERT( pScene != nullptr, LOG_FATAL, "Trying to set a nullptr pScene as the active Scene" );
-	if ( m_pActiveScene != nullptr )
+	if (m_pActiveScene != nullptr)
+	{
+		m_pActiveScene->Deactivate();
 		m_pActiveScene->m_active = false;
+	}
     m_pActiveScene = pScene;
     m_pActiveScene->m_active = true;
 }
+
 
 /////////////////////////////////////////////
 /// @return A pointer to the active scene.
@@ -118,7 +125,7 @@ void GCSceneManager::CreateComponent( GCComponent* pComponent )
 {
 	ASSERT( pComponent != nullptr, LOG_FATAL, "Trying to create a nullptr pComponent" );
 	pComponent->m_created = true;
-	if ( pComponent->IsActive() == true )
+	if ( pComponent->IsActive() == true && pComponent->m_pGameObject->m_pScene->m_active == true )
 		pComponent->RegisterToManagers();
 }
 
@@ -146,7 +153,7 @@ void GCSceneManager::DestroyGameObject( GCGameObject* pGameObject )
 {
 	ASSERT( pGameObject != nullptr, LOG_FATAL, "Trying to destroy a nullptr pGameObject" );
 	if ( pGameObject->m_pParent != nullptr )
-		pGameObject->m_pChildNode->Delete();
+		pGameObject->m_pChildNode = nullptr;
 	if ( pGameObject->m_pSceneNode != nullptr )
 		pGameObject->m_pSceneNode->Delete();
 	delete pGameObject;

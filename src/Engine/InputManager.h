@@ -91,6 +91,17 @@ enum GCMOUSE
 };
 
 
+enum GCCONTROLLER
+{
+    BUTTON_A = 0, BUTTON_B = 1, BUTTON_X = 2, BUTTON_Y = 3,
+    RSHOULDER = 4, LSHOULDER  = 5,
+    LTRIGGER = 6, RTRIGGER = 7,
+    CROSS_UP = 8, CROSSDOWN = 9, CROSSLEFT = 10, CROSSRIGHT = 11,
+    START  = 12, BACK  = 13,
+    LJOYSTICK = 14, RJOYSTICK = 15,
+    CONTROLLERIDCOUNT
+};
+
 
 class GCInputManager
 {
@@ -213,6 +224,7 @@ class GCMouseInputManager : public GCInputManager
 {
 friend class GCInputManager;
 friend class GCInputSystem;
+friend class GCButton;
 
 public: 
     GCMouseInputManager();
@@ -237,7 +249,7 @@ public:
     };
 
 private:
-
+    void RegisterButton( GCButton* pButton );
 
     void Update();
 
@@ -246,6 +258,7 @@ private:
     int GetStateSize() const override { return MouseState::MOUSESTATECOUNT; };
     std::vector<BYTE> m_buttonState;
     GCVEC2 m_mousePos;
+    GCList<GCButton*> m_buttonComponentsList;
     void SendEvent( int index, BYTE state );
     
 };
@@ -259,17 +272,6 @@ public:
     GCControllerInputManager();
     GCControllerInputManager( int id );
 
-    enum ControllerID
-    {
-        A,B,X,Y,
-        RSHOULDER, LSHOULDER, 
-        LTRIGGER, RTRIGGER, 
-        CROSS_UP,CROSSDOWN,CROSSLEFT,CROSSRIGHT,
-        START, BACK,
-        LJOYSTICK, RJOYSTICK,
-        CONTROLLERIDCOUNT
-    };
-
     enum ControllerState
     {
         NONE, // NOT PRESSED
@@ -279,29 +281,29 @@ public:
         CONTROLLERSTATECOUNT
     };
 
-    int GetIDSize() const override { return ControllerID::CONTROLLERIDCOUNT; };
+    int GetIDSize() const override { return GCCONTROLLER::CONTROLLERIDCOUNT; };
 
     int GetStateSize() const override { return ControllerState::CONTROLLERSTATECOUNT; };
 
     void UpdateController();
 
-    GCVEC2* GetControllerLeftJoyStick( int controllerID ) { return &m_controllersLeftAxis; }
-    GCVEC2* GetControllerRightJoyStick( int controllerID ) { return &m_controllersRightAxis; }
-    float GetControllerLeftAxisX( int controllerID ) { return m_controllersLeftAxis.x; }
-    float GetControllerLeftAxisY( int controllerID ) { return m_controllersLeftAxis.y; }
+    GCVEC2* GetControllerLeftJoyStick() { return &m_controllersLeftAxis; }
+    GCVEC2* GetControllerRightJoyStick() { return &m_controllersRightAxis; }
+    
+    float GetControllerLeftAxisX() { return m_controllersLeftAxis.x; }
+    float GetControllerLeftAxisY() { return m_controllersLeftAxis.y; }
+
+    float GetControllerRightAxisX() { return m_controllersRightAxis.x; }
+    float GetControllerRightAxisY() { return m_controllersRightAxis.y; }
 
 
-    float GetControllerRightAxisX( int controllerID ) { return m_controllersRightAxis.x; }
-    float GetControllerRightAxisY( int controllerID ) { return m_controllersRightAxis.y; }
-
-    float GetControllerLeftTriggerState( int controllerID ) { return m_controllerTrigger.x; }
-    float GetControllerRightTriggerState( int controllerID ) { return m_controllerTrigger.y; }
+    float GetControllerLeftTriggerState() { return m_controllerTrigger.x; }
+    float GetControllerRightTriggerState() { return m_controllerTrigger.y; }
 
     bool GetControllerButtonDown( int vButton );
     bool GetControllerButtonStay( int vButton );
     bool GetControllerButtonUp( int vButton );
 
-    GCVector<BYTE> m_buttonState;
 private:
 
 
@@ -317,7 +319,8 @@ private:
     GCVEC2 m_controllersRightAxis;
     GCVEC2 m_controllerTrigger; // 0 - left, 1 - Right ;
 
-    GCVector<int> m_updatedControllerKeys;
+    std::vector<int> m_updatedControllerKeys;
+    std::vector<BYTE> m_buttonState;
 
 
 };
@@ -362,7 +365,18 @@ public:
     static bool GetKeyStay( GCMOUSE keyId );
     static bool GetKeyUp( GCMOUSE keyId );
 
+    static bool GetControllerKeyDown(int controllerID, GCCONTROLLER keyId);
+    static bool GetControllerKeyStay(int controllerID, GCCONTROLLER keyId);
+    static bool GetControllerKeyUp(int controllerID, GCCONTROLLER keyId);
+    
     static GCVEC2 GetMousePos();
+
+    static GCVEC2 GetControllerLeftJoyStick(int controllerID);
+    static GCVEC2 GetControllerRightJoyStick(int controllerID);
+
+    static float GetControllerLeftTrigger(int controllerID);
+    static float GetControllerRightTrigger(int controllerID);
+
 
 // private:
 //     static void Update();

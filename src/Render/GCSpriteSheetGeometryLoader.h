@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../Core/metadata.h"
+#include "metadata.h"
 #include <cstdint>
+
 
 struct GC_SPRITE {
     GCVEC2 uvs[4]; 

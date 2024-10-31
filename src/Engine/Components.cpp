@@ -10,6 +10,7 @@ GCComponent::GCComponent()
 	m_selfActive = true;
 	
 	m_created = false;
+	m_registered = false;
 	
 	m_pUpdateNode = nullptr;
 	m_pPhysicsNode = nullptr;
@@ -17,6 +18,17 @@ GCComponent::GCComponent()
 }
 
 
+void GCComponent::Destroy()
+{
+	m_pGameObject = nullptr;
+
+	if ( m_pUpdateNode != nullptr )
+		m_pUpdateNode->Delete();
+	if ( m_pPhysicsNode != nullptr )
+		m_pPhysicsNode->Delete();
+	if ( m_pRenderNode != nullptr )
+		m_pRenderNode->Delete();
+}
 
 void GCComponent::RegisterToManagers()
 {
@@ -28,6 +40,8 @@ void GCComponent::RegisterToManagers()
 	
 	if ( IsFlagSet( RENDER ) )
 		GC::GetActiveRenderManager()->RegisterComponent( this );
+
+	m_registered = true;
 }
 
 void GCComponent::UnregisterFromManagers()
@@ -49,6 +63,8 @@ void GCComponent::UnregisterFromManagers()
 		m_pRenderNode->Delete();
 		m_pRenderNode = nullptr;
 	}
+
+	m_registered = false;
 }
 
 
@@ -151,9 +167,13 @@ void GCComponent::SetActive( bool active )
 
 
 GCSpriteRenderer::GCSpriteRenderer()
+{
+	m_pSprite = new GCSprite(); m_isFlippedX = false;  m_isFlippedY = false;
+}
+
+
+GCSpriteRenderer::~GCSpriteRenderer()
 { m_pSprite = nullptr; }
-
-
 
 void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 {
@@ -164,38 +184,126 @@ void GCSpriteRenderer::CopyTo( GCComponent* pDestination )
 
 void GCSpriteRenderer::Render()
 {
+	if (m_pSprite->m_pMesh == nullptr)
+		return;
 	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
-	pGraphics->UpdateWorldConstantBuffer( m_pSprite->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
-	pGraphics->GetRender()->DrawObject( m_pSprite->m_pMesh, m_pSprite->m_pMaterial, true );
+	pGraphics->UpdateWorldConstantBuffer( m_pSprite->m_pMaterial , m_pGameObject->m_transform.GetWorldMatrix() );
+	pGraphics->GetRender()->DrawObject( m_pSprite->m_pMesh , m_pSprite->m_pMaterial , true );
 }
 
 
 
 void GCSpriteRenderer::SetSprite( GCSprite* pSprite )
 {
-	if ( m_pSprite == nullptr )
-	{
-		m_pSprite = pSprite;
-		return;
-	}
-	m_pSprite->m_pGeometry = pSprite->m_pGeometry;
-	m_pSprite->m_pMaterial = pSprite->m_pMaterial;
-	m_pSprite->m_pMesh = pSprite->m_pMesh;
+	m_pSprite = pSprite;
 }
 
 void GCSpriteRenderer::SetAnimatedSprite( GCGeometry* pGeometry )
 {
-	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
 	m_pSprite->m_pGeometry = pGeometry;
-	
-	pGraphics->InitializeGraphicsResourcesStart();
-	m_pSprite->m_pMesh = pGraphics->CreateMeshTexture( m_pSprite->m_pGeometry ).resource;
-	pGraphics->InitializeGraphicsResourcesEnd();
+
+	if (m_pSprite->m_pMesh == nullptr)
+	{
+		GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+		pGraphics->InitializeGraphicsResourcesStart();
+		m_pSprite->m_pMesh = pGraphics->CreateMeshTexture(pGeometry).resource;
+		pGraphics->InitializeGraphicsResourcesEnd();
+		return;
+	}
+
+	m_pSprite->m_pMesh->UpdateGeometryData();
+}
+
+void GCSpriteRenderer::FlipX()
+{
+
+	DirectX::XMFLOAT2 uv0 = m_pSprite->m_pGeometry->uv[0];
+	DirectX::XMFLOAT2 uv1 = m_pSprite->m_pGeometry->uv[1];
+
+	m_pSprite->m_pGeometry->uv[0] = m_pSprite->m_pGeometry->uv[2];
+	m_pSprite->m_pGeometry->uv[2] = uv0;
+	m_pSprite->m_pGeometry->uv[1] = m_pSprite->m_pGeometry->uv[3];
+	m_pSprite->m_pGeometry->uv[3] = uv1;
+
+	//GC::GetActiveRenderManager()->m_pGraphics->
+	m_pSprite->m_pMesh->UpdateGeometryData();
+}
+
+void GCSpriteRenderer::FlipY()
+{
+
+	DirectX::XMFLOAT2 uv0 = m_pSprite->m_pGeometry->uv[0];
+	DirectX::XMFLOAT2 uv2 = m_pSprite->m_pGeometry->uv[2];
+
+	m_pSprite->m_pGeometry->uv[0] = m_pSprite->m_pGeometry->uv[1];
+	m_pSprite->m_pGeometry->uv[1] = uv0;
+	m_pSprite->m_pGeometry->uv[2] = m_pSprite->m_pGeometry->uv[3];
+	m_pSprite->m_pGeometry->uv[3] = uv2;
+
+	m_pSprite->m_pMesh->UpdateGeometryData();
 }
 
 
 
+void GCSpriteRenderer::SetOrigin( int originType )
+{
+	// Vertices of a unit 1:1:1 cube (assuming Z=0 for a 2D plane)
+	// Initially centered at (0,0,0)
+	GCVEC2 origin( 0.0f , 0.0f );
 
+	// Adjust the origin based on the selected origin type
+	switch ( originType )
+	{
+	case BottomLeft:
+		// Origin at bottom-left of the unit square (no adjustment needed)
+		origin = GCVEC2( 0.0f , 0.0f );
+		break;
+	case BottomRight:
+		// Move origin to bottom-right of the unit square
+		origin = GCVEC2( -1.0f , 0.0f );
+		break;
+	case TopLeft:
+		// Move origin to top-left of the unit square
+		origin = GCVEC2( 0.0f , -1.0f );
+		break;
+	case TopRight:
+		// Move origin to top-right of the unit square
+		origin = GCVEC2( -1.0f , -1.0f );
+		break;
+	case Center:
+		// Move origin to center of the unit square
+		origin = GCVEC2( -0.5f , -0.5f );
+		break;
+	case Left:
+		// Move origin to the left center of the unit square
+		origin = GCVEC2( 0.0f , -0.5f );
+		break;
+	case Right:
+		// Move origin to the right center of the unit square
+		origin = GCVEC2( -1.0f , -0.5f );
+		break;
+	case Top:
+		// Move origin to the top center of the unit square
+		origin = GCVEC2( -0.5f , -1.0f );
+		break;
+	case Bottom:
+		// Move origin to the bottom center of the unit square
+		origin = GCVEC2( -0.5f , 0.0f );
+		break;
+	default:
+		break;
+	}
+
+	// Now set the vertices counterclockwise starting from the bottom-left
+	// Vertices for a 1x1 square on the XY plane
+	m_pSprite->m_pGeometry->pos[ 0 ] = XMFLOAT3( origin.x , origin.y , 0.0f );         // Bottom-left
+	m_pSprite->m_pGeometry->pos[ 1 ] = XMFLOAT3( origin.x , origin.y + 1.0f , 0.0f );  // Top-left
+	m_pSprite->m_pGeometry->pos[ 2 ] = XMFLOAT3( origin.x + 1.0f , origin.y + 1.0f , 0.0f );  // Top-right
+	m_pSprite->m_pGeometry->pos[ 3 ] = XMFLOAT3( origin.x + 1.0f , origin.y , 0.0f );  // Bottom-right
+
+	m_pSprite->m_pMesh->UpdateGeometryData();
+
+}
 
 GCCollider::GCCollider()
 {
@@ -225,8 +333,6 @@ void GCCollider::CopyTo( GCComponent* pDestination )
 	GCCollider* pCollider = static_cast<GCCollider*>( pDestination );
 	pCollider->m_trigger = m_trigger;
 	pCollider->m_visible = m_visible;
-	// *( pCollider->m_pMesh ) = *m_pMesh; 
-	// *( pCollider->m_pMaterial ) = *m_pMaterial;
 }
 
 
@@ -287,14 +393,6 @@ void GCRigidBody::Update()
 
 
 
-
-void GCSoundMixer::CopyTo( GCComponent* pDestination )
-{ GCComponent::CopyTo( pDestination ); }
-
-
-
-
-
 GCAnimator::GCAnimator()
 {
 	m_pCurrentAnimation = nullptr;
@@ -307,6 +405,11 @@ GCAnimator::GCAnimator()
 }
 
 
+GCAnimator::~GCAnimator()
+{
+	m_pCurrentAnimation = nullptr;
+	m_pSpriteRenderer = nullptr;
+}
 
 void GCAnimator::Start()
 {
@@ -336,14 +439,15 @@ void GCAnimator::Update()
 	if ( m_pCurrentAnimation == nullptr )
 		return;
 
+	m_pCurrentAnimation->Update(&m_currentFrameIndex, &m_currentFrameTime);
+		//m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 	if ( m_isLoop == false && m_currentFrameIndex == m_pCurrentAnimation->GetLastFrameIndex() )
 	{
+		m_isEnded = true;
 		StopAnimation();
 		return;
 	}
 
-	if ( m_pCurrentAnimation->Update( &m_currentFrameIndex, &m_currentFrameTime ) )
-		m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 }
 
 
@@ -363,8 +467,11 @@ void GCAnimator::PlayAnimation( std::string animationName, bool isLoop )
 	m_pCurrentAnimation = pAnimation;
 	m_lastFrameIndex = pAnimation->GetLastFrameIndex();
 	m_pCurrentAnimation->StartAnimation();
-	m_pSpriteRenderer->m_pSprite->m_pMaterial = m_pCurrentAnimation->m_pMaterial;
-	m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
+	m_currentFrameIndex = 0;
+	m_currentFrameTime = 0.0f;
+	m_pSpriteRenderer->m_pSprite = m_pCurrentAnimation->m_pSprite;
+	m_isEnded = false;
+	//m_pSpriteRenderer->SetAnimatedSprite( m_pCurrentAnimation->GetGeometry() );
 }
 
 /////////////////////////////////////////////////////////////
@@ -401,6 +508,7 @@ void GCAnimator::LoadSpriteSheet(std::string fileName, int spriteSheetID)
 /// @param firstFrame the first frame id of the animation in the spritesheet 
 /// @param frameNumber the number of frame in the spritesheet for the animation
 /// @param frameDisplayTime How long each frame will be display
+/// !!! Need to use 1 out of 2 frame because spritesheet generator create an empty frame every 1 out of 2 frame
 //////////////////////////////////////////////////////////////////////////////////
 GCAnimation* GCAnimator::CreateAnimation( std::string animationName, int firstFrame, int frameNumber, float frameDisplayTime )
 {
@@ -408,7 +516,7 @@ GCAnimation* GCAnimator::CreateAnimation( std::string animationName, int firstFr
 	ASSERT( GC::GetActiveRenderManager()->GetAnimation( animationName ) == nullptr , LOG_FATAL , "Trying to create a new animation with an existent animation's name" );
 	GCAnimation* pNewAnimation = new GCAnimation();
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
-	for ( int i = firstFrame; i < firstFrame + frameNumber; i++ )
+	for ( int i = firstFrame; i < firstFrame + frameNumber; i ++ )
 		pNewAnimation->AddFrame( i, frameDisplayTime );
 	GC::GetActiveRenderManager()->AddAnimation( pNewAnimation , animationName );
 
@@ -431,11 +539,19 @@ GCAnimation* GCAnimator::CreateAnimationWithCustomFrames( std::string animationN
 	pNewAnimation->SetSpriteSheet( m_spritesheetName , m_spriteSheetID);
 
 	for ( int i = 0; i < frameList.size() ; i++ )
-		pNewAnimation->AddFrame( frameList[i] , frameDisplayTime );
+		pNewAnimation->AddFrame( frameList[i], frameDisplayTime );
 	GC::GetActiveRenderManager()->AddAnimation( pNewAnimation , animationName );
 
 	return pNewAnimation;
 }
+
+
+
+
+
+
+void GCSoundMixer::CopyTo( GCComponent* pDestination )
+{ GCComponent::CopyTo( pDestination ); }
 
 
 
@@ -448,8 +564,8 @@ GCCamera::GCCamera()
 	m_target.SetZero();
 	m_up.SetZero();
 	
-	m_viewWidth = 10.0f;
-	m_viewHeight = 10.0f;
+	m_viewWidth = GC::GetWindow()->GetClientWidth()/100;
+	m_viewHeight = GC::GetWindow()->GetClientHeight()/100;
 	m_nearZ = 1.0f;
 	m_farZ = 1000.0f;
 	
@@ -509,19 +625,96 @@ void GCCamera::Update()
 
 
 
+GCText::GCText()
+{
+	m_pGeometry = nullptr;
+	m_pMesh = nullptr;
+	m_color = GCColor( 255, 255, 255 );
+};
+
+void GCText::CopyTo( GCComponent* pDestination )
+{
+	GCComponent::CopyTo( pDestination );
+	GCText* pText = static_cast<GCText*>( pDestination );
+
+	pText->m_pMesh = m_pMesh;
+	pText->m_pGeometry = m_pGeometry;
+	pText->m_text = m_text;	
+}
+
+void GCText::SetText(std::string text, GCColor color)
+{
+	m_color = color;
+	m_text = text;
+	GC::GetActiveTextManager()->CreateText( this );
+}
+
+void GCText::SetColor(GCColor color)
+{
+	m_color = color;
+	GC::GetActiveTextManager()->CreateText( this );
+}
+
+void GCText::Render()
+{
+	GCGraphics* pGraphics = GC::GetActiveRenderManager()->m_pGraphics;
+	pGraphics->UpdateWorldConstantBuffer( GC::GetActiveTextManager()->m_pMaterial, m_pGameObject->m_transform.GetWorldMatrix() );
+	pGraphics->GetRender()->DrawObject( m_pMesh, GC::GetActiveTextManager()->m_pMaterial, true );
+}
+
+
+
+
+
+
+void GCButton::CopyTo( GCComponent* pDestination )
+{
+	GCComponent::CopyTo( pDestination );
+    GCButton* pButton = static_cast<GCButton*>( pDestination );
+}
+
+
+
+void GCButton::RegisterToManagers()
+{
+	GCComponent::RegisterToManagers();
+	GC::GetActiveInputSystem()->m_pMouse->RegisterButton( this );
+}
+
+void GCButton::UnregisterFromManagers()
+{
+	GCComponent::UnregisterFromManagers();
+	m_pButtonNode->Delete();
+}
+
+
+
+bool GCButton::IsClicked( GCVEC2* pMousePosition )
+{
+	GCVEC3 gameObjectPosition = m_pGameObject->m_transform.GetWorldPosition();
+	GCVEC3 gameObjectScale = m_pGameObject->m_transform.GetWorldScale();
+	return gameObjectPosition.x < pMousePosition->x && pMousePosition->x < gameObjectPosition.x + gameObjectScale.x &&
+		   gameObjectPosition.y < pMousePosition->y && pMousePosition->y < gameObjectPosition.y + gameObjectScale.y;
+}
+
+
+
+
+
 GCScript::GCScript()
 { m_pTriggerNode = nullptr; }
-
 
 
 void GCScript::RegisterToManagers()
 {
 	GCComponent::RegisterToManagers();
 	m_pGameObject->RegisterScriptToTrigger( this );
+	m_pGameObject->RegisterScriptToClicked( this );
 }
 
 void GCScript::UnregisterFromManagers()
 {
 	GCComponent::UnregisterFromManagers();
 	m_pTriggerNode->Delete();
+	m_pClickedNode->Delete();
 }

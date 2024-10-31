@@ -1,0 +1,1 @@
+python randomImageGen.py -o ../../res/spritesheet -n 10 -w 10 -W 100 -h 10 -H 100 -format dds

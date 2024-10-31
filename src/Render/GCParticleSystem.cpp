@@ -139,5 +139,5 @@ void GCParticleSystem::UpdateParticleSystem(float deltaTime)
         }
         m_pMesh->EditGeometryPositionAt(i, m_Particles[i].position);
     }
-    m_pMesh->UpdateGeometryData(deltaTime);
+    m_pMesh->UpdateGeometryData();
 }

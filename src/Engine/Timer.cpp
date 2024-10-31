@@ -98,6 +98,7 @@ bool GCTime::Update()
 	// Delta time
 	m_deltaTime = m_sysDeltaTime;
 	m_deltaTime *= m_timeScale;
+	std::cout << m_deltaTime << std::endl;
 	m_sysDeltaTime = 0.0f;
 
 	// Total time

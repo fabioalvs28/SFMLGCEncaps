@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "../Core/framework.h"
+#include "framework.h"
 
 GC_SPRITESHEET_DATA GCSpriteSheetGeometryLoader::LoadSpriteSheets(const char* filename) {
 
