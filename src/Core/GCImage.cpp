@@ -1,17 +1,9 @@
-#include "pch.h"
 #include "GCImage.h"
 #include "BMPHeader.h"
-#include "dds/dds.hpp"
-#include "dds/savedds.h"
+#include "savedds.h"
 #include "GCFile.h"
-#include "lodepng.h"
-
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <cstdint>
-#include <cstring>
-
+#include "pch.h"
+#include "dds_formats.hpp"
 GCImage::GCImage(const GCImage& img)
 {
 	m_rgba = img.m_rgba;
@@ -397,11 +389,23 @@ bool GCImage::LoadPNG(const std::string& filename)
 
 bool GCImage::LoadDDS(const std::string& filename)
 {
-	dds::Image dds;
+	dds::Image dds{
+		0,                      // numMips
+		1,                      // arraySize
+		1,                      // width
+		1,                      // height
+		1,                      // depth
+		dds::Unknown,  // dimension
+		false,                  // supportsAlpha
+		DXGI_FORMAT_UNKNOWN,     // format
+		{},                     // data (empty vector)
+		{}                      // mipmaps (empty vector)
+	};	
 	auto error = dds::readFile(filename, &dds);
 
 	//if there's an error, display it
-	if (error) std::cout << "dds decoder error " << error << std::endl;
+	if (error) 
+		std::cout<<"dds decoder error "<<std::endl;
 
 	m_width = dds.width;
 	m_height = dds.height;
@@ -650,21 +654,40 @@ void GCImage::CreateEmptyImage(int w, int h, int bitDepth)
 	m_rgba.resize(m_width * m_height * m_channels, 0);
 }
 
-inline uint8_t GCImage::GetRGBA(int x, int y)
+
+UI32 GCImage::GetPixelRGB(int x, int y)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height)
 	{
 		return NULL;
 	}
-	return m_rgba[(x + y * m_width) * m_channels];
+	int index = GetIndex(x, y);
+	uint8_t R = m_rgba[index + 0];
+	uint8_t G = m_rgba[index + 1];
+	uint8_t B = m_rgba[index + 2];
+	return RGB(R, G, B);
 }
 
-inline bool GCImage::IsValidPixel(int x, int y)
+UI32 GCImage::GetPixelRGBA(int x, int y)
+{
+	if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+	{
+		return NULL;
+	}
+	int index = GetIndex(x, y);
+	uint8_t R = m_rgba[index + 0];
+	uint8_t G = m_rgba[index + 1];
+	uint8_t B = m_rgba[index + 2];
+	uint8_t A = m_rgba[index + 3];
+	return RGBA(R, G, B, A);
+}
+
+bool GCImage::IsValidPixel(int x, int y)
 {
 	return x >= 0 && x < m_width && y >= 0 && y < m_height;
 }
 
-inline int GCImage::GetIndex(int x, int y)
+int GCImage::GetIndex(int x, int y)
 {
 	return (x + y * m_width) * m_channels;
 }
@@ -685,27 +708,8 @@ void GCImage::SetPixel(int x, int y, int r, int g, int b, int a)
 	}
 }
 
-COLORREF GCImage::GetPixel(int x, int y)
+int GCImage::GetPixelDepth()
 {
-	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return 0;
-	int index = (x + y * m_width) * m_channels;
-	return RGB(m_rgba[index], m_rgba[index + 1], m_rgba[index + 2]);
-}
-
-void GCImage::WritePixel(int x, int y, int r, int g, int b, int a, int d, int id)
-{
-}
-
-uint8_t GCImage::GetPixelA(int x, int y)
-{
-	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return 0;
-	int index = (x + y * m_width) * m_channels;
-	return m_rgba[index + 3];
-}
-
-int GCImage::GetPixelDepth(int x, int y)
-{
-	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return 0;
 	return m_channels;
 }
 
@@ -745,7 +749,7 @@ int GCImage::CountPixelOfColor(int r, int g, int b, int a)
 }
 
 //** All drawing Functions **//
-void GCImage::WritePixel(int x, int y, COLORREF color, int d, int id)
+void GCImage::WritePixel(int x, int y, UI32 color)
 {
 	if (x < 0 || x >= m_width || y < 0 || y >= m_height) 
 	{
@@ -1070,7 +1074,7 @@ bool GCImage::SetAlpha(uint8_t alpha)
 	return true;
 }
 
-bool GCImage::SetAlphaForColor(uint8_t alpha, COLORREF colorToFind)
+bool GCImage::SetAlphaForColor(uint8_t alpha, UI32 colorToFind)
 {
 	int channels = m_bitDepth / 8;
 	if (channels != 4)
@@ -1084,7 +1088,7 @@ bool GCImage::SetAlphaForColor(uint8_t alpha, COLORREF colorToFind)
 		for (int x = 0; x < m_width; ++x)
 		{
 			int index = (x + y * m_width) * channels;
-			if (GetPixel(x, y) == colorToFind)
+			if (GetPixelRGB(x, y) == colorToFind)
 			{
 				m_rgba[index + 3] = alpha;
 			}

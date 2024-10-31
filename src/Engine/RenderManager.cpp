@@ -6,7 +6,7 @@ GCRenderManager::GCRenderManager( Window* pWindow )
 {
     m_pGraphics = new GCGraphics();
     m_pGraphics->Initialize(pWindow,1920,1080);
-    m_spriteSheetData = m_pGraphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheet("../../../src/Textures/SS_data.ssdg");
+    m_spriteSheetData = m_pGraphics->m_pSpriteSheetGeometryLoader->LoadSpriteSheets("../../../src/Textures/SS_data.ssdg");
 }
 
 GCRenderManager::~GCRenderManager() {}

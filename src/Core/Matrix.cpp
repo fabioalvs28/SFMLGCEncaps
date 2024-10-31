@@ -39,6 +39,52 @@ void GCMATRIX::operator*=(const GCMATRIX& other)
 	_33 = pM._31 * other._13 + pM._32 * other._23 + pM._33 * other._33 + pM._34 * other._43;
 	_34 = pM._31 * other._14 + pM._32 * other._24 + pM._33 * other._34 + pM._34 * other._44;
 	_41 = pM._41 * other._11 + pM._42 * other._21 + pM._43 * other._31 + pM._44 * other._41;
+	_42 = pM._41 * other._12 + pM._42 * other._22 + pM._43 * other._32 + pM._44 * other._42; //!
+	_43 = pM._41 * other._13 + pM._42 * other._23 + pM._43 * other._33 + pM._44 * other._43; //!
+	_44 = pM._41 * other._14 + pM._42 * other._24 + pM._43 * other._34 + pM._44 * other._44; //!
+}
+
+
+void GCMATRIX::operator+=( const GCMATRIX& other )
+{
+	_11 += other._11;
+	_12 += other._12;
+	_13 += other._13;
+	_14 += other._14;
+	_21 += other._21;
+	_22 += other._22;
+	_23 += other._23;
+	_24 += other._24;
+	_31 += other._31;
+	_32 += other._32;
+	_33 += other._33;
+	_34 += other._34;
+	_41 += other._41;
+	_42 += other._42;
+	_43 += other._43;
+	_44 += other._44;
+}
+
+
+
+void GCMATRIX::operator-=( const GCMATRIX& other )
+{
+	_11 -= other._11;
+	_12 -= other._12;
+	_13 -= other._13;
+	_14 -= other._14;
+	_21 -= other._21;
+	_22 -= other._22;
+	_23 -= other._23;
+	_24 -= other._24;
+	_31 -= other._31;
+	_32 -= other._32;
+	_33 -= other._33;
+	_34 -= other._34;
+	_41 -= other._41;
+	_42 -= other._42;
+	_43 -= other._43;
+	_44 -= other._44;
 }
 
 /// <summary>

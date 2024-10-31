@@ -8,19 +8,11 @@
         "engine": {
             "projects": ["Testing.json", "Engine.json", "Core.json","Render.json"] 
         },
-        "gameplay": {
-            "projects": ["Jeu_1.json", "Engine.json", "Core.json", "Jeu_2.json"],
-            "folders": [
-                {
-                    "name": "Gameplay"
-                }
-            ]
-        },
         "render": {
             "projects": ["RenderApp.json"]
         },
         "tools": {
-            "projects": ["Multimedia.json","Core.json","SpriteSheetGenerator.json"]
+            "projects": ["Core.json"]
         },
         "qa": {
             "projects": []

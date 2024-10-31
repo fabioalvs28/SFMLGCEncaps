@@ -13,6 +13,7 @@ Metadata::Data Metadata::jsonToMetadataStruct(json data)
         texture.textureName = std::string(data["textures"][i]["textureName"]).c_str();
         texture.texturesize = data["textures"][i]["textureSize"];
         texture.imageCount = data["textures"][i]["imageCount"];
+
         for (size_t j = 0; j < data["textures"][i]["imageCount"]; j++)
         {
             Metadata::Image image;

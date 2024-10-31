@@ -14,6 +14,8 @@
 #include "GCString.h"
 #include "GCColor.h"
 #include "Log.h"
+#include "metadata.h"
+#include "lodepng.h"
 
 #include "GCFile.h"
 
