@@ -8,7 +8,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCGameManager* pGameManager = GC::CreateGameManager( hInstance );
     GCScene* pScene = GCScene::Create();
     
-    GCSprite pPlayerSprite( "caow.dds" );
+    GCSprite pPlayerSprite( "Testing", "caow.dds" );
     GCGameObject* pPlayer = pScene->CreateGameObject();
     pPlayer->AddComponent<GCSpriteRenderer>()->SetSprite( &pPlayerSprite );
     pPlayer->AddComponent<GCAnimator>()->LoadSpriteSheet("spritesheet/0.dds", 0);
@@ -22,7 +22,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     pPlayer->AddChild( pMainCamera );
     // pMainCamera->AddComponent<GCScriptFollowPlayer>()->SetPlayer( pPlayer );
     
-    GCSprite pHappySprite( "happyImage.dds" );
+    GCSprite pHappySprite("Testing", "happyImage.dds");
     GCGameObject* pHappy1 = pScene->CreateGameObject();
     pHappy1->AddComponent<GCSpriteRenderer>()->SetSprite( &pHappySprite );
     pHappy1->AddComponent<GCBoxCollider>()->SetVisible( false );

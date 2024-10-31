@@ -11,8 +11,8 @@ void GCScriptPlayerMovement::CopyTo( GCComponent* pDestination )
 void GCScriptPlayerMovement::Start()
 {
     m_speed = 0.05f;
-    m_pSprite1 = new GCSprite( "goofyImage.dds" );
-    m_pSprite2 = new GCSprite( "happyImage.dds" );
+    m_pSprite1 = new GCSprite("Testing", "goofyImage.dds" );
+    m_pSprite2 = new GCSprite("Testing", "happyImage.dds" );
 }
 
 void GCScriptPlayerMovement::Update()
