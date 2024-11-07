@@ -1,0 +1,11 @@
+﻿  core.cpp
+  main.cpp
+  res.cpp
+  tinyxml2.cpp
+  Génération de code en cours
+  Previous IPDB not found, fall back to full compilation.
+  All 4153 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Fin de la génération du code
+  SolutionGenerator.vcxproj -> C:\Users\dragn\Documents\GitHub\gce-dev\bin\SolutionGenerator-v1.13\x64\Release\SolutionGenerator.exe
+  'pwsh.exe' n'est pas reconnu en tant que commande interne
+  ou externe, un programme exécutable ou un fichier de commandes.
