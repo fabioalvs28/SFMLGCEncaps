@@ -12,6 +12,7 @@
 //C++ libraries
 #include <iostream>
 #include <string>
+
 #include <typeinfo>
 #include <functional>
 #include <Windows.h>
@@ -22,7 +23,7 @@
 #include "framework.h"
 
 //Render Elements
-#include "$(ProjectDir)../../..//Render/pch.h" //! To change
+#include "$(ProjectDir)../../../Render/pch.h" //! To change
 
 
 // Gameplay classes

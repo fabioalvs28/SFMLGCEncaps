@@ -80,6 +80,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     GCGameObject* GO_pDarkGoat = SC_pGame->CreateGameObject();
     GO_pDarkGoat->AddComponent<GCSpriteRenderer>();
     GCAnimator* pDarkGoatAnimator = GO_pDarkGoat->AddComponent<GCAnimator>();
+
     pDarkGoatAnimator->LoadSpriteSheet("spritesheet_0.dds", 0);
     pDarkGoatAnimator->CreateAnimation("DarkGoatForward", 5, 5, 0.05f);
     pDarkGoatAnimator->CreateAnimation("DarkGoatBackWard", 0, 5, 0.05f);
