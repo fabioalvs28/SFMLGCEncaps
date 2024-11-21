@@ -9,7 +9,7 @@
     "use_vcpkg_manifest": "false",
     "configuration": [
         {
-            "additional_dependencies": "Render.lib;Core.lib;Engine.lib;%(AdditionalDependencies)",
+            "additional_dependencies": "Render.lib;Core.lib;Engine.lib;winmm.lib;%(AdditionalDependencies)",
             "additional_include_directories": "$(SolutionDir)..\\..\\src\\Engine;$(SolutionDir)..\\..\\src\\Core;$(SolutionDir)..\\..\\src\\Render;",
             "additional_library_directories": "$(SolutionDir)Render\\Build\\$(Configuration);$(SolutionDir)Core\\Build\\$(Configuration);$(SolutionDir)Engine\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "character_set": "Unicode",
@@ -24,14 +24,14 @@
             "precompiled_header_file": "pch.h",
             "preprocessor_definitions": "_DEBUG;_CONSOLE;%(PreprocessorDefinitions)",
             "sdl_check": "true",
-            "subsystem": "Console",
+            "subsystem": "Windows",
             "type": "Application",
             "use_debug_libraries": "true",
             "vcpkg_configuration": "Debug",
             "warning_level": "Level3"
         },
         {
-            "additional_dependencies": "Render.lib;Core.lib;Engine.lib;%(AdditionalDependencies)",
+            "additional_dependencies": "Render.lib;Core.lib;Engine.lib;winmm.lib%(AdditionalDependencies)",
             "additional_include_directories": "$(SolutionDir)..\\..\\src\\Engine;$(SolutionDir)..\\..\\src\\Core;$(SolutionDir)..\\..\\src\\Render;",
             "additional_library_directories": "$(SolutionDir)Render\\Build\\$(Configuration);$(SolutionDir)Core\\Build\\$(Configuration);$(SolutionDir)Engine\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
             "character_set": "Unicode",
