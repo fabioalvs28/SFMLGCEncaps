@@ -154,7 +154,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showC
     
 #pragma endregion
 
-
 #pragma region CARDSCENE
     GCScene* SC_pCards = GCScene::Create();
     GCGameObject* GO_cardTemplate = SC_pCards->CreateGameObject();

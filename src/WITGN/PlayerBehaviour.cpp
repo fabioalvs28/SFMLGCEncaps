@@ -32,7 +32,6 @@ void GCScriptPlayerBehaviour::Update()
 
 void GCScriptPlayerBehaviour::FixedUpdate()
 {
-
 	GCVEC3 translation;
 	//Player movements
 	for (int input : m_pInputSystem->GetDirections()->Up.inputs) //Up
