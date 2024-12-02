@@ -18,20 +18,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     graphics->GetRender()->Set2DMode();
 
-    int flagsTexture = 0;
-    GC_SET_FLAG(flagsTexture, GC_VERTEX_POSITION);
-    GC_SET_FLAG(flagsTexture, GC_VERTEX_UV);
-
-    int flagsLightColor = 0;
-    GC_SET_FLAG(flagsLightColor, GC_VERTEX_POSITION);
-    GC_SET_FLAG(flagsLightColor, GC_VERTEX_COLOR);
-    GC_SET_FLAG(flagsLightColor, GC_VERTEX_NORMAL);
-
-    int flagsLightTexture = 0;
-    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_POSITION);
-    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_UV);
-    GC_SET_FLAG(flagsLightTexture, GC_VERTEX_NORMAL);
-
     int flagsColorTexture = 0;
     GC_SET_FLAG(flagsColorTexture, GC_VERTEX_POSITION);
     GC_SET_FLAG(flagsColorTexture, GC_VERTEX_COLOR);
@@ -104,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     );
 
     //Setting up matrixes
-    DirectX::XMMATRIX worldMatrixText = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-9.0f, 0.0f, 0.0f); // Texte
+    DirectX::XMMATRIX worldMatrixText = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-10.0f, 8.0f, 0.0f); // Texte
     DirectX::XMMATRIX worldMatrixBackground = DirectX::XMMatrixScaling(500.0f, 500.0f, 0.0f) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f); // Plane
 
     auto startTime = std::chrono::steady_clock::now();
