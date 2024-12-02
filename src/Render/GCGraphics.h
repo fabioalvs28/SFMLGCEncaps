@@ -185,19 +185,17 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix); //#TODO -> Have possibility to specify camera we want draw with
-	bool CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp, float fieldOfView, 
+	bool UpdateViewProjConstantBuffer(DirectX::XMMATRIX& projectionMatrix, DirectX::XMMATRIX& viewMatrix); //#TODO -> Have possibility to specify camera we want draw with
+	bool CreateViewProjConstantBuffer(const DirectX::XMFLOAT3& cameraPosition, const DirectX::XMFLOAT3& cameraTarget, const DirectX::XMFLOAT3& cameraUp, float fieldOfView, 
 		float aspectRatio, 
 		float nearZ, 
 		float farZ, 
 		float viewWidth,  
 		float viewHeight,  
 		GC_PROJECTION_TYPE projType,
-		GCMATRIX& projectionMatrix,
-		GCMATRIX& viewMatrix);
+		DirectX::XMMATRIX& projectionMatrix,
+		DirectX::XMMATRIX& viewMatrix);
 
-	// No comment
-	GCMATRIX UpdateScalingRatio(const GCMATRIX& worldMatrix);
 
 	/************************************************************************************************
 	* @brief Update one object data, using GCWORLDCB Struct, template for update object matrix, and object/layer id in for PixelIdMapping
@@ -210,7 +208,7 @@ public:
 	*
 	* @return bool(success)
 	************************************************************************************************/
-	bool UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId = 0.0f);
+	bool UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMMATRIX& worldMatrix, float meshId = 0.0f);
 
 	/************************************************************************************************
 	* @template specify struct derived from GCSHADERCB

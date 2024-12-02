@@ -47,7 +47,7 @@ float4 PS(VertexOut pin) : SV_Target
 {    
     float4 texColor = g_texture.Sample(g_sampler, pin.UV);
     float4 white = (1.0f, 1.0f, 1.0f, 1.0f);
-    float4 outColor = (texColor + pin.Color) * 0.5f;
+    float4 outColor = (texColor * pin.Color);
     
     outColor.a = texColor.a;
     return outColor;

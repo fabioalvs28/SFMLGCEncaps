@@ -8,7 +8,7 @@ public:
     void Initialize(const std::string& metadataFile);
 
     // Crée un maillage à partir du texte fourni
-    GCGeometry* CreateText(const std::string& text, GCColor Color);
+    GCGeometry* CreateText(const std::string& text, DirectX::XMFLOAT4 Color);
     void GenerateFontMetadata(std::string filePath);
 
 private:

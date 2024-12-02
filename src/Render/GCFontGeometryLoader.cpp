@@ -49,9 +49,9 @@ void GCFontGeometryLoader::LoadMetadata(const std::string& metadataFile) {
     logger.LogInfo("Metadata loading completed.");
 }
 
-GCGeometry* GCFontGeometryLoader::CreateText(const std::string& text, GCColor textColor) {
+GCGeometry* GCFontGeometryLoader::CreateText(const std::string& text, DirectX::XMFLOAT4 textColor) {
     GCGeometry* pGeometry = new GCGeometry;
-    m_textColor = GCUtils::GCColorToXMFLOAT4(textColor);
+    m_textColor = textColor;
     GenerateMesh(pGeometry, text);
 
     return pGeometry;
@@ -67,7 +67,7 @@ void GCFontGeometryLoader::GenerateMesh(GCGeometry* pGeometry, const std::string
     float yOffset = 0.0f;
     float charWidth = 0.2f;
     float charHeight = 0.4f;
-    float spacing = 0.1f;
+    float spacing = 0.0f;
     bool isBold = false;
     bool isItalic = false;
     int letterAmount = 186;

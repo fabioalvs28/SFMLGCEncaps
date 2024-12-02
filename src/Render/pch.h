@@ -96,13 +96,10 @@ class MathHelper;
 class Timer;
 class Window;
 
-struct GCMATRIX;
-struct GCVEC3;
 
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 #include "MathHelper.h"
-#include "framework.h"
 
 // Add William 
 #include "GCGraphicsLogger.h"
@@ -112,11 +109,10 @@ struct GCVEC3;
 
 
 
-
-//
 #include "d3dx12.h"
 #include "Window.h"
 #include "Macros.h"
+#include "Define.h"
 #include "GCUploadBuffer.h"
 #include "GCRenderContext.h"
 #include "GCRenderResources.h"
@@ -126,9 +122,7 @@ struct GCVEC3;
 #include "GCMaterial.h"
 #include "GCModelParserFactory.h"
 #include "GCModelParserObj.h"
-#include "GCParticleSystem.h"
 #include "GCFontGeometryLoader.h"
-#include "GCSpriteSheetGeometryLoader.h"
 #include "GCUtils.h"
 
 #include "GCPrimitiveFactory.h"

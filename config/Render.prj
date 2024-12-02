@@ -1,7 +1,6 @@
 {
     "name": "Render",
     "folder": "Render\\",
-    "dependencies": ["Core"],
     "vc_project_version": "17.0",
     "root_namespace": "Render",
     "windows_target_platform_version": "10.0",
@@ -9,9 +8,9 @@
     "use_vcpkg_manifest": "false",
     "configuration": [
         {
-            "additional_dependencies" : "Core.lib;%(AdditionalDependencies)",
-            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Core;",
-            "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
+            "additional_dependencies" : "",
+            "additional_include_directories" : "",
+            "additional_library_directories" : "%(AdditionalLibraryDirectories)",
             "character_set": "Unicode",
             "conformance_mode": "true",
             "generate_debug_information": "true",
@@ -31,9 +30,9 @@
             "warning_level": "Level3"
         },
         {
-            "additional_dependencies" : "Core.lib;%(AdditionalDependencies)",
-            "additional_include_directories" : "$(SolutionDir)..\\..\\src\\Core;",
-            "additional_library_directories" : "$(SolutionDir)Core\\Build\\$(Configuration);%(AdditionalLibraryDirectories)",
+            "additional_dependencies" : "",
+            "additional_include_directories" : "",
+            "additional_library_directories" : "%(AdditionalLibraryDirectories)",
             "character_set": "Unicode",
             "conformance_mode": "true",
             "generate_debug_information": "false",

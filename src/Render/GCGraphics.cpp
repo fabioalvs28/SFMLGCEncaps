@@ -61,7 +61,6 @@ bool GCGraphics::Initialize(Window* pWindow, int renderWidth,int renderHeight)
     m_pModelParserFactory = new GCModelParserObj();
     m_pFontGeometryLoader = new GCFontGeometryLoader();
     m_pFontGeometryLoader->GenerateFontMetadata("../../../res/Fonts/LetterUV.txt");
-    m_pSpriteSheetGeometryLoader = new GCSpriteSheetGeometryLoader;
 
     m_pPrimitiveFactory->Initialize();
 
@@ -463,12 +462,12 @@ GC_GRAPHICS_ERROR GCGraphics::RemoveTexture(GCTexture* pTexture) {
     return GCRENDER_ERROR_RESOURCE_TO_REMOVE_DONT_FIND;
 }
 
-bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATRIX& viewMatrix)
+bool GCGraphics::UpdateViewProjConstantBuffer(DirectX::XMMATRIX& projectionMatrix, DirectX::XMMATRIX& viewMatrix)
 {
     GCVIEWPROJCB cameraData;
 
-    cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
-    cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
+    DirectX::XMStoreFloat4x4( &cameraData.view, viewMatrix );
+    DirectX::XMStoreFloat4x4( &cameraData.proj,projectionMatrix);
 
     UpdateConstantBuffer(cameraData, m_cbCameraInstances[0]);
 
@@ -478,7 +477,7 @@ bool GCGraphics::UpdateViewProjConstantBuffer(GCMATRIX& projectionMatrix, GCMATR
 }
 
 // Update per camera constant buffer
-bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, const GCVEC3& cameraTarget, const GCVEC3& cameraUp,
+bool GCGraphics::CreateViewProjConstantBuffer(const DirectX::XMFLOAT3& cameraPosition, const DirectX::XMFLOAT3& cameraTarget, const DirectX::XMFLOAT3& cameraUp,
     float fieldOfView,
     float aspectRatio,
     float nearZ,
@@ -486,8 +485,8 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
     float viewWidth,  
     float viewHeight,  
     GC_PROJECTION_TYPE projType,
-    GCMATRIX& projectionMatrix,
-    GCMATRIX& viewMatrix)
+    DirectX::XMMATRIX& projectionMatrix,
+    DirectX::XMMATRIX& viewMatrix)
 {
     DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraPosition));
     DirectX::XMVECTOR camTarget = XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraTarget));
@@ -507,17 +506,14 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
     DirectX::XMMATRIX transposedProjectionMatrix = DirectX::XMMatrixTranspose(projectionMatrixXM);
     DirectX::XMMATRIX transposedViewMatrix = DirectX::XMMatrixTranspose(viewMatrixXM);
 
-    GCMATRIX storedProjectionMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedProjectionMatrix);
-    GCMATRIX storedViewMatrix = GCUtils::XMMATRIXToGCMATRIX(transposedViewMatrix);
-
     // Output
-    projectionMatrix = storedProjectionMatrix;
-    viewMatrix = storedViewMatrix;
+    projectionMatrix = transposedProjectionMatrix;
+    viewMatrix = transposedViewMatrix;
 
     // Cb buffer
     GCVIEWPROJCB cameraData;
-    cameraData.view = GCUtils::GCMATRIXToXMFLOAT4x4(viewMatrix);
-    cameraData.proj = GCUtils::GCMATRIXToXMFLOAT4x4(projectionMatrix);
+    DirectX::XMStoreFloat4x4(&cameraData.view, viewMatrix);
+    DirectX::XMStoreFloat4x4(&cameraData.proj, projectionMatrix);
     UpdateConstantBuffer(cameraData, m_cbCameraInstances[0]);
 
     m_pRender->m_pCbCurrentViewProjInstance = m_cbCameraInstances[0];
@@ -526,7 +522,7 @@ bool GCGraphics::CreateViewProjConstantBuffer(const GCVEC3& cameraPosition, cons
 }
 
 // Update per object constant buffer
-bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worldMatrix, float meshId)
+bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, DirectX::XMMATRIX& worldMatrix, float meshId)
 {
     //if (GC_CHECK_POINTERSNULL("Ptr for Update World Constant Buffer is not null", "Ptr for UpdateMaterialProperties is null", pMaterial) == false)
         //return false;
@@ -539,13 +535,13 @@ bool GCGraphics::UpdateWorldConstantBuffer(GCMaterial* pMaterial, GCMATRIX& worl
     //Additional scaling for Screen Ratio not equilibrate, not ponderate
     if (m_pRender->GetRenderMode() == 0)//2D
     {
-        //GCMATRIX matrix = UpdateScalingRatio(worldMatrix);
+        //DirectX::XMMATRIX matrix = UpdateScalingRatio(worldMatrix);
 
-        worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
+        DirectX::XMStoreFloat4x4(&worldData.world, worldMatrix);
     }
     else if (m_pRender->GetRenderMode() == 1)//3D
     {
-        worldData.world = GCUtils::GCMATRIXToXMFLOAT4x4(worldMatrix);
+        DirectX::XMStoreFloat4x4(&worldData.world, worldMatrix);
     }
 
     worldData.objectId = meshId;
