@@ -79,10 +79,10 @@ bool Window::Run(GCRenderContext* pRender)
 	return true;
 }
 
-bool Window::Initialize()
+bool Window::Initialize(std::wstring name)
 {
 	//m_pRender = pRender;
-	if (!InitMainWindow())
+	if (!InitMainWindow(name))
 		return false;
 	// Do the initial resize code.
 
@@ -225,7 +225,7 @@ LRESULT Window::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-bool Window::InitMainWindow()
+bool Window::InitMainWindow(std::wstring name)
 {
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -251,7 +251,7 @@ bool Window::InitMainWindow()
 	int width = R.right - R.left;
 	int height = R.bottom - R.top;
 
-	m_hMainWnd = CreateWindow(L"MainWnd", mMainWndCaption.c_str(),
+	m_hMainWnd = CreateWindow(L"MainWnd", name.c_str(),
 		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, mhAppInst, 0);
 	if (!m_hMainWnd)
 	{

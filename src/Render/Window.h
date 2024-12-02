@@ -25,7 +25,7 @@ public:
 
     bool Run(GCRenderContext* pRender);
 
-    virtual bool Initialize();
+    virtual bool Initialize(std::wstring name);
     virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
     int GetClientWidth();
     int GetClientHeight();
@@ -36,7 +36,7 @@ public:
 private:
     void OnResize();
 
-    bool InitMainWindow();
+    bool InitMainWindow(std::wstring name);
 
     void CalculateFrameStats();
 
