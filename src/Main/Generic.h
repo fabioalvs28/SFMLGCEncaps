@@ -1,17 +1,17 @@
 #pragma once
 
-class LEDrawable;
+class IDrawable;
 
-class LEWindow
+class IWindow
 {
 public:
 	virtual void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) = 0;
 	virtual void Clear() = 0;
-	virtual void Draw(LEDrawable* pDrawable) = 0;
+	virtual void Draw(IDrawable* pDrawable) = 0;
 	virtual void Render() = 0;
 };
 
-class LETexture
+class ITexture
 {
 public:
 	virtual void Load(const char* path) = 0;
@@ -19,22 +19,22 @@ public:
 	virtual void GetHeight() = 0;
 };
 
-class LEDrawable
+class IDrawable
 {
 public:
-	virtual void Draw(LEWindow* pWindow) = 0;
+	virtual void Draw(IWindow* pWindow) = 0;
 };
 
-class LESprite : public LEDrawable
+class ISprite : public IDrawable
 {
 public:
-	virtual void SetTexture(LETexture* pTexture) = 0;
+	virtual void SetTexture(ITexture* pTexture) = 0;
 	virtual void SetPosition(float x, float y) = 0;
-	virtual void Draw(LEWindow* pWindow) = 0;
+	virtual void Draw(IWindow* pWindow) = 0;
 
 };
 
-class GenericCircle : public LEDrawable
+class ICircle : public IDrawable
 {
 public:
 	virtual void SetPosition(float x, float y) = 0;

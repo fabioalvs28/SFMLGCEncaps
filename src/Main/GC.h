@@ -6,7 +6,7 @@ class Window;
 class GCTexture;
 class GCMaterial;
 
-class LEWindowGC : public LEWindow
+class LEWindowGC : public IWindow
 {
 	Window* mpWindow; 
 	GCGraphics* mpGraphics;
@@ -20,14 +20,14 @@ public:
 
 	void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) override;
 	void Clear() override;
-	void Draw(LEDrawable* pDrawable) override;
+	void Draw(IDrawable* pDrawable) override;
 	void Render() override;
 
 	friend class LETextureGC;
 	friend class LESpriteGC;
 };
 
-class LETextureGC : public LETexture
+class LETextureGC : public ITexture
 {
 	GCTexture* mpTexture;
 	GCMaterial* mpMaterial;
@@ -44,7 +44,7 @@ public:
 };
 
 
-class LESpriteGC : public LESprite
+class LESpriteGC : public ISprite
 {
 	GCGeometry* mpGeometry;
 	GCMesh* mpMesh;
@@ -61,8 +61,8 @@ public:
 
 
 public:
-	void SetTexture(LETexture* pTexture) override;
+	void SetTexture(ITexture* pTexture) override;
 	void SetPosition(float x, float y) override;
-	void Draw(LEWindow* pWindow) override;
+	void Draw(IWindow* pWindow) override;
 };
 

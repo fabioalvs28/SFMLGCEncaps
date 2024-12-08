@@ -13,7 +13,7 @@ void SFMLWindow::Clear()
 	mpWindow->clear();
 }
 
-void SFMLWindow::Draw(LEDrawable* pDrawable)
+void SFMLWindow::Draw(IDrawable* pDrawable)
 {
 	pDrawable->Draw(this);
 }
@@ -23,7 +23,7 @@ void SFMLWindow::Render()
 	mpWindow->display();
 }
 
-void SFMLSprite::SetTexture(LETexture* pTexture)
+void SFMLSprite::SetTexture(ITexture* pTexture)
 {
 	mpSprite = new sf::Sprite();
 
@@ -37,7 +37,7 @@ void SFMLSprite::SetPosition(float x, float y)
 	mpSprite->setPosition(x, y);
 }
 
-void SFMLSprite::Draw(LEWindow* pWindow)
+void SFMLSprite::Draw(IWindow* pWindow)
 {
 	SFMLWindow* pSFMLWindow = (SFMLWindow*)pWindow;
 	pSFMLWindow->mpWindow->draw(*mpSprite);

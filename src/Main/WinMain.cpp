@@ -1,53 +1,29 @@
 #pragma region 2DDEMO
 
 //2D DEMO
-
 #include "pch.h"
+
+#include "LE.h"
 
 #include <assert.h>
 
 #define WIDTH 1920
 #define HEIGHT 1080
 
-#define SFML
-
-#ifdef SFML
-#include "SFML.h"
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
-{
-	LEWindow* pWindow = new SFMLWindow();
-	pWindow->Initialize(hInstance, WIDTH, HEIGHT, "SFML works!");
-
-	LETexture* pTexture = new SFMLTexture();
-	pTexture->Load("../../../res/Testing/image.png");
-
-	LESprite* pSprite = new SFMLSprite();
-	pSprite->SetTexture(pTexture);
-	pSprite->SetPosition(0, 0);
-
-    while (true)
-    {
-		pWindow->Clear();
-		pWindow->Draw(pSprite);
-		pWindow->Render();
-    }
-
-    return 0;
-}
-#endif
-
-#ifdef GC
-#include "GC.h"
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) 
 {
-	LEWindow* pWindow = new LEWindowGC();
+	LEWindow* pWindow = new LEWindow();
 	pWindow->Initialize(hInstance, WIDTH, HEIGHT, "GC works!");
 
-	LETexture* pTexture = new LETextureGC();
-	pTexture->Load("../../../res/Testing/Textures/happyImage.dds");
+	LETexture* pTexture = new LETexture();
 
-	LESprite* pSprite = new LESpriteGC();
-	pSprite->SetPosition(0, 0);
+#ifdef GC
+	pTexture->Load("../../../res/Testing/Textures/happyImage.dds");
+#else
+    pTexture->Load("../../../res/Testing/image.png");
+#endif
+
+	LESprite* pSprite = new LESprite();
 	pSprite->SetTexture(pTexture);
 	pSprite->SetPosition(0, 0);
 
@@ -60,7 +36,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     return 0;
 }
-#endif
 
 /*
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)

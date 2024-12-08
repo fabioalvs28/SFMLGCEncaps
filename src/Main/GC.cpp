@@ -54,7 +54,7 @@ void LEWindowGC::Clear()
 
 bool start = false;
 
-void LEWindowGC::Draw(LEDrawable* pDrawable)
+void LEWindowGC::Draw(IDrawable* pDrawable)
 {
     if (start == false) 
     {
@@ -123,7 +123,7 @@ LESpriteGC::LESpriteGC()
     pGraphics->InitializeGraphicsResourcesEnd();
 }
 
-void LESpriteGC::SetTexture(LETexture* pTexture)
+void LESpriteGC::SetTexture(ITexture* pTexture)
 {
 	mpTexture = (LETextureGC*)pTexture;
 
@@ -136,7 +136,7 @@ void LESpriteGC::SetPosition(float x, float y)
     mWorldMatrix = DirectX::XMMatrixScaling(mWidth, mHeight, 1.0f) * DirectX::XMMatrixTranslation(x, y, 0.0f);
 }
 
-void LESpriteGC::Draw(LEWindow* pWindow)
+void LESpriteGC::Draw(IWindow* pWindow)
 {
     LEWindowGC* pLEWindowGC = (LEWindowGC*) pWindow;
 	GCGraphics* pGraphics = pLEWindowGC->mpGraphics;
