@@ -4,61 +4,112 @@
 
 #include "pch.h"
 
+#include <assert.h>
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) {
+#define WIDTH 1920
+#define HEIGHT 1080
+
+#define SFML
+
+#ifdef SFML
+#include "SFML.h"
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
+{
+	LEWindow* pWindow = new SFMLWindow();
+	pWindow->Initialize(hInstance, WIDTH, HEIGHT, "SFML works!");
+
+	LETexture* pTexture = new SFMLTexture();
+	pTexture->Load("../../../res/Testing/image.png");
+
+	LESprite* pSprite = new SFMLSprite();
+	pSprite->SetTexture(pTexture);
+	pSprite->SetPosition(0, 0);
+
+    while (true)
+    {
+		pWindow->Clear();
+		pWindow->Draw(pSprite);
+		pWindow->Render();
+    }
+
+    return 0;
+}
+#endif
+
+#ifdef GC
+#include "GC.h"
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) 
+{
+	LEWindow* pWindow = new LEWindowGC();
+	pWindow->Initialize(hInstance, WIDTH, HEIGHT, "GC works!");
+
+	LETexture* pTexture = new LETextureGC();
+	pTexture->Load("../../../res/Testing/Textures/happyImage.dds");
+
+	LESprite* pSprite = new LESpriteGC();
+	pSprite->SetPosition(0, 0);
+	pSprite->SetTexture(pTexture);
+	pSprite->SetPosition(0, 0);
+
+    while (true)
+    {
+        pWindow->Clear();
+        pWindow->Draw(pSprite);
+        pWindow->Render();
+    }
+
+    return 0;
+}
+#endif
+
+/*
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
+{
     //Initialize graphics resource
     GCGraphicsLogger& profiler = GCGraphicsLogger::GetInstance();
     profiler.InitializeConsole();
 
-    Window* window = new Window(hInstance);
-    window->Initialize(L"hello world");
+    Window* pWindow = new Window(hInstance);
+    pWindow->Initialize(L"hello world");
 
-    GCGraphics* graphics = new GCGraphics();
-    graphics->Initialize(window, 1920, 1080);
+    GCGraphics* pGraphics = new GCGraphics();
 
-    graphics->GetRender()->Set2DMode();
+    pGraphics->Initialize(pWindow, WIDTH, HEIGHT);
+    pGraphics->GetRender()->Set2DMode();
 
     int flagsColorTexture = 0;
+
     GC_SET_FLAG(flagsColorTexture, GC_VERTEX_POSITION);
     GC_SET_FLAG(flagsColorTexture, GC_VERTEX_COLOR);
     GC_SET_FLAG(flagsColorTexture, GC_VERTEX_UV);
 
     //Create geometries
+    auto geoPlane = pGraphics->CreateGeometryPrimitive(Plane, DirectX::XMFLOAT4(DirectX::Colors::Beige));
 
-    auto geoPlane = graphics->CreateGeometryPrimitive(Plane, DirectX::XMFLOAT4(DirectX::Colors::DarkBlue));
-    auto housePlane = graphics->CreateGeometryPrimitive(Plane, DirectX::XMFLOAT4(DirectX::Colors::White));
-    graphics->m_pFontGeometryLoader->Initialize("../../../res/Fonts/LetterUV.txt");
-
-    DirectX::XMFLOAT4 textColor = DirectX::XMFLOAT4( DirectX::Colors::Red);
-    auto geoPlaneAlphabet = graphics->m_pFontGeometryLoader->CreateText("azertyu\biopqs\bdf\tghjklm\twxcvbn\nAZERTYUIOPQSDFGHJKLMWXCVBN\n0123456789\n, ; :!? . / !$ *  ^  % & () = \n ", textColor);
-
-    std::string shaderTextFilePath = "../../../res/Shaders/textTexture.hlsl";
-    std::string csoDestinationTextPath = "../../../res/CsoCompiled/textTexture";
-    auto shaderText = graphics->CreateShaderCustom(shaderTextFilePath, csoDestinationTextPath, flagsColorTexture);
-
-    auto shaderTexture = graphics->CreateShaderTexture();
-
-    auto shaderColor = graphics->CreateShaderColor();
-
-    //Init graphics ressources
-    graphics->InitializeGraphicsResourcesStart();
+    pGraphics->InitializeGraphicsResourcesStart();
 
     //Mesh creation
-    auto meshBackground = graphics->CreateMeshTexture(geoPlane.resource);
-    auto meshPlaneAlphabet = graphics->CreateMeshCustom(geoPlaneAlphabet, flagsColorTexture);
+    auto mesh = pGraphics->CreateMeshTexture(geoPlane.resource);
+    auto meshColor = pGraphics->CreateMeshColor(geoPlane.resource);
 
-    std::string texturePath = "../../../res/Textures/Textures/texture.dds";
-    std::string texturePath2 = "../../../res/Textures/TimesFont.dds";
-    auto texture = graphics->CreateTexture(texturePath);
-    auto textureText = graphics->CreateTexture(texturePath2);
+    //Texture creation
+    std::string texturePath = "../../../res/Testing/Textures/happyImage.dds";
+    auto texture = pGraphics->CreateTexture(texturePath);
 
-    graphics->InitializeGraphicsResourcesEnd();
+    assert(texture.success);
 
-    auto materialText = graphics->CreateMaterial(shaderText.resource);
-    materialText.resource->SetTexture(textureText.resource);
+    int textWidth = texture.resource->GetWidth();
+    int textHeight = texture.resource->GetHeight();
 
-    auto materialBackground = graphics->CreateMaterial(shaderTexture.resource);
-    materialBackground.resource->SetTexture(texture.resource);
+    pGraphics->InitializeGraphicsResourcesEnd();
+
+    //Create shaders
+    auto shaderTexture = pGraphics->CreateShaderTexture();
+    auto shaderColor = pGraphics->CreateShaderColor();
+
+    //Create materials
+    auto material = pGraphics->CreateMaterial(shaderTexture.resource);
+    material.resource->SetTexture(texture.resource);
 
     //Setting up camera
     DirectX::XMFLOAT3 cameraPosition(0.0f, 0.0f, -10.0f);
@@ -66,15 +117,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     DirectX::XMFLOAT3 cameraUp(0.0f, 1.0f, 0.0f);
 
     //Orthographic projection
-    float viewWidth = 20.0f;   
-    float viewHeight = 20.0f; 
-    float nearZ = 1.0f;       
-    float farZ = 1000.0f;      
+    float viewWidth = WIDTH;
+    float viewHeight = HEIGHT;
+    float nearZ = 1.0f;
+    float farZ = 1000.0f;
 
     DirectX::XMMATRIX storedProjectionMatrix, storedViewMatrix;
 
     //Create view and projection matrixes
-    graphics->CreateViewProjConstantBuffer(
+    pGraphics->CreateViewProjConstantBuffer(
         cameraPosition,
         cameraTarget,
         cameraUp,
@@ -90,32 +141,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     );
 
     //Setting up matrixes
-    DirectX::XMMATRIX worldMatrixText = DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(-10.0f, 8.0f, 0.0f); // Texte
-    DirectX::XMMATRIX worldMatrixBackground = DirectX::XMMatrixScaling(500.0f, 500.0f, 0.0f) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f); // Plane
+    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixScaling(textWidth, textHeight, 1.0f) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
-    auto startTime = std::chrono::steady_clock::now();
-    auto lastFrameTime = startTime;
+    while (pWindow->IsClosed() == false)
+    {
+        pGraphics->StartFrame();
 
-    float fireworkTriggerTime[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-    int textureSelect = 0;
-    while (window->IsClosed() == false) {
-        auto currentTime = std::chrono::steady_clock::now();
-        float elapsedTime = std::chrono::duration<float>(currentTime - startTime).count();
+        pGraphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
+        pGraphics->UpdateWorldConstantBuffer(material.resource, worldMatrix);
+        pGraphics->GetRender()->DrawObject(mesh.resource, material.resource, true);
 
-        float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime).count();
-        lastFrameTime = currentTime;
+        pGraphics->EndFrame();
 
-        graphics->StartFrame();
-        graphics->UpdateViewProjConstantBuffer(storedProjectionMatrix, storedViewMatrix);
-
-        graphics->UpdateWorldConstantBuffer(materialText.resource, worldMatrixText);
-        graphics->GetRender()->DrawObject(meshPlaneAlphabet.resource, materialText.resource, true);
-
-
-        graphics->EndFrame();
-        window->Run(graphics->GetRender());
+        pWindow->Run(pGraphics->GetRender());
     }
 
     return 0;
 }
+*/
+
 #pragma endregion
