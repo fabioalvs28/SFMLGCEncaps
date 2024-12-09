@@ -5,7 +5,13 @@
 
 LEWindowGC::LEWindowGC()
 {
-	mpLastInstance = this;
+    if (mpInstance) 
+    {
+		std::cerr << "GC Doesn't support multiple windows" << std::endl;
+		exit(1);
+    }
+
+	mpInstance = this;
 }
 
 void LEWindowGC::Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title)
@@ -16,8 +22,8 @@ void LEWindowGC::Initialize(HINSTANCE hInstance, unsigned int width, unsigned in
 	mpWindow->Initialize(L"hello world");
 
 	mpGraphics = new GCGraphics();
-	mpGraphics->Initialize(mpWindow, width, height);
-	mpGraphics->GetRender()->Set2DMode();
+    mpGraphics->Initialize(mpWindow, width, height);
+    mpGraphics->GetRender()->Set2DMode();
 
     //Setting up camera
     DirectX::XMFLOAT3 cameraPosition(0.0f, 0.0f, -10.0f);
@@ -45,43 +51,69 @@ void LEWindowGC::Initialize(HINSTANCE hInstance, unsigned int width, unsigned in
         mProjectionMatrix,
         mViewMatrix
     );
+
+    mpGraphics->UpdateViewProjConstantBuffer(mProjectionMatrix, mViewMatrix);
+
+	mWidth = width;
+	mHeight = height;
 }
 
-void LEWindowGC::Clear()
+void LEWindowGC::Draw(IObject* pDrawable)
 {
-	//mpWindow->clear();
-}
-
-bool start = false;
-
-void LEWindowGC::Draw(IDrawable* pDrawable)
-{
-    if (start == false) 
+    if (mStartFrame == false)
     {
         mpGraphics->StartFrame();
-        mpGraphics->UpdateViewProjConstantBuffer(mProjectionMatrix, mViewMatrix);
 
-		start = true;
+        mStartFrame = true;
     }
 
-	pDrawable->Draw(this);
+    LEObjectGC* pLEDrawableGC = (LEObjectGC*)pDrawable;
+
+    GCMaterial* mpMaterial = pLEDrawableGC->mpMaterial;
+	GCMesh* pMesh = pLEDrawableGC->mpMesh;
+	DirectX::XMMATRIX& mWorldMatrix = pLEDrawableGC->mWorldMatrix;
+
+    mpGraphics->UpdateWorldConstantBuffer(mpMaterial, mWorldMatrix);
+
+    mpGraphics->GetRender()->DrawObject(pMesh, mpMaterial, true);
 }
 
 void LEWindowGC::Render()
 {
     mpGraphics->EndFrame();
     mpWindow->Run(mpGraphics->GetRender());
-    start = false;
+    mStartFrame = false;
+}
+
+LEObjectGC::LEObjectGC()
+{
+	mWorldMatrix = DirectX::XMMatrixIdentity();
+}
+
+void LEObjectGC::SetPosition(float x, float y)
+{
+    int offsetX = -LEWindowGC::Get()->GetWidth() / 2;
+    int offsetY = (LEWindowGC::Get()->GetHeight() / 2) - mHeight;
+
+    mX = x + offsetX;
+    mY = y + offsetY;
+
+    ComputeWorldMatrix();
+}
+
+void LEObjectGC::ComputeWorldMatrix()
+{
+	mWorldMatrix = DirectX::XMMatrixScaling(mWidth, mHeight, 1.0f) * DirectX::XMMatrixTranslation(mX, mY, 0.0f);
 }
 
 void LETextureGC::Load(const char* path)
 {
-	GCGraphics* pGraphics = LEWindowGC::mpLastInstance->mpGraphics;
+    GCGraphics* pGraphics = LEWindowGC::Get()->GetGraphics();
 
     pGraphics->InitializeGraphicsResourcesStart();
 
     //Texture creation
-    auto texture = pGraphics->CreateTexture(path);
+    auto texture = pGraphics->CreateTexture(std::string(path) + ".dds");
     assert(texture.success);
     
     mpTexture = texture.resource;
@@ -105,11 +137,10 @@ void LETextureGC::Load(const char* path)
 
 LESpriteGC::LESpriteGC()
 {
-    GCGraphics* pGraphics = LEWindowGC::mpLastInstance->mpGraphics;
+    GCGraphics* pGraphics = LEWindowGC::Get()->GetGraphics();
 
-    auto geoPlane = pGraphics->CreateGeometryPrimitive(Plane, DirectX::XMFLOAT4(DirectX::Colors::Beige));
+    auto geoPlane = pGraphics->CreateGeometryPrimitive(Plane, DirectX::XMFLOAT4(DirectX::Colors::Black));
     assert(geoPlane.success);
-
     mpGeometry = geoPlane.resource;
 
     pGraphics->InitializeGraphicsResourcesStart();
@@ -121,28 +152,51 @@ LESpriteGC::LESpriteGC()
     mpMesh = mesh.resource;
 
     pGraphics->InitializeGraphicsResourcesEnd();
+
+	mpTexture = nullptr;
 }
 
 void LESpriteGC::SetTexture(ITexture* pTexture)
 {
 	mpTexture = (LETextureGC*)pTexture;
+	mpMaterial = mpTexture->mpMaterial;
 
 	mWidth = mpTexture->mWidth;
 	mHeight = mpTexture->mHeight;
 }
 
-void LESpriteGC::SetPosition(float x, float y)
+LECircleGC::LECircleGC()
 {
-    mWorldMatrix = DirectX::XMMatrixScaling(mWidth, mHeight, 1.0f) * DirectX::XMMatrixTranslation(x, y, 0.0f);
+    GCGraphics* pGraphics = LEWindowGC::Get()->GetGraphics();
+
+	auto geoCircle = pGraphics->CreateGeometryPrimitive(Circle, DirectX::XMFLOAT4(DirectX::Colors::Beige));
+	assert(geoCircle.success);
+	mpGeometry = geoCircle.resource;
+
+	pGraphics->InitializeGraphicsResourcesStart();
+
+    //Mesh creation
+	auto mesh = pGraphics->CreateMeshColor(mpGeometry);
+	assert(mesh.success);
+	mpMesh = mesh.resource;
+
+    pGraphics->InitializeGraphicsResourcesEnd();
+
+    //Create shaders
+    auto shaderColor = pGraphics->CreateShaderColor();
+
+    //Create material
+    auto material = pGraphics->CreateMaterial(shaderColor.resource);
+    assert(material.success);
+
+    mpMaterial = material.resource;
+
+	SetRadius(1.0f);
 }
 
-void LESpriteGC::Draw(IWindow* pWindow)
+void LECircleGC::SetRadius(float radius)
 {
-    LEWindowGC* pLEWindowGC = (LEWindowGC*) pWindow;
-	GCGraphics* pGraphics = pLEWindowGC->mpGraphics;
+	mRadius = radius;
 
-	GCMaterial* mpMaterial = mpTexture->mpMaterial;
-
-    pGraphics->UpdateWorldConstantBuffer(mpMaterial, mWorldMatrix);
-    pGraphics->GetRender()->DrawObject(mpMesh, mpMaterial, true);
+    ComputeWorldMatrix();
 }

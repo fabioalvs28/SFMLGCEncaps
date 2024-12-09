@@ -1,13 +1,13 @@
 #pragma once
 
-class IDrawable;
+class IObject;
 
 class IWindow
 {
 public:
 	virtual void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) = 0;
 	virtual void Clear() = 0;
-	virtual void Draw(IDrawable* pDrawable) = 0;
+	virtual void Draw(IObject* pDrawable) = 0;
 	virtual void Render() = 0;
 };
 
@@ -19,26 +19,21 @@ public:
 	virtual void GetHeight() = 0;
 };
 
-class IDrawable
+class IObject
 {
-public:
-	virtual void Draw(IWindow* pWindow) = 0;
+	virtual void SetPosition(float x, float y) = 0;
 };
 
-class ISprite : public IDrawable
+class ISprite
 {
 public:
 	virtual void SetTexture(ITexture* pTexture) = 0;
-	virtual void SetPosition(float x, float y) = 0;
-	virtual void Draw(IWindow* pWindow) = 0;
-
 };
 
-class ICircle : public IDrawable
+class ICircle
 {
 public:
-	virtual void SetPosition(float x, float y) = 0;
 	virtual void SetRadius(float radius) = 0;
-	virtual void SetColor(float r, float g, float b, float a) = 0;
+	virtual void SetColor(unsigned char r, unsigned char g, unsigned char b) = 0;
 };
 

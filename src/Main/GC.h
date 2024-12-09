@@ -3,28 +3,64 @@
 #include "Generic.h"
 
 class Window;
+class GCGraphics;
+
 class GCTexture;
 class GCMaterial;
 
+struct GCGeometry;
+class GCMesh;
+
+namespace DirectX 
+{
+	struct XMMATRIX;
+}
+
 class LEWindowGC : public IWindow
 {
-	Window* mpWindow; 
+	Window* mpWindow;
 	GCGraphics* mpGraphics;
-	inline static LEWindowGC* mpLastInstance = nullptr; //#UGLY
 
 	DirectX::XMMATRIX mProjectionMatrix, mViewMatrix;
 
+	int mWidth, mHeight;
+
+	bool mStartFrame = false;
+
+	inline static LEWindowGC* mpInstance = nullptr;
 
 public:
 	LEWindowGC();
 
-	void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) override;
-	void Clear() override;
-	void Draw(IDrawable* pDrawable) override;
-	void Render() override;
+	static LEWindowGC* Get() { return mpInstance; }
+	GCGraphics* GetGraphics() { return mpGraphics; }
 
-	friend class LETextureGC;
-	friend class LESpriteGC;
+	int GetWidth() { return mWidth; }
+	int GetHeight() { return mHeight; }
+
+	void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) override;
+	void Clear() override {};
+	void Draw(IObject* pDrawable) override;
+	void Render() override;
+};
+
+class LEObjectGC : public IObject
+{
+protected:
+	GCMesh* mpMesh;
+	GCMaterial* mpMaterial;
+
+	DirectX::XMMATRIX mWorldMatrix;
+	int mX = 0, mY = 0;
+	int mWidth = 0, mHeight = 0;
+
+public:
+	LEObjectGC();
+
+	void SetPosition(float x, float y) override;
+	void ComputeWorldMatrix();
+
+	friend LEWindowGC;
 };
 
 class LETextureGC : public ITexture
@@ -43,26 +79,28 @@ public:
 	friend class LESpriteGC;
 };
 
-
-class LESpriteGC : public ISprite
+class LESpriteGC : public ISprite, public LEObjectGC
 {
 	GCGeometry* mpGeometry;
-	GCMesh* mpMesh;
-
-	DirectX::XMMATRIX mWorldMatrix;
-
 	LETextureGC* mpTexture;
 	
-	int mWidth;
-	int mHeight;
 
 public:
 	LESpriteGC();
 
-
 public:
 	void SetTexture(ITexture* pTexture) override;
-	void SetPosition(float x, float y) override;
-	void Draw(IWindow* pWindow) override;
 };
 
+class LECircleGC : public ICircle, public LEObjectGC
+{
+	GCGeometry* mpGeometry;
+
+	float mRadius;
+
+public:
+	LECircleGC();
+
+	void SetRadius(float radius) override;
+	void SetColor(unsigned char r, unsigned char g, unsigned char b) override {};
+};

@@ -5,8 +5,12 @@
 namespace sf 
 {
 	class RenderWindow;
-	class Sprite;
+
+	class Drawable;
+	class Transformable;
 	class Texture;
+	class Sprite;
+	class CircleShape;
 }
 
 class SFMLWindow : public IWindow
@@ -16,10 +20,21 @@ class SFMLWindow : public IWindow
 public:
 	virtual void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) override;
 	virtual void Clear() override;
-	virtual void Draw(IDrawable* pDrawable) override;
+	virtual void Draw(IObject* pObject) override;
 	virtual void Render() override;
 
 	friend class SFMLSprite;
+};
+
+class SFMLObject : public IObject
+{
+protected:
+	sf::Drawable* mpDrawable;
+	sf::Transformable* mpTransformable;
+
+public:
+	const sf::Drawable& Get() { return *mpDrawable; }
+	void SetPosition(float x, float y);
 };
 
 class SFMLTexture : public ITexture
@@ -27,6 +42,8 @@ class SFMLTexture : public ITexture
 	sf::Texture* mpTexture;
 
 public:
+	SFMLTexture();
+
 	void Load(const char* path) override;
 	void GetWidth() override;
 	void GetHeight() override;
@@ -34,14 +51,19 @@ public:
 	const sf::Texture& Get() { return *mpTexture; }
 };
 
-class SFMLSprite : public ISprite
+class SFMLSprite : public ISprite, public SFMLObject
 {
-	sf::Sprite* mpSprite;
-
 public:
-	void SetTexture(ITexture* pTexture) override;
-	void SetPosition(float x, float y) override;
-	void Draw(IWindow* pWindow) override;
+	SFMLSprite();
 
-	const sf::Sprite& Get() { return *mpSprite; }
+	void SetTexture(ITexture* pTexture) override;
+};
+
+class SFMLCircle : public ICircle, public SFMLObject
+{
+public:
+	SFMLCircle();
+
+	void SetRadius(float radius) override;
+	void SetColor(unsigned char r, unsigned char g, unsigned char b) override;
 };

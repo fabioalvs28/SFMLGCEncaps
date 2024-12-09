@@ -13,9 +13,10 @@ void SFMLWindow::Clear()
 	mpWindow->clear();
 }
 
-void SFMLWindow::Draw(IDrawable* pDrawable)
+void SFMLWindow::Draw(IObject* pDrawable)
 {
-	pDrawable->Draw(this);
+	SFMLObject* pSFMLDrawable = (SFMLObject*)pDrawable;
+	mpWindow->draw(pSFMLDrawable->Get());
 }
 
 void SFMLWindow::Render()
@@ -23,37 +24,60 @@ void SFMLWindow::Render()
 	mpWindow->display();
 }
 
+void SFMLObject::SetPosition(float x, float y)
+{
+	mpTransformable->setPosition(x, y);
+}
+
+SFMLSprite::SFMLSprite()
+{
+	sf::Sprite* pSprite = new sf::Sprite();
+	
+	mpDrawable = pSprite;
+	mpTransformable = pSprite;
+}
+
 void SFMLSprite::SetTexture(ITexture* pTexture)
 {
-	mpSprite = new sf::Sprite();
-
 	SFMLTexture* pSFMLTexture = (SFMLTexture*)pTexture;
 
-	mpSprite->setTexture(pSFMLTexture->Get());
+	((sf::Sprite*)mpDrawable)->setTexture(pSFMLTexture->Get());
 }
 
-void SFMLSprite::SetPosition(float x, float y)
+SFMLTexture::SFMLTexture()
 {
-	mpSprite->setPosition(x, y);
-}
-
-void SFMLSprite::Draw(IWindow* pWindow)
-{
-	SFMLWindow* pSFMLWindow = (SFMLWindow*)pWindow;
-	pSFMLWindow->mpWindow->draw(*mpSprite);
+	mpTexture = new sf::Texture();
 }
 
 void SFMLTexture::Load(const char* path)
 {
-	mpTexture = new sf::Texture();
-	mpTexture->loadFromFile(path);
+	mpTexture->loadFromFile(std::string(path) + ".png");
 }
 
 void SFMLTexture::GetWidth()
 {
-
+	mpTexture->getSize().x;
 }
 
 void SFMLTexture::GetHeight()
 {
+	mpTexture->getSize().y;
+}
+
+SFMLCircle::SFMLCircle()
+{
+	sf::CircleShape* pCircle = new sf::CircleShape();
+
+	mpDrawable = pCircle;
+	mpTransformable = pCircle;
+}
+
+void SFMLCircle::SetRadius(float radius)
+{
+	((sf::CircleShape*)mpDrawable)->setRadius(radius);
+}
+
+void SFMLCircle::SetColor(unsigned char r, unsigned char g, unsigned char b)
+{
+	((sf::CircleShape*)mpDrawable)->setFillColor(sf::Color(r, g, b));
 }

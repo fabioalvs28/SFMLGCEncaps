@@ -17,18 +17,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	LETexture* pTexture = new LETexture();
 
-#ifdef GC
-	pTexture->Load("../../../res/Testing/Textures/happyImage.dds");
-#else
-    pTexture->Load("../../../res/Testing/image.png");
-#endif
+    pTexture->Load("../../../res/Testing/image");
 
 	LESprite* pSprite = new LESprite();
 	pSprite->SetTexture(pTexture);
 	pSprite->SetPosition(0, 0);
 
-    while (true)
+	//LECircle* pCircle = new LECircle();
+    //pCircle->SetPosition(0, 0);
+
+    int x = 0;
+    while (true) 
     {
+        //pSprite->SetPosition(x++, 0);
         pWindow->Clear();
         pWindow->Draw(pSprite);
         pWindow->Render();
