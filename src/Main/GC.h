@@ -38,7 +38,7 @@ public:
 	int GetWidth() { return mWidth; }
 	int GetHeight() { return mHeight; }
 
-	void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) override;
+	void Initialize(int width, int height, const char* title) override;
 	void Clear() override {};
 	void Draw(IObject* pDrawable) override;
 	void Render() override;
@@ -47,6 +47,7 @@ public:
 class LEObjectGC : public IObject
 {
 protected:
+	GCGeometry* mpGeometry;
 	GCMesh* mpMesh;
 	GCMaterial* mpMaterial;
 
@@ -81,10 +82,6 @@ public:
 
 class LESpriteGC : public ISprite, public LEObjectGC
 {
-	GCGeometry* mpGeometry;
-	LETextureGC* mpTexture;
-	
-
 public:
 	LESpriteGC();
 
@@ -94,8 +91,6 @@ public:
 
 class LECircleGC : public ICircle, public LEObjectGC
 {
-	GCGeometry* mpGeometry;
-
 	float mRadius;
 
 public:

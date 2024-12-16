@@ -14,11 +14,11 @@ LEWindowGC::LEWindowGC()
 	mpInstance = this;
 }
 
-void LEWindowGC::Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title)
+void LEWindowGC::Initialize(int width, int height, const char* title)
 {
 	GCGraphicsLogger::GetInstance().InitializeConsole();
 
-	mpWindow = new Window(hInstance);
+	mpWindow = new Window(GetModuleHandle(nullptr));
 	mpWindow->Initialize(L"hello world");
 
 	mpGraphics = new GCGraphics();
@@ -26,8 +26,10 @@ void LEWindowGC::Initialize(HINSTANCE hInstance, unsigned int width, unsigned in
     mpGraphics->GetRender()->Set2DMode();
 
     //Setting up camera
-    DirectX::XMFLOAT3 cameraPosition(0.0f, 0.0f, -10.0f);
-    DirectX::XMFLOAT3 cameraTarget(0.0f, 0.0f, 0.0f);
+	int halfHeight = -1 * (height / 2);
+
+    DirectX::XMFLOAT3 cameraPosition(width / 2, halfHeight, -10.0f);
+    DirectX::XMFLOAT3 cameraTarget(width / 2, halfHeight, 0.0f);
     DirectX::XMFLOAT3 cameraUp(0.0f, 1.0f, 0.0f);
 
     //Orthographic projection
@@ -92,18 +94,15 @@ LEObjectGC::LEObjectGC()
 
 void LEObjectGC::SetPosition(float x, float y)
 {
-    int offsetX = -LEWindowGC::Get()->GetWidth() / 2;
-    int offsetY = (LEWindowGC::Get()->GetHeight() / 2) - mHeight;
-
-    mX = x + offsetX;
-    mY = y + offsetY;
+    mX = x;
+    mY = y;
 
     ComputeWorldMatrix();
 }
 
 void LEObjectGC::ComputeWorldMatrix()
 {
-	mWorldMatrix = DirectX::XMMatrixScaling(mWidth, mHeight, 1.0f) * DirectX::XMMatrixTranslation(mX, mY, 0.0f);
+	mWorldMatrix = DirectX::XMMatrixScaling(mWidth, mHeight, 1.0f) * DirectX::XMMatrixTranslation(mX, -mY, 0.0f);
 }
 
 void LETextureGC::Load(const char* path)
@@ -152,17 +151,15 @@ LESpriteGC::LESpriteGC()
     mpMesh = mesh.resource;
 
     pGraphics->InitializeGraphicsResourcesEnd();
-
-	mpTexture = nullptr;
 }
 
 void LESpriteGC::SetTexture(ITexture* pTexture)
 {
-	mpTexture = (LETextureGC*)pTexture;
-	mpMaterial = mpTexture->mpMaterial;
+    LETextureGC* pLETextureGC = (LETextureGC*)pTexture;
+	mpMaterial = pLETextureGC->mpMaterial;
 
-	mWidth = mpTexture->mWidth;
-	mHeight = mpTexture->mHeight;
+	mWidth = pLETextureGC->mWidth;
+	mHeight = pLETextureGC->mHeight;
 }
 
 LECircleGC::LECircleGC()

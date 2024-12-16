@@ -5,7 +5,7 @@ class IObject;
 class IWindow
 {
 public:
-	virtual void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) = 0;
+	virtual void Initialize(int width, int height, const char* title) = 0;
 	virtual void Clear() = 0;
 	virtual void Draw(IObject* pDrawable) = 0;
 	virtual void Render() = 0;

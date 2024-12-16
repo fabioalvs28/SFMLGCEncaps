@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-void SFMLWindow::Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title)
+void SFMLWindow::Initialize(int width, int height, const char* title)
 {
 	mpWindow = new sf::RenderWindow(sf::VideoMode(width, height), "SFML works!");
 }

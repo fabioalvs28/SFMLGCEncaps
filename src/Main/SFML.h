@@ -18,7 +18,7 @@ class SFMLWindow : public IWindow
 	sf::RenderWindow* mpWindow;
 
 public:
-	virtual void Initialize(HINSTANCE hInstance, unsigned int width, unsigned int height, const char* title) override;
+	virtual void Initialize(int width, int height, const char* title) override;
 	virtual void Clear() override;
 	virtual void Draw(IObject* pObject) override;
 	virtual void Render() override;

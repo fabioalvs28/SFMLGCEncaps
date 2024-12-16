@@ -10,10 +10,10 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd) 
+int main()
 {
 	LEWindow* pWindow = new LEWindow();
-	pWindow->Initialize(hInstance, WIDTH, HEIGHT, "GC works!");
+	pWindow->Initialize(WIDTH, HEIGHT, "GC works!");
 
 	LETexture* pTexture = new LETexture();
 
@@ -29,7 +29,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     int x = 0;
     while (true) 
     {
-        //pSprite->SetPosition(x++, 0);
         pWindow->Clear();
         pWindow->Draw(pSprite);
         pWindow->Render();

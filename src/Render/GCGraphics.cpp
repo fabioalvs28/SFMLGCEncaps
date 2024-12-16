@@ -488,9 +488,9 @@ bool GCGraphics::CreateViewProjConstantBuffer(const DirectX::XMFLOAT3& cameraPos
     DirectX::XMMATRIX& projectionMatrix,
     DirectX::XMMATRIX& viewMatrix)
 {
-    DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraPosition));
-    DirectX::XMVECTOR camTarget = XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraTarget));
-    DirectX::XMVECTOR camUp = XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraUp));
+    DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&cameraPosition);
+    DirectX::XMVECTOR camTarget = XMLoadFloat3(&cameraTarget);
+    DirectX::XMVECTOR camUp = XMLoadFloat3(&cameraUp);
 
     DirectX::XMMATRIX viewMatrixXM = DirectX::XMMatrixLookAtLH(camPos, camTarget, camUp);
 
