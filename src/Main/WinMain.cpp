@@ -9,6 +9,7 @@
 
 #define WIDTH 1920
 #define HEIGHT 1080
+#define FIXED_DT 0.01667
 
 int main()
 {
@@ -23,15 +24,18 @@ int main()
 	pSprite->SetTexture(pTexture);
 	pSprite->SetPosition(0, 0);
 
+    LEEntity* pEntity = new LEEntity();
+
+    pEntity->Initialize("../../../res/Testing/image",10,1);
 	//LECircle* pCircle = new LECircle();
     //pCircle->SetPosition(0, 0);
 
-    int x = 0;
     while (true) 
     {
         pWindow->Clear();
-        pWindow->Draw(pSprite);
+        pWindow->Draw(pEntity);
         pWindow->Render();
+        pEntity->FixedUpdate(FIXED_DT);
     }
 
     return 0;

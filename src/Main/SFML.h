@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/System/Vector2.hpp>
+
 #include "Generic.h"
 
 namespace sf 
@@ -33,7 +35,8 @@ protected:
 	sf::Transformable* mpTransformable;
 
 public:
-	const sf::Drawable& Get() { return *mpDrawable; }
+	sf::Drawable& Get() const { return *mpDrawable; }
+	sf::Transformable& GetTransformable() const { return *mpTransformable; }
 	void SetPosition(float x, float y);
 };
 
@@ -66,4 +69,40 @@ public:
 
 	void SetRadius(float radius) override;
 	void SetColor(unsigned char r, unsigned char g, unsigned char b) override;
+};
+
+
+class SFMLEntity : public IEntity, public SFMLObject
+{
+protected:
+	struct Target 
+	{
+		sf::Vector2i position;
+		float distance;
+		bool isSet;
+	};
+	
+	sf::Vector2f mDirection;
+	Target mTarget;
+	float mSpeed;
+
+public:
+	SFMLEntity();
+
+	// enum Tag
+	// {
+	// 	PLAYER,
+	// 	PPROJECTILES,
+	// 	EPROJECTILES,
+	// 	ENNEMY,
+	//
+	// 	TAG_COUNT
+	//
+	// };
+
+	void Update() override;
+	void FixedUpdate(float dt) override;
+	void Initialize(const char* path) override;
+	
+	sf::Vector2f& GetPosition(float ratioX = 0.5f, float ratioY = 0.5f) const;
 };

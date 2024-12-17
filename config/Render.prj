@@ -4,8 +4,8 @@
     "vc_project_version": "17.0",
     "root_namespace": "Render",
     "windows_target_platform_version": "10.0",
-    "use_vcpkg": "false",
-    "use_vcpkg_manifest": "false",
+    "use_vcpkg": "true",
+    "use_vcpkg_manifest": "true",
     "configuration": [
         {
             "additional_dependencies" : "",

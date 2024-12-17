@@ -81,3 +81,63 @@ void SFMLCircle::SetColor(unsigned char r, unsigned char g, unsigned char b)
 {
 	((sf::CircleShape*)mpDrawable)->setFillColor(sf::Color(r, g, b));
 }
+
+SFMLEntity::SFMLEntity()
+{
+	sf::Sprite* pSprite = new sf::Sprite();
+
+	mpDrawable = pSprite;
+	mpTransformable = pSprite;
+}
+
+void SFMLEntity::Initialize(const char* path)
+{
+
+	mDirection = sf::Vector2f(5.0f, 0.0f);
+	mSpeed = 10.0f;
+	
+	SFMLTexture* pTemp = new SFMLTexture();
+	pTemp->Load(path);
+	static_cast<sf::Sprite*>(mpDrawable)->setTexture(pTemp->Get());
+	delete pTemp;
+	
+	mTarget.isSet = false;
+}
+
+sf::Vector2f& SFMLEntity::GetPosition(float ratioX, float ratioY) const
+{
+	sf::Vector2f position;
+	position.x = GetTransformable().getPosition().x;
+	position.y = GetTransformable().getPosition().y;
+	return position;
+}
+
+void SFMLEntity::FixedUpdate(float dt)
+{
+	float x = GetPosition().x / 2;
+	float y = GetPosition().y / 2;
+	float distance = dt * mSpeed;
+	sf::Vector2f translation = distance * mDirection;
+	((sf::Sprite*)mpDrawable)->move(translation);
+
+	std::cout << GetPosition().x;
+	
+	if (mTarget.isSet)
+	{
+		mTarget.distance -= distance;
+
+		if (mTarget.distance <= 0.f)
+		{
+			SetPosition(static_cast<float>(mTarget.position.x), static_cast<float>(mTarget.position.y));
+			mDirection = sf::Vector2f(0.f, 0.f);
+			mTarget.isSet = false;
+		}
+	}
+}
+
+void SFMLEntity::Update()
+{
+	//
+}
+
+

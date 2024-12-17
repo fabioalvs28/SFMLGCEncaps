@@ -37,3 +37,11 @@ public:
 	virtual void SetColor(unsigned char r, unsigned char g, unsigned char b) = 0;
 };
 
+class IEntity
+{
+public:
+	virtual void Update() = 0;
+	virtual void FixedUpdate(float dt) = 0;
+	virtual void Initialize(const char* path) = 0;
+	
+};

@@ -99,3 +99,26 @@ public:
 	void SetRadius(float radius) override;
 	void SetColor(unsigned char r, unsigned char g, unsigned char b) override {};
 };
+
+class LEEntityGC : public IEntity, public LEObjectGC
+{
+protected:
+	struct Target 
+	{
+		DirectX::XMINT2 position;
+		float distance;
+		bool isSet;
+	};
+	
+	DirectX::XMFLOAT2 mDirection;
+	Target mTarget;
+	float mSpeed;
+	
+public:
+	LEEntityGC();
+
+	void Update() override;
+	void FixedUpdate(float dt) override;
+	void Initialize(const char* path) override;
+	
+};

@@ -3,6 +3,8 @@
 
 #include <d3d11.h>
 
+#include "GCSprite.h"
+
 LEWindowGC::LEWindowGC()
 {
     if (mpInstance) 
@@ -196,4 +198,31 @@ void LECircleGC::SetRadius(float radius)
 	mRadius = radius;
 
     ComputeWorldMatrix();
+}
+
+LEEntityGC::LEEntityGC()
+{
+	GCGraphics* pGraphics = LEWindowGC::Get()->GetGraphics();
+
+	auto geoPlane = pGraphics->CreateGeometryPrimitive(Plane, DirectX::XMFLOAT4(DirectX::Colors::Black));
+	assert(geoPlane.success);
+	mpGeometry = geoPlane.resource;
+
+	pGraphics->InitializeGraphicsResourcesStart();
+
+	//Mesh creation
+	auto mesh = pGraphics->CreateMeshTexture(mpGeometry);
+	assert(mesh.success);
+
+	mpMesh = mesh.resource;
+
+	
+
+	pGraphics->InitializeGraphicsResourcesEnd();
+	
+}
+
+void LEEntityGC::Initialize(const char* path)
+{
+	GCSprite*  
 }
