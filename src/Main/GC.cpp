@@ -46,7 +46,7 @@ void LEWindowGC::Initialize(int width, int height, const char* title)
         cameraTarget,
         cameraUp,
         0.0f,                 //FOV not used for orthographic
-        0.0f,                 //Aspect ration not used for orthographic
+        0.0f,                 //Aspect ratio not used for orthographic
         nearZ,
         farZ,
         viewWidth,
@@ -215,14 +215,83 @@ LEEntityGC::LEEntityGC()
 	assert(mesh.success);
 
 	mpMesh = mesh.resource;
-
 	
-
 	pGraphics->InitializeGraphicsResourcesEnd();
 	
 }
 
 void LEEntityGC::Initialize(const char* path)
 {
-	GCSprite*  
+	GCGraphics* pGraphics = LEWindowGC::Get()->GetGraphics();
+
+	pGraphics->InitializeGraphicsResourcesStart();
+
+	//Texture creation
+	auto texture = pGraphics->CreateTexture(std::string(path) + ".dds");
+	assert(texture.success);
+    
+	GCTexture* mpTexture = texture.resource;
+
+	pGraphics->InitializeGraphicsResourcesEnd();
+
+	//Create shaders
+	auto shaderTexture = pGraphics->CreateShaderTexture();
+
+	//Create material
+	auto material = pGraphics->CreateMaterial(shaderTexture.resource);
+	material.resource->SetTexture(texture.resource);
+	assert(material.success);
+
+	mpMaterial = material.resource;
+
+	mWidth = texture.resource->GetWidth();
+	mHeight = texture.resource->GetHeight();
+	
+	mTarget.isSet = false;
+	mDirection = DirectX::XMFLOAT2(5.0f, 0.0f);
+	mSpeed = 50.0f;
 }
+
+void LEEntityGC::Update()
+{
+	//
+}
+
+DirectX::XMFLOAT2& LEEntityGC::GetPosition(float ratioX, float ratioY) const
+{
+	DirectX::XMFLOAT2 position;
+	position.x = mX;
+	position.y = mY;
+	return position;
+}
+
+void LEEntityGC::Move(DirectX::XMFLOAT2 offset)
+{
+	mX += offset.x;
+	mY += offset.y;
+}
+
+void LEEntityGC::FixedUpdate(float dt)
+{
+	float x = GetPosition().x / 2;
+	float y = GetPosition().y / 2;
+	float distance = dt * mSpeed;
+	DirectX::XMFLOAT2 translation = { mDirection.x * distance, mDirection.y * distance };
+	Move(translation);
+	
+	std::cout << mX << " " << mY << "\n";
+	if (mTarget.isSet)
+	{
+		mTarget.distance -= distance;
+
+		if (mTarget.distance <= 0.f)
+		{
+			SetPosition(static_cast<float>(mTarget.position.x), static_cast<float>(mTarget.position.y));
+			mDirection = DirectX::XMFLOAT2(0.f, 0.f);
+			mTarget.isSet = false;
+		}
+	}
+
+	ComputeWorldMatrix();
+}
+

@@ -116,9 +116,11 @@ protected:
 	
 public:
 	LEEntityGC();
-
+	
 	void Update() override;
 	void FixedUpdate(float dt) override;
 	void Initialize(const char* path) override;
+	void Move(DirectX::XMFLOAT2 offset);
+	DirectX::XMFLOAT2& GetPosition(float ratioX = 0.5f, float ratioY = 0.5f) const;
 	
 };

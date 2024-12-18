@@ -94,7 +94,7 @@ void SFMLEntity::Initialize(const char* path)
 {
 
 	mDirection = sf::Vector2f(5.0f, 0.0f);
-	mSpeed = 10.0f;
+	mSpeed = 50.0f;
 	
 	SFMLTexture* pTemp = new SFMLTexture();
 	pTemp->Load(path);

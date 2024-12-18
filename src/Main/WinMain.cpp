@@ -26,7 +26,8 @@ int main()
 
     LEEntity* pEntity = new LEEntity();
 
-    pEntity->Initialize("../../../res/Testing/image",10,1);
+    pEntity->Initialize("../../../res/Testing/image");
+    pEntity->SetPosition(0,0);
 	//LECircle* pCircle = new LECircle();
     //pCircle->SetPosition(0, 0);
 
