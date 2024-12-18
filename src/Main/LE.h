@@ -1,6 +1,6 @@
 #pragma once
 
-#define GC
+//#define GC
 
 #ifdef GC
 #include "GC.h"

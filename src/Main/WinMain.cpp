@@ -34,9 +34,11 @@ int main()
     while (true) 
     {
         pWindow->Clear();
+        pWindow->HandleInput();
+        pEntity->FixedUpdate(FIXED_DT);
         pWindow->Draw(pEntity);
         pWindow->Render();
-        pEntity->FixedUpdate(FIXED_DT);
+        
     }
 
     return 0;

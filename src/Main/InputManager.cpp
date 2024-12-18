@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "InputManager.h"
 
 #include <xinput.h>
@@ -5,8 +6,6 @@
 #pragma comment(lib,"xinput.lib")
 #include <vector>
 #include <Windows.h>
-
-
 
 #define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
@@ -49,7 +48,6 @@ void GCInputSystem::GetConnectedControllers()
         }
     }
 }
-
 
 #pragma region Keyboard Manager
 

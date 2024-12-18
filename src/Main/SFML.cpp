@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#pragma region Window
 void SFMLWindow::Initialize(int width, int height, const char* title)
 {
 	mpWindow = new sf::RenderWindow(sf::VideoMode(width, height), "SFML works!");
@@ -19,16 +20,51 @@ void SFMLWindow::Draw(IObject* pDrawable)
 	mpWindow->draw(pSFMLDrawable->Get());
 }
 
+void SFMLWindow::HandleInput()
+{
+	sf::Event event;
+	while (mpWindow->pollEvent(event))
+	{
+		switch (event.type) // NOLINT(clang-diagnostic-switch-enum)
+		{
+		case sf::Event::Closed:
+			{
+				mpWindow->close();
+				break;
+			}
+		case sf::Event::KeyPressed:
+			{
+				switch (event.key.scancode) // NOLINT(clang-diagnostic-switch-enum)
+				{
+				case (sf::Keyboard::Scancode::Escape):
+					{
+						mpWindow->close();
+						break;
+					}
+				default: break;
+				}
+				break;
+			}
+		}
+	}
+}
+
+
 void SFMLWindow::Render()
 {
 	mpWindow->display();
 }
+#pragma endregion
+
+#pragma region Object
 
 void SFMLObject::SetPosition(float x, float y)
 {
 	mpTransformable->setPosition(x, y);
 }
+#pragma endregion
 
+#pragma region Sprite
 SFMLSprite::SFMLSprite()
 {
 	sf::Sprite* pSprite = new sf::Sprite();
@@ -43,7 +79,9 @@ void SFMLSprite::SetTexture(ITexture* pTexture)
 
 	((sf::Sprite*)mpDrawable)->setTexture(pSFMLTexture->Get());
 }
+#pragma endregion
 
+#pragma region Texture
 SFMLTexture::SFMLTexture()
 {
 	mpTexture = new sf::Texture();
@@ -64,6 +102,9 @@ void SFMLTexture::GetHeight()
 	mpTexture->getSize().y;
 }
 
+#pragma endregion
+
+#pragma region Circle
 SFMLCircle::SFMLCircle()
 {
 	sf::CircleShape* pCircle = new sf::CircleShape();
@@ -81,7 +122,9 @@ void SFMLCircle::SetColor(unsigned char r, unsigned char g, unsigned char b)
 {
 	((sf::CircleShape*)mpDrawable)->setFillColor(sf::Color(r, g, b));
 }
+#pragma endregion
 
+#pragma region Entity
 SFMLEntity::SFMLEntity()
 {
 	sf::Sprite* pSprite = new sf::Sprite();
@@ -93,8 +136,8 @@ SFMLEntity::SFMLEntity()
 void SFMLEntity::Initialize(const char* path)
 {
 
-	mDirection = sf::Vector2f(5.0f, 0.0f);
-	mSpeed = 50.0f;
+	mDirection = sf::Vector2f(0.0f, 0.0f);
+	mSpeed = 0.0f;
 	
 	SFMLTexture* pTemp = new SFMLTexture();
 	pTemp->Load(path);
@@ -139,5 +182,5 @@ void SFMLEntity::Update()
 {
 	//
 }
-
+#pragma endregion
 

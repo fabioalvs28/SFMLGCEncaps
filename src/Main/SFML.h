@@ -20,10 +20,11 @@ class SFMLWindow : public IWindow
 	sf::RenderWindow* mpWindow;
 
 public:
-	virtual void Initialize(int width, int height, const char* title) override;
-	virtual void Clear() override;
-	virtual void Draw(IObject* pObject) override;
-	virtual void Render() override;
+	void Initialize(int width, int height, const char* title) override;
+	void Clear() override;
+	void HandleInput() override;
+	void Draw(IObject* pObject) override;
+	void Render() override;
 
 	friend class SFMLSprite;
 };

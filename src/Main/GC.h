@@ -40,6 +40,7 @@ public:
 
 	void Initialize(int width, int height, const char* title) override;
 	void Clear() override {};
+	void HandleInput() override{};
 	void Draw(IObject* pDrawable) override;
 	void Render() override;
 };
@@ -59,6 +60,7 @@ public:
 	LEObjectGC();
 
 	void SetPosition(float x, float y) override;
+	void Move(DirectX::XMFLOAT2 offset);
 	void ComputeWorldMatrix();
 
 	friend LEWindowGC;
@@ -120,7 +122,6 @@ public:
 	void Update() override;
 	void FixedUpdate(float dt) override;
 	void Initialize(const char* path) override;
-	void Move(DirectX::XMFLOAT2 offset);
 	DirectX::XMFLOAT2& GetPosition(float ratioX = 0.5f, float ratioY = 0.5f) const;
 	
 };

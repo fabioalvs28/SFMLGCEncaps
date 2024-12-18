@@ -8,6 +8,7 @@ public:
 	virtual void Initialize(int width, int height, const char* title) = 0;
 	virtual void Clear() = 0;
 	virtual void Draw(IObject* pDrawable) = 0;
+	virtual void HandleInput() = 0;
 	virtual void Render() = 0;
 };
 

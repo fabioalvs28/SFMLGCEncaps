@@ -248,8 +248,8 @@ void LEEntityGC::Initialize(const char* path)
 	mHeight = texture.resource->GetHeight();
 	
 	mTarget.isSet = false;
-	mDirection = DirectX::XMFLOAT2(5.0f, 0.0f);
-	mSpeed = 50.0f;
+	mDirection = DirectX::XMFLOAT2(0.0f, 0.0f);
+	mSpeed = 0.0f;
 }
 
 void LEEntityGC::Update()
@@ -265,7 +265,7 @@ DirectX::XMFLOAT2& LEEntityGC::GetPosition(float ratioX, float ratioY) const
 	return position;
 }
 
-void LEEntityGC::Move(DirectX::XMFLOAT2 offset)
+void LEObjectGC::Move(DirectX::XMFLOAT2 offset)
 {
 	mX += offset.x;
 	mY += offset.y;
@@ -279,7 +279,6 @@ void LEEntityGC::FixedUpdate(float dt)
 	DirectX::XMFLOAT2 translation = { mDirection.x * distance, mDirection.y * distance };
 	Move(translation);
 	
-	std::cout << mX << " " << mY << "\n";
 	if (mTarget.isSet)
 	{
 		mTarget.distance -= distance;
